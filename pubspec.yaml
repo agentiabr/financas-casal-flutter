@@ -1,0 +1,45 @@
+name: financas_casal_flutter
+description: "Aplicativo de Finanças do Casal • Rodrigo & Márcia (Flutter + Supabase)"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Backend & Realtime
+  supabase_flutter: ^2.8.0
+
+  # Reconhecimento de Voz Nativo (Hardware do Celular)
+  speech_to_text: ^7.0.0
+
+  # Câmera e OCR de Cupom Fiscal com Inteligência Artificial On-Device
+  camera: ^0.11.0
+  google_mlkit_text_recognition: ^0.13.0
+  image_picker: ^1.1.2
+
+  # UI & Design System Flat
+  intl: ^0.19.0
+  lucide_icons: ^0.450.0
+  fl_chart: ^0.70.0
+  google_fonts: ^6.2.1
+
+  # Gerenciamento de Estado e Armazenamento Local / Offline
+  provider: ^6.1.2
+  shared_preferences: ^2.3.3
+  permission_handler: ^11.3.1
+  # Autenticação Biométrica e Face ID
+  local_auth: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

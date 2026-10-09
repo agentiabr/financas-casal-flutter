@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Finanças Casal</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>financas_casal_flutter</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- PERMISSÕES EXIGIDAS PELA APPLE STORE PARA SUBMISSÃO -->
+	<!-- 1. BIOMETRIA E FACE ID (local_auth) -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>O Finanças Casal utiliza o Face ID / Touch ID para proteger com segurança máxima seus dados bancários e patrimoniais.</string>
+
+	<!-- 2. RECONHECIMENTO DE VOZ (speech_to_text) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O Finanças Casal precisa do microfone para permitir que você lance despesas e receitas rapidamente por voz.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>O aplicativo utiliza inteligência de voz para converter sua fala em lançamentos financeiros instantâneos.</string>
+
+	<!-- 3. CÂMERA E GALERIA PARA OCR DE NOTAS FISCAIS (google_mlkit) -->
+	<key>NSCameraUsageDescription</key>
+	<string>O Finanças Casal usa a câmera para digitalizar cupons fiscais e notas de compras automaticamente.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permite selecionar fotos de notas fiscais salvas na galeria para leitura automática de valores.</string>
+</dict>
+</plist>
