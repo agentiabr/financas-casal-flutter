@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/finance_provider.dart';
@@ -17,7 +17,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   String _searchQuery = '';
   String _selectedTipoFilter = 'Todos';
   String _selectedCategoryFilter = 'Todas';
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +125,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   Widget _buildTransactionCard(TransactionModel tx, FinanceProvider finance) {
     final isReceita = tx.tipo == 'Receita';
-    final valorFormatado = finance.isPrivacyMode ? 'R$ •••••' : _currencyFormat.format(tx.valor);
+    final valorFormatado = finance.isPrivacyMode ? r'R$ •••••' : _currencyFormat.format(tx.valor);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -138,7 +138,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: isReceita ? Colors.emeraldGreen.withOpacity(0.15) : Colors.slate.shade100,
+            backgroundColor: isReceita ? AppTheme.emeraldGreen.withOpacity(0.15) : Colors.grey.shade100,
             child: Icon(
               isReceita ? LucideIcons.arrowDownLeft : (tx.categoria.contains('Pet') ? LucideIcons.heart : LucideIcons.shoppingBag),
               size: 16,
@@ -181,7 +181,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ],
           ),
           IconButton(
-            icon: const Icon(LucideIcons.trash2, size: 16, color: Colors.slate),
+            icon: const Icon(LucideIcons.trash2, size: 16, color: AppTheme.textMuted),
             onPressed: () {
               finance.deleteTransaction(tx.id);
               ScaffoldMessenger.of(context).showSnackBar(

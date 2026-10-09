@@ -70,7 +70,7 @@ class SubscriptionPlanModel {
       additionalMemberPrice: 10.00,
       features: [
         'Base para 2 usuários principais (Casal)',
-        '+ R$ 10,00 por membro extra (máx. 5 adicionais)',
+        r'+ R$ 10,00 por membro extra (máx. 5 adicionais)',
         'Até 7 pessoas sincronizadas na mesma conta',
         'Permissões personalizadas por membro',
         'Histórico e relatórios consolidados da casa',

@@ -10,8 +10,10 @@ class AppTheme {
   static const Color textMain = Color(0xFF0F172A);
   static const Color textMuted = Color(0xFF64748B);
 
-  // Cores de Status
+  // Cores de Status e Atalhos Compatíveis
   static const Color emeraldGreen = Color(0xFF059669);
+  static const Color emerald = Color(0xFF059669);
+  static const Color slate = Color(0xFF64748B);
   static const Color amberWarning = Color(0xFFD97706);
   static const Color roseDanger = Color(0xFFE11D48);
   static const Color alertNegative = Color(0xFFDC2626);
@@ -24,7 +26,7 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: lightBg,
       primaryColor: primaryBlue,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardBg,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -47,7 +49,7 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF0F172A),
       primaryColor: const Color(0xFF3B82F6),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: const Color(0xFF1E293B),
         elevation: 0,
         shape: RoundedRectangleBorder(

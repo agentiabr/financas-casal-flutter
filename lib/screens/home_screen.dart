@@ -2,7 +2,7 @@ import 'plans_screen.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../config/app_theme.dart';
@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentBottomNavIndex = 0;
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHeroCard(FinanceProvider finance, bool isNegative) {
     final displayBalance = finance.isPrivacyMode
-        ? 'R$ •••••'
+        ? r'R$ •••••'
         : _currencyFormat.format(finance.saldoDisponivel);
 
     return Container(
@@ -436,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ));
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Lançamento adicionado: R$ ${parsed.valor} (${parsed.categoria})')),
+                    SnackBar(content: Text('Lançamento adicionado: R\$ ${parsed.valor} (${parsed.categoria})')),
                   );
                 }
               },
@@ -490,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
             keyboardType: TextInputType.number,
             inputFormatters: [CurrencyInputFormatter()],
             decoration: const InputDecoration(
-              labelText: 'Valor (R$)',
+              labelText: r'Valor (R$)',
               hintText: '0,00',
               border: OutlineInputBorder(),
             ),
@@ -553,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ...finance.cards.map((c) => ListTile(
               contentPadding: EdgeInsets.zero,
               leading: CircleAvatar(
-                backgroundColor: c.cor == 'purple' ? Colors.purple.shade100 : Colors.emerald.shade100,
+                backgroundColor: c.cor == 'purple' ? Colors.purple.shade100 : Colors.green.shade100,
                 child: const Icon(LucideIcons.creditCard, size: 18),
               ),
               title: Text(c.nome, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),

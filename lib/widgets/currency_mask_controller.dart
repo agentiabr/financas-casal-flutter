@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CurrencyInputFormatter extends TextInputFormatter {
-  final NumberFormat _formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+  final NumberFormat _formatter = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
   @override
   TextEditingValue formatEditUpdate(
@@ -31,7 +31,7 @@ class CurrencyInputFormatter extends TextInputFormatter {
 
   static double parse(String formatted) {
     if (formatted.isEmpty) return 0.0;
-    String clean = formatted.replaceAll('R$', '').replaceAll('.', '').replaceAll(',', '.').trim();
+    String clean = formatted.replaceAll(r'R$', '').replaceAll('.', '').replaceAll(',', '.').trim();
     return double.tryParse(clean) ?? 0.0;
   }
 }

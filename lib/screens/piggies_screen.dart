@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/finance_provider.dart';
@@ -13,7 +13,7 @@ class PiggiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final finance = Provider.of<FinanceProvider>(context);
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +68,7 @@ class PiggiesScreen extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: p.percentual,
                     minHeight: 8,
-                    backgroundColor: Colors.slate.shade100,
+                    backgroundColor: Colors.grey.shade100,
                     valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
                   ),
                 ),
@@ -108,7 +108,7 @@ class PiggiesScreen extends StatelessWidget {
           controller: ctrl,
           keyboardType: TextInputType.number,
           inputFormatters: [CurrencyInputFormatter()],
-          decoration: const InputDecoration(labelText: 'Valor (R$)', hintText: '0,00'),
+          decoration: const InputDecoration(labelText: r'Valor (R$)', hintText: '0,00'),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),

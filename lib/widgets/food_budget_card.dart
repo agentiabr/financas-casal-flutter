@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/finance_provider.dart';
@@ -11,7 +11,7 @@ class FoodBudgetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final finance = Provider.of<FinanceProvider>(context);
-    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+    final fmt = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
     final percent = (finance.foodBudgetSpent / finance.foodBudgetCap).clamp(0.0, 1.0);
 
     return Container(
@@ -50,7 +50,7 @@ class FoodBudgetCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: percent > 0.85 ? Colors.red.shade100 : Colors.emeraldGreen.withOpacity(0.15),
+                  color: percent > 0.85 ? Colors.red.shade100 : AppTheme.emeraldGreen.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -72,7 +72,7 @@ class FoodBudgetCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: percent,
               minHeight: 10,
-              backgroundColor: Colors.slate.shade100,
+              backgroundColor: Colors.grey.shade100,
               valueColor: AlwaysStoppedAnimation<Color>(
                 percent > 0.85 ? Colors.red : (percent > 0.60 ? AppTheme.amberWarning : AppTheme.emeraldGreen),
               ),

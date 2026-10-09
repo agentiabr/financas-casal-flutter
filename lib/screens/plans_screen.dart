@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../config/app_theme.dart';
 import '../models/plan_model.dart';
@@ -14,7 +14,7 @@ class PlansScreen extends StatefulWidget {
 class _PlansScreenState extends State<PlansScreen> {
   PlanType _selectedPlan = PlanType.casal;
   int _extraFamilyMembers = 1; // De 1 a 5 membros no plano família
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R$');
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
   @override
   Widget build(BuildContext context) {
