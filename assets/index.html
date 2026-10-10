@@ -1671,85 +1671,86 @@
     </section>
 
     <!-- MODAL DEDICADO: LISTA DE COMPRAS & COMPARADOR DE PREÇOS (RECURSO PLUS) -->
-  <div id="modalShoppingListHistory" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs">
-      <section class="w-full" id="sectionPriceHistory">
-      <div class="app-card rounded-none p-5 transition-all">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <div class="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200">
-              <i data-lucide="trending-up" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Histórico de Lista de Compras & Comparador de Preços</h2>
-                <span class="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-full">Por Estabelecimento</span>
-              </div>
-              <p class="text-[11px] text-slate-500">Compare os preços dos produtos entre meses e lojas. Produtos mais caros são alertados automaticamente.</p>
-            </div>
+  <div id="modalShoppingListHistory" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeShoppingListModal()">
+    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-800 text-xs flex flex-col">
+      
+      <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-950/60 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-800/80 shadow-xs">
+            🛒
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="openInvoiceScanModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-none flex items-center gap-1 transition-all">
-              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-              <span>+ Ler Foto de Cupom</span>
-            </button>
-            <button onclick="closeShoppingListModal()" class="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
-              <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <div class="flex items-center cursor-grab text-slate-400 hover:text-slate-700 p-1 rounded-none hover:bg-slate-100 transition-colors mr-1" title="Arraste pelos pontinhos para reordenar esta seção" draggable="false" ondragstart="handleSectionDragStart(event, 'sectionPriceHistory')">
-              <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-black text-base text-white">Histórico de Lista de Compras & Mercados</h3>
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold rounded-full">Comparador Inteligente</span>
             </div>
+            <p class="text-[11px] text-slate-400">Compare os preços dos produtos entre estabelecimentos e descubra onde comprar mais barato.</p>
           </div>
         </div>
+        
+        <!-- BOTÃO DE FECHAR PROEMINENTE [ ✕ ] -->
+        <button type="button" onclick="closeShoppingListModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-700" title="Fechar Lista de Compras">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-        <div id="sectionPriceContent" class="collapsible-content pt-2">
-          <!-- Filtro por Estabelecimento & Busca de Produto -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pb-3 border-b border-slate-200">
-            <div class="sm:col-span-2 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
-              <!-- Filtros de Loja Injetados Dinamicamente -->
-            </div>
-            <div class="sm:col-span-2 flex items-center justify-between gap-2 pt-1">
-              <button onclick="openManageStoresModal()" class="px-2.5 py-1 text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-none flex items-center gap-1 transition-colors" title="Gerenciar ou excluir estabelecimentos">
-                <i data-lucide="store" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>⚙️ Gerenciar / Excluir Lojas</span>
-              </button>
-              <div id="activeStoreActionsBox" class="hidden flex items-center gap-1">
-                <button onclick="deleteActiveEstablishment()" class="px-2 py-1 text-[10px] font-bold bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded-none flex items-center gap-1" title="Excluir todos os produtos da loja ativa">
-                  <i data-lucide="trash-2" class="w-3 h-3"></i>
-                  <span id="btnDeleteActiveStoreLabel">Excluir Loja</span>
-                </button>
-              </div>
-            </div>
-            <div class="relative">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
-              <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar produto (ex: Leite, Arroz, Café)..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-none focus:outline-none focus:ring-1 focus:ring-emerald-500">
-            </div>
-          </div>
+      <!-- Barra de Ações & Busca com Alto Contraste -->
+      <div class="pt-3.5 pb-3 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" onclick="openInvoiceScanModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+            <span>+ Ler Foto de Cupom</span>
+          </button>
+          <button type="button" onclick="openManageStoresModal()" class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
+            <i data-lucide="store" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span>Gerenciar Lojas</span>
+          </button>
+        </div>
 
-          <!-- Tabela de Comparativo de Preços -->
-          <div class="overflow-x-auto mt-3">
-            <table class="w-full text-left text-xs">
-              <thead>
-                <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 text-[11px]">
-                  <th class="py-2.5 px-3">Produto / Item</th>
-                  <th class="py-2.5 px-3">Estabelecimento</th>
-                  <th class="py-2.5 px-3">Última Compra</th>
-                  <th class="py-2.5 px-3 text-right">Preço Atual</th>
-                  <th class="py-2.5 px-3 text-right">Preço Anterior</th>
-                  <th class="py-2.5 px-3 text-center">Comparativo</th>
-                  <th class="py-2.5 px-3 text-center w-24">Ações</th>
-                </tr>
-              </thead>
-              <tbody id="priceHistoryTableBody" class="divide-y divide-slate-100">
-                <!-- Injetado dinamicamente via JS -->
-              </tbody>
-            </table>
-          </div>
+        <div class="relative flex-1 max-w-xs">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+          <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar produto (ex: Leite, Arroz, Café)..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
         </div>
       </div>
-    </section>
 
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionPiggy">
+      <!-- Filtro de Lojas (Chips de Estabelecimentos) -->
+      <div class="py-2.5 border-b border-slate-800 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+
+      <!-- Tabela de Comparativo de Preços com Alto Contraste -->
+      <div class="overflow-x-auto mt-2 custom-scrollbar flex-1">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-700 text-[11px]">
+              <th class="py-2.5 px-3">Produto / Item</th>
+              <th class="py-2.5 px-3">Estabelecimento</th>
+              <th class="py-2.5 px-3">Última Compra</th>
+              <th class="py-2.5 px-3 text-right">Preço Atual</th>
+              <th class="py-2.5 px-3 text-right">Preço Anterior</th>
+              <th class="py-2.5 px-3 text-center">Comparativo</th>
+              <th class="py-2.5 px-3 text-center w-24">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="priceHistoryTableBody" class="divide-y divide-slate-800/80">
+            <!-- Injetado dinamicamente via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Rodapé do Modal com Botão de Fechar Extra -->
+      <div class="pt-3.5 mt-2 border-t border-slate-800 flex items-center justify-between">
+        <span class="text-[11px] text-slate-400">Dica: Os itens da nota fiscal vão para este comparador sem poluir a tabela geral.</span>
+        <button type="button" onclick="closeShoppingListModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs transition-colors">
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionPiggy">
       <div class="app-card rounded-none p-5 relative overflow-hidden transition-all">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -5528,8 +5529,8 @@
       if (pillContainer) {
         pillContainer.innerHTML = stores.map(s => {
           const isActive = s === activeEstablishmentFilter;
-          const cls = isActive ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 text-slate-700 hover:bg-slate-200';
-          return `<button onclick="setEstablishmentFilter('${s}')" class="px-2.5 py-1 text-[11px] rounded-none border border-slate-300 transition-colors ${cls}">${s}</button>`;
+          const cls = isActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700';
+          return `<button onclick="setEstablishmentFilter('${s}')" class="px-3 py-1 text-[11px] rounded-xl transition-all ${cls}">${s}</button>`;
         }).join('');
       }
 
@@ -5547,20 +5548,20 @@
       }
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400 text-xs">Nenhum produto cadastrado para este estabelecimento.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400 text-xs">Nenhum produto encontrado para este estabelecimento.</td></tr>';
         return;
       }
 
       tbody.innerHTML = list.map(item => {
         let diffPct = 0;
-        let diffBadge = '<span class="text-[10px] font-bold px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded-none">🏷️ Estável</span>';
+        let diffBadge = '<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg">🏷️ Estável</span>';
 
         if (item.precoAnterior && item.precoAnterior > 0) {
           diffPct = Math.round(((item.preco - item.precoAnterior) / item.precoAnterior) * 100);
           if (diffPct > 0) {
-            diffBadge = `<span class="text-[10px] font-bold px-1.5 py-0.5 bg-red-100 text-red-700 rounded-none border border-red-200">🔺 Mais caro (+${diffPct}%)</span>`;
+            diffBadge = `<span class="text-[10px] font-bold px-2 py-0.5 bg-rose-950/60 text-rose-300 border border-rose-800 rounded-lg">🔺 Subiu (+${diffPct}%)</span>`;
           } else if (diffPct < 0) {
-            diffBadge = `<span class="text-[10px] font-bold px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-none border border-emerald-200">🟢 Mais barato (${diffPct}%)</span>`;
+            diffBadge = `<span class="text-[10px] font-bold px-2 py-0.5 bg-emerald-950/60 text-emerald-300 border border-emerald-800 rounded-lg">🟢 Baixou (${diffPct}%)</span>`;
           }
         }
 
@@ -7765,37 +7766,43 @@
   <!-- ============================================================== -->
   <!-- MOBILE BOTTOM NAVIGATION BAR (DOCK INFERIOR PARA SMARTPHONES)  -->
   <!-- ============================================================== -->
-  <nav class="block md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 shadow-2xl">
-    <div class="grid grid-cols-5 items-center justify-between max-w-md mx-auto text-center">
+  <nav class="block md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-1 py-1.5 shadow-2xl">
+    <div class="grid grid-cols-6 items-center justify-between max-w-md mx-auto text-center">
       <!-- 1. Início -->
       <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-blue-600">
-        <i data-lucide="home" class="w-5 h-5"></i>
-        <span class="text-[10px] font-bold mt-0.5">Início</span>
+        <i data-lucide="home" class="w-4.5 h-4.5"></i>
+        <span class="text-[9px] font-bold mt-0.5">Início</span>
       </button>
 
-      <!-- 2. Análise Visual (Restaurado a pedido do usuário) -->
-      <button onclick="document.getElementById('sectionCharts').scrollIntoView({ behavior: 'smooth' })" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-blue-600">
-        <i data-lucide="pie-chart" class="w-5 h-5 text-sky-500"></i>
-        <span class="text-[10px] font-bold mt-0.5">Análise</span>
+      <!-- 2. Carrinho de Compras / Mercado (Mesmo estilo dos outros) -->
+      <button onclick="openShoppingListModal()" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-emerald-600">
+        <i data-lucide="shopping-cart" class="w-4.5 h-4.5 text-emerald-500"></i>
+        <span class="text-[9px] font-bold mt-0.5">Mercado</span>
       </button>
 
-      <!-- 3. FAB Central: Lançar -->
-      <div class="flex items-center justify-center -mt-6">
-        <button onclick="openActionHubModal()" class="w-13 h-13 rounded-full bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-950 text-white flex items-center justify-center shadow-xl border-4 border-white dark:border-slate-900 transform active:scale-90 transition-transform" title="Lançar Despesa / Receita">
-          <i data-lucide="plus" class="w-7 h-7 text-white"></i>
+      <!-- 3. Parcelados -->
+      <button onclick="document.getElementById('cardHeroInstallments').scrollIntoView({ behavior: 'smooth' })" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-indigo-600">
+        <i data-lucide="layers" class="w-4.5 h-4.5 text-indigo-500"></i>
+        <span class="text-[9px] font-bold mt-0.5">Parcelas</span>
+      </button>
+
+      <!-- 4. FAB Central: Lançar -->
+      <div class="flex items-center justify-center -mt-5">
+        <button onclick="openActionHubModal()" class="w-11 h-11 rounded-full bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-950 text-white flex items-center justify-center shadow-xl border-2 border-white dark:border-slate-900 transform active:scale-90 transition-transform" title="Lançar Despesa / Receita">
+          <i data-lucide="plus" class="w-5.5 h-5.5 text-white"></i>
         </button>
       </div>
 
-      <!-- 4. Parcelados -->
-      <button onclick="document.getElementById('cardHeroInstallments').scrollIntoView({ behavior: 'smooth' })" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-blue-600">
-        <i data-lucide="layers" class="w-5 h-5 text-indigo-500"></i>
-        <span class="text-[10px] font-bold mt-0.5">Parcelados</span>
+      <!-- 5. Análise Visual -->
+      <button onclick="document.getElementById('sectionCharts').scrollIntoView({ behavior: 'smooth' })" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-blue-600">
+        <i data-lucide="pie-chart" class="w-4.5 h-4.5 text-sky-500"></i>
+        <span class="text-[9px] font-bold mt-0.5">Análise</span>
       </button>
 
-      <!-- 5. Tabela de Gastos -->
-      <button onclick="document.getElementById('sectionTable').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-blue-600">
-        <i data-lucide="receipt" class="w-5 h-5 text-emerald-500"></i>
-        <span class="text-[10px] font-bold mt-0.5">Tabela</span>
+      <!-- 6. Tabela -->
+      <button onclick="document.getElementById('sectionTable').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-emerald-600">
+        <i data-lucide="receipt" class="w-4.5 h-4.5 text-emerald-500"></i>
+        <span class="text-[9px] font-bold mt-0.5">Tabela</span>
       </button>
     </div>
   </nav>
