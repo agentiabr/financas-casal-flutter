@@ -21726,8 +21726,31 @@ Check your Browserslist config to be sure that your targets are set up correctly
 
     /* Cantos arredondados suaves e modernos (Flat Design) */
     .app-card {
-      border-radius: var(--radius-card) !important;
+      border-radius: 1rem !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       transition: all 0.2s ease-in-out;
+    }
+    body.theme-light .app-card {
+      background: rgba(255, 255, 255, 0.82) !important;
+      border: 1px solid rgba(220, 229, 243, 0.85) !important;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+    }
+    body.theme-dark .app-card {
+      background: rgba(30, 41, 59, 0.78) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+    }
+    body.theme-rose .app-card {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(254, 205, 211, 0.65) !important;
+      box-shadow: 0 8px 32px 0 rgba(244, 63, 94, 0.07) !important;
+    }
+    .hero-card-banner {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 12px 40px 0 rgba(37, 99, 235, 0.25) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
 
     /* 1. TEMA CLARO FLAT (PADRÃO AZUL) */
@@ -22300,15 +22323,15 @@ Check your Browserslist config to be sure that your targets are set up correctly
 
         <!-- Botões de Ação Rápida (Voz, Foto Cupom e Lançar) -->
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <button onclick="openVoiceRecordModal()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 flex items-center gap-1.5 transition-all" title="Lançar por Voz">
+          <button onclick="openVoiceRecordModal()" class="hidden md:flex p-2 sm:px-3 sm:py-2 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 items-center gap-1.5 transition-all" title="Lançar por Voz">
             <i data-lucide="mic" class="w-4 h-4 text-blue-600"></i>
-            <span class="hidden md:inline">Voz</span>
+            <span class="hidden lg:inline">Voz</span>
           </button>
-          <button onclick="openInvoiceScanModal()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 transition-all" title="Fotografar Cupom com a Câmera">
+          <button onclick="openInvoiceScanModal()" class="hidden md:flex p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800 items-center gap-1.5 transition-all" title="Fotografar Cupom com a Câmera">
             <i data-lucide="camera" class="w-4 h-4 text-emerald-600"></i>
-            <span class="hidden md:inline">Foto Cupom</span>
+            <span class="hidden lg:inline">Foto Cupom</span>
           </button>
-          <button onclick="openActionHubModal()" class="btn-primary-action flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-extrabold rounded-xl shadow-md transition-all">
+          <button onclick="openActionHubModal()" class="btn-primary-action flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-extrabold rounded-xl shadow-md transition-all whitespace-nowrap">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span>+ Lançar Valor</span>
           </button>
@@ -22364,8 +22387,10 @@ Check your Browserslist config to be sure that your targets are set up correctly
           <div class="flex items-center gap-2">
             <div class="flex items-center bg-white dark:bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 text-xs shadow-xs">
               <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-600 mr-1.5"></i>
-              <select id="cycleSelector" onchange="onCycleChange()" class="font-bold bg-transparent cursor-pointer border-none focus:ring-0 p-0 pr-4 text-slate-800 dark:text-slate-100 text-xs">
-                <!-- Preenchido via JS -->
+              <select id="cycleSelector" onchange="onCycleChange()" class="font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 cursor-pointer border-none focus:ring-0 p-0 text-xs outline-none">
+                <option value="05/Out a 04/Nov 2026">05/Out a 04/Nov 2026 (✨ Mês Vigente)</option>
+                <option value="05/Set a 04/Out 2026">05/Set a 04/Out 2026</option>
+                <option value="05/Ago a 04/Set 2026">05/Ago a 04/Set 2026</option>
               </select>
             </div>
             <button onclick="openManageCardsModal()" class="flex items-center gap-1 px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 font-bold text-xs rounded-xl border border-purple-200">
@@ -24456,18 +24481,36 @@ Check your Browserslist config to be sure that your targets are set up correctly
     }
 
     function loadData() {
-      // Transações
-      const savedTxs = localStorage.getItem('financas_transacoes_v2');
+      // Transações v4
+      const savedTxs = localStorage.getItem('financas_transacoes_v4');
       if (savedTxs) {
-        try { transactions = JSON.parse(savedTxs); } catch(e) { transactions = INITIAL_TRANSACTIONS; }
+        try { 
+          transactions = JSON.parse(savedTxs); 
+        } catch(e) { 
+          transactions = INITIAL_TRANSACTIONS; 
+        }
       } else {
         transactions = INITIAL_TRANSACTIONS;
-        localStorage.setItem('financas_transacoes_v2', JSON.stringify(transactions));
+        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
       }
 
       // Ciclo Ativo
       const savedCycle = localStorage.getItem('financas_active_cycle');
-      if (savedCycle) currentCycle = savedCycle;
+      if (savedCycle) {
+        currentCycle = savedCycle;
+      } else {
+        currentCycle = '05/Out a 04/Nov 2026';
+        localStorage.setItem('financas_active_cycle', currentCycle);
+      }
+
+      // Migração V4 garantida para Outubro 2026
+      if (!localStorage.getItem('financas_v4_migrated')) {
+        currentCycle = '05/Out a 04/Nov 2026';
+        transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
+        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+        localStorage.setItem('financas_active_cycle', currentCycle);
+        localStorage.setItem('financas_v4_migrated', 'true');
+      }
 
       // Tema
       const savedTheme = localStorage.getItem('financas_theme');
@@ -24558,7 +24601,20 @@ Check your Browserslist config to be sure that your targets are set up correctly
     }
 
     function saveData() {
-      localStorage.setItem('financas_transacoes_v2', JSON.stringify(transactions));
+      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+    }
+
+    function resetToOfficialOct2026() {
+      if (confirm('Deseja restaurar o orçamento oficial de Outubro 2026 com todas as 28 despesas e receitas cadastradas?')) {
+        transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
+        currentCycle = '05/Out a 04/Nov 2026';
+        saveData();
+        localStorage.setItem('financas_active_cycle', currentCycle);
+        populateCycleSelector();
+        updateDashboard();
+        renderTransactionsTable();
+        showToastUndo('Orçamento oficial de Outubro 2026 restaurado com sucesso! ✨', false);
+      }
     }
 
     // ==========================================
@@ -24609,13 +24665,6 @@ Check your Browserslist config to be sure that your targets are set up correctly
       if (btnRose) {
         btnRose.classList.toggle('bg-slate-700', themeName === 'theme-rose');
         btnRose.classList.toggle('text-white', themeName === 'theme-rose');
-      }
-      if (btnRose) {
-        btnRose.classList.toggle('bg-slate-700', themeName === 'theme-rose');
-        btnRose.classList.toggle('text-white', themeName === 'theme-rose');
-      } else {
-          btnDark.className = 'p-1 sm:p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 transition-all flex items-center justify-center';
-        }
       }
 
       if (shouldSave) {
@@ -27602,9 +27651,18 @@ Check your Browserslist config to be sure that your targets are set up correctly
       img.src = dataUrl;
     }
 
-    window.onload = function() {
-      loadData(); loadPriceHistory(); updateFoodBudgetWidget(); loadSectionsOrder();
-    };
+    function initApp() {
+      loadData();
+      loadPriceHistory();
+      updateFoodBudgetWidget();
+      loadSectionsOrder();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+    window.addEventListener('load', initApp);
   
     // ==============================================================================
     // SUÍTE DE INTELIGÊNCIA E REGRAS DE NEGÓCIO V5.2
@@ -28141,6 +28199,23 @@ Check your Browserslist config to be sure that your targets are set up correctly
             <span>Membros Ativos: <strong class="text-blue-600" id="adminMembrosCount">2 (Rodrigo & Márcia)</strong></span>
             <button onclick="closeAdminModal(); openAddUserModal();" class="text-blue-600 hover:underline">+ Convidar Membro</button>
           </div>
+        </div>
+
+        <!-- SEÇÃO EXTRA: RESTAURAR DADOS DE OUTUBRO 2026 -->
+        <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+              <span>🔄</span><span>Restaurar Orçamento Outubro 2026</span>
+            </h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800">Oficial</span>
+          </div>
+          <p class="text-[11px] text-emerald-800 dark:text-emerald-300 mb-2.5">
+            Recarrega as 28 despesas e receitas oficiais de Outubro 2026 (R$ 5.666,06 em despesas e R$ 5.891,00 em receitas).
+          </p>
+          <button onclick="resetToOfficialOct2026()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Restaurar Lançamentos Oficiais de Outubro 2026</span>
+          </button>
         </div>
 
         <!-- SEÇÃO 3: GOOGLE GEMINI AI (OPCIONAL E GRATUITA) -->
