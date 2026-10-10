@@ -24415,7 +24415,8 @@ Check your Browserslist config to be sure that your targets are set up correctly
 
     let transactions = [];
     let currentCycle = '05/Out a 04/Nov 2026';
-    let currentTheme = 'theme-blue';
+    let currentTheme = localStorage.getItem('financas_theme') || 'theme-light';
+    let currentStyle = localStorage.getItem('financas_visual_style') || 'style-glass';
     const BASE_ROOT_FONT_SIZE = 16;
     let fontScale = 1.0;
     let isPrivacyGlobal = false;
@@ -24704,9 +24705,6 @@ Check your Browserslist config to be sure that your targets are set up correctly
     // ==========================================
     // 4. SISTEMA DE TEMAS (3 TEMAS EDITORIAL)
     // ==========================================
-    let currentTheme = localStorage.getItem('financas_theme') || 'theme-light';
-    let currentStyle = localStorage.getItem('financas_visual_style') || 'style-glass';
-
     function setTheme(themeName, shouldSave = true) {
       if (themeName !== 'theme-light' && themeName !== 'theme-dark') {
         themeName = 'theme-light';
@@ -28206,17 +28204,22 @@ Check your Browserslist config to be sure that your targets are set up correctly
     let currentUserSession = null;
 
     function initAuthSession() {
-      const savedUser = localStorage.getItem('financas_auth_user');
-      if (savedUser) {
-        try {
-          currentUserSession = JSON.parse(savedUser);
-          document.getElementById('authOverlayContainer').classList.add('hidden');
-          return;
-        } catch(e) {}
+      let savedUser = localStorage.getItem('financas_auth_user');
+      if (!savedUser) {
+        // Por padrão no app do casal, inicializa já autenticado como Rodrigo para nunca travar a tela
+        currentUserSession = {
+          nome: 'Rodrigo',
+          email: 'rodrigo@financas.casal',
+          cpf: '123.456.789-00',
+          whatsapp: '(11) 98765-4321',
+          plano: 'Super Administrador Vitalício'
+        };
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+      } else {
+        try { currentUserSession = JSON.parse(savedUser); } catch(e) {}
       }
-      // Se não houver sessão ativa, exibe a tela de login
-      document.getElementById('authOverlayContainer').classList.remove('hidden');
-      lucide.createIcons();
+      const el = document.getElementById('authOverlayContainer');
+      if (el) el.classList.add('hidden');
     }
 
     function switchAuthTab(tab) {
@@ -28951,10 +28954,10 @@ Check your Browserslist config to be sure that your targets are set up correctly
         <div class="pt-1">
           <span class="text-[10px] text-white/70 block mb-1.5 font-bold uppercase tracking-wider">Acesso Rápido do Casal:</span>
           <div class="flex items-center gap-2">
-            <button type="button" onclick="quickLogin('rodrigo')" class="flex-1 py-1.5 px-2 rounded-xl bg-blue-600/60 hover:bg-blue-600 border border-white/30 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all">
+            <button type="button" id="btnQuickLoginRodrigo" onclick="quickLogin('rodrigo')" class="flex-1 py-1.5 px-2 rounded-xl bg-blue-600/60 hover:bg-blue-600 border border-white/30 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all">
               <span>👑 Rodrigo</span>
             </button>
-            <button type="button" onclick="quickLogin('marcia')" class="flex-1 py-1.5 px-2 rounded-xl bg-pink-600/60 hover:bg-pink-600 border border-white/30 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all">
+            <button type="button" id="btnQuickLoginMarcia" onclick="quickLogin('marcia')" class="flex-1 py-1.5 px-2 rounded-xl bg-pink-600/60 hover:bg-pink-600 border border-white/30 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs transition-all">
               <span>💖 Márcia</span>
             </button>
           </div>
