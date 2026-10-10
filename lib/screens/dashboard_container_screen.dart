@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -78,6 +79,19 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   }
 
   Future<void> _startNativeVoiceRecording() async {
+    final status = await Permission.microphone.request();
+    if (!status.isGranted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Permissão de microfone necessária para comando de voz.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+
     final speech = Provider.of<SpeechService>(context, listen: false);
     final available = await speech.initialize();
     if (!available) {
