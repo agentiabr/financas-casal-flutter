@@ -8,6 +8,8 @@ import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/biometric_lock_screen.dart';
 
+import 'screens/dashboard_container_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initialize();
@@ -35,8 +37,8 @@ class FinancasCasalApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      // Tela inicial: Login com E-mail e Senha (com atalho para Face ID / Biometria)
-      home: const LoginScreen(),
+      // Tela principal com alta fidelidade visual (exata da versão original)
+      home: const DashboardContainerScreen(),
     );
   }
 }

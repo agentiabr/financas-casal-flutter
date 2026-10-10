@@ -30,13 +30,13 @@ jobs:
       - name: Instalar Dependências Flutter
         run: flutter pub get
 
-      - name: Compilar APK de Produção (Universal)
-        run: flutter build apk --release --android-skip-build-dependency-validation
+      - name: Compilar APKs Otimizados (Leves para Celular)
+        run: flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
 
-      - name: Disponibilizar APK para Download
+      - name: Disponibilizar APKs para Download
         uses: actions/upload-artifact@v4
         with:
-          name: financas-casal-app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: financas-casal-apks
+          path: build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
           retention-days: 30
