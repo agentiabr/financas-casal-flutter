@@ -41,8 +41,19 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
             });
             _injectNativeBridge();
           },
+          onNavigationRequest: (NavigationRequest request) {
+            final url = request.url;
+            if (url.startsWith('file:') || url.contains('flutter_assets') || url == 'about:blank') {
+              return NavigationDecision.navigate;
+            }
+            debugPrint('Navegação externa bloqueada no WebView: $url');
+            return NavigationDecision.prevent;
+          },
           onWebResourceError: (WebResourceError error) {
             debugPrint('Erro no WebView: ${error.description}');
+            if (error.isForMainFrame ?? false) {
+              _controller.loadFlutterAsset('assets/index.html');
+            }
           },
         ),
       )
@@ -159,7 +170,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
-        if (didPop) return;
+        // Se por qualquer motivo o WebView não estiver no index.html, recupera imediatamente
+        try {
+          final currentUrl = await _controller.currentUrl();
+          if (currentUrl != null && !currentUrl.contains('index.html')) {
+            _controller.loadFlutterAsset('assets/index.html');
+            return;
+          }
+        } catch (_) {}
 
         // 1. Fechar qualquer modal ativo dentro do Dashboard web
         try {
