@@ -5,9 +5,6 @@ import 'config/supabase_config.dart';
 import 'providers/finance_provider.dart';
 import 'services/speech_service.dart';
 import 'services/auth_service.dart';
-import 'screens/login_screen.dart';
-import 'screens/biometric_lock_screen.dart';
-
 import 'screens/dashboard_container_screen.dart';
 
 void main() async {
@@ -37,7 +34,7 @@ class FinancasCasalApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      // Tela principal com alta fidelidade visual (exata da versão original)
+      // Tela definitiva com layout idêntico ao original e sensores nativos
       home: const DashboardContainerScreen(),
     );
   }

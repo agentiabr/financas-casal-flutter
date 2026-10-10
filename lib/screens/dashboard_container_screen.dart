@@ -20,6 +20,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
+  DateTime? _lastBackPressTime;
 
   @override
   void initState() {
@@ -52,7 +53,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   }
 
   void _injectNativeBridge() {
-    // Injeta script no WebView para conectar os botões de voz e câmera diretamente aos sensores nativos
     const jsBridge = '''
       window.isNativeApp = true;
       console.log("Flutter Native Bridge conectada com sucesso!");
@@ -93,7 +93,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       onResult: (text) {
         if (text.isNotEmpty) {
           final safeText = text.replaceAll("'", "\\'");
-          _controller.runJavaScript("if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult('$safeText'); }");
+          _controller.runJavaScript(
+            "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult('$safeText'); }"
+          );
         }
       },
     );
@@ -101,7 +103,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
 
   Future<void> _startNativeCameraOcr() async {
     try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+      );
       if (photo == null) return;
 
       final ocrService = OcrService();
@@ -114,38 +119,81 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
         'date': result.date?.toIso8601String().split('T')[0] ?? '',
       };
       final jsonData = jsonEncode(dataMap);
-      _controller.runJavaScript("if (typeof window.onNativeOcrResult === 'function') { window.onNativeOcrResult($jsonData); }");
+      _controller.runJavaScript(
+        "if (typeof window.onNativeOcrResult === 'function') { window.onNativeOcrResult($jsonData); }"
+      );
     } catch (e) {
       debugPrint('Erro no OCR Nativo: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao acessar a câmera: $e')),
+        );
+      }
     }
   }
 
   Future<void> _authenticateBiometric() async {
     final bio = BiometricService();
     final auth = await bio.authenticate(reason: 'Autenticação de Segurança Finanças Casal');
-    _controller.runJavaScript("if (typeof window.onBiometricAuthResult === 'function') { window.onBiometricAuthResult($auth); }");
+    _controller.runJavaScript(
+      "if (typeof window.onBiometricAuthResult === 'function') { window.onBiometricAuthResult($auth); }"
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFEEF3FB),
-        body: SafeArea(
-          child: Stack(
-            children: [
-              WebViewWidget(controller: _controller),
-              if (_isLoading)
-                const Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF1D4ED8),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return;
+
+        // 1. Fechar qualquer modal ativo dentro do Dashboard web
+        try {
+          final closedResult = await _controller.runJavaScriptReturningResult(
+            "typeof window.closeAnyActiveModal === 'function' ? window.closeAnyActiveModal() : false;"
+          );
+          if (closedResult.toString() == 'true') {
+            return;
+          }
+        } catch (_) {}
+
+        // 2. Se não houver modal aberto, confirmação de 2 toques para sair do app (nunca volta para login)
+        final now = DateTime.now();
+        if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+          _lastBackPressTime = now;
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Pressione voltar novamente para sair do app'),
+                duration: Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+          return;
+        }
+
+        SystemNavigator.pop();
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+        child: Scaffold(
+          backgroundColor: const Color(0xFFEEF3FB),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                WebViewWidget(controller: _controller),
+                if (_isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF1D4ED8),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
