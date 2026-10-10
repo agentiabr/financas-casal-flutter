@@ -5570,18 +5570,15 @@
     };
 
     // Callback recebido do Flutter com os dados do cupom fiscal
-    window.onNativeOcrResult = function(items) {
-      if (Array.isArray(items) && items.length > 0) {
-        let total = 0;
-        let store = items[0].estabelecimento || '';
-        for (let item of items) {
-          total += (item.preco || 0);
-        }
+    window.onNativeOcrResult = function(data) {
+      if (data) {
+        const store = data.store || (Array.isArray(data) && data[0] ? data[0].estabelecimento : '');
+        const total = data.total || (Array.isArray(data) ? data.reduce((acc, i) => acc + (i.preco || 0), 0) : 0);
         const storeInput = document.getElementById('invoiceExtractedStore');
         const totalInput = document.getElementById('invoiceExtractedTotal');
         const ocrStatus = document.getElementById('invoiceOcrStatus');
-        if (storeInput) storeInput.value = store;
-        if (totalInput) totalInput.value = total.toFixed(2);
+        if (storeInput && store) storeInput.value = store;
+        if (totalInput && total > 0) totalInput.value = total.toFixed(2);
         if (ocrStatus) ocrStatus.textContent = 'Foto processada com sucesso!';
       }
     };

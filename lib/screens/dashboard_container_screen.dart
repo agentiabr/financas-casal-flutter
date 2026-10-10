@@ -105,13 +105,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       if (photo == null) return;
 
       final ocrService = OcrService();
-      final items = await ocrService.extractItemsFromReceipt(photo.path);
+      final result = await ocrService.processReceiptImage(photo.path);
       ocrService.dispose();
 
-      if (items.isNotEmpty) {
-        final jsonItems = jsonEncode(items.map((i) => i.toJson()).toList());
-        _controller.runJavaScript("if (typeof window.onNativeOcrResult === 'function') { window.onNativeOcrResult($jsonItems); }");
-      }
+      final dataMap = {
+        'store': result.storeName ?? '',
+        'total': result.totalAmount ?? 0.0,
+        'date': result.date?.toIso8601String().split('T')[0] ?? '',
+      };
+      final jsonData = jsonEncode(dataMap);
+      _controller.runJavaScript("if (typeof window.onNativeOcrResult === 'function') { window.onNativeOcrResult($jsonData); }");
     } catch (e) {
       debugPrint('Erro no OCR Nativo: $e');
     }
