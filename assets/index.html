@@ -727,6 +727,13 @@
             <span class="hidden sm:inline">Lista Mercado</span>
           </button>
           
+          <!-- Botão Dedicado: Chat Familiar & Lembretes estilo WhatsApp -->
+          <button onclick="openFamilyChatModal()" id="btnOpenFamilyChat" class="relative px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all" title="Chat Familiar & Lembretes estilo WhatsApp">
+            <i data-lucide="message-circle" class="w-3 h-3"></i>
+            <span class="hidden sm:inline">Chat Familiar</span>
+            <span id="chatHeaderBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">1</span>
+          </button>
+          
           <button onclick="atualizarApp()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all" title="Atualizar e sincronizar todos os cards e dados">
             <i data-lucide="refresh-cw" class="w-3 h-3"></i>
             <span class="hidden xs:inline">Atualizar</span>
@@ -1702,7 +1709,11 @@
             <i data-lucide="camera" class="w-4 h-4"></i>
             <span>+ Ler Foto de Cupom</span>
           </button>
-          <button type="button" onclick="openManageStoresModal()" class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
+          <button type="button" onclick="openFamilyChatWithRequest('Filho, pode trazer os itens da feira para mim?')" class="px-3 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl flex items-center gap-1.5 transition-colors shadow-xs" title="Pedir itens no Chat da Família">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+            <span>Pedir no Chat Familiar</span>
+          </button>
+          <button type="button" onclick="openManageStoresModal()"  class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
             <i data-lucide="store" class="w-3.5 h-3.5 text-blue-400"></i>
             <span>Gerenciar Lojas</span>
           </button>
@@ -2009,7 +2020,18 @@
         </button>
 
         <!-- 2. Fotografar Nota Fiscal -->
-        <button type="button" onclick="closeActionHubModal(); openInvoiceScanModal();" class="flex items-center gap-3.5 w-full p-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-md shadow-purple-500/5 hover:scale-102 active:scale-95 transition-all group text-left">
+        <!-- Novo: Recado / Pedido no Chat da Família -->
+        <button type="button" onclick="closeActionHubModal(); openFamilyChatModal();" class="flex items-center gap-3.5 w-full p-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-md shadow-emerald-500/5 hover:scale-102 active:scale-95 transition-all group text-left">
+          <div class="w-13 h-13 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/30 group-hover:scale-105 transition-transform">
+            <i data-lucide="message-circle" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="block font-black text-sm text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Chat & Pedidos da Família</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Recado estilo WhatsApp (ex: Filho trazer pão)</span>
+          </div>
+        </button>
+
+        <button type="button" onclick="closeActionHubModal(); openInvoiceScanModal();"  class="flex items-center gap-3.5 w-full p-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-md shadow-purple-500/5 hover:scale-102 active:scale-95 transition-all group text-left">
           <div class="w-13 h-13 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-purple-500/30 group-hover:scale-105 transition-transform">
             <i data-lucide="camera" class="w-6 h-6"></i>
           </div>
@@ -7761,7 +7783,587 @@
         alert(`Código: ${code}`);
       });
     }
-    </script>
+    
+
+    // ==============================================================
+    // 26. CHAT FAMILIAR ESTILO WHATSAPP & LEMBRETES (V1.4.8)
+    // ==============================================================
+    let currentChatPlanMode = localStorage.getItem('financas_active_plan_mode') || 'familia';
+    let currentChatSender = 'marcia'; // quem está usando o chat agora (ex: Mãe)
+    let currentChatTargetMember = 'todos'; // para quem o recado vai
+    let isChatAudioEnabled = localStorage.getItem('financas_chat_audio') !== 'false';
+
+    const INITIAL_FAMILY_CHAT_MESSAGES = [
+      {
+        id: "msg_1",
+        senderId: "marcia",
+        senderName: "Márcia (Mãe)",
+        senderAvatar: "👩",
+        targetMember: "todos",
+        text: "Oi família! Fiz a feira do mês e organizei os comprovantes no app.",
+        isRequest: false,
+        requestItems: [],
+        isCompleted: false,
+        completedBy: null,
+        completedAt: null,
+        timestamp: "17:15"
+      },
+      {
+        id: "msg_2",
+        senderId: "marcia",
+        senderName: "Márcia (Mãe)",
+        senderAvatar: "👩",
+        targetMember: "filho",
+        text: "Filho, pode trazer leite e pão para mim quando voltar da escola?",
+        isRequest: true,
+        requestItems: ["Leite integral/desnatado", "Pão francês fresquinho"],
+        isCompleted: false,
+        completedBy: null,
+        completedAt: null,
+        timestamp: "17:18"
+      },
+      {
+        id: "msg_3",
+        senderId: "filho",
+        senderName: "Filho",
+        senderAvatar: "👦",
+        targetMember: "marcia",
+        text: "Pode deixar mãe! Saindo da aula passo na padaria e levo. 👍",
+        isRequest: false,
+        requestItems: [],
+        isCompleted: false,
+        completedBy: null,
+        completedAt: null,
+        timestamp: "17:22"
+      },
+      {
+        id: "msg_4",
+        senderId: "rodrigo",
+        senderName: "Rodrigo (Pai)",
+        senderAvatar: "👨",
+        targetMember: "todos",
+        text: "Já conferi a tabela de despesas e os gráficos do ciclo. Tudo dentro da meta! 🎯",
+        isRequest: false,
+        requestItems: [],
+        isCompleted: false,
+        completedBy: null,
+        completedAt: null,
+        timestamp: "17:35"
+      }
+    ];
+
+    const INITIAL_PERSONAL_REMINDERS = [
+      {
+        id: "rem_1",
+        title: "Comprar leite e café após o trabalho",
+        categoria: "Mercado",
+        isCompleted: false,
+        data: "Hoje"
+      },
+      {
+        id: "rem_2",
+        title: "Pagar fatura do cartão de crédito",
+        categoria: "Finanças",
+        isCompleted: true,
+        data: "Ontem"
+      },
+      {
+        id: "rem_3",
+        title: "Conferir compras parceladas ativas",
+        categoria: "Finanças",
+        isCompleted: false,
+        data: "Esta semana"
+      }
+    ];
+
+    function getFamilyChatMessages() {
+      try {
+        const stored = localStorage.getItem('financas_family_chat_messages');
+        if (!stored) {
+          localStorage.setItem('financas_family_chat_messages', JSON.stringify(INITIAL_FAMILY_CHAT_MESSAGES));
+          return INITIAL_FAMILY_CHAT_MESSAGES;
+        }
+        return JSON.parse(stored);
+      } catch(e) {
+        return INITIAL_FAMILY_CHAT_MESSAGES;
+      }
+    }
+
+    function saveFamilyChatMessages(msgs) {
+      try {
+        localStorage.setItem('financas_family_chat_messages', JSON.stringify(msgs));
+      } catch(e) {}
+    }
+
+    function getPersonalReminders() {
+      try {
+        const stored = localStorage.getItem('financas_personal_reminders');
+        if (!stored) {
+          localStorage.setItem('financas_personal_reminders', JSON.stringify(INITIAL_PERSONAL_REMINDERS));
+          return INITIAL_PERSONAL_REMINDERS;
+        }
+        return JSON.parse(stored);
+      } catch(e) {
+        return INITIAL_PERSONAL_REMINDERS;
+      }
+    }
+
+    function savePersonalReminders(rems) {
+      try {
+        localStorage.setItem('financas_personal_reminders', JSON.stringify(rems));
+      } catch(e) {}
+    }
+
+    function playChatDing() {
+      if (!isChatAudioEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(784, ctx.currentTime); // G5 note
+        osc.frequency.exponentialRampToValueAtTime(1046.5, ctx.currentTime + 0.12); // C6 note
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.22);
+      } catch(e) {}
+    }
+
+    function toggleChatAudio() {
+      isChatAudioEnabled = !isChatAudioEnabled;
+      localStorage.setItem('financas_chat_audio', isChatAudioEnabled ? 'true' : 'false');
+      const btn = document.getElementById('btnChatAudio');
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="${isChatAudioEnabled ? 'volume-2' : 'volume-x'}" class="w-4 h-4"></i>`;
+        lucide.createIcons();
+      }
+      showToastUndo(isChatAudioEnabled ? 'Som do Chat ativado! 🔔' : 'Som do Chat silenciado! 🔕', false);
+    }
+
+    function triggerFamilyPushNotification(title, body, senderAvatar) {
+      playChatDing();
+      const banner = document.getElementById('bannerFamilyPushNotification');
+      if (banner) {
+        const titleEl = document.getElementById('bannerPushTitle');
+        const bodyEl = document.getElementById('bannerPushBody');
+        const avEl = document.getElementById('bannerPushAvatar');
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.textContent = body;
+        if (avEl) avEl.textContent = senderAvatar || '🔔';
+        banner.classList.remove('hidden');
+        clearTimeout(window._pushBannerTimeout);
+        window._pushBannerTimeout = setTimeout(() => {
+          banner.classList.add('hidden');
+        }, 5500);
+      }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(title, { body: body });
+        } catch(e) {}
+      }
+    }
+
+    function openFamilyChatModal() {
+      const modal = document.getElementById('modalFamilyChat');
+      if (modal) modal.classList.remove('hidden');
+      
+      // Limpa os badges não lidos
+      const bH = document.getElementById('chatHeaderBadge');
+      if (bH) bH.classList.add('hidden');
+      const bF = document.getElementById('chatFloatingBadge');
+      if (bF) bF.classList.add('hidden');
+
+      setChatPlanMode(currentChatPlanMode);
+      lucide.createIcons();
+
+      // Rola mensagens para o fim
+      setTimeout(() => {
+        const feed = document.getElementById('chatMessagesFeed');
+        if (feed) feed.scrollTop = feed.scrollHeight;
+      }, 50);
+    }
+
+    function closeFamilyChatModal() {
+      const modal = document.getElementById('modalFamilyChat');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openFamilyChatWithRequest(promptText) {
+      closeShoppingListModal();
+      openFamilyChatModal();
+      setChatPlanMode('familia');
+      fillChatMessagePrompt(promptText, true, 'filho');
+    }
+
+    function setChatPlanMode(mode) {
+      currentChatPlanMode = mode;
+      localStorage.setItem('financas_active_plan_mode', mode);
+
+      const tabF = document.getElementById('tabPlanFamilia');
+      const tabC = document.getElementById('tabPlanCasal');
+      const tabS = document.getElementById('tabPlanSolteiro');
+      const badge = document.getElementById('chatActivePlanBadge');
+      const viewChat = document.getElementById('viewFamilyChatMode');
+      const viewSingle = document.getElementById('viewSinglePlanMode');
+      const headerTitle = document.getElementById('chatHeaderTitle');
+      const headerSubtitle = document.getElementById('chatHeaderSubtitle');
+      const headerAvatar = document.getElementById('chatHeaderAvatar');
+
+      [tabF, tabC, tabS].forEach(t => {
+        if (t) {
+          t.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all text-slate-400 hover:text-white';
+        }
+      });
+
+      if (mode === 'solteiro') {
+        if (tabS) tabS.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all bg-blue-600 text-white shadow-xs';
+        if (badge) {
+          badge.textContent = 'Plano Solteiro Ativo';
+          badge.className = 'text-[10px] font-bold text-blue-400 bg-blue-950/60 border border-blue-800 px-2 py-0.5 rounded-full';
+        }
+        if (viewChat) viewChat.classList.add('hidden');
+        if (viewSingle) viewSingle.classList.remove('hidden');
+        if (headerTitle) headerTitle.innerHTML = `Lembretes Pessoais <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-1.5 py-0.5 rounded-full font-bold">Individual</span>`;
+        if (headerSubtitle) headerSubtitle.textContent = 'Gestão Pessoal de Compras e Tarefas';
+        if (headerAvatar) headerAvatar.textContent = '👤';
+        renderPersonalReminders();
+      } else if (mode === 'casal') {
+        if (tabC) tabC.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all bg-rose-600 text-white shadow-xs';
+        if (badge) {
+          badge.textContent = 'Plano Casal Ativo';
+          badge.className = 'text-[10px] font-bold text-rose-400 bg-rose-950/60 border border-rose-800 px-2 py-0.5 rounded-full';
+        }
+        if (viewChat) viewChat.classList.remove('hidden');
+        if (viewSingle) viewSingle.classList.add('hidden');
+        if (headerTitle) headerTitle.innerHTML = `Chat do Casal <span class="text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/40 px-1.5 py-0.5 rounded-full font-bold">Privado a Dois</span>`;
+        if (headerSubtitle) headerSubtitle.textContent = 'Rodrigo & Márcia • Recados e Finanças Conjuntas';
+        if (headerAvatar) headerAvatar.textContent = '👫';
+        renderFamilyChatMembersTarget();
+        renderFamilyChatMessages();
+      } else { // familia
+        if (tabF) tabF.className = 'px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all bg-emerald-600 text-white shadow-xs';
+        if (badge) {
+          badge.textContent = 'Plano Família Ativo';
+          badge.className = 'text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-full';
+        }
+        if (viewChat) viewChat.classList.remove('hidden');
+        if (viewSingle) viewSingle.classList.add('hidden');
+        if (headerTitle) headerTitle.innerHTML = `Chat da Família <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-bold">Grupo Ativo</span>`;
+        if (headerSubtitle) headerSubtitle.textContent = 'Rodrigo, Márcia, Filho • Mensagens e Pedidos';
+        if (headerAvatar) headerAvatar.textContent = '👨‍👩‍👧‍👦';
+        renderFamilyChatMembersTarget();
+        renderFamilyChatMessages();
+      }
+      lucide.createIcons();
+    }
+
+    function changeChatSender(senderId) {
+      currentChatSender = senderId;
+      renderFamilyChatMessages();
+    }
+
+    function selectChatTarget(target) {
+      currentChatTargetMember = target;
+      renderFamilyChatMembersTarget();
+    }
+
+    function renderFamilyChatMembersTarget() {
+      const container = document.getElementById('chipsTargetMembers');
+      if (!container) return;
+
+      let targets = [];
+      if (currentChatPlanMode === 'casal') {
+        targets = [
+          { id: 'todos', label: 'Cônjuge' }
+        ];
+      } else {
+        targets = [
+          { id: 'todos', label: '👥 Todos' },
+          { id: 'filho', label: '👦 Filho' },
+          { id: 'marcia', label: '👩 Márcia' },
+          { id: 'rodrigo', label: '👨 Rodrigo' }
+        ];
+      }
+
+      container.innerHTML = targets.map(t => {
+        const isSel = currentChatTargetMember === t.id;
+        return `
+          <button type="button" onclick="selectChatTarget('${t.id}')" class="px-2 py-0.5 rounded-md font-bold text-[10px] transition-all ${isSel ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300 hover:text-white'}">
+            ${t.label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderFamilyChatMessages() {
+      const container = document.getElementById('chatMessagesList');
+      if (!container) return;
+
+      const msgs = getFamilyChatMessages();
+      container.innerHTML = msgs.map(m => {
+        const isMe = m.senderId === currentChatSender;
+        const targetLabel = m.targetMember === 'todos' ? '' : `@${m.targetMember}`;
+
+        if (isMe) {
+          // Balão Verde do lado direito (Enviado por mim estilo WhatsApp)
+          return `
+            <div class="flex flex-col items-end">
+              <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-tr-xs p-3 shadow-md bg-emerald-700/90 text-white border border-emerald-600/50">
+                ${m.isRequest ? `
+                  <div class="mb-2 pb-2 border-b border-emerald-600/60">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-[10px] font-black uppercase tracking-wider text-emerald-200 flex items-center gap-1">
+                        🛒 PEDIDO DE COMPRAS
+                      </span>
+                      ${targetLabel ? `<span class="text-[10px] px-1.5 py-0.2 bg-emerald-900/80 rounded font-bold">${targetLabel}</span>` : ''}
+                    </div>
+                  </div>
+                ` : ''}
+
+                <p class="text-xs sm:text-[13px] leading-relaxed text-white">${m.text}</p>
+
+                ${m.isRequest ? `
+                  <div class="mt-2.5">
+                    ${!m.isCompleted ? `
+                      <button type="button" onclick="toggleFamilyRequestCompleted('${m.id}')" class="w-full py-1 px-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        <span>Pendente • Marcar como Feito</span>
+                      </button>
+                    ` : `
+                      <div class="w-full py-1 px-2.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold flex items-center justify-between">
+                        <span class="flex items-center gap-1"><i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i> Comprado (${m.completedBy || 'Membro'})</span>
+                        <span class="text-[10px] opacity-80 font-mono">${m.completedAt || ''}</span>
+                      </div>
+                    `}
+                  </div>
+                ` : ''}
+
+                <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-emerald-200/80 font-mono">
+                  <span>${m.timestamp}</span>
+                  <i data-lucide="check-check" class="w-3.5 h-3.5 text-sky-300"></i>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          // Balão Escuro do lado esquerdo (Recebido estilo WhatsApp)
+          return `
+            <div class="flex items-start gap-2 max-w-[85%] sm:max-w-[75%]">
+              <div class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs flex-shrink-0 border border-slate-700 shadow-xs mt-1">
+                ${m.senderAvatar || '👤'}
+              </div>
+              <div class="rounded-2xl rounded-tl-xs p-3 shadow-md bg-slate-900 text-slate-100 border border-slate-800 flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <span class="text-[11px] font-black text-emerald-400 truncate">${m.senderName}</span>
+                  ${targetLabel ? `<span class="text-[10px] px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded font-bold">${targetLabel}</span>` : ''}
+                </div>
+
+                ${m.isRequest ? `
+                  <div class="mb-2 pb-1.5 border-b border-slate-800 flex items-center gap-1 text-[10px] font-black text-amber-400">
+                    🛒 PEDIDO DE COMPRAS
+                  </div>
+                ` : ''}
+
+                <p class="text-xs sm:text-[13px] leading-relaxed text-slate-200">${m.text}</p>
+
+                ${m.isRequest ? `
+                  <div class="mt-2.5">
+                    ${!m.isCompleted ? `
+                      <button type="button" onclick="toggleFamilyRequestCompleted('${m.id}')" class="w-full py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs">
+                        <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                        <span>Clique para Marcar: [ Já comprei! ]</span>
+                      </button>
+                    ` : `
+                      <div class="w-full py-1 px-2.5 rounded-lg bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold flex items-center justify-between">
+                        <span class="flex items-center gap-1"><i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400"></i> Concluído (${m.completedBy || 'Membro'})</span>
+                        <span class="text-[10px] opacity-80 font-mono">${m.completedAt || ''}</span>
+                      </div>
+                    `}
+                  </div>
+                ` : ''}
+
+                <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-slate-400 font-mono">
+                  <span>${m.timestamp}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleFamilyRequestCompleted(id) {
+      const msgs = getFamilyChatMessages();
+      const m = msgs.find(x => x.id === id);
+      if (m) {
+        m.isCompleted = !m.isCompleted;
+        if (m.isCompleted) {
+          const senderObj = currentChatSender === 'filho' ? 'Filho' : (currentChatSender === 'rodrigo' ? 'Rodrigo' : 'Márcia');
+          m.completedBy = senderObj;
+          const now = new Date();
+          m.completedAt = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          triggerFamilyPushNotification('🎉 Pedido Concluído!', `${senderObj} comprou os itens do pedido!`, '✅');
+          showToastUndo(`Pedido marcado como concluído por ${senderObj}! ✅`, false);
+        } else {
+          m.completedBy = null;
+          m.completedAt = null;
+          showToastUndo('Status do pedido retornado para pendente.', false);
+        }
+        saveFamilyChatMessages(msgs);
+        renderFamilyChatMessages();
+      }
+    }
+
+    function fillChatMessagePrompt(text, isRequest, target) {
+      const inp = document.getElementById('inputChatMessage');
+      if (inp) {
+        inp.value = text;
+        inp.focus();
+      }
+      const chk = document.getElementById('checkIsShoppingRequest');
+      if (chk) chk.checked = !!isRequest;
+      if (target) selectChatTarget(target);
+    }
+
+    function handleSendChatMessage(e) {
+      if (e) e.preventDefault();
+      const inp = document.getElementById('inputChatMessage');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) return;
+
+      const isRequest = document.getElementById('checkIsShoppingRequest') ? document.getElementById('checkIsShoppingRequest').checked : false;
+      const target = currentChatTargetMember || 'todos';
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      let sName = 'Márcia (Mãe)';
+      let sAvatar = '👩';
+      if (currentChatSender === 'rodrigo') {
+        sName = 'Rodrigo (Pai)';
+        sAvatar = '👨';
+      } else if (currentChatSender === 'filho') {
+        sName = 'Filho';
+        sAvatar = '👦';
+      }
+
+      const newMsg = {
+        id: 'msg_' + Date.now(),
+        senderId: currentChatSender,
+        senderName: sName,
+        senderAvatar: sAvatar,
+        targetMember: target,
+        text: text,
+        isRequest: isRequest,
+        requestItems: [],
+        isCompleted: false,
+        completedBy: null,
+        completedAt: null,
+        timestamp: timeStr
+      };
+
+      const msgs = getFamilyChatMessages();
+      msgs.push(newMsg);
+      saveFamilyChatMessages(msgs);
+
+      inp.value = '';
+      if (document.getElementById('checkIsShoppingRequest')) {
+        document.getElementById('checkIsShoppingRequest').checked = false;
+      }
+
+      renderFamilyChatMessages();
+
+      const feed = document.getElementById('chatMessagesFeed');
+      if (feed) feed.scrollTop = feed.scrollHeight;
+
+      // Dispara Notificação Push Simulada
+      const targetTxt = target === 'todos' ? 'Família' : target;
+      triggerFamilyPushNotification(
+        `💬 ${sName} no Chat`,
+        isRequest ? `🛒 Pedido para ${targetTxt}: "${text}"` : `Para ${targetTxt}: "${text}"`,
+        sAvatar
+      );
+    }
+
+    function renderPersonalReminders() {
+      const container = document.getElementById('personalRemindersList');
+      if (!container) return;
+
+      const rems = getPersonalReminders();
+      if (!rems.length) {
+        container.innerHTML = `<p class="text-xs text-slate-500 py-3 text-center">Nenhum lembrete cadastrado.</p>`;
+        return;
+      }
+
+      container.innerHTML = rems.map(r => `
+        <div class="flex items-center justify-between p-3 rounded-xl border ${r.isCompleted ? 'bg-slate-900/40 border-slate-800 text-slate-500' : 'bg-slate-900 border-slate-800 text-slate-200'}">
+          <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
+            <input type="checkbox" onchange="togglePersonalReminder('${r.id}')" ${r.isCompleted ? 'checked' : ''} class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500">
+            <span class="text-xs font-bold ${r.isCompleted ? 'line-through text-slate-500' : 'text-slate-100'} truncate">${r.title}</span>
+          </label>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-bold">${r.categoria}</span>
+            <button type="button" onclick="deletePersonalReminder('${r.id}')" class="p-1 text-slate-400 hover:text-red-400" title="Excluir Lembrete">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function handleAddPersonalReminder(e) {
+      if (e) e.preventDefault();
+      const inp = document.getElementById('inputNewReminderText');
+      const cat = document.getElementById('selectNewReminderCategory');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) return;
+
+      const newRem = {
+        id: 'rem_' + Date.now(),
+        title: text,
+        categoria: cat ? cat.value : 'Geral',
+        isCompleted: false,
+        data: 'Hoje'
+      };
+
+      const rems = getPersonalReminders();
+      rems.unshift(newRem);
+      savePersonalReminders(rems);
+
+      inp.value = '';
+      renderPersonalReminders();
+      showToastUndo('Lembrete pessoal adicionado!', false);
+    }
+
+    function togglePersonalReminder(id) {
+      const rems = getPersonalReminders();
+      const r = rems.find(x => x.id === id);
+      if (r) {
+        r.isCompleted = !r.isCompleted;
+        savePersonalReminders(rems);
+        renderPersonalReminders();
+        playChatDing();
+      }
+    }
+
+    function deletePersonalReminder(id) {
+      let rems = getPersonalReminders();
+      rems = rems.filter(x => x.id !== id);
+      savePersonalReminders(rems);
+      renderPersonalReminders();
+      showToastUndo('Lembrete excluído!', false);
+    }
+
+</script>
 
   <!-- ============================================================== -->
   <!-- MOBILE BOTTOM NAVIGATION BAR (DOCK INFERIOR PARA SMARTPHONES)  -->
@@ -7806,6 +8408,35 @@
       </button>
     </div>
   </nav>
+
+  <!-- BOTÃO FLUTUANTE ESTILO WHATSAPP (MOBILE & ACESSO RÁPIDO) -->
+  <button onclick="openFamilyChatModal()" id="btnFloatingFamilyChat" class="fixed bottom-16 right-3.5 z-40 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all border-2 border-white dark:border-slate-800" title="Abrir Chat Familiar estilo WhatsApp">
+    <i data-lucide="message-circle" class="w-6 h-6"></i>
+    <span id="chatFloatingBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">1</span>
+  </button>
+
+  <!-- BANNER NOTIFICAÇÃO PUSH FLUTUANTE NO TOPO (SIMULAÇÃO PUSH NO CELULAR) -->
+  <div id="bannerFamilyPushNotification" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[92%] bg-slate-900/95 text-white border border-emerald-500/50 shadow-2xl rounded-2xl p-3.5 hidden backdrop-blur-xl transition-all cursor-pointer" onclick="openFamilyChatModal()">
+    <div class="flex items-start gap-3">
+      <div id="bannerPushAvatar" class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-sm border border-emerald-400">
+        🔔
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] uppercase font-black text-emerald-400 tracking-wider flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            Finanças Família • Push
+          </span>
+          <span class="text-[9px] text-slate-400">Agora</span>
+        </div>
+        <h4 id="bannerPushTitle" class="text-xs font-black text-white mt-0.5 truncate">Nova Mensagem</h4>
+        <p id="bannerPushBody" class="text-[11px] text-slate-300 line-clamp-2 mt-0.5">Filho pode trazer leite e pão para mim?</p>
+      </div>
+      <button type="button" onclick="event.stopPropagation(); document.getElementById('bannerFamilyPushNotification').classList.add('hidden')" class="p-1 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- ============================================================== -->
   <!-- MODAL: MEU PERFIL DO USUÁRIO (AVATAR, SENHA E DADOS CADASTRAIS) -->
@@ -8473,6 +9104,179 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL: CHAT FAMILIAR ESTILO WHATSAPP & GESTÃO DE LEMBRETES     -->
+  <!-- ============================================================== -->
+  <div id="modalFamilyChat" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-slate-950 text-slate-100 border border-slate-800 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
+      
+      <!-- Top Bar (WhatsApp Style Header) -->
+      <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <div id="chatHeaderAvatar" class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-lg border-2 border-emerald-500 shadow-sm">
+              👨‍👩‍👧‍👦
+            </div>
+            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-900"></span>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-sm sm:text-base text-white flex items-center gap-1.5" id="chatHeaderTitle">
+              Chat da Família
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-1.5 py-0.5 rounded-full font-bold">Online</span>
+            </h3>
+            <p class="text-[11px] text-slate-400 truncate max-w-[200px] sm:max-w-xs" id="chatHeaderSubtitle">
+              Rodrigo, Márcia, Filho • Mensagens e Pedidos
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Som de Notificação -->
+          <button type="button" onclick="toggleChatAudio()" id="btnChatAudio" class="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors" title="Alternar som do chat">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+          
+          <!-- Fechar Modal -->
+          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Fechar Chat">
+            <i data-lucide="x" class="w-4.5 h-4.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seletor de Planos & Abas (Solteiro vs Casal vs Família) -->
+      <div class="bg-slate-900/80 px-4 py-2 border-b border-slate-800/80 flex items-center justify-between gap-2 flex-wrap flex-shrink-0">
+        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <button type="button" onclick="setChatPlanMode('familia')" id="tabPlanFamilia" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all bg-emerald-600 text-white shadow-xs">
+            👨‍👩‍👧‍👦 Família
+          </button>
+          <button type="button" onclick="setChatPlanMode('casal')" id="tabPlanCasal" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all text-slate-400 hover:text-white">
+            👫 Casal
+          </button>
+          <button type="button" onclick="setChatPlanMode('solteiro')" id="tabPlanSolteiro" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all text-slate-400 hover:text-white">
+            👤 Solteiro
+          </button>
+        </div>
+
+        <span id="chatActivePlanBadge" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-full">
+          Plano Família Ativo
+        </span>
+      </div>
+
+      <!-- VISÃO 1: MODO PLANO FAMÍLIA & CASAL (CHAT WHATSAPP + PEDIDOS) -->
+      <div id="viewFamilyChatMode" class="flex-1 flex flex-col min-h-0 bg-slate-950">
+        
+        <!-- Sub-header do Chat: Quem está enviando e Para quem -->
+        <div class="bg-slate-900/60 px-4 py-2 border-b border-slate-800/60 flex items-center justify-between gap-2 text-xs flex-wrap flex-shrink-0">
+          <!-- Seleção de quem sou eu -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Eu sou:</span>
+            <select id="selectChatSender" onchange="changeChatSender(this.value)" class="bg-slate-800 border border-slate-700 text-white rounded-lg px-2 py-0.5 text-xs font-bold focus:outline-none">
+              <option value="marcia">👩 Márcia (Mãe)</option>
+              <option value="rodrigo">👨 Rodrigo (Pai)</option>
+              <option value="filho">👦 Filho</option>
+            </select>
+          </div>
+
+          <!-- Destinatário do Recado / Pedido -->
+          <div class="flex items-center gap-1" id="boxTargetMemberSelection">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Para:</span>
+            <div class="flex items-center gap-1" id="chipsTargetMembers">
+              <!-- Renderizado dinamicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Feed de Mensagens estilo WhatsApp -->
+        <div id="chatMessagesFeed" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-slate-950/95">
+          <!-- Divisor de Data -->
+          <div class="flex justify-center my-1">
+            <span class="px-3 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-bold text-slate-400 shadow-xs">
+              Hoje
+            </span>
+          </div>
+
+          <!-- Lista de mensagens -->
+          <div id="chatMessagesList" class="space-y-3"></div>
+        </div>
+
+        <!-- Barra de Digitação e Envio estilo WhatsApp -->
+        <div class="p-3 bg-slate-900 border-t border-slate-800 flex-shrink-0">
+          <!-- Sugestões Rápidas -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 custom-scrollbar text-[11px]">
+            <button type="button" onclick="fillChatMessagePrompt('Filho, pode trazer leite e pão para mim?', true, 'filho')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1">
+              🥛 Filho, trazer leite e pão?
+            </button>
+            <button type="button" onclick="fillChatMessagePrompt('Amor, passei na padaria e já peguei tudo!', false, 'rodrigo')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1">
+              🍞 Amor, passei na padaria!
+            </button>
+            <button type="button" onclick="fillChatMessagePrompt('Já lancei as despesas de hoje no app!', false, 'todos')" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1">
+              💳 Despesas lançadas no app
+            </button>
+          </div>
+
+          <form onsubmit="handleSendChatMessage(event)" class="flex items-center gap-2">
+            <!-- Toggle Pedido de Compras -->
+            <label class="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer text-xs select-none" title="Marcar como Pedido de Compras">
+              <input type="checkbox" id="checkIsShoppingRequest" class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500">
+              <span class="font-bold text-[11px] text-emerald-400 hidden sm:inline">🛒 Pedido</span>
+            </label>
+
+            <!-- Campo de Texto -->
+            <div class="flex-1 relative">
+              <input type="text" id="inputChatMessage" placeholder="Mensagem estilo WhatsApp ou pedido..." autocomplete="off" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
+            </div>
+
+            <!-- Botão Enviar -->
+            <button type="submit" class="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 flex-shrink-0">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- VISÃO 2: MODO PLANO SOLTEIRO (LEMBRETES PESSOAIS & COMPRAS) -->
+      <div id="viewSinglePlanMode" class="flex-1 hidden flex-col min-h-0 bg-slate-950 p-4 overflow-y-auto custom-scrollbar">
+        <div class="p-3.5 rounded-2xl bg-blue-950/40 border border-blue-800/80 mb-4">
+          <div class="flex items-center gap-2 text-blue-400 font-extrabold text-xs mb-1">
+            <i data-lucide="info" class="w-4 h-4"></i>
+            <span>Modo Plano Solteiro (Individual)</span>
+          </div>
+          <p class="text-[11px] text-slate-300">
+            No <strong>Plano Solteiro</strong> você conta com lembretes pessoais de compras e tarefas. Para delegar pedidos para familiares ou cônjuge via Chat estilo WhatsApp, ative o <strong>Plano Casal ou Família</strong>.
+          </p>
+        </div>
+
+        <!-- Adicionar Lembrete -->
+        <form onsubmit="handleAddPersonalReminder(event)" class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 mb-4 shadow-sm">
+          <h4 class="text-xs font-black text-white mb-2 flex items-center gap-1.5">
+            <span>🔔</span> Adicionar Lembrete Pessoal
+          </h4>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="inputNewReminderText" placeholder="Ex: Comprar leite e café após o trabalho..." required class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+            <select id="selectNewReminderCategory" class="bg-slate-950 border border-slate-700 text-white rounded-xl px-2.5 py-2 text-xs focus:outline-none">
+              <option value="Mercado">🛒 Mercado</option>
+              <option value="Finanças">💳 Finanças</option>
+              <option value="Geral">📌 Geral</option>
+            </select>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 shadow-md">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Adicionar</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Lista de Lembretes -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Meus Lembretes Ativos:</h4>
+          <div id="personalRemindersList" class="space-y-2"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
