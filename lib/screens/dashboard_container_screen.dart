@@ -81,6 +81,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
         _startNativeVoiceRecording();
       } else if (action == 'start_camera_ocr') {
         _startNativeCameraOcr();
+      } else if (action == 'pick_chat_photo') {
+        _pickChatPhoto();
       } else if (action == 'authenticate_biometric') {
         _authenticateBiometric();
       }
@@ -152,6 +154,34 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao acessar a câmera: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickChatPhoto() async {
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 75,
+      );
+      if (photo == null) return;
+
+      final bytes = await photo.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/jpeg;base64,$base64Str';
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativeChatPhotoResult === 'function') { window.onNativeChatPhotoResult('$dataUrl'); }"
+      );
+    } catch (e) {
+      debugPrint('Erro ao capturar foto no chat: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao capturar foto: $e')),
         );
       }
     }

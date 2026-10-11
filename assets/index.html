@@ -29,6 +29,11 @@
   <title>Finanças • Rodrigo & Márcia</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <!-- Tesseract.js OCR -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <!-- Chart.js -->
@@ -278,49 +283,124 @@
       background-color: #BE123C !important;
     }
 
-    /* 2. TEMA ESCURO (MIDNIGHT SLATE WCAG AAA) */
+    /* 2. TEMA ESCURO (DEEP MIDNIGHT SLATE / BLACK WCAG AAA) */
+    html.dark,
+    html.dark body,
     body.theme-dark {
-      background-color: #0B1120 !important;
-      color: #F8FAFC;
-      --card-bg: #1E293B;
-      --card-border: #334155;
-      --hero-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #334155 100%);
-      --status-bg: #1E293B;
-      --status-color: #CBD5E1;
-      --status-border: #334155;
-    }
-    body.theme-dark .app-navbar {
-      background-color: #0F172A !important;
+      background-color: #070B14 !important;
       color: #F8FAFC !important;
-      border-bottom: 1px solid #334155 !important;
+      --card-bg: #0F172A;
+      --card-border: #1E293B;
+      --hero-gradient: linear-gradient(135deg, #0B1120 0%, #111C33 50%, #172544 100%);
+      --status-bg: #0F172A;
+      --status-color: #CBD5E1;
+      --status-border: #1E293B;
+    }
+    html.dark #main-content,
+    body.theme-dark #main-content {
+      background-color: #070B14 !important;
+    }
+    html.dark #heroCardBanner,
+    body.theme-dark #heroCardBanner {
+      background: linear-gradient(135deg, #0B1120 0%, #111C33 50%, #172544 100%) !important;
+      border: 1px solid #1E293B !important;
+      box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.6) !important;
+    }
+    html.dark .app-navbar,
+    body.theme-dark .app-navbar {
+      background-color: #0B1120 !important;
+      color: #F8FAFC !important;
+      border-bottom: 1px solid #1E293B !important;
       border-top: 3px solid #38BDF8 !important;
     }
+    html.dark .app-card,
     body.theme-dark .app-card {
-      background-color: #1E293B !important;
-      border: 1px solid #334155 !important;
+      background-color: #0F172A !important;
+      border: 1px solid #1E293B !important;
       color: #F8FAFC !important;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
+    html.dark .app-card-solid,
     body.theme-dark .app-card-solid {
-      background-color: #162035 !important;
+      background-color: #111C33 !important;
       color: #FFFFFF !important;
       border-color: #38BDF8 !important;
     }
+    html.dark .app-card-solid *,
     body.theme-dark .app-card-solid * { color: #FFFFFF !important; }
-    body.theme-dark .text-slate-800, body.theme-dark .text-slate-700 { color: #F8FAFC !important; }
-    body.theme-dark .text-slate-600, body.theme-dark .text-slate-500, body.theme-dark .text-slate-400 { color: #CBD5E1 !important; }
-    body.theme-dark .bg-slate-50 { background-color: #0F172A !important; }
-    body.theme-dark .bg-slate-100 { background-color: #1E293B !important; }
-    body.theme-dark .border-slate-100, body.theme-dark .border-slate-200, body.theme-dark .border-slate-300 { border-color: #334155 !important; }
-    body.theme-dark .table-header-row {
+
+    /* Cores de fundo e bordas em modo escuro para eliminar áreas claras indesejadas */
+    html.dark .bg-white,
+    body.theme-dark .bg-white {
       background-color: #0F172A !important;
+    }
+    html.dark .bg-slate-50,
+    body.theme-dark .bg-slate-50 {
+      background-color: #070B14 !important;
+    }
+    html.dark .bg-slate-100,
+    body.theme-dark .bg-slate-100 {
+      background-color: #1E293B !important;
+    }
+    html.dark .border-slate-100,
+    html.dark .border-slate-200,
+    html.dark .border-slate-300,
+    body.theme-dark .border-slate-100,
+    body.theme-dark .border-slate-200,
+    body.theme-dark .border-slate-300 {
+      border-color: #1E293B !important;
+    }
+
+    /* Proteção de contraste para textos: NUNCA cinza escuro ou preto no tema escuro */
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-slate-700,
+    body.theme-dark .text-slate-900,
+    body.theme-dark .text-slate-800,
+    body.theme-dark .text-slate-700 {
+      color: #F8FAFC !important;
+    }
+    html.dark .text-slate-600,
+    html.dark .text-slate-500,
+    html.dark .text-slate-400,
+    body.theme-dark .text-slate-600,
+    body.theme-dark .text-slate-500,
+    body.theme-dark .text-slate-400 {
+      color: #94A3B8 !important;
+    }
+
+    /* Inputs e campos de texto em modo escuro */
+    html.dark input:not([type="checkbox"]):not([type="radio"]),
+    html.dark select,
+    html.dark textarea,
+    body.theme-dark input:not([type="checkbox"]):not([type="radio"]),
+    body.theme-dark select,
+    body.theme-dark textarea {
+      background-color: #0F172A !important;
+      color: #FFFFFF !important;
+      border-color: #334155 !important;
+    }
+    html.dark ::placeholder,
+    body.theme-dark ::placeholder {
+      color: #64748B !important;
+    }
+
+    body.theme-dark .table-header-row,
+    html.dark .table-header-row {
+      background-color: #0B1120 !important;
       color: #38BDF8 !important;
       border-bottom: 2px solid #38BDF8 !important;
     }
-    body.theme-dark .table-header-row * { color: #38BDF8 !important; }
-    body.theme-dark .table-row-even { background-color: #1E293B; color: #F8FAFC; }
-    body.theme-dark .table-row-odd { background-color: #162035; color: #F8FAFC; }
-    body.theme-dark .table-row-even:hover, body.theme-dark .table-row-odd:hover { background-color: #24324D; }
+    body.theme-dark .table-header-row *,
+    html.dark .table-header-row * { color: #38BDF8 !important; }
+    body.theme-dark .table-row-even,
+    html.dark .table-row-even { background-color: #0F172A; color: #F8FAFC; }
+    body.theme-dark .table-row-odd,
+    html.dark .table-row-odd { background-color: #0A101D; color: #F8FAFC; }
+    body.theme-dark .table-row-even:hover,
+    html.dark .table-row-even:hover,
+    body.theme-dark .table-row-odd:hover,
+    html.dark .table-row-odd:hover { background-color: #172544; }
 
     /* No tema escuro se o saldo for negativo: faixa e badge de alerta sem quebrar contraste */
     body.theme-dark.theme-negative-alert .app-navbar {
@@ -899,45 +979,12 @@
               <div id="dynamicMembersContainer" class="flex items-center gap-2 flex-wrap"></div>
             </div>
 
-            <!-- Menu de Ciclos Unificado & Elegante (Estilo Apple / Sem Poluição) -->
-            <div class="relative" id="cycleDropdownWrapper">
-              <button type="button" onclick="toggleCycleMenu()" id="btnCycleDropdownTrigger" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 border border-slate-300 dark:border-slate-700 shadow-xs text-xs font-bold text-slate-800 dark:text-slate-100 transition-all">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
-                <span id="currentCycleLabelDisplay">05/Out a 04/Nov 2026</span>
-                <span class="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10px] font-extrabold">Ativo</span>
-                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
-              </button>
-
-              <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
-              <select id="cycleSelector" onchange="onCycleChange()" class="hidden">
-                <option value="05/Out a 04/Nov 2026">05/Out a 04/Nov 2026</option>
-                <option value="05/Set a 04/Out 2026">05/Set a 04/Out 2026</option>
-                <option value="05/Ago a 04/Set 2026">05/Ago a 04/Set 2026</option>
-              </select>
-
-              <!-- Dropdown Flutuante de Ciclos com Ação Integrada "+ Novo Ciclo" -->
-              <div id="cycleDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs">
-                <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Períodos Mensais</div>
-                <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
-                  <button type="button" onclick="selectCycleFromMenu('05/Out a 04/Nov 2026')" class="w-full text-left px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 font-bold flex items-center justify-between text-blue-600 dark:text-blue-400">
-                    <span>05/Out a 04/Nov 2026</span>
-                    <span class="text-[10px] font-extrabold bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.2 rounded-md">Vigente</span>
-                  </button>
-                  <button type="button" onclick="selectCycleFromMenu('05/Set a 04/Out 2026')" class="w-full text-left px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
-                    <span>05/Set a 04/Out 2026</span>
-                  </button>
-                  <button type="button" onclick="selectCycleFromMenu('05/Ago a 04/Set 2026')" class="w-full text-left px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
-                    <span>05/Ago a 04/Set 2026</span>
-                  </button>
-                </div>
-                <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
-                  <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                    <span>+ Criar Novo Ciclo...</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
+            <select id="cycleSelector" onchange="onCycleChange()" class="hidden">
+              <option value="05/Out a 04/Nov 2026">05/Out a 04/Nov 2026</option>
+              <option value="05/Set a 04/Out 2026">05/Set a 04/Out 2026</option>
+              <option value="05/Ago a 04/Set 2026">05/Ago a 04/Set 2026</option>
+            </select>
 
           </div>
 
@@ -959,20 +1006,43 @@
     <!-- Inspirado no modelo de referência com mascote porquinho-robô    -->
     <!-- ============================================================== -->
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 pb-2 w-full">
-      <div id="heroCardBanner" class="hero-card-banner relative overflow-hidden rounded-2xl p-4 sm:p-6 text-white shadow-md transition-all duration-300" style="background: var(--hero-gradient);">
+      <div id="heroCardBanner" class="hero-card-banner relative rounded-2xl p-4 sm:p-6 text-white shadow-md transition-all duration-300" style="background: var(--hero-gradient);">
         
-        <!-- Efeito de iluminação suave de fundo -->
-        <div class="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        <!-- Efeito de iluminação suave de fundo encapsulado para não cortar dropdowns -->
+        <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div class="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
 
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           
           <!-- Lado Esquerdo: Boas-vindas, Saldo Disponível & Ações -->
           <div class="flex-1 min-w-0">
             
-            <!-- Tag do Ciclo Vigente -->
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[11px] font-semibold text-blue-100 mb-2">
-              <i data-lucide="sparkles" class="w-3 h-3 text-amber-300"></i>
-              <span id="heroCycleTag">Ciclo Vigente • 05/Out a 04/Nov 2026</span>
+            <!-- Tag Interativa do Ciclo Vigente (com Seletor e Alteração Integrados) -->
+            <div class="relative inline-block mb-2.5">
+              <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-[11px] font-semibold text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 group cursor-pointer" title="Clique para trocar o ciclo vigente ou criar novo ciclo">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span id="heroCycleTag">Ciclo Vigente • 05/Out a 04/Nov 2026</span>
+                <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wide">Trocar</span>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-white/80 transition-transform group-hover:translate-y-0.5"></i>
+              </button>
+
+              <!-- Dropdown Flutuante de Ciclos Integrado ao Card Azul -->
+              <div id="cycleDropdownMenu" class="hidden absolute left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs text-slate-800 dark:text-slate-100">
+                <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                  <span>Selecionar Período</span>
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
+                </div>
+                <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
+                  <!-- Ciclos injetados dinamicamente via renderCycleDropdownItems() -->
+                </div>
+                <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
+                  <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>+ Criar Novo Ciclo...</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Saudação Rodrigo & Márcia -->
@@ -3336,6 +3406,18 @@
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
+      }
+
+      // Atualiza o background e estilo do card herói
+      const heroBanner = document.getElementById('heroCardBanner');
+      if (heroBanner) {
+        if (themeName === 'theme-dark') {
+          heroBanner.style.background = 'linear-gradient(135deg, #0B1120 0%, #111C33 50%, #172544 100%)';
+          heroBanner.style.borderColor = '#1E293B';
+        } else {
+          heroBanner.style.background = 'var(--hero-gradient)';
+          heroBanner.style.borderColor = 'transparent';
+        }
       }
 
       const btnLight = document.getElementById('btnThemeLight');
@@ -7776,9 +7858,15 @@
       window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
     }
 
-    function toggleCycleMenu() {
+    function toggleCycleMenu(e) {
+      if (e) e.stopPropagation();
       const menu = document.getElementById('cycleDropdownMenu');
-      if (menu) menu.classList.toggle('hidden');
+      if (menu) {
+        menu.classList.toggle('hidden');
+        if (!menu.classList.contains('hidden')) {
+          renderCycleDropdownItems();
+        }
+      }
     }
 
     function closeCycleMenu() {
@@ -7786,16 +7874,54 @@
       if (menu) menu.classList.add('hidden');
     }
 
+    function renderCycleDropdownItems() {
+      const container = document.getElementById('cycleDropdownItems');
+      if (!container) return;
+      const cycles = Array.from(new Set(transactions.map(t => t.ciclo).filter(Boolean)));
+      if (!cycles.includes('05/Out a 04/Nov 2026')) cycles.unshift('05/Out a 04/Nov 2026');
+      if (!cycles.includes('05/Set a 04/Out 2026')) cycles.push('05/Set a 04/Out 2026');
+      if (!cycles.includes('05/Ago a 04/Set 2026')) cycles.push('05/Ago a 04/Set 2026');
+
+      container.innerHTML = '';
+      cycles.forEach(c => {
+        const isCurrent = c === currentCycle;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => selectCycleFromMenu(c);
+        btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors ${
+          isCurrent 
+            ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800' 
+            : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+        }`;
+        btn.innerHTML = `
+          <span>${c}</span>
+          ${isCurrent ? '<span class="text-[10px] font-extrabold bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md">Ativo</span>' : ''}
+        `;
+        container.appendChild(btn);
+      });
+    }
+
     function selectCycleFromMenu(cycleName) {
       currentCycle = cycleName;
       localStorage.setItem('financas_active_cycle', currentCycle);
-      const label = document.getElementById('currentCycleLabelDisplay');
-      if (label) label.textContent = cycleName;
+      const heroTag = document.getElementById('heroCycleTag');
+      if (heroTag) heroTag.textContent = `Ciclo Vigente • ${cycleName}`;
       const sel = document.getElementById('cycleSelector');
       if (sel) sel.value = cycleName;
       closeCycleMenu();
       onCycleChange();
+      renderCycleDropdownItems();
     }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('cycleDropdownMenu');
+      const trigger = document.getElementById('btnHeroCycleTrigger');
+      if (menu && !menu.classList.contains('hidden')) {
+        if (!menu.contains(e.target) && !trigger?.contains(e.target)) {
+          closeCycleMenu();
+        }
+      }
+    });
 
     function scrollFilterBarRight() {
       const bar = document.getElementById('iconFilterBar');
@@ -8368,6 +8494,92 @@
       showToastUndo(`Item "${nome}" salvo na lista de mercado!`, false);
     }
 
+    // ==========================================
+    // NLP PARSER INTELIGENTE DE ITENS DE MERCADO NO CHAT
+    // ==========================================
+    function parseSingleGroceryItem(text) {
+      if (!text) return null;
+      const original = text.trim();
+      if (!original || original.length < 2) return null;
+      
+      const lower = original.toLowerCase();
+      // Ignora saudações, confirmações e perguntas conversacionais puras
+      if (original.includes('?') || ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'ok', 'beleza', 'sim', 'não', 'nao', 'tô aqui', 'cheguei', 'tá bom', 'valeu', 'obrigado', 'obrigada', 'já estou aqui', 'já cheguei', 'oi mãe', 'oi pai', 'oi amor', 'oi filho'].includes(lower)) {
+        return null;
+      }
+
+      // Remove vocativos no início (Filho, Mãe, Pai, Amor, etc.)
+      let cleaned = original.replace(/^(?:(?:ol[áa]|oi|filho|filha|amor|m[ãa]e|pai|esposa|marido)\s*[,:]?\s*)/i, '').trim();
+      
+      // Remove verbos e preposições de pedido no início
+      cleaned = cleaned.replace(/^(?:(?:por\s+favor\s*[,:]?\s*)?(?:comprar|compre|compra|trazer|traga|traz|pegar|pega|levar|leva|adicionar|adiciona|n[ãa]o\s+esquece\s+d[eo]|\+)\s*(?:(?:pra\s+mim|por\s+favor)\s*)?)+/i, '').trim();
+      
+      // Remove ruídos conversacionais no final
+      cleaned = cleaned.replace(/\s*(?:pra\s+mim|por\s+favor|viu|t[áa]\??|tamb[ée]m)\s*$/i, '').trim();
+      if (!cleaned || cleaned.length < 2) return null;
+
+      let qtd = 1;
+      let unidade = 'un';
+      let nome = cleaned;
+
+      // Padrão 1: Quantidade + Unidade + 'de' (ex: '2 pacotes de macarrão de 1kg', '500g de alcatra', '3 caixas de leite')
+      const m1 = cleaned.match(/^(\d+(?:[.,]\d+)?)\s*(pacotes?|pcts?|caixas?|cxs?|latas?|garrafas?|vidros?|barras?|sacos?|unidades?|un|kg|quilos?|kilos?|g|gramas?|litros?|l|ml)\s*(?:de\s+)?(.*)$/i);
+      if (m1) {
+        const rawQty = parseFloat(m1[1].replace(',', '.'));
+        const rawUnit = m1[2].toLowerCase();
+        const rest = (m1[3] || '').trim();
+
+        const unitMap = {
+          'pacote': 'pct', 'pacotes': 'pct', 'pct': 'pct', 'pcts': 'pct',
+          'caixa': 'cx', 'caixas': 'cx', 'cx': 'cx', 'cxs': 'cx',
+          'lata': 'lata', 'latas': 'lata',
+          'garrafa': 'garrafa', 'garrafas': 'garrafa',
+          'barra': 'barra', 'barras': 'barra',
+          'saco': 'saco', 'sacos': 'saco',
+          'kg': 'kg', 'quilo': 'kg', 'quilos': 'kg', 'kilo': 'kg', 'kilos': 'kg',
+          'g': 'g', 'grama': 'g', 'gramas': 'g',
+          'l': 'L', 'litro': 'L', 'litros': 'L',
+          'ml': 'ml'
+        };
+        unidade = unitMap[rawUnit] || 'un';
+        qtd = Number.isInteger(rawQty) ? parseInt(rawQty) : rawQty;
+        nome = rest || cleaned;
+      } else {
+        // Padrão 2: Apenas número + item (ex: '3 leites integrais', '2 coca colas 2L')
+        const m2 = cleaned.match(/^(\d+(?:[.,]\d+)?)\s+(.*)$/i);
+        if (m2) {
+          const rawQty = parseFloat(m2[1].replace(',', '.'));
+          const rest = (m2[2] || '').trim();
+          qtd = Number.isInteger(rawQty) ? parseInt(rawQty) : rawQty;
+          unidade = 'un';
+          nome = rest;
+        }
+      }
+
+      // Remove 'de ' residual no início do nome se houver
+      nome = nome.replace(/^(?:de\s+)/i, '').trim();
+      if (nome) {
+        nome = nome.charAt(0).toUpperCase() + nome.slice(1);
+      }
+      return { qtd, unidade, nome };
+    }
+
+    function parseGroceryItemsFromMessage(text) {
+      if (!text) return [];
+      const parts = text.split(/[\n,]/).map(p => p.trim()).filter(Boolean);
+      if (!parts.length) return [];
+      if (parts.length > 1) {
+        const list = [];
+        for (const p of parts) {
+          const it = parseSingleGroceryItem(p);
+          if (it) list.push(it);
+        }
+        if (list.length > 0) return list;
+      }
+      const single = parseSingleGroceryItem(text);
+      return single ? [single] : [];
+    }
+
     function handleSendCleanChatMessage(e) {
       e.preventDefault();
       const input = document.getElementById('inputChatMessageClean');
@@ -8377,24 +8589,28 @@
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-      // Detecta se a mensagem é uma adição de item (ex: "traz café", "leite 2L", "adicionar maçã")
-      const lower = text.toLowerCase();
-      let addedItem = null;
-      if (lower.startsWith('traz ') || lower.startsWith('comprar ') || lower.startsWith('+ ') || lower.includes('leite') || lower.includes('pão') || lower.includes('café') || lower.includes('arroz')) {
-        let cleanName = text.replace(/^(traz|comprar|\+)\s+/i, '').trim();
-        let items = getActiveShoppingItems();
-        addedItem = {
-          id: 'item_' + Date.now(),
-          nome: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-          qtdDesejada: 1,
-          qtdComprada: 1,
-          unidade: 'un',
+      // Detecta se a mensagem contém itens de mercado (ex: '2 pacotes de macarrão de 1kg', 'pão frances', etc)
+      const detectedItems = parseGroceryItemsFromMessage(text);
+      let items = getActiveShoppingItems();
+      const addedNames = [];
+
+      detectedItems.forEach(it => {
+        const newItem = {
+          id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          nome: it.nome,
+          qtdDesejada: it.qtd,
+          qtdComprada: it.qtd,
+          unidade: it.unidade,
           marca: '',
           precoUnitario: 0,
           status: 'pendente',
           pedidoPor: 'Família'
         };
-        items.push(addedItem);
+        items.push(newItem);
+        addedNames.push(`${it.nome} (${it.qtd} ${it.unidade})`);
+      });
+
+      if (detectedItems.length > 0) {
         saveActiveShoppingItems(items);
         updateCartSummaryUI();
       }
@@ -8409,13 +8625,13 @@
         time: timeStr
       });
 
-      if (addedItem) {
+      if (addedNames.length > 0) {
         msgs.push({
           id: 'sys_' + Date.now(),
           sender: 'Lista de Mercado',
           avatar: '🛒',
           isMe: false,
-          text: `✅ Adicionado à lista de compras: "${addedItem.nome}"! Vai marcando o preço na gôndola.`,
+          text: `✅ Adicionado à lista de compras: "${addedNames.join(', ')}"! Marque o preço na gôndola.`,
           time: timeStr
         });
       }
@@ -8430,38 +8646,65 @@
       triggerFamilyPushNotification('💬 Mensagem no Chat', text, '🛒');
     }
 
+    // ==========================================
+    // CAPTURA DE FOTO NA GÔNDOLA (NATIVA + WEB)
+    // ==========================================
+    function triggerChatPhotoCapture() {
+      // 1. Tenta canal nativo Flutter para abrir câmera do Android
+      if (window.FlutterBridge) {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'pick_chat_photo' }));
+          return;
+        } catch (err) {
+          console.warn('Erro ao chamar FlutterBridge pick_chat_photo:', err);
+        }
+      }
+      // 2. Fallback para navegador Web
+      const fileInput = document.getElementById('chatPhotoInput');
+      if (fileInput) fileInput.click();
+    }
+
+    // Callback recebido do Flutter quando a foto nativa da câmera é capturada
+    window.onNativeChatPhotoResult = function(photoDataUrl) {
+      if (!photoDataUrl) return;
+      handleChatPhotoDataReceived(photoDataUrl);
+    };
+
     function handleChatPhotoUpload(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(evt) {
-        const photoData = evt.target.result;
-        // Armazenado APENAS temporariamente na sessão
-        ephemeralChatPhotos.push(photoData);
-
-        const now = new Date();
-        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-        const msgs = getCleanChatMessages();
-        msgs.push({
-          id: 'photo_' + Date.now(),
-          sender: 'Eu',
-          avatar: '👤',
-          isMe: true,
-          photoUrl: photoData,
-          text: 'Enviei foto da gôndola para confirmar a marca.',
-          time: timeStr
-        });
-        saveCleanChatMessages(msgs);
-        renderCleanChatStream();
-
-        const feed = document.getElementById('chatMessagesFeed');
-        if (feed) feed.scrollTop = feed.scrollHeight;
-
-        triggerFamilyPushNotification('📸 Foto na Gôndola', 'Nova foto enviada no chat da família', '📷');
+        handleChatPhotoDataReceived(evt.target.result);
       };
       reader.readAsDataURL(file);
+      e.target.value = ''; // Reseta input para permitir tirar nova foto
+    }
+
+    function handleChatPhotoDataReceived(photoData) {
+      ephemeralChatPhotos.push(photoData);
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const msgs = getCleanChatMessages();
+      msgs.push({
+        id: 'photo_' + Date.now(),
+        sender: 'Eu',
+        avatar: '👤',
+        isMe: true,
+        photoUrl: photoData,
+        text: 'Enviei foto da gôndola para confirmar a marca.',
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+      renderCleanChatStream();
+
+      const feed = document.getElementById('chatMessagesFeed');
+      if (feed) feed.scrollTop = feed.scrollHeight;
+
+      triggerFamilyPushNotification('📸 Foto na Gôndola', 'Nova foto enviada no chat da família', '📷');
     }
 
     function openFinishShoppingModal() {
@@ -9908,7 +10151,7 @@
       <div class="p-3 bg-slate-900 border-t border-slate-800 flex-shrink-0">
         <form onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2">
           <!-- Botão Câmera (Tirar Foto Temporária da Gôndola) -->
-          <button type="button" onclick="document.getElementById('chatPhotoInput').click()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 border border-slate-700" title="Tirar foto na gôndola (temporária)">
+          <button type="button" onclick="triggerChatPhotoCapture()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 border border-slate-700 active:scale-95" title="Tirar foto na gôndola (temporária)">
             <i data-lucide="camera" class="w-4.5 h-4.5"></i>
           </button>
           <input type="file" id="chatPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="handleChatPhotoUpload(event)">
