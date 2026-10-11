@@ -620,6 +620,85 @@
       pointer-events: none;
     }
   
+    /* ============================================================== */
+    /* 3 BOTÕES GLOSSY SQUIRCLE (HUB PÓS-LOGIN - INSPIRAÇÃO SKEUOMORPHIC)*/
+    /* ============================================================== */
+    .glossy-squircle-recess {
+      background: linear-gradient(145deg, #e2e8f0, #f1f5f9);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(255, 255, 255, 0.9);
+      border-radius: 30px;
+      padding: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+    html.dark .glossy-squircle-recess {
+      background: linear-gradient(145deg, #111827, #1e293b);
+      box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(255, 255, 255, 0.05);
+    }
+    .glossy-squircle-btn {
+      position: relative;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 10px 22px -4px rgba(15, 23, 42, 0.18),
+        0 4px 8px -2px rgba(15, 23, 42, 0.10),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+    .glossy-squircle-btn::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      right: 4px;
+      height: 48%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 60%, rgba(255, 255, 255, 0) 100%);
+      border-radius: 20px 20px 32px 32px / 20px 20px 14px 14px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    html.dark .glossy-squircle-btn {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 10px 22px -4px rgba(0, 0, 0, 0.5),
+        0 4px 8px -2px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.4);
+    }
+    html.dark .glossy-squircle-btn::before {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0) 100%);
+    }
+
+    .glossy-emerald {
+      background: linear-gradient(145deg, #ffffff 15%, #ecfdf5 100%);
+    }
+    html.dark .glossy-emerald {
+      background: linear-gradient(145deg, #064e3b 10%, #022c22 100%);
+    }
+    .glossy-purple {
+      background: linear-gradient(145deg, #ffffff 15%, #f5f3ff 100%);
+    }
+    html.dark .glossy-purple {
+      background: linear-gradient(145deg, #3730a3 10%, #1e1b4b 100%);
+    }
+    .glossy-blue {
+      background: linear-gradient(145deg, #ffffff 15%, #eff6ff 100%);
+    }
+    html.dark .glossy-blue {
+      background: linear-gradient(145deg, #1e3a8a 10%, #0f172a 100%);
+    }
+
     /* RESPONSIVIDADE MULTIPLATAFORMA AVANÇADA (MOBILE, TABLET & DESKTOP) */
     html, body {
       overflow-x: hidden;
@@ -991,9 +1070,10 @@
             <span id="chatHeaderBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">1</span>
           </button>
           
-          <button onclick="atualizarApp()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0" title="Atualizar e sincronizar todos os cards e dados">
-            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-            <span class="hidden xs:inline">Atualizar</span>
+          <!-- Hub de Início Rápido -->
+          <button onclick="openWelcomeQuickHub()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0" title="Central de Acesso Rápido (Lista, Chat ou Finanças)">
+            <i data-lucide="compass" class="w-3 h-3"></i>
+            <span class="hidden xs:inline">Início Rápido</span>
           </button>
 
           <!-- Escala Tipográfica -->
@@ -1006,11 +1086,6 @@
           <!-- Olho Mestre de Privacidade -->
           <button id="btnTogglePrivacy" onclick="togglePrivacyModeGlobal()" title="Ocultar/Mostrar valores confidenciais" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
             <i data-lucide="eye" id="iconPrivacyGlobal" class="w-3.5 h-3.5"></i>
-          </button>
-
-          <!-- Alternar Áudio / Silencioso -->
-          <button id="btnToggleAudio" onclick="toggleAppAudio()" title="Ativar/Desativar sons do aplicativo" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
-            <i data-lucide="volume-2" id="iconAppAudio" class="w-3.5 h-3.5"></i>
           </button>
 
           <!-- Lixeira -->
@@ -1218,9 +1293,8 @@
               </div>
 
               <!-- Botão Olhinho de Privacidade no Espaço Vazio ao lado do Ciclo Vigente -->
-              <button type="button" onclick="togglePrivacyModeGlobal()" id="btnHeroPrivacyToggle" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 cursor-pointer" title="Ocultar ou mostrar valores confidenciais (Privacidade do Saldo e Ciclo)">
+              <button type="button" onclick="togglePrivacyModeGlobal()" id="btnHeroPrivacyToggle" class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 cursor-pointer" title="Ocultar ou mostrar valores confidenciais">
                 <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-white"></i>
-                <span class="text-[10px] font-extrabold tracking-wide" id="labelHeroPrivacy">Ocultar Valores</span>
               </button>
             </div>
 
@@ -1309,77 +1383,6 @@
     
 
     
-    <!-- ============================================================== -->
-    <!-- CARD FLAT: COMPRAS PARCELADAS ATIVAS (DESTAQUE NO TOPO)        -->
-    <!-- ============================================================== -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 w-full" id="cardHeroInstallments">
-      <div class="app-card rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-slate-50 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/50 shadow-xs transition-all">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm flex-shrink-0">
-              <i data-lucide="layers" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">Compras Parceladas Ativas</h3>
-                <span id="badgeInstallmentsCount" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300">
-                  Calculando parcelas...
-                </span>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Impacto nas próximas faturas: <strong id="totalInstallmentsFutureSum" class="text-indigo-700 dark:text-indigo-300">R$ 0,00</strong> comprometidos.
-              </p>
-            </div>
-          </div>
-
-          <!-- Seta Sanfona para Expandir para Baixo -->
-          <div class="flex items-center gap-2 self-end sm:self-center">
-            <button onclick="toggleInstallmentsAccordion()" id="btnToggleInstallmentsAccordion" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all">
-              <span id="labelToggleInstallments">Ver Parcelas</span>
-              <i data-lucide="chevron-down" id="iconToggleInstallments" class="w-4 h-4 transition-transform duration-200"></i>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- DEMONSTRAÇÃO VISUAL: LINHA DE STATUS E PROGRESSO DO TOTAL FINANCIADO -->
-        <div class="mt-3.5 pt-3 border-t border-indigo-100 dark:border-indigo-900/60">
-          <div class="flex items-center justify-between text-[11px] font-bold mb-1.5">
-            <div class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Já Quitado: <strong id="valInstallmentsPaidText">R$ 0,00 (0%)</strong></span>
-            </div>
-            <div class="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300">
-              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-              <span>Falta Pagar: <strong id="valInstallmentsRemainingText">R$ 0,00 (100%)</strong></span>
-            </div>
-          </div>
-          <!-- Barra de Status Visual Multicor -->
-          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden flex shadow-inner">
-            <div id="barInstallmentsPaid" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" style="width: 50%;"></div>
-            <div id="barInstallmentsRemaining" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-500" style="width: 50%;"></div>
-          </div>
-          <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
-            <span>Início dos Financiamentos</span>
-            <span id="valInstallmentsTotalFinanced">Total Financiado: R$ 0,00</span>
-          </div>
-        </div>
-
-        <!-- CONTEÚDO EXPANSÍVEL PARA BAIXO (SANFONA INLINE) -->
-        <div id="installmentsAccordionContent" class="hidden mt-4 pt-3.5 border-t border-indigo-100 dark:border-indigo-900/60 space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">Detalhamento Individual de Cada Compra</h4>
-            <span class="text-[10px] text-slate-400">Atualizado automaticamente</span>
-          </div>
-          <div id="installmentsAccordionList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
-            <!-- Injetado dinamicamente via JS -->
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionMetrics">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
@@ -1567,6 +1570,84 @@
       </div>
     </section>
 
+    <!-- ============================================================== -->
+    <!-- CARD FLAT: COMPRAS PARCELADAS ATIVAS (DESTAQUE NO TOPO)        -->
+    <!-- ============================================================== -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 w-full" id="cardHeroInstallments">
+      <div class="app-card rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-slate-50 dark:from-slate-800/90 dark:via-indigo-950/40 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/50 shadow-xs transition-all">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm flex-shrink-0">
+              <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">Compras Parceladas Ativas</h3>
+                <span id="badgeInstallmentsCount" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300">
+                  Calculando parcelas...
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Impacto nas próximas faturas: <strong id="totalInstallmentsFutureSum" class="text-indigo-700 dark:text-indigo-300">R$ 0,00</strong> comprometidos.
+              </p>
+            </div>
+          </div>
+
+          <!-- Seta Sanfona para Expandir para Baixo e Colapso do Card -->
+          <div class="flex items-center gap-2 self-end sm:self-center">
+            <button onclick="toggleInstallmentsAccordion()" id="btnToggleInstallmentsAccordion" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all">
+              <span id="labelToggleInstallments">Ver Parcelas</span>
+              <i data-lucide="chevron-down" id="iconToggleInstallments" class="w-4 h-4 transition-transform duration-200"></i>
+            </button>
+            <button onclick="toggleSectionCollapse('cardHeroInstallmentsContent')" title="Minimizar / Expandir Compras Parceladas" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+              <i data-lucide="chevron-up" id="iconCollapse_cardHeroInstallmentsContent" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <div id="cardHeroInstallmentsContent" class="collapsible-content">
+        <!-- DEMONSTRAÇÃO VISUAL: LINHA DE STATUS E PROGRESSO DO TOTAL FINANCIADO -->
+        <div class="mt-3.5 pt-3 border-t border-indigo-100 dark:border-indigo-900/60">
+          <div class="flex items-center justify-between text-[11px] font-bold mb-1.5">
+            <div class="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Já Quitado: <strong id="valInstallmentsPaidText">R$ 0,00 (0%)</strong></span>
+            </div>
+            <div class="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+              <span>Falta Pagar: <strong id="valInstallmentsRemainingText">R$ 0,00 (100%)</strong></span>
+            </div>
+          </div>
+          <!-- Barra de Status Visual Multicor -->
+          <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden flex shadow-inner">
+            <div id="barInstallmentsPaid" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" style="width: 50%;"></div>
+            <div id="barInstallmentsRemaining" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-500" style="width: 50%;"></div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+            <span>Início dos Financiamentos</span>
+            <span id="valInstallmentsTotalFinanced">Total Financiado: R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- CONTEÚDO EXPANSÍVEL PARA BAIXO (SANFONA INLINE) -->
+        <div id="installmentsAccordionContent" class="hidden mt-4 pt-3.5 border-t border-indigo-100 dark:border-indigo-900/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">Detalhamento Individual de Cada Compra</h4>
+            <span class="text-[10px] text-slate-400">Atualizado automaticamente</span>
+          </div>
+          <div id="installmentsAccordionList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+        </div>
+        </div><!-- Fim cardHeroInstallmentsContent -->
+
+      </div>
+    </div>
+
+    
+
     <section class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 w-full" id="sectionReminders">
       <!-- Container com destaque executivo de alto impacto visual -->
       <div class="app-card rounded-none p-4 sm:p-5 bg-gradient-to-r from-blue-50/90 via-indigo-50/50 to-slate-50 dark:from-slate-800/90 dark:via-slate-800 dark:to-slate-900 border-2 border-blue-400/40 dark:border-blue-700/50 shadow-md transition-all">
@@ -1739,12 +1820,16 @@
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
               </button>
             </div>
+            <button onclick="toggleSectionCollapse('sectionFoodBudgetContent')" title="Minimizar / Expandir Orçamento de Mercado" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+              <i data-lucide="chevron-up" id="iconCollapse_sectionFoodBudgetContent" class="w-4 h-4"></i>
+            </button>
             <div class="flex items-center cursor-grab text-slate-400 hover:text-slate-700 p-1 rounded-none hover:bg-slate-100 transition-colors ml-1" title="Arraste pelos pontinhos para reordenar esta seção" draggable="false" ondragstart="handleSectionDragStart(event, 'sectionFoodBudget')">
               <i data-lucide="grip-vertical" class="w-4 h-4"></i>
             </div>
           </div>
         </div>
 
+        <div id="sectionFoodBudgetContent" class="collapsible-content">
         <!-- GRID DE 4 KPIS NUMÉRICOS -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 py-4">
           
@@ -1816,6 +1901,7 @@
             <span class="font-bold px-1.5 py-0.5 bg-red-100 text-red-800 rounded-none border border-red-200">&gt;100% Estourado</span>
           </div>
         </div>
+        </div><!-- Fim sectionFoodBudgetContent -->
 
       </div>
     </section>
@@ -3678,8 +3764,8 @@
       const iconHero = document.getElementById('iconHeroPrivacy');
       if (iconHero) iconHero.setAttribute('data-lucide', isPrivacyGlobal ? 'eye-off' : 'eye');
 
-      const labelHero = document.getElementById('labelHeroPrivacy');
-      if (labelHero) labelHero.textContent = isPrivacyGlobal ? 'Mostrar Valores' : 'Ocultar Valores';
+      const btnHero = document.getElementById('btnHeroPrivacyToggle');
+      if (btnHero) btnHero.title = isPrivacyGlobal ? 'Mostrar valores confidenciais' : 'Ocultar valores confidenciais';
 
       const iconMetrics = document.getElementById('iconPrivacyMetricsHeader');
       if (iconMetrics) {
@@ -6344,8 +6430,9 @@
     // 26. REORDENAÇÃO DE SEÇÕES MAIORES COM DROP ZONE SEGURO (V4.9.2)
     // ==============================================================
     const CANONICAL_SECTIONS_ORDER = [
-      'sectionReminders',
       'sectionMetrics',
+      'cardHeroInstallments',
+      'sectionReminders',
       'sectionFoodBudget',
       'sectionCharts',
       'sectionTable',
@@ -6426,7 +6513,7 @@
       const order = Array.from(container.children)
         .filter(c => c.tagName === 'SECTION' && c.id)
         .map(c => c.id);
-      localStorage.setItem('financas_sections_order_v4', JSON.stringify(order));
+      localStorage.setItem('financas_sections_order_v5', JSON.stringify(order));
     }
 
     function loadSectionsOrder() {
@@ -6436,8 +6523,9 @@
       // Limpar chaves antigas para desapegar de ordens bagunçadas
       localStorage.removeItem('financas_sections_order');
       localStorage.removeItem('financas_sections_order_v3');
+      localStorage.removeItem('financas_sections_order_v4');
 
-      const saved = localStorage.getItem('financas_sections_order_v4');
+      const saved = localStorage.getItem('financas_sections_order_v5');
       const orderToApply = saved ? JSON.parse(saved) : CANONICAL_SECTIONS_ORDER;
 
       try {
@@ -7528,6 +7616,7 @@
 
       // Se for primeiro acesso, pergunta se deseja ativar Face ID / Biometria
       promptBiometricsOnFirstAccess();
+      openWelcomeQuickHub();
     }
 
     function triggerBiometricLogin() {
@@ -7604,6 +7693,36 @@
       lucide.createIcons();
     }
 
+    // ==============================================================
+    // HUB DE ACESSO RÁPIDO PÓS-LOGIN (LISTA, CHAT, FINANÇAS)
+    // ==============================================================
+    function openWelcomeQuickHub() {
+      const hub = document.getElementById('modalWelcomeQuickHub');
+      if (hub) {
+        hub.classList.remove('hidden');
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
+      }
+    }
+
+    function closeWelcomeQuickHub() {
+      const hub = document.getElementById('modalWelcomeQuickHub');
+      if (hub) hub.classList.add('hidden');
+    }
+
+    function navigateToQuickHubOption(destination) {
+      closeWelcomeQuickHub();
+      if (destination === 'shopping') {
+        openShoppingListModal();
+      } else if (destination === 'chat') {
+        openFamilyChatModal();
+      } else if (destination === 'dashboard') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToastUndo('Painel de Controle Financeiro pronto!', false);
+      }
+    }
+
     function quickLogin(who) {
       if (who === 'rodrigo') {
         currentUserSession = {
@@ -7627,6 +7746,7 @@
       localStorage.removeItem('financas_auth_logged_out');
       document.documentElement.classList.remove('require-auth'); document.getElementById('authOverlayContainer').classList.add('hidden');
       const bioModal = document.getElementById("modalBiometricPrompt"); if (bioModal) bioModal.classList.add("hidden"); showToastUndo(`Bem-vindo(a) de volta, ${currentUserSession.nome}! 👋`, false); promptBiometricsOnFirstAccess();
+      openWelcomeQuickHub();
     }
 
     function handleAuthLogin(e) {
@@ -7652,7 +7772,7 @@
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
       const checkBio = document.getElementById('checkProfileBiometrics'); if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
           document.documentElement.classList.remove('require-auth'); document.getElementById('authOverlayContainer').classList.add('hidden');
-          const bioModal = document.getElementById("modalBiometricPrompt"); if (bioModal) bioModal.classList.add("hidden"); showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}!`, false); promptBiometricsOnFirstAccess(); return;
+          const bioModal = document.getElementById("modalBiometricPrompt"); if (bioModal) bioModal.classList.add("hidden"); showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}!`, false); promptBiometricsOnFirstAccess(); openWelcomeQuickHub(); return;
         } else {
           alert('Senha incorreta! Caso tenha esquecido, clique em "Esqueceu?".');
           return;
@@ -7677,6 +7797,7 @@
       const checkBio = document.getElementById('checkProfileBiometrics'); if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
         document.documentElement.classList.remove('require-auth'); document.getElementById('authOverlayContainer').classList.add('hidden');
         showToastUndo(`Bem-vindo, ${currentUserSession.nome}!`, false);
+        openWelcomeQuickHub();
       }
     }
 
@@ -10775,6 +10896,90 @@
   </div>
 
   <!-- ============================================================== -->
+  <!-- MODAL: HUB DE ACESSO RÁPIDO PÓS-LOGIN (GLOSSY SQUIRCLE BUTTONS)-->
+  <!-- ============================================================== -->
+  <div id="modalWelcomeQuickHub" class="fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-4 transition-all duration-300">
+    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200/80 dark:border-slate-800 text-center animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Botão Fechar Modal -->
+      <button onclick="closeWelcomeQuickHub()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Fechar e ir ao Dashboard">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Saudação e Ícone -->
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-lg shadow-blue-500/25 mb-3.5">
+        <i data-lucide="sparkles" class="w-7 h-7 text-amber-300"></i>
+      </div>
+
+      <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+        Para onde você quer ir agora?
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+        Acesso rápido aos principais recursos do casal. Escolha abaixo:
+      </p>
+
+      <!-- Grade dos 3 Botões Grandes Glossy Squircle Centralizados -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-5 my-6 sm:my-8 items-start justify-items-center">
+        
+        <!-- Botão 1: Lista de Compras -->
+        <button type="button" onclick="navigateToQuickHubOption('shopping')" class="flex flex-col items-center group w-full text-center focus:outline-none cursor-pointer">
+          <div class="glossy-squircle-recess w-20 h-20 sm:w-26 sm:h-26 group-hover:scale-105 group-active:scale-95 transition-transform duration-200">
+            <div class="glossy-squircle-btn w-full h-full glossy-emerald">
+              <i data-lucide="shopping-cart" class="w-8 h-8 sm:w-11 sm:h-11 text-emerald-500 drop-shadow-md"></i>
+            </div>
+          </div>
+          <span class="mt-2.5 text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">
+            Lista de Compras
+          </span>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 hidden xs:inline mt-0.5">
+            Gôndola & Preços
+          </span>
+        </button>
+
+        <!-- Botão 2: Chat da Família -->
+        <button type="button" onclick="navigateToQuickHubOption('chat')" class="flex flex-col items-center group w-full text-center focus:outline-none cursor-pointer">
+          <div class="glossy-squircle-recess w-20 h-20 sm:w-26 sm:h-26 group-hover:scale-105 group-active:scale-95 transition-transform duration-200">
+            <div class="glossy-squircle-btn w-full h-full glossy-purple">
+              <i data-lucide="message-circle" class="w-8 h-8 sm:w-11 sm:h-11 text-indigo-500 drop-shadow-md"></i>
+            </div>
+          </div>
+          <span class="mt-2.5 text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+            Chat da Família
+          </span>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 hidden xs:inline mt-0.5">
+            Recados & Avisos
+          </span>
+        </button>
+
+        <!-- Botão 3: Controle Financeiro -->
+        <button type="button" onclick="navigateToQuickHubOption('dashboard')" class="flex flex-col items-center group w-full text-center focus:outline-none cursor-pointer">
+          <div class="glossy-squircle-recess w-20 h-20 sm:w-26 sm:h-26 group-hover:scale-105 group-active:scale-95 transition-transform duration-200">
+            <div class="glossy-squircle-btn w-full h-full glossy-blue">
+              <i data-lucide="wallet" class="w-8 h-8 sm:w-11 sm:h-11 text-blue-600 drop-shadow-md"></i>
+            </div>
+          </div>
+          <span class="mt-2.5 text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+            Controle Financeiro
+          </span>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 hidden xs:inline mt-0.5">
+            Dashboard Geral
+          </span>
+        </button>
+
+      </div>
+
+      <!-- Rodapé: Atalho direto para o Dashboard -->
+      <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-center">
+        <button type="button" onclick="navigateToQuickHubOption('dashboard')" class="text-xs font-bold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 flex items-center gap-1.5 transition-colors group">
+          <span>Abrir Dashboard Completo</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
   <!-- MODAL: ENTRADA RÁPIDA POR BIOMETRIA AUTOMÁTICA                 -->
   <!-- ============================================================== -->
   <div id="modalBiometricPrompt" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
@@ -11016,6 +11221,11 @@
         </div>
 
         <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- Som / Áudio do Chat -->
+          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Ativar/Desativar sons do chat">
+            <i data-lucide="volume-2" id="iconAppAudio" class="w-4 h-4"></i>
+          </button>
+
           <!-- Alternar Visão: Chat vs Apenas Lista -->
           <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-colors" title="Ver Lista da Gôndola">
             <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-400"></i>
