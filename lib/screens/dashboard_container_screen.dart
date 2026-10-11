@@ -85,6 +85,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
         _pickChatPhoto();
       } else if (action == 'pick_logo_image') {
         _pickLogoImage();
+      } else if (action == 'pick_avatar_photo') {
+        final member = data['member'] as String? ?? 'rodrigo';
+        final source = data['source'] as String? ?? 'gallery';
+        _pickAvatarPhoto(member, source: source);
       } else if (action == 'authenticate_biometric') {
         _authenticateBiometric();
       }
@@ -216,12 +220,51 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
     }
   }
 
+  Future<void> _pickAvatarPhoto(String member, {String source = 'gallery'}) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        preferredCameraDevice: CameraDevice.front,
+        maxWidth: 400,
+        maxHeight: 400,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+
+      final bytes = await image.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/jpeg;base64,$base64Str';
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativeAvatarResult === 'function') { window.onNativeAvatarResult('$member', '$dataUrl'); }"
+      );
+    } catch (e) {
+      debugPrint('Erro ao selecionar foto do avatar: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao selecionar foto do avatar: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _authenticateBiometric() async {
-    final bio = BiometricService();
-    final auth = await bio.authenticate(reason: 'Autenticação de Segurança Finanças Casal');
-    _controller.runJavaScript(
-      "if (typeof window.onBiometricAuthResult === 'function') { window.onBiometricAuthResult($auth); }"
-    );
+    try {
+      final bio = BiometricService();
+      final auth = await bio.authenticate(
+        reason: 'Confirme com sua digital, rosto ou senha do celular para acessar',
+      );
+      final errorMsg = (bio.lastErrorMessage ?? '').replaceAll("'", "\\'");
+      _controller.runJavaScript(
+        "if (typeof window.onBiometricAuthResult === 'function') { window.onBiometricAuthResult($auth, '$errorMsg'); }"
+      );
+    } catch (e) {
+      debugPrint('Erro em _authenticateBiometric: $e');
+      final errorMsg = e.toString().replaceAll("'", "\\'");
+      _controller.runJavaScript(
+        "if (typeof window.onBiometricAuthResult === 'function') { window.onBiometricAuthResult(false, '$errorMsg'); }"
+      );
+    }
   }
 
   @override

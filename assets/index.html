@@ -426,6 +426,171 @@
     }
     .btn-voice-action * { color: #FFFFFF !important; }
     .btn-voice-action:hover { background-color: #1E293B !important; }
+
+    /* Utilitário para ocultar scrollbars nativas mantendo navegação por toque fluida */
+    .no-scrollbar::-webkit-scrollbar { display: none !important; }
+    .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
+    /* ============================================================== */
+    /* DESIGN EXECUTIVO DIFERENCIADO: MÉTRICAS & INDICADORES DO CICLO */
+    /* Proteção total contra cards brancos ilegíveis com alto contraste */
+    /* ============================================================== */
+    #sectionMetrics .draggable-metric-card {
+      border-radius: 12px !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    #sectionMetrics .draggable-metric-card:hover {
+      transform: translateY(-2px);
+    }
+
+    /* 1. Receitas - Fundo Verde Suave Executivo com Borda de Destaque */
+    body.theme-light #sectionMetrics [data-card-id="receitas"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="receitas"] {
+      background-color: #F0FDF4 !important;
+      border: 1px solid #BBF7D0 !important;
+      border-left: 5px solid #16A34A !important;
+      box-shadow: 0 1px 3px rgba(22, 163, 74, 0.08) !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="receitas"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="receitas"] span {
+      color: #166534 !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="receitas"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="receitas"] p {
+      color: #15803D !important;
+    }
+    #sectionMetrics [data-card-id="receitas"] #metricReceitasVal {
+      color: #16A34A !important;
+    }
+
+    /* 2. Despesas Fixas - Fundo Azul Suave com Borda de Destaque */
+    body.theme-light #sectionMetrics [data-card-id="fixas"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="fixas"] {
+      background-color: #EFF6FF !important;
+      border: 1px solid #BFDBFE !important;
+      border-left: 5px solid #2563EB !important;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.08) !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="fixas"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="fixas"] span {
+      color: #1E40AF !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="fixas"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="fixas"] p {
+      color: #2563EB !important;
+    }
+    #sectionMetrics [data-card-id="fixas"] #metricFixasVal {
+      color: #2563EB !important;
+    }
+
+    /* 3. Despesas Variáveis - Fundo Âmbar/Laranja Suave com Borda de Destaque */
+    body.theme-light #sectionMetrics [data-card-id="variaveis"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="variaveis"] {
+      background-color: #FFFBEB !important;
+      border: 1px solid #FDE68A !important;
+      border-left: 5px solid #D97706 !important;
+      box-shadow: 0 1px 3px rgba(217, 119, 6, 0.08) !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="variaveis"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="variaveis"] span {
+      color: #92400E !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="variaveis"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="variaveis"] p {
+      color: #B45309 !important;
+    }
+    #sectionMetrics [data-card-id="variaveis"] #metricVariaveisVal {
+      color: #D97706 !important;
+    }
+
+    /* 4. Total de Gastos - CARD ESCURO ELEGANTE DE ALTO CONTRASTE */
+    #sectionMetrics [data-card-id="gastos"] {
+      background-color: #0F172A !important;
+      border: 1px solid #334155 !important;
+      border-left: 5px solid #F43F5E !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25) !important;
+      color: #FFFFFF !important;
+    }
+    #sectionMetrics [data-card-id="gastos"] span,
+    #sectionMetrics [data-card-id="gastos"] p,
+    #sectionMetrics [data-card-id="gastos"] i {
+      color: #CBD5E1 !important;
+    }
+    #sectionMetrics [data-card-id="gastos"] #metricGastosVal {
+      color: #FB7185 !important;
+      font-weight: 900 !important;
+    }
+
+    /* 5. Saldo Disponível - AZUL NOTURNO REAL DE DESTAQUE */
+    #sectionMetrics [data-card-id="saldo"] {
+      background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%) !important;
+      border: 1px solid #3B82F6 !important;
+      border-left: 5px solid #60A5FA !important;
+      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25) !important;
+      color: #FFFFFF !important;
+    }
+    #sectionMetrics [data-card-id="saldo"] * {
+      color: #FFFFFF !important;
+    }
+
+    /* 6. % Renda Gasta - Fundo Roxo Suave com Borda de Destaque */
+    body.theme-light #sectionMetrics [data-card-id="comprometimento"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="comprometimento"] {
+      background-color: #FAF5FF !important;
+      border: 1px solid #E9D5FF !important;
+      border-left: 5px solid #9333EA !important;
+      box-shadow: 0 1px 3px rgba(147, 51, 234, 0.08) !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="comprometimento"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="comprometimento"] span {
+      color: #6B21A8 !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="comprometimento"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="comprometimento"] p {
+      color: #7E22CE !important;
+    }
+    #sectionMetrics [data-card-id="comprometimento"] #metricComprometimentoVal {
+      color: #9333EA !important;
+    }
+
+    /* TEMA ESCURO PROFUNDO WCAG AAA PARA AS MÉTRICAS */
+    body.theme-dark #sectionMetrics [data-card-id="receitas"] {
+      background-color: #064E3B35 !important;
+      border: 1px solid #065F46 !important;
+      border-left: 5px solid #10B981 !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="receitas"] span,
+    body.theme-dark #sectionMetrics [data-card-id="receitas"] p {
+      color: #6EE7B7 !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="fixas"] {
+      background-color: #1E3A8A35 !important;
+      border: 1px solid #1E40AF !important;
+      border-left: 5px solid #3B82F6 !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="fixas"] span,
+    body.theme-dark #sectionMetrics [data-card-id="fixas"] p {
+      color: #93C5FD !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="variaveis"] {
+      background-color: #78350F35 !important;
+      border: 1px solid #92400E !important;
+      border-left: 5px solid #F59E0B !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="variaveis"] span,
+    body.theme-dark #sectionMetrics [data-card-id="variaveis"] p {
+      color: #FCD34D !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="comprometimento"] {
+      background-color: #581C8735 !important;
+      border: 1px solid #6B21A8 !important;
+      border-left: 5px solid #A855F7 !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="comprometimento"] span,
+    body.theme-dark #sectionMetrics [data-card-id="comprometimento"] p {
+      color: #D8B4FE !important;
+    }
+
     /* ESTILO DA LINHA DE STATUS DO SISTEMA */
     .app-status-bar {
       background-color: var(--status-bg);
@@ -793,8 +958,8 @@
     <!-- ============================================================== -->
     <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-all">
 
-      <!-- FAIXA 1: BARRA DE UTILITÁRIOS SUPERIOR FULL-WIDTH -->
-      <div class="w-full bg-slate-900 text-slate-200 border-b border-slate-800 text-xs px-2.5 sm:px-6 py-1.5 flex items-center justify-between gap-1 sm:gap-3 overflow-x-hidden max-w-full">
+      <!-- FAIXA 1: BARRA DE UTILITÁRIOS SUPERIOR FULL-WIDTH (SCROLL HORIZONTAL FLUIDO NO MOBILE) -->
+      <div class="w-full bg-slate-900 text-slate-200 border-b border-slate-800 text-xs px-2.5 sm:px-6 py-1.5 flex items-center justify-between gap-1 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth max-w-full">
         <!-- Lado Esquerdo: Seletor de Cores (Azul/Escuro) & Estilo (Glass/Flat) -->
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           <!-- Cor: Azul vs Escuro -->
@@ -813,57 +978,56 @@
 
         <!-- Lado Direito: Ações Utilitárias Compactas -->
         <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          <!-- Botão Atualizar Dados / Sincronizar Instantâneo -->
           <!-- Botão Dedicado: Lista de Compras & Comparador de Mercados -->
-          <button onclick="openShoppingListModal()" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all" title="Ver Lista de Compras e Comparador de Preços de Mercado">
+          <button onclick="openShoppingListModal()" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0" title="Ver Lista de Compras e Comparador de Preços de Mercado">
             <i data-lucide="shopping-cart" class="w-3 h-3"></i>
             <span class="hidden sm:inline">Lista Mercado</span>
           </button>
           
           <!-- Botão Dedicado: Chat Familiar & Lembretes estilo WhatsApp -->
-          <button onclick="openFamilyChatModal()" id="btnOpenFamilyChat" class="relative px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all" title="Chat Familiar & Lembretes estilo WhatsApp">
+          <button onclick="openFamilyChatModal()" id="btnOpenFamilyChat" class="relative px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0" title="Chat Familiar & Lembretes estilo WhatsApp">
             <i data-lucide="message-circle" class="w-3 h-3"></i>
             <span class="hidden sm:inline">Chat Familiar</span>
             <span id="chatHeaderBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">1</span>
           </button>
           
-          <button onclick="atualizarApp()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all" title="Atualizar e sincronizar todos os cards e dados">
+          <button onclick="atualizarApp()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0" title="Atualizar e sincronizar todos os cards e dados">
             <i data-lucide="refresh-cw" class="w-3 h-3"></i>
             <span class="hidden xs:inline">Atualizar</span>
           </button>
 
           <!-- Escala Tipográfica -->
-          <div class="flex items-center bg-slate-800/90 px-1.5 py-0.5 rounded-lg border border-slate-700 text-[11px]" title="Ajustar tamanho da fonte">
+          <div class="flex items-center bg-slate-800/90 px-1.5 py-0.5 rounded-lg border border-slate-700 text-[11px] flex-shrink-0" title="Ajustar tamanho da fonte">
             <button onclick="adjustFontScale(-0.06)" class="font-bold text-slate-300 hover:text-white px-0.5">A-</button>
             <span id="fontScaleDisplay" class="px-1 text-[10px] font-mono font-bold text-slate-400 hidden xs:inline">100%</span>
             <button onclick="adjustFontScale(0.06)" class="font-bold text-slate-300 hover:text-white px-0.5">A+</button>
           </div>
 
           <!-- Olho Mestre de Privacidade -->
-          <button id="btnTogglePrivacy" onclick="togglePrivacyModeGlobal()" title="Ocultar/Mostrar valores confidenciais" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+          <button id="btnTogglePrivacy" onclick="togglePrivacyModeGlobal()" title="Ocultar/Mostrar valores confidenciais" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
             <i data-lucide="eye" id="iconPrivacyGlobal" class="w-3.5 h-3.5"></i>
           </button>
 
           <!-- Alternar Áudio / Silencioso -->
-          <button id="btnToggleAudio" onclick="toggleAppAudio()" title="Ativar/Desativar sons do aplicativo" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+          <button id="btnToggleAudio" onclick="toggleAppAudio()" title="Ativar/Desativar sons do aplicativo" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
             <i data-lucide="volume-2" id="iconAppAudio" class="w-3.5 h-3.5"></i>
           </button>
 
           <!-- Lixeira -->
-          <button onclick="openTrashModal()" title="Lixeira de Lançamentos" class="relative p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+          <button onclick="openTrashModal()" title="Lixeira de Lançamentos" class="relative p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             <span id="trashBadgeCount" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">0</span>
           </button>
 
           <!-- Botão Administrador Rodrigo -->
-          <button onclick="openAdminModal()" class="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-900 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm transition-all" title="Painel Administrativo: Sugestões, Cupons VIP & Configurações">
+          <button onclick="openAdminModal()" class="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-900 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm transition-all flex-shrink-0" title="Painel Administrativo: Sugestões, Cupons VIP & Configurações">
             <span>👑 Admin</span>
           </button>
 
-          <!-- Botão Sair / Deslogar -->
-          <button onclick="openExitModal()" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-rose-300 hover:text-rose-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all border border-slate-700" title="Deslogar ou deixar sugestão">
+          <!-- Botão Sair / Deslogar com Alta Visibilidade sem Cortes -->
+          <button onclick="openExitModal()" class="px-2.5 py-0.5 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-100 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all border border-rose-800/60 flex-shrink-0 active:scale-95" title="Deslogar ou deixar sugestão">
             <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-400"></i>
-            <span class="hidden sm:inline">Sair</span>
+            <span>Sair</span>
           </button>
         </div>
       </div>
@@ -1020,36 +1184,44 @@
           <!-- Lado Esquerdo: Boas-vindas, Saldo Disponível & Ações -->
           <div class="flex-1 min-w-0">
             
-            <!-- Tag Interativa do Ciclo Vigente (com Seletor e Alteração Integrados) -->
-            <div class="relative inline-block mb-2.5">
-              <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 group cursor-pointer text-left" title="Clique para trocar o ciclo vigente ou criar novo ciclo">
-                <i data-lucide="calendar" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
-                <div class="flex flex-col text-left leading-tight">
-                  <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-200/90">Ciclo Vigente</span>
-                  <span id="heroCycleTag" class="text-xs font-black text-white">05/Out a 04/Nov - 2026</span>
-                </div>
-                <div class="flex items-center gap-1 pl-1 ml-1 border-l border-white/20">
-                  <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wide">Trocar</span>
-                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/80 transition-transform group-hover:translate-y-0.5"></i>
-                </div>
-              </button>
+            <!-- Tag Interativa do Ciclo Vigente e Ícone Olhinho no Espaço Vazio -->
+            <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+              <div class="relative inline-block">
+                <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 group cursor-pointer text-left" title="Clique para trocar o ciclo vigente ou criar novo ciclo">
+                  <i data-lucide="calendar" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
+                  <div class="flex flex-col text-left leading-tight">
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-200/90">Ciclo Vigente</span>
+                    <span id="heroCycleTag" class="text-xs font-black text-white">05/Out a 04/Nov - 2026</span>
+                  </div>
+                  <div class="flex items-center gap-1 pl-1 ml-1 border-l border-white/20">
+                    <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wide">Trocar</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 text-white/80 transition-transform group-hover:translate-y-0.5"></i>
+                  </div>
+                </button>
 
-              <!-- Dropdown Flutuante de Ciclos Integrado ao Card Azul -->
-              <div id="cycleDropdownMenu" class="hidden absolute left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs text-slate-800 dark:text-slate-100">
-                <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                  <span>Selecionar Período</span>
-                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
-                </div>
-                <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
-                  <!-- Ciclos injetados dinamicamente via renderCycleDropdownItems() -->
-                </div>
-                <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
-                  <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                    <span>+ Criar Novo Ciclo...</span>
-                  </button>
+                <!-- Dropdown Flutuante de Ciclos Integrado ao Card Azul -->
+                <div id="cycleDropdownMenu" class="hidden absolute left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs text-slate-800 dark:text-slate-100">
+                  <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <span>Selecionar Período</span>
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
+                  </div>
+                  <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
+                    <!-- Ciclos injetados dinamicamente via renderCycleDropdownItems() -->
+                  </div>
+                  <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
+                    <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
+                      <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                      <span>+ Criar Novo Ciclo...</span>
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              <!-- Botão Olhinho de Privacidade no Espaço Vazio ao lado do Ciclo Vigente -->
+              <button type="button" onclick="togglePrivacyModeGlobal()" id="btnHeroPrivacyToggle" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 cursor-pointer" title="Ocultar ou mostrar valores confidenciais (Privacidade do Saldo e Ciclo)">
+                <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-white"></i>
+                <span class="text-[10px] font-extrabold tracking-wide" id="labelHeroPrivacy">Ocultar Valores</span>
+              </button>
             </div>
 
             <!-- Saudação Rodrigo & Márcia -->
@@ -1743,9 +1915,14 @@
               <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Buscar lançamentos..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-blue-500 focus:outline-none">
             </div>
 
-            <!-- Barra de Filtros Compacta e Clean com Setinha Elegante -->
+            <!-- Barra de Filtros Compacta e Clean com Setinhas (Esquerda e Direita) -->
             <div class="relative flex items-center w-full sm:w-auto">
-              <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar scroll-smooth w-full pr-8" id="iconFilterBar">
+              <!-- Setinha Esquerda de Navegação Horizontal -->
+              <button onclick="scrollFilterBarLeft()" id="btnScrollFilterLeft" type="button" class="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver filtros anteriores">
+                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+              </button>
+
+              <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar scroll-smooth w-full px-7" id="iconFilterBar">
                 <button onclick="setFilterByIcon('tipo', '')" id="filterIcon_Todas" title="Todos os Lançamentos" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-blue-500 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
                   <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                   <span>Todos</span>
@@ -1782,8 +1959,8 @@
                 <input type="hidden" id="filterComprovante" value="">
               </div>
 
-              <!-- Setinha Clean de Navegação Horizontal -->
-              <button onclick="scrollFilterBarRight()" type="button" class="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver mais filtros">
+              <!-- Setinha Direita de Navegação Horizontal -->
+              <button onclick="scrollFilterBarRight()" id="btnScrollFilterRight" type="button" class="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver mais filtros">
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
               </button>
             </div>
@@ -3498,6 +3675,12 @@
       const icon = document.getElementById('iconPrivacyGlobal');
       if (icon) icon.setAttribute('data-lucide', isPrivacyGlobal ? 'eye-off' : 'eye');
 
+      const iconHero = document.getElementById('iconHeroPrivacy');
+      if (iconHero) iconHero.setAttribute('data-lucide', isPrivacyGlobal ? 'eye-off' : 'eye');
+
+      const labelHero = document.getElementById('labelHeroPrivacy');
+      if (labelHero) labelHero.textContent = isPrivacyGlobal ? 'Mostrar Valores' : 'Ocultar Valores';
+
       const iconMetrics = document.getElementById('iconPrivacyMetricsHeader');
       if (iconMetrics) {
         const allMetricsHidden = Object.values(cardPrivacyStates).every(v => v);
@@ -3507,6 +3690,7 @@
       for (const k in cardPrivacyStates) {
         updateCardPrivacyUI(k);
       }
+      if (window.lucide) lucide.createIcons();
     }
 
     function updateCardPrivacyUI(cardKey) {
@@ -7318,6 +7502,10 @@
           if (bioModal) {
             bioModal.classList.remove('hidden');
             lucide.createIcons();
+            // Disparo automático e suave para o leitor de digital / Face ID aparecer na tela
+            setTimeout(function() {
+              triggerBiometricLogin();
+            }, 350);
             return;
           }
         }
@@ -7344,18 +7532,48 @@
 
     function triggerBiometricLogin() {
       if (window.FlutterBridge) {
-        window.FlutterBridge.postMessage(JSON.stringify({ action: 'authenticate_biometric' }));
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'authenticate_biometric' }));
+        } catch(e) {
+          console.warn('FlutterBridge biometric error:', e);
+          let target = 'rodrigo';
+          try {
+            const last = JSON.parse(localStorage.getItem('financas_auth_user') || '{}');
+            if (last && last.nome && last.nome.toLowerCase().includes('marcia')) target = 'marcia';
+          } catch(err) {}
+          quickLogin(target);
+        }
       } else {
-        // No navegador web simula login do Rodrigo com Face ID
-        quickLogin('rodrigo');
+        // No navegador web simula login inteligente do último usuário ativo
+        let target = 'rodrigo';
+        try {
+          const last = JSON.parse(localStorage.getItem('financas_auth_user') || '{}');
+          if (last && last.nome && last.nome.toLowerCase().includes('marcia')) target = 'marcia';
+        } catch(err) {}
+        quickLogin(target);
       }
     }
 
-    window.onBiometricAuthResult = function(success) {
+    window.onBiometricAuthResult = function(success, message) {
       if (success) {
-        quickLogin('rodrigo');
+        let target = 'rodrigo';
+        try {
+          const last = JSON.parse(localStorage.getItem('financas_auth_user') || '{}');
+          if (last && last.nome && last.nome.toLowerCase().includes('marcia')) target = 'marcia';
+        } catch(err) {}
+        quickLogin(target);
       } else {
-        showToastUndo('Autenticação biométrica cancelada ou não reconhecida.', false);
+        const bioModal = document.getElementById('modalBiometricPrompt');
+        if (message && (message.includes('Nenhuma biometria') || message.includes('sem suporte') || message.includes('não possui'))) {
+          showToastUndo(message, false);
+          if (bioModal) bioModal.classList.add('hidden');
+          const el = document.getElementById('authOverlayContainer');
+          if (el) el.classList.remove('hidden');
+        } else if (message) {
+          showToastUndo(message, false);
+        } else {
+          showToastUndo('Autenticação biométrica cancelada ou não concluída.', false);
+        }
       }
     };
 
@@ -7726,6 +7944,42 @@
       showToastUndo(`Avatar atualizado com sucesso!`, false);
     }
 
+    function triggerMemberAvatarUpload(source = 'gallery') {
+      if (window.FlutterBridge) {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'pick_avatar_photo',
+            member: currentAvatarTargetMember || 'rodrigo',
+            source: source
+          }));
+          return;
+        } catch(e) {
+          console.warn('FlutterBridge avatar error:', e);
+        }
+      }
+      const fileInput = document.getElementById('inputMemberAvatarPhoto');
+      if (fileInput) fileInput.click();
+    }
+
+    window.onNativeAvatarResult = function(member, dataUrl) {
+      if (!dataUrl) return;
+      if (member === 'rodrigo') {
+        localStorage.setItem('financas_avatar_rodrigo', dataUrl);
+      } else if (member === 'marcia') {
+        localStorage.setItem('financas_avatar_marcia', dataUrl);
+      } else {
+        let membros = getDynamicFamilyMembers();
+        let m = membros.find(x => x.id === member || x.nome.toLowerCase() === (member || '').toLowerCase());
+        if (m) {
+          m.avatar = dataUrl;
+          localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
+        }
+      }
+      loadUserCustomAssets();
+      closeMemberAvatarPicker();
+      showToastUndo('Foto do avatar atualizada com sucesso!', false);
+    };
+
     function handleMemberAvatarPhoto(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -7998,6 +8252,13 @@
         }
       }
     });
+
+    function scrollFilterBarLeft() {
+      const bar = document.getElementById('iconFilterBar');
+      if (bar) {
+        bar.scrollBy({ left: -140, behavior: 'smooth' });
+      }
+    }
 
     function scrollFilterBarRight() {
       const bar = document.getElementById('iconFilterBar');
@@ -10471,13 +10732,19 @@
           </div>
         </div>
 
-        <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
-          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Ou envie uma foto do aparelho:</label>
+        <div class="pt-2.5 border-t border-slate-200 dark:border-slate-800">
+          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Ou foto personalizada do aparelho:</label>
           <input type="file" id="inputMemberAvatarPhoto" accept="image/*" class="hidden" onchange="handleMemberAvatarPhoto(event)">
-          <button type="button" onclick="document.getElementById('inputMemberAvatarPhoto').click()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-xs flex items-center justify-center gap-1.5 transition-all">
-            <i data-lucide="camera" class="w-4 h-4"></i>
-            <span>Carregar Foto da Galeria</span>
-          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="triggerMemberAvatarUpload('gallery')" class="py-2.5 px-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold rounded-xl border border-blue-200 dark:border-blue-800/60 text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95" title="Abrir Galeria de Fotos do celular">
+              <i data-lucide="image" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+              <span>Galeria de Fotos</span>
+            </button>
+            <button type="button" onclick="triggerMemberAvatarUpload('camera')" class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-95" title="Tirar foto ou selfie com a câmera">
+              <i data-lucide="camera" class="w-4 h-4 text-indigo-500"></i>
+              <span>Tirar Selfie / Foto</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
