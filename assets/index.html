@@ -1351,6 +1351,46 @@
         </div>
 
         <div id="sectionRemindersContent" class="collapsible-content">
+
+          <!-- ============================================================== -->
+          <!-- BANNER DO MENTOR FINANCEIRO INTELIGENTE & METAS DE VIDA        -->
+          <!-- ============================================================== -->
+          <div class="mb-3.5 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 text-white border border-blue-500/30 shadow-lg relative overflow-hidden">
+            <div class="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+              <div class="flex items-start gap-3">
+                <div class="relative w-11 h-11 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+                  🎓
+                  <span class="absolute -bottom-1 -right-1 text-xs">🐷</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-300 border border-blue-400/30">
+                      Mentor Financeiro do Casal
+                    </span>
+                    <span class="text-[10px] text-blue-300 font-bold" id="mentorTipCategory">✈️ Viagem dos Sonhos</span>
+                  </div>
+                  <h4 class="text-xs sm:text-sm font-black text-white mt-1 leading-snug" id="mentorTipMainQuote">
+                    "Você sabia que se organizar um valor mensal você consegue fazer a viagem dos seus sonhos? Deixa eu te ajudar!"
+                  </h4>
+                  <p class="text-[11px] text-blue-200/90 mt-0.5" id="mentorTipSubtext">
+                    Pequenas reservas mensais realizam passagens, hospedagem e passeios incríveis em casal sem dívidas.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Ações do Mentor -->
+              <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
+                <button type="button" onclick="openDreamTripPlannerModal()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                  <span>✈️ Planejar Viagem</span>
+                </button>
+                <button type="button" onclick="nextMentorTip()" class="px-2.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/15 flex items-center justify-center gap-1 transition-colors whitespace-nowrap" title="Próxima dica do mentor">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+                  <span>Outra Dica</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
             
             <!-- Card 1: Gastos do Dia em Destaque -->
@@ -1371,21 +1411,29 @@
               </div>
             </div>
 
-            <!-- Card 2: Contas Fixas & Vencimentos em Destaque -->
+            <!-- Card 2: Lembretes de Vencimento de Contas a Pagar (Cartões, Condomínio, Aluguel, Luz) -->
             <div class="p-3.5 rounded-none bg-white dark:bg-slate-900 border-l-4 border-l-emerald-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex items-start gap-3">
               <div class="p-2.5 bg-emerald-600 text-white rounded-none mt-0.5 flex-shrink-0 shadow-sm">
-                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <i data-lucide="calendar-clock" class="w-4 h-4"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100">Contas Fixas & Vencimentos</h3>
-                  <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 rounded-none">Quitadas</span>
+                  <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100">Contas & Vencimentos</h3>
+                  <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-none bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" id="badgeNextBillStatus">Em dia</span>
                 </div>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1" id="reminderFixasStatus">Mapeando contas no ciclo vigente...</p>
-                <button onclick="filterTableByTipo('Despesa Fixa')" class="mt-2 text-[11px] font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1 group">
-                  <span>Ver contas fixas do ciclo</span>
-                  <i data-lucide="arrow-right" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform"></i>
-                </button>
+                <p class="text-[11px] text-slate-800 dark:text-slate-100 font-bold mt-1 truncate" id="reminderNextBillTitle">Próxima: Fatura Cartão</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5" id="reminderFixasStatus">Mapeando contas no ciclo vigente...</p>
+                
+                <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+                  <button type="button" onclick="openBillsReminderModal()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs transition-colors">
+                    <i data-lucide="check-square" class="w-3 h-3"></i>
+                    <span>Ver Contas a Pagar</span>
+                  </button>
+                  <button type="button" onclick="openRegisterBillModal()" class="px-2 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-colors">
+                    <i data-lucide="plus" class="w-3 h-3"></i>
+                    <span>+ Nova</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -5256,6 +5304,7 @@
       updateCharts();
       if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
+      if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
     }
 
     function updateCharts() {
@@ -8514,7 +8563,536 @@
       showToastUndo('Lista de compras finalizada e fotos temporárias limpas.', false);
     }
 
-    </script>
+    
+
+    // ==============================================================
+    // 27. LEMBRETES DE CONTAS A PAGAR & MENTOR FINANCEIRO (V1.5.0)
+    // ==============================================================
+    let currentMentorTipIndex = 0;
+
+    const MENTOR_FINANCIAL_TIPS = [
+      {
+        categoria: "✈️ Viagem dos Sonhos",
+        quote: "Você sabia que se organizar um valor mensal você consegue fazer a viagem dos seus sonhos? Deixa eu te ajudar!",
+        subtext: "Pequenas reservas mensais realizam passagens, hospedagem e passeios incríveis em casal sem criar dívidas."
+      },
+      {
+        categoria: "⏰ Contas em Dia",
+        quote: "Pagar faturas e contas antes do vencimento evita juros do rotativo e multas de atraso que poderiam ir para o seu cofrinho!",
+        subtext: "Cadastre as datas de vencimento no app e receba lembretes automáticos com antecedência."
+      },
+      {
+        categoria: "🛡️ Reserva de Emergência",
+        quote: "O segredo para dormir em paz é ter o equivalente a 3 a 6 meses de contas essenciais guardado em um cofrinho seguro.",
+        subtext: "Comece guardando 10% do salário todo mês até atingir a meta da sua reserva de tranquilidade."
+      },
+      {
+        categoria: "📊 Regra 50-30-20",
+        quote: "50% para necessidades (aluguel, condomínio, luz, mercado), 30% para lazer e 20% para o futuro e investimentos do casal.",
+        subtext: "Essa proporção equilibra o bem-estar de hoje com a liberdade e conquistas de amanhã."
+      },
+      {
+        categoria: "🛒 Supermercado Inteligente",
+        quote: "Usar a lista de compras na gôndola e registrar os preços reduz compras por impulso em mais de 20%!",
+        subtext: "No final do ano, essa economia paga uma viagem de fim de semana inteira para a família."
+      }
+    ];
+
+    const DEFAULT_RECURRING_BILLS = [
+      {
+        id: "bill_cartao",
+        nome: "Fatura Cartão de Crédito Nubank",
+        categoria: "Cartão de Crédito",
+        diaVencimento: 10,
+        valorMedio: 1850.00,
+        responsavel: "Rodrigo",
+        alertaDias: 3
+      },
+      {
+        id: "bill_aluguel",
+        nome: "Aluguel Residencial",
+        categoria: "Moradia",
+        diaVencimento: 5,
+        valorMedio: 2400.00,
+        responsavel: "Ambos",
+        alertaDias: 5
+      },
+      {
+        id: "bill_condominio",
+        nome: "Condomínio Edifício Solar",
+        categoria: "Condomínio",
+        diaVencimento: 15,
+        valorMedio: 680.00,
+        responsavel: "Ambos",
+        alertaDias: 3
+      },
+      {
+        id: "bill_luz",
+        nome: "Luz / Energia Enel",
+        categoria: "Energia & Água",
+        diaVencimento: 18,
+        valorMedio: 220.00,
+        responsavel: "Márcia",
+        alertaDias: 3
+      },
+      {
+        id: "bill_internet",
+        nome: "Internet Fibra 500MB",
+        categoria: "Telecom",
+        diaVencimento: 22,
+        valorMedio: 130.00,
+        responsavel: "Rodrigo",
+        alertaDias: 2
+      },
+      {
+        id: "bill_agua",
+        nome: "Água / Saneamento Sabesp",
+        categoria: "Energia & Água",
+        diaVencimento: 25,
+        valorMedio: 95.00,
+        responsavel: "Márcia",
+        alertaDias: 3
+      }
+    ];
+
+    function getRegisteredRecurringBills() {
+      try {
+        const stored = localStorage.getItem('financas_contas_recorrentes');
+        if (!stored) {
+          localStorage.setItem('financas_contas_recorrentes', JSON.stringify(DEFAULT_RECURRING_BILLS));
+          return DEFAULT_RECURRING_BILLS;
+        }
+        return JSON.parse(stored);
+      } catch(e) {
+        return DEFAULT_RECURRING_BILLS;
+      }
+    }
+
+    function saveRegisteredRecurringBills(bills) {
+      try {
+        localStorage.setItem('financas_contas_recorrentes', JSON.stringify(bills));
+      } catch(e) {}
+    }
+
+    function getBillsPaidStatusMap() {
+      try {
+        return JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
+      } catch(e) {
+        return {};
+      }
+    }
+
+    function saveBillsPaidStatusMap(map) {
+      try {
+        localStorage.setItem('financas_status_contas_pagas', JSON.stringify(map));
+      } catch(e) {}
+    }
+
+    function isBillPaidInCurrentCycle(billId) {
+      const cycleKey = `${currentCycle || 'ciclo'}_${billId}`;
+      const statusMap = getBillsPaidStatusMap();
+      return !!statusMap[cycleKey];
+    }
+
+    function nextMentorTip() {
+      currentMentorTipIndex = (currentMentorTipIndex + 1) % MENTOR_FINANCIAL_TIPS.length;
+      updateMentorTipUI();
+    }
+
+    function updateMentorTipUI() {
+      const tip = MENTOR_FINANCIAL_TIPS[currentMentorTipIndex];
+      const catEl = document.getElementById('mentorTipCategory');
+      const quoteEl = document.getElementById('mentorTipMainQuote');
+      const subEl = document.getElementById('mentorTipSubtext');
+
+      if (catEl) catEl.textContent = tip.categoria;
+      if (quoteEl) quoteEl.textContent = `"${tip.quote}"`;
+      if (subEl) subEl.textContent = tip.subtext;
+    }
+
+    function openDreamTripPlannerModal() {
+      const modal = document.getElementById('modalDreamTripPlanner');
+      if (modal) modal.classList.remove('hidden');
+      recalcTripPlan();
+      lucide.createIcons();
+    }
+
+    function closeDreamTripPlannerModal() {
+      const modal = document.getElementById('modalDreamTripPlanner');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function recalcTripPlan() {
+      const valorTotal = parseFloat(document.getElementById('inputTripValorTotal').value) || 6000;
+      const meses = Math.max(1, parseInt(document.getElementById('inputTripPrazoMeses').value) || 12);
+
+      const mensal = valorTotal / meses;
+      const diario = mensal / 30;
+
+      const monthlyEl = document.getElementById('displayTripMonthlyVal');
+      const dailyEl = document.getElementById('displayTripDailyVal');
+      const adviceEl = document.getElementById('displayTripMentorAdvice');
+
+      if (monthlyEl) monthlyEl.textContent = `R$ ${mensal.toFixed(2).replace('.', ',')} / mês`;
+      if (dailyEl) dailyEl.textContent = `R$ ${diario.toFixed(2).replace('.', ',')} / dia (apenas pequenas escolhas!)`;
+
+      if (adviceEl) {
+        if (mensal <= 350) {
+          adviceEl.textContent = `Meta super acessível! R$ ${mensal.toFixed(2).replace('.', ',')} cabe com folga no orçamento mensal de vocês sem alterar nenhum hábito.`;
+        } else if (mensal <= 700) {
+          adviceEl.textContent = `Excelente planejamento! Guardando R$ ${mensal.toFixed(2).replace('.', ',')}/mês vocês realizam a viagem completa com hospedagem, voos e passeios garantidos.`;
+        } else {
+          adviceEl.textContent = `Meta ambiciosa e compensadora! Vocês podem ajustar para um prazo ligeiramente maior ou priorizar esse cofrinho para embarcar sem dívidas.`;
+        }
+      }
+    }
+
+    function handleCalculateDreamTrip(e) {
+      e.preventDefault();
+      recalcTripPlan();
+    }
+
+    function createPiggyBankForTrip() {
+      const destino = document.getElementById('inputTripDestino').value.trim() || 'Viagem dos Sonhos';
+      const valorTotal = parseFloat(document.getElementById('inputTripValorTotal').value) || 6000;
+      const meses = parseInt(document.getElementById('inputTripPrazoMeses').value) || 12;
+
+      // Adiciona aos cofrinhos do app
+      const novoCofrinho = {
+        id: 'piggy_' + Date.now(),
+        nome: `✈️ ${destino}`,
+        categoria: 'Viagem / Sonhos',
+        saldo: 0,
+        meta: valorTotal,
+        prazoMeses: meses,
+        criadoEm: new Date().toISOString()
+      };
+
+      try {
+        let savedPiggies = JSON.parse(localStorage.getItem('financas_cofrinhos_personalizados') || '[]');
+        savedPiggies.push(novoCofrinho);
+        localStorage.setItem('financas_cofrinhos_personalizados', JSON.stringify(savedPiggies));
+      } catch(e) {}
+
+      closeDreamTripPlannerModal();
+      showToastUndo(`Cofrinho "✈️ ${destino}" criado com sucesso! Meta: R$ ${valorTotal.toFixed(2).replace('.', ',')}. 🐷`, false);
+      playChatDing();
+
+      // Rola suavemente até os cofrinhos se existirem
+      const piggySec = document.getElementById('sectionPiggy');
+      if (piggySec) piggySec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openBillsReminderModal() {
+      const modal = document.getElementById('modalBillsReminder');
+      if (modal) modal.classList.remove('hidden');
+      renderBillsReminderList();
+      lucide.createIcons();
+    }
+
+    function closeBillsReminderModal() {
+      const modal = document.getElementById('modalBillsReminder');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openRegisterBillModal(billId = null) {
+      const modal = document.getElementById('modalRegisterBill');
+      if (!modal) return;
+
+      const titleEl = document.getElementById('registerBillModalTitle');
+      const idInput = document.getElementById('inputBillId');
+      const nomeInput = document.getElementById('inputBillNome');
+      const catInput = document.getElementById('inputBillCategoria');
+      const diaInput = document.getElementById('inputBillDia');
+      const valorInput = document.getElementById('inputBillValor');
+      const respInput = document.getElementById('inputBillResponsavel');
+      const alertaInput = document.getElementById('inputBillAlertaDias');
+
+      if (billId) {
+        const bills = getRegisteredRecurringBills();
+        const b = bills.find(x => x.id === billId);
+        if (b) {
+          titleEl.innerHTML = `<span>✏️</span> Editar Conta a Pagar`;
+          idInput.value = b.id;
+          nomeInput.value = b.nome;
+          catInput.value = b.categoria;
+          diaInput.value = b.diaVencimento;
+          valorInput.value = b.valorMedio ? b.valorMedio.toFixed(2) : '';
+          respInput.value = b.responsavel || 'Ambos';
+          alertaInput.value = b.alertaDias || 3;
+        }
+      } else {
+        titleEl.innerHTML = `<span>💳</span> Cadastrar Conta a Pagar`;
+        idInput.value = '';
+        nomeInput.value = '';
+        catInput.value = 'Cartão de Crédito';
+        diaInput.value = '10';
+        valorInput.value = '';
+        respInput.value = 'Ambos';
+        alertaInput.value = '3';
+      }
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeRegisterBillModal() {
+      const modal = document.getElementById('modalRegisterBill');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleSaveRecurringBill(e) {
+      e.preventDefault();
+      const id = document.getElementById('inputBillId').value;
+      const nome = document.getElementById('inputBillNome').value.trim();
+      const cat = document.getElementById('inputBillCategoria').value;
+      const dia = parseInt(document.getElementById('inputBillDia').value) || 10;
+      const valor = parseFloat(document.getElementById('inputBillValor').value.replace(',', '.')) || 0;
+      const resp = document.getElementById('inputBillResponsavel').value;
+      const alerta = parseInt(document.getElementById('inputBillAlertaDias').value) || 3;
+
+      if (!nome) return;
+
+      let bills = getRegisteredRecurringBills();
+      if (id) {
+        const b = bills.find(x => x.id === id);
+        if (b) {
+          b.nome = nome;
+          b.categoria = cat;
+          b.diaVencimento = dia;
+          b.valorMedio = valor;
+          b.responsavel = resp;
+          b.alertaDias = alerta;
+        }
+      } else {
+        bills.push({
+          id: 'bill_' + Date.now(),
+          nome: nome,
+          categoria: cat,
+          diaVencimento: dia,
+          valorMedio: valor,
+          responsavel: resp,
+          alertaDias: alerta
+        });
+      }
+
+      saveRegisteredRecurringBills(bills);
+      closeRegisterBillModal();
+      renderBillsReminderList();
+      updateBillsReminderCard();
+      showToastUndo(`Conta "${nome}" salva com sucesso!`, false);
+    }
+
+    function deleteRecurringBill(id) {
+      if (!confirm('Deseja realmente remover o cadastro deste lembrete de conta?')) return;
+      let bills = getRegisteredRecurringBills();
+      bills = bills.filter(x => x.id !== id);
+      saveRegisteredRecurringBills(bills);
+      renderBillsReminderList();
+      updateBillsReminderCard();
+      showToastUndo('Conta removida dos lembretes.', false);
+    }
+
+    function renderBillsReminderList() {
+      const container = document.getElementById('billsListContainer');
+      if (!container) return;
+
+      const bills = getRegisteredRecurringBills();
+      const today = new Date().getDate();
+      let totalAmount = 0;
+      let paidCount = 0;
+
+      container.innerHTML = bills.map(b => {
+        totalAmount += (b.valorMedio || 0);
+        const isPaid = isBillPaidInCurrentCycle(b.id);
+        if (isPaid) paidCount++;
+
+        let statusBadge = '';
+        let rowBorder = 'border-slate-800 bg-slate-950/60';
+
+        if (isPaid) {
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold flex items-center gap-1">✓ Paga no Ciclo</span>`;
+          rowBorder = 'border-emerald-500/40 bg-emerald-950/15';
+        } else if (b.diaVencimento === today) {
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 font-black animate-pulse flex items-center gap-1">⚠️ VENCE HOJE</span>`;
+          rowBorder = 'border-amber-500/60 bg-amber-950/20';
+        } else if (b.diaVencimento > today && (b.diaVencimento - today) <= b.alertaDias) {
+          const diff = b.diaVencimento - today;
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">🚨 Vence em ${diff} dia(s)</span>`;
+          rowBorder = 'border-amber-500/40 bg-amber-950/15';
+        } else if (b.diaVencimento < today) {
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-red-950/60 text-red-300 border border-red-800 font-bold">❗ Venceu dia ${b.diaVencimento}</span>`;
+          rowBorder = 'border-red-500/40 bg-red-950/15';
+        } else {
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-bold">⏳ Vence dia ${b.diaVencimento}</span>`;
+        }
+
+        return `
+          <div class="p-3 rounded-2xl border ${rowBorder} transition-all">
+            <div class="flex items-start justify-between gap-2.5">
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h5 class="font-extrabold text-sm text-white ${isPaid ? 'line-through text-slate-400' : ''}">${b.nome}</h5>
+                  ${statusBadge}
+                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${b.categoria}</span>
+                </div>
+
+                <div class="mt-1 flex items-center gap-3 text-xs text-slate-400 flex-wrap">
+                  <span>📅 Vencimento: <strong class="text-white">Dia ${b.diaVencimento}</strong></span>
+                  <span>💰 Valor Estimado: <strong class="text-emerald-400 font-mono">R$ ${(b.valorMedio || 0).toFixed(2).replace('.', ',')}</strong></span>
+                  <span>👤 Responsável: <strong class="text-slate-300">${b.responsavel || 'Ambos'}</strong></span>
+                </div>
+              </div>
+
+              <!-- Ações da Conta -->
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                ${!isPaid ? `
+                  <button type="button" onclick="promptPayRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1 shadow-sm transition-all active:scale-95" title="Dar baixa e lançar nas despesas">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Pagar</span>
+                  </button>
+                ` : `
+                  <button type="button" onclick="toggleReopenRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold text-xs flex items-center gap-1 border border-slate-700" title="Reabrir como pendente">
+                    <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                    <span>Paga ✓</span>
+                  </button>
+                `}
+
+                <button type="button" onclick="openRegisterBillModal('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Editar conta">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button type="button" onclick="deleteRecurringBill('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors" title="Excluir conta">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const totalEl = document.getElementById('billsSummaryTotalAmount');
+      const countEl = document.getElementById('billsSummaryPaidCount');
+      if (totalEl) totalEl.textContent = `R$ ${totalAmount.toFixed(2).replace('.', ',')}`;
+      if (countEl) countEl.textContent = `${paidCount} de ${bills.length} pagas`;
+
+      lucide.createIcons();
+    }
+
+    function promptPayRecurringBill(billId) {
+      const bills = getRegisteredRecurringBills();
+      const b = bills.find(x => x.id === billId);
+      if (!b) return;
+
+      const confirmPost = confirm(`Deseja marcar a conta "${b.nome}" como PAGA e lançar R$ ${(b.valorMedio||0).toFixed(2).replace('.', ',')} diretamente nas despesas do ciclo "${currentCycle}"?`);
+
+      const cycleKey = `${currentCycle || 'ciclo'}_${b.id}`;
+      const statusMap = getBillsPaidStatusMap();
+      statusMap[cycleKey] = {
+        isPaid: true,
+        paidAt: new Date().toISOString()
+      };
+      saveBillsPaidStatusMap(statusMap);
+
+      if (confirmPost && (b.valorMedio || 0) > 0) {
+        const novaDespesa = {
+          id: Date.now(),
+          data: new Date().toISOString().split('T')[0],
+          ciclo: currentCycle || "05/Set a 04/Out 2026",
+          tipo: 'Despesa Fixa',
+          categoria: b.categoria || 'Moradia',
+          subcategoria: b.nome,
+          estabelecimento: b.nome,
+          descricao: `Pagamento: ${b.nome} (Vencimento Dia ${b.diaVencimento})`,
+          valor: b.valorMedio,
+          pago_por: b.responsavel === 'Ambos' ? 'Rodrigo' : b.responsavel,
+          status: 'Pago'
+        };
+
+        if (typeof transactions !== 'undefined') {
+          transactions.unshift(novaDespesa);
+          if (typeof renderTable === 'function') renderTable();
+          if (typeof updateMetrics === 'function') updateMetrics();
+          if (typeof updateDashboard === 'function') updateDashboard();
+        }
+        showToastUndo(`Conta "${b.nome}" paga e lançada nas despesas do ciclo! 🎉`, false);
+      } else {
+        showToastUndo(`Conta "${b.nome}" marcada como paga! ✓`, false);
+      }
+
+      playChatDing();
+      renderBillsReminderList();
+      updateBillsReminderCard();
+    }
+
+    function toggleReopenRecurringBill(billId) {
+      const cycleKey = `${currentCycle || 'ciclo'}_${billId}`;
+      const statusMap = getBillsPaidStatusMap();
+      delete statusMap[cycleKey];
+      saveBillsPaidStatusMap(statusMap);
+      renderBillsReminderList();
+      updateBillsReminderCard();
+      showToastUndo('Status da conta revertido para pendente.', false);
+    }
+
+    function updateBillsReminderCard() {
+      const bills = getRegisteredRecurringBills();
+      const today = new Date().getDate();
+      const nextBillTitle = document.getElementById('reminderNextBillTitle');
+      const badgeStatus = document.getElementById('badgeNextBillStatus');
+      const statusFixas = document.getElementById('reminderFixasStatus');
+
+      let paidCount = 0;
+      let nextDueBill = null;
+      let minDiff = 999;
+
+      bills.forEach(b => {
+        const isPaid = isBillPaidInCurrentCycle(b.id);
+        if (isPaid) {
+          paidCount++;
+        } else {
+          let diff = b.diaVencimento - today;
+          if (diff < 0) diff += 30; // no próximo mês se já passou
+          if (diff < minDiff) {
+            minDiff = diff;
+            nextDueBill = b;
+          }
+        }
+      });
+
+      if (statusFixas) {
+        statusFixas.textContent = `${paidCount} de ${bills.length} contas fixas pagas no ciclo.`;
+      }
+
+      if (badgeStatus) {
+        if (paidCount === bills.length && bills.length > 0) {
+          badgeStatus.textContent = 'Todas em Dia ✓';
+          badgeStatus.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-none bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+        } else if (nextDueBill && nextDueBill.diaVencimento === today) {
+          badgeStatus.textContent = 'Vence Hoje ⚠️';
+          badgeStatus.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-none bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 animate-pulse';
+        } else if (nextDueBill && (nextDueBill.diaVencimento - today) <= 3 && (nextDueBill.diaVencimento - today) > 0) {
+          badgeStatus.textContent = `Em ${nextDueBill.diaVencimento - today} dias 🚨`;
+          badgeStatus.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-none bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300';
+        } else {
+          badgeStatus.textContent = `${bills.length - paidCount} pendentes`;
+          badgeStatus.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-none bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300';
+        }
+      }
+
+      if (nextBillTitle) {
+        if (nextDueBill) {
+          nextBillTitle.textContent = `Próxima: ${nextDueBill.nome} (R$ ${(nextDueBill.valorMedio||0).toFixed(2).replace('.', ',')} • Dia ${nextDueBill.diaVencimento})`;
+        } else if (bills.length === 0) {
+          nextBillTitle.textContent = 'Nenhuma conta cadastrada.';
+        } else {
+          nextBillTitle.textContent = 'Todas as contas foram quitadas!';
+        }
+      }
+    }
+
+</script>
 
   <!-- ============================================================== -->
   <!-- MOBILE BOTTOM NAVIGATION BAR (DOCK INFERIOR PARA SMARTPHONES)  -->
@@ -9446,6 +10024,227 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL: GESTOR DE VENCIMENTOS & LEMBRETES DE CONTAS A PAGAR     -->
+  <!-- ============================================================== -->
+  <div id="modalBillsReminder" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeBillsReminderModal()">
+    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-800 text-xs flex flex-col">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-950/60 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-800 shadow-sm">
+            📅
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-black text-base text-white">Contas a Pagar & Lembretes de Vencimento</h3>
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold rounded-full">Ciclo Atual</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Cartão de crédito, condomínio, aluguel, luz, internet e contas recorrentes.</p>
+          </div>
+        </div>
+        
+        <button type="button" onclick="closeBillsReminderModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-700" title="Fechar">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Barra de Ações & Resumo -->
+      <div class="py-3.5 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Total Previsto:</span>
+            <span class="text-xs font-black text-emerald-400 font-mono ml-1" id="billsSummaryTotalAmount">R$ 0,00</span>
+          </div>
+          <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Status:</span>
+            <span class="text-xs font-bold text-white ml-1" id="billsSummaryPaidCount">0 de 0 pagas</span>
+          </div>
+        </div>
+
+        <button type="button" onclick="openRegisterBillModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>+ Cadastrar Nova Conta</span>
+        </button>
+      </div>
+
+      <!-- Lista de Contas Cadastradas com Status e Botão de Pagar -->
+      <div class="py-3 flex-1 overflow-y-auto space-y-2.5 custom-scrollbar" id="billsListContainer">
+        <!-- Renderizado dinamicamente -->
+      </div>
+
+      <!-- Rodapé do Modal -->
+      <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+        <span class="text-slate-400 text-[11px]">💡 Ao dar baixa, você pode lançar o valor direto nas despesas do ciclo.</span>
+        <button type="button" onclick="closeBillsReminderModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition-colors">
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: CADASTRAR OU EDITAR CONTA A PAGAR RECORRENTE             -->
+  <!-- ============================================================== -->
+  <div id="modalRegisterBill" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 text-white shadow-2xl">
+      <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-800">
+        <h4 class="font-black text-sm sm:text-base text-white flex items-center gap-2" id="registerBillModalTitle">
+          <span>💳</span> Cadastrar Conta a Pagar
+        </h4>
+        <button type="button" onclick="closeRegisterBillModal()" class="p-1 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveRecurringBill(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="inputBillId">
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Nome da Conta / Despesa *</label>
+          <input type="text" id="inputBillNome" required placeholder="Ex: Fatura Cartão Nubank, Condomínio, Aluguel, Luz" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Categoria *</label>
+            <select id="inputBillCategoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold">
+              <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+              <option value="Moradia">🏠 Aluguel / Moradia</option>
+              <option value="Condomínio">🏢 Condomínio</option>
+              <option value="Energia & Água">💡 Luz / Energia</option>
+              <option value="Energia & Água">💧 Água / Saneamento</option>
+              <option value="Telecom">🌐 Internet / Wi-Fi</option>
+              <option value="Transporte">🚗 Carro / Seguro / IPVA</option>
+              <option value="Educação">📚 Educação / Escola</option>
+              <option value="Outros">📌 Outra Conta Fixa</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Dia do Vencimento (1 a 31) *</label>
+            <input type="number" min="1" max="31" id="inputBillDia" required placeholder="Ex: 10" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Valor Médio / Estimado (R$)</label>
+            <input type="number" step="0.01" min="0" id="inputBillValor" placeholder="0,00" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Responsável</label>
+            <select id="inputBillResponsavel" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+              <option value="Ambos">👫 Ambos (Casal)</option>
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Alerta de Antecedência</label>
+          <select id="inputBillAlertaDias" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+            <option value="3">🔔 Avisar 3 dias antes</option>
+            <option value="1">🔔 Avisar 1 dia antes</option>
+            <option value="5">🔔 Avisar 5 dias antes</option>
+            <option value="0">🔔 Avisar no dia do vencimento</option>
+          </select>
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <button type="button" onclick="closeRegisterBillModal()" class="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold hover:bg-slate-800 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-md transition-all">
+            Salvar Conta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: PLANEJADOR DA VIAGEM DOS SONHOS (MENTOR FINANCEIRO)     -->
+  <!-- ============================================================== -->
+  <div id="modalDreamTripPlanner" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeDreamTripPlannerModal()">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 text-white shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      
+      <!-- Cabeçalho com o Mascote Mentor -->
+      <div class="flex items-start justify-between pb-3.5 mb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-blue-950 border border-blue-500/40 text-blue-400 flex items-center justify-center text-2xl shadow-inner flex-shrink-0">
+            ✈️
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h3 class="font-black text-base text-white">Planejador da Viagem dos Sonhos</h3>
+              <span class="text-[10px] px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-400/30 font-bold rounded-full">Mentor IA</span>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-0.5">
+              "Você sabia que se organizar um valor mensal você consegue fazer a viagem dos seus sonhos? Deixa eu te ajudar!"
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeDreamTripPlannerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário de Simulação de Viagem -->
+      <form onsubmit="handleCalculateDreamTrip(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">Destino ou Sonho da Família *</label>
+          <input type="text" id="inputTripDestino" required placeholder="Ex: Viagem para o Nordeste / Praia, Disney, Paris, Gramado" value="Viagem para a Praia em Família" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Custo Total Estimado (R$) *</label>
+            <input type="number" step="100" min="500" id="inputTripValorTotal" required placeholder="Ex: 5000" value="6000" oninput="recalcTripPlan()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-emerald-400 font-mono font-bold focus:outline-none focus:border-blue-500 text-sm">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Prazo (em meses) *</label>
+            <input type="number" step="1" min="1" max="60" id="inputTripPrazoMeses" required placeholder="Ex: 12" value="12" oninput="recalcTripPlan()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold focus:outline-none focus:border-blue-500 text-sm">
+          </div>
+        </div>
+
+        <!-- Painel de Feedback e Cálculo do Mentor -->
+        <div class="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/30 text-white space-y-2 mt-4">
+          <div class="flex items-center justify-between border-b border-blue-500/20 pb-2">
+            <span class="text-xs text-blue-200 font-semibold">Valor mensal a reservar:</span>
+            <span class="text-base font-black text-emerald-300 font-mono" id="displayTripMonthlyVal">R$ 500,00 / mês</span>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-blue-200/80">
+            <span>Equivalente por dia:</span>
+            <span class="font-bold text-white font-mono" id="displayTripDailyVal">R$ 16,67 / dia (menos que um lanche!)</span>
+          </div>
+
+          <div class="pt-1.5 text-[11px] text-slate-200 flex items-start gap-2">
+            <span class="text-base">💡</span>
+            <p id="displayTripMentorAdvice" class="leading-relaxed">
+              Para o casal Rodrigo & Márcia, reservar R$ 500/mês representa uma fração pequena do saldo livre. Vocês conseguem embarcar com tranquilidade e tudo pago!
+            </p>
+          </div>
+        </div>
+
+        <!-- Ação para Criar Cofrinho / Meta no App -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center gap-2">
+          <button type="button" onclick="closeDreamTripPlannerModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold hover:bg-slate-800 transition-colors">
+            Voltar
+          </button>
+          <button type="button" onclick="createPiggyBankForTrip()" class="w-full sm:flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+            <span>🐷 Criar Cofrinho desta Viagem no App</span>
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 
