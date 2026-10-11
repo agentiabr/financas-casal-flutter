@@ -506,14 +506,15 @@
     /* ========================================================== */
     /* MASCOTE VIVO: FLUTUAÇÃO PURA, LUZ NO PEITO & OLHOS ANIMADOS */
     /* ========================================================== */
-    .mascote-flutuante {
-      animation: mascotPureFloat 4s ease-in-out infinite;
-      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+    .mascote-flutuante, #mascotImage {
+      animation: mascotPureFloat 3.5s ease-in-out infinite !important;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.22));
+      will-change: transform;
     }
 
     @keyframes mascotPureFloat {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-7px); }
+      50% { transform: translateY(-8px); }
     }
 
     /* Luz Suave Multicolorida no Peito (Coração / Reator) */
@@ -843,6 +844,11 @@
             <i data-lucide="eye" id="iconPrivacyGlobal" class="w-3.5 h-3.5"></i>
           </button>
 
+          <!-- Alternar Áudio / Silencioso -->
+          <button id="btnToggleAudio" onclick="toggleAppAudio()" title="Ativar/Desativar sons do aplicativo" class="p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+            <i data-lucide="volume-2" id="iconAppAudio" class="w-3.5 h-3.5"></i>
+          </button>
+
           <!-- Lixeira -->
           <button onclick="openTrashModal()" title="Lixeira de Lançamentos" class="relative p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
@@ -867,10 +873,10 @@
         
         <!-- Versão Smartphone (Centrada com Ícone Maior e Nome Abaixo) -->
         <div class="flex sm:hidden flex-col items-center justify-center text-center w-full py-1">
-          <div class="relative cursor-pointer group mb-1.5" onclick="document.getElementById('inputCustomLogo').click()" title="Toque para personalizar o logo">
+          <div class="relative cursor-pointer group mb-1.5" onclick="triggerLogoUpload()" title="Toque para personalizar o logo">
             <input type="file" id="inputCustomLogoMob" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-bold text-base shadow-md overflow-hidden border-2 border-white/40 dark:border-slate-700 transition-transform active:scale-95 mx-auto">
-              <i data-lucide="wallet" class="w-6 h-6 text-white"></i>
+              <i data-lucide="wallet" id="defaultLogoIconMob" class="w-6 h-6 text-white"></i>
               <img id="customLogoImgMob" src="" alt="Logo" class="hidden w-full h-full object-cover">
             </div>
             <span class="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 p-0.5 rounded-full text-[9px] shadow border border-slate-200">✎</span>
@@ -885,7 +891,7 @@
 
         <!-- Versão Desktop / Tablet (Alinhamento em Linha) -->
         <div class="hidden sm:flex items-center gap-3 flex-shrink-0">
-          <div class="relative group cursor-pointer" onclick="document.getElementById('inputCustomLogo').click()" title="Clique para trocar o Logo da Família">
+          <div class="relative group cursor-pointer" onclick="triggerLogoUpload()" title="Clique para trocar o Logo da Família">
             <input type="file" id="inputCustomLogo" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
             <div id="headerLogoContainer" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm overflow-hidden border border-blue-500/30 transition-transform group-hover:scale-105">
               <i data-lucide="wallet" id="defaultLogoIcon" class="w-5 h-5"></i>
@@ -941,37 +947,33 @@
                 <span>Todos</span>
               </button>
 
-              <!-- Botão: Rodrigo (com troca rápida de avatar) -->
+              <!-- Botão: Rodrigo (com avatar e alteração discreta embutida) -->
               <div class="relative inline-flex items-center">
                 <button onclick="selectUserFilter('Rodrigo')" id="btnUserFilter_Rodrigo" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-blue-500 font-bold text-xs shadow-xs transition-all group">
-                  <div class="relative w-8 h-8 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs">
+                  <div class="relative w-8 h-8 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs cursor-pointer group/avatar" onclick="event.stopPropagation(); openMemberAvatarPicker('rodrigo')" title="Clique no avatar para alterar foto ou ícone">
                     <span id="avatarInitialsRodrigo" class="text-base">👨‍💼</span>
                     <img id="avatarImgRodrigo" src="" alt="Rodrigo" class="hidden w-full h-full object-cover">
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-slate-900/80 rounded-full text-[8px] flex items-center justify-center text-white border border-white/40">✎</span>
                   </div>
                   <div class="text-left leading-tight">
                     <span class="block font-extrabold text-xs">Rodrigo</span>
                     <span id="userGastoRodrigo" class="text-[10px] text-slate-400 font-medium">R$ 0,00</span>
                   </div>
                 </button>
-                <button type="button" onclick="openMemberAvatarPicker('rodrigo')" title="Alterar avatar do Rodrigo" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 text-white text-[10px] flex items-center justify-center border border-white dark:border-slate-700 shadow-xs hover:scale-110 transition-transform">
-                  ✏️
-                </button>
               </div>
 
-              <!-- Botão: Márcia (com troca rápida de avatar) -->
+              <!-- Botão: Márcia (com avatar e alteração discreta embutida) -->
               <div class="relative inline-flex items-center">
                 <button onclick="selectUserFilter('Márcia')" id="btnUserFilter_Marcia" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-pink-500 font-bold text-xs shadow-xs transition-all group">
-                  <div class="relative w-8 h-8 rounded-full bg-pink-500 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs">
+                  <div class="relative w-8 h-8 rounded-full bg-pink-500 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs cursor-pointer group/avatar" onclick="event.stopPropagation(); openMemberAvatarPicker('marcia')" title="Clique no avatar para alterar foto ou ícone">
                     <span id="avatarInitialsMarcia" class="text-base">👩‍💼</span>
                     <img id="avatarImgMarcia" src="" alt="Márcia" class="hidden w-full h-full object-cover">
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-slate-900/80 rounded-full text-[8px] flex items-center justify-center text-white border border-white/40">✎</span>
                   </div>
                   <div class="text-left leading-tight">
                     <span class="block font-extrabold text-xs">Márcia</span>
                     <span id="userGastoMarcia" class="text-[10px] text-slate-400 font-medium">R$ 0,00</span>
                   </div>
-                </button>
-                <button type="button" onclick="openMemberAvatarPicker('marcia')" title="Alterar avatar da Márcia" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 text-white text-[10px] flex items-center justify-center border border-white dark:border-slate-700 shadow-xs hover:scale-110 transition-transform">
-                  ✏️
                 </button>
               </div>
 
@@ -1311,13 +1313,13 @@
             </div>
           </div>
 
-          <!-- CARD: TOTAL DE GASTOS -->
-          <div class="app-card rounded-none p-4 flex flex-col justify-between relative draggable-metric-card cursor-move group" data-card-id="gastos">
+          <!-- CARD: TOTAL DE GASTOS (COR ESCURA SÓLIDA DE ALTO CONTRASTE) -->
+          <div class="app-card rounded-none p-4 flex flex-col justify-between relative draggable-metric-card cursor-move group bg-slate-900 dark:bg-slate-950 border border-slate-800 text-white shadow-sm" data-card-id="gastos">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <span class="text-xs font-bold text-slate-300 flex items-center gap-1">
                 Total Gastos
                 <div class="group/tip relative inline-flex items-center cursor-pointer">
-                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400"></i>
+                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-400 hover:text-white"></i>
                   <div class="pointer-events-none absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 hidden group-hover/tip:flex flex-col items-center z-50 w-max max-w-xs">
                     <div class="bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1 shadow-lg border border-slate-700 rounded-none whitespace-nowrap">
                       Soma exata de todas as suas despesas no ciclo.
@@ -1326,14 +1328,14 @@
                 </div>
               </span>
               <div class="flex items-center gap-1">
-                <button onclick="toggleCardPrivacy('gastos')" title="Ocultar/Mostrar Gastos" class="text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 p-0.5">
+                <button onclick="toggleCardPrivacy('gastos')" title="Ocultar/Mostrar Gastos" class="text-slate-400 hover:text-white p-0.5">
                   <i data-lucide="eye" id="eyeCard_gastos" class="w-3.5 h-3.5"></i>
                 </button>
-                <i data-lucide="grip-vertical" class="w-3 h-3 text-slate-300 group-hover:text-slate-500"></i>
+                <i data-lucide="grip-vertical" class="w-3 h-3 text-slate-500 group-hover:text-slate-300"></i>
               </div>
             </div>
             <div class="mt-2">
-              <div class="text-base sm:text-lg font-black text-slate-800" id="metricGastosVal">R$ 0,00</div>
+              <div class="text-base sm:text-lg font-black text-rose-400 dark:text-rose-400" id="metricGastosVal">R$ 0,00</div>
               <p class="text-[10px] text-slate-400 mt-0.5">Fixas + Variáveis</p>
             </div>
           </div>
@@ -1972,41 +1974,6 @@
         </div>
       </div>
     </section>
-
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionInstallments">
-      <div class="app-card rounded-none p-4 transition-all">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <div class="p-1.5 bg-slate-100 text-purple-600 rounded-none border border-slate-300">
-              <i data-lucide="layers" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Compras Parceladas Ativas</h2>
-              <p class="text-[11px] text-slate-500">Acompanhamento de parcelas futuras e impacto nas faturas.</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="openInstallmentsDetailModal()" class="text-xs font-semibold text-purple-700 hover:text-purple-900 px-2 py-1 bg-purple-50 rounded-none border border-purple-200 transition-all">
-              Ver Todas
-            </button>
-            <button onclick="toggleSectionCollapse('sectionInstallmentsContent')" title="Minimizar / Expandir Parceladas" class="text-slate-400 hover:text-slate-700 p-1">
-              <i data-lucide="chevron-up" id="iconCollapse_sectionInstallmentsContent" class="w-4 h-4"></i>
-            </button>
-            <div class="flex items-center cursor-grab text-slate-400 hover:text-slate-700 p-1 rounded-none hover:bg-slate-100 transition-colors mr-1" title="Arraste pelos pontinhos para reordenar esta seção" draggable="false" ondragstart="handleSectionDragStart(event, 'sectionInstallments')">
-              <i data-lucide="grip-vertical" class="w-4 h-4"></i>
-            </div>
-          </div>
-        </div>
-
-        <div id="sectionInstallmentsContent" class="collapsible-content">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1" id="installmentsCardsSummary">
-            <!-- Gerado dinamicamente via JS -->
-          </div>
-        </div>
-      </div>
-    </section>
-    </div>
-  </div>
 
     </div><!-- Fim dashboardSectionsContainer -->
     <!-- RODAPÉ OFICIAL CENTRALIZADO AGGENTIA LABS -->
@@ -6193,15 +6160,14 @@
     // 26. REORDENAÇÃO DE SEÇÕES MAIORES COM DROP ZONE SEGURO (V4.9.2)
     // ==============================================================
     const CANONICAL_SECTIONS_ORDER = [
-      'sectionMetrics',
       'sectionReminders',
+      'sectionMetrics',
       'sectionFoodBudget',
       'sectionCharts',
       'sectionTable',
       'sectionPriceHistory',
       'sectionPiggy',
-      'sectionCards',
-      'sectionInstallments'
+      'sectionCards'
     ];
 
     let draggedSectionEl = null;
@@ -6276,17 +6242,18 @@
       const order = Array.from(container.children)
         .filter(c => c.tagName === 'SECTION' && c.id)
         .map(c => c.id);
-      localStorage.setItem('financas_sections_order_v3', JSON.stringify(order));
+      localStorage.setItem('financas_sections_order_v4', JSON.stringify(order));
     }
 
     function loadSectionsOrder() {
       const container = document.getElementById('dashboardSectionsContainer');
       if (!container) return;
 
-      // Limpar chave antiga v1 para desapegar de ordens bagunçadas
+      // Limpar chaves antigas para desapegar de ordens bagunçadas
       localStorage.removeItem('financas_sections_order');
+      localStorage.removeItem('financas_sections_order_v3');
 
-      const saved = localStorage.getItem('financas_sections_order_v3');
+      const saved = localStorage.getItem('financas_sections_order_v4');
       const orderToApply = saved ? JSON.parse(saved) : CANONICAL_SECTIONS_ORDER;
 
       try {
@@ -6304,6 +6271,7 @@
     }
 
     function resetSectionsOrder() {
+      localStorage.removeItem('financas_sections_order_v4');
       localStorage.removeItem('financas_sections_order_v3');
       localStorage.removeItem('financas_sections_order');
       const container = document.getElementById('dashboardSectionsContainer');
@@ -6725,6 +6693,30 @@
       renderCuponsAtivosList();
     }
 
+    function triggerLogoUpload() {
+      if (window.FlutterBridge) {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'pick_logo_image' }));
+          return;
+        } catch(e) {
+          console.warn('Erro ao chamar FlutterBridge pick_logo_image:', e);
+        }
+      }
+      const fileInput = document.getElementById('inputCustomLogo') || 
+                        document.getElementById('inputAdminCustomLogo') || 
+                        document.getElementById('inputCustomLogoMob');
+      if (fileInput) fileInput.click();
+    }
+
+    window.onNativeLogoResult = function(dataUrl) {
+      if (!dataUrl) return;
+      resizeImageToDataUrl(dataUrl, 200, 200, function(resizedUrl) {
+        localStorage.setItem('financas_custom_logo', resizedUrl);
+        loadUserCustomAssets();
+        showToastUndo('Logo atualizada com sucesso!', false);
+      });
+    };
+
     function handleLogoUpload(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -6733,6 +6725,7 @@
         resizeImageToDataUrl(evt.target.result, 160, 160, function(dataUrl) {
           localStorage.setItem('financas_custom_logo', dataUrl);
           loadUserCustomAssets(); initAllCurrencyMasks();
+          showToastUndo('Logo atualizada com sucesso!', false);
         });
       };
       reader.readAsDataURL(file);
@@ -6784,6 +6777,7 @@
       renderFeedbacksAdminList();
       setStyle(currentStyle, false);
       renderInstallments();
+      updateAudioUI();
     }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initApp);
@@ -7781,25 +7775,99 @@
         return `
           <div class="relative inline-flex items-center">
             <button onclick="selectUserFilter('${m.nome}')" id="btnUserFilter_${m.id}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-blue-500 font-bold text-xs shadow-xs transition-all group">
-              <div class="relative w-8 h-8 rounded-full bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs">
+              <div class="relative w-8 h-8 rounded-full bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-xs cursor-pointer group/avatar" onclick="event.stopPropagation(); openMemberAvatarPicker('${m.id}')" title="Clique no avatar para alterar foto ou ícone">
                 ${isImage ? `<img src="${m.avatar}" class="w-full h-full object-cover">` : `<span class="text-base">${m.avatar || '👤'}</span>`}
+                <span class="absolute bottom-0 right-0 w-3 h-3 bg-slate-900/80 rounded-full text-[8px] flex items-center justify-center text-white border border-white/40">✎</span>
               </div>
               <div class="text-left leading-tight">
                 <span class="block font-extrabold text-xs">${m.nome}</span>
                 <span class="text-[10px] text-slate-400 font-medium">${m.papel || 'Membro'}</span>
               </div>
             </button>
-            <button type="button" onclick="openMemberAvatarPicker('${m.id}')" title="Alterar avatar de ${m.nome}" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 text-white text-[10px] flex items-center justify-center border border-white dark:border-slate-700 shadow-xs hover:scale-110 transition-transform">
-              ✏️
-            </button>
           </div>
         `;
       }).join('');
     }
 
+    function renderFamilyMembersListInModal() {
+      const listEl = document.getElementById('modalFamilyMembersList');
+      const countEl = document.getElementById('modalFamilyMembersCount');
+      if (!listEl) return;
+
+      const din = getDynamicFamilyMembers();
+      if (countEl) countEl.textContent = `${2 + din.length} membros`;
+
+      let html = `
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold">👨‍💼</div>
+            <div>
+              <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Rodrigo</span>
+              <span class="block text-[9px] text-slate-400">Administrador Oficial</span>
+            </div>
+          </div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Principal</span>
+        </div>
+
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-extrabold">👩‍💼</div>
+            <div>
+              <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Márcia</span>
+              <span class="block text-[9px] text-slate-400">Administradora</span>
+            </div>
+          </div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/60 dark:text-pink-300 font-bold">Principal</span>
+        </div>
+      `;
+
+      din.forEach(m => {
+        html += `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-extrabold overflow-hidden">
+                ${m.avatar && m.avatar.startsWith('data:image') ? `<img src="${m.avatar}" class="w-full h-full object-cover">` : `<span>${m.avatar || '👤'}</span>`}
+              </div>
+              <div>
+                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">${m.nome}</span>
+                <span class="block text-[9px] text-slate-400">${m.papel || 'Membro'}</span>
+              </div>
+            </div>
+            <button type="button" onclick="deleteFamilyMember('${m.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 rounded-lg text-[10px] font-bold border border-rose-200 dark:border-rose-900 transition-colors flex items-center gap-1" title="Excluir este participante da família">
+              <i data-lucide="trash-2" class="w-3 h-3"></i>
+              <span>Excluir</span>
+            </button>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html;
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function deleteFamilyMember(memberId) {
+      let din = getDynamicFamilyMembers();
+      const target = din.find(m => m.id === memberId);
+      if (!target) return;
+
+      if (confirm(`Tem certeza que deseja excluir o membro "${target.nome}" da família?`)) {
+        din = din.filter(m => m.id !== memberId);
+        localStorage.setItem('financas_membros_familia', JSON.stringify(din));
+        renderDynamicFamilyMembers();
+        renderFamilyMembersListInModal();
+        loadUserCustomAssets();
+        showToastUndo(`Membro "${target.nome}" removido da família!`, false);
+      }
+    }
+
     function openAddUserModal() {
       const modal = document.getElementById('modalAddUser');
-      if (modal) modal.classList.remove('hidden');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderFamilyMembersListInModal();
+      }
       lucide.createIcons();
     }
 
@@ -7836,7 +7904,9 @@
       
       updateUserDropdowns(nome);
       loadUserCustomAssets();
-      closeAddUserModal();
+      renderFamilyMembersListInModal();
+      if (nomeInput) nomeInput.value = '';
+      if (avatarInput) avatarInput.value = '';
       showToastUndo(`Membro "${nome}" adicionado com sucesso! 🎉`, false);
     }
 
@@ -7857,10 +7927,11 @@
     }
 
     function shareInviteWhatsApp() {
-      const cupom = localStorage.getItem('financas_ultimo_cupom_vip') || 'FAMILIA-2026';
-      const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v1.4.5/app-arm64-v8a-release.apk';
-      const msg = `Olá! O Rodrigo convidou você para o aplicativo Finanças Casal (Aggentia Labs).%0A%0ABaixe o app aqui:%0A${urlApp}%0A%0AUse o código de convite: *${cupom}* para liberar seu acesso!`;
-      window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+      const cupom = localStorage.getItem('financas_ultimo_cupom_vip') || 'CASAL-2026';
+      const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v1.5.3/app-arm64-v8a-release.apk';
+      const msg = `Olá! O Rodrigo convidou você para sincronizar os gastos no aplicativo Finanças Casal (Aggentia Labs).\n\n📱 Baixe o app oficial aqui:\n${urlApp}\n\n🔑 Seu Código de Acesso do Casal: *${cupom}*\n\nAbra o app, conecte com o código e nossas finanças e listas de mercado estarão sempre sincronizadas em tempo real! ❤️`;
+      const encoded = encodeURIComponent(msg);
+      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
     }
 
     function toggleCycleMenu(e) {
@@ -7978,9 +8049,39 @@
     
 
     // ==============================================================
-    
-    
+    // CONTROLE DE ÁUDIO & SOM DO APLICATIVO E CHAT
+    // ==============================================================
+    let isAppAudioMuted = localStorage.getItem('financas_audio_muted') === 'true';
+
+    function updateAudioUI() {
+      const icon = document.getElementById('iconAppAudio');
+      if (icon) {
+        icon.setAttribute('data-lucide', isAppAudioMuted ? 'volume-x' : 'volume-2');
+        if (icon.parentElement) {
+          icon.parentElement.title = isAppAudioMuted ? 'Áudio desativado (Clique para ativar)' : 'Áudio ativado (Clique para silenciar)';
+          if (isAppAudioMuted) {
+            icon.parentElement.classList.add('text-rose-400');
+            icon.parentElement.classList.remove('text-slate-300');
+          } else {
+            icon.parentElement.classList.remove('text-rose-400');
+            icon.parentElement.classList.add('text-slate-300');
+          }
+        }
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function toggleAppAudio() {
+      isAppAudioMuted = !isAppAudioMuted;
+      localStorage.setItem('financas_audio_muted', isAppAudioMuted ? 'true' : 'false');
+      updateAudioUI();
+      showToastUndo(isAppAudioMuted ? '🔇 Áudio desativado (modo silencioso)' : '🔊 Áudio ativado com sucesso!', false);
+    }
+
     function playChatDing() {
+      if (isAppAudioMuted) return;
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -8343,6 +8444,9 @@
                   <i data-lucide="edit-2" class="w-3 h-3"></i>
                   <span>Ajustar</span>
                 </button>
+                <button type="button" onclick="deleteOcrProductCard('${m.id}')" class="p-1.5 rounded-xl bg-red-950/70 hover:bg-red-900 text-rose-300 hover:text-white transition-colors" title="Descartar esta foto e card">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
             </div>
           `;
@@ -8567,6 +8671,18 @@
         renderCleanChatStream();
         showToastUndo('Foto apagada da conversa.', false);
       }
+    }
+
+    function deleteOcrProductCard(ocrCardId) {
+      let msgs = getCleanChatMessages();
+      const card = msgs.find(m => m.id === ocrCardId);
+      if (card && card.photoUrl) {
+        ephemeralChatPhotos = ephemeralChatPhotos.filter(p => p !== card.photoUrl);
+      }
+      msgs = msgs.filter(m => m.id !== ocrCardId);
+      saveCleanChatMessages(msgs);
+      renderCleanChatStream();
+      showToastUndo('Card de reconhecimento descartado!', false);
     }
 
     function confirmAddOcrItemToCart(ocrCardId, nome, preco) {
@@ -8807,32 +8923,6 @@
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-      // Detecta se a mensagem contém itens de mercado (ex: '2 pacotes de macarrão de 1kg', 'pão frances', etc)
-      const detectedItems = parseGroceryItemsFromMessage(text);
-      let items = getActiveShoppingItems();
-      const addedNames = [];
-
-      detectedItems.forEach(it => {
-        const newItem = {
-          id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-          nome: it.nome,
-          qtdDesejada: it.qtd,
-          qtdComprada: it.qtd,
-          unidade: it.unidade,
-          marca: '',
-          precoUnitario: 0,
-          status: 'pendente',
-          pedidoPor: 'Família'
-        };
-        items.push(newItem);
-        addedNames.push(`${it.nome} (${it.qtd} ${it.unidade})`);
-      });
-
-      if (detectedItems.length > 0) {
-        saveActiveShoppingItems(items);
-        updateCartSummaryUI();
-      }
-
       const msgs = getCleanChatMessages();
       msgs.push({
         id: 'msg_' + Date.now(),
@@ -8843,15 +8933,153 @@
         time: timeStr
       });
 
-      if (addedNames.length > 0) {
-        msgs.push({
-          id: 'sys_' + Date.now(),
-          sender: 'Lista de Mercado',
-          avatar: '🛒',
-          isMe: false,
-          text: `✅ Adicionado à lista de compras: "${addedNames.join(', ')}"! Marque o preço na gôndola.`,
-          time: timeStr
+      // ==============================================================
+      // INTELIGÊNCIA CONVERSACIONAL NO CHAT DE MERCADO
+      // ==============================================================
+      let handledByDialog = false;
+
+      // 1. VERIFICA SE ESTÁ AGUARDANDO QUANTIDADE DE UM PRODUTO
+      const awaitingDataStr = localStorage.getItem('financas_chat_awaiting_qty');
+      let awaitingData = null;
+      try { awaitingData = awaitingDataStr ? JSON.parse(awaitingDataStr) : null; } catch(e){}
+
+      if (awaitingData && awaitingData.product) {
+        // Padrões de quantidade: 'pega 2', 'leva 2 caixas', '2', 'só 1', 'traz 3 pacotes', 'pode pegar 2'
+        const qtyMatch = text.match(/(?:(?:pega|leva|traz|quero|coloca|bota|pode\s+pegar|s[óo])\s+)?(\d+|um|uma|dois|duas|tr[êe]s|quatro|cinco)\s*(?:unidades?|pacotes?|caixas?|latas?|garrafas?|un|pct)?/i);
+        if (qtyMatch) {
+          let numVal = parseInt(qtyMatch[1], 10);
+          if (isNaN(numVal)) {
+            const wordMap = { 'um': 1, 'uma': 1, 'dois': 2, 'duas': 2, 'três': 3, 'tres': 3, 'quatro': 4, 'cinco': 5 };
+            numVal = wordMap[qtyMatch[1].toLowerCase()] || 1;
+          }
+
+          const prodNome = awaitingData.product;
+          let items = getActiveShoppingItems();
+          items.push({
+            id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+            nome: prodNome,
+            qtdDesejada: numVal,
+            qtdComprada: numVal,
+            unidade: 'un',
+            marca: '',
+            precoUnitario: 0,
+            status: 'pendente',
+            pedidoPor: 'Família'
+          });
+          saveActiveShoppingItems(items);
+          updateCartSummaryUI();
+
+          msgs.push({
+            id: 'sys_' + Date.now(),
+            sender: 'Assistente de Compras',
+            avatar: '🛒',
+            isMe: false,
+            text: `✅ Perfeito! Incluí ${numVal} un de "${prodNome}" na nossa lista de mercado!`,
+            time: timeStr
+          });
+
+          localStorage.removeItem('financas_chat_awaiting_qty');
+          handledByDialog = true;
+          playChatDing();
+        }
+      }
+
+      // 2. VERIFICA SE É RESPOSTA AFIRMATIVA A UMA PERGUNTA PENDENTE
+      if (!handledByDialog) {
+        const pendingInquiryStr = localStorage.getItem('financas_chat_pending_inquiry');
+        let pendingInquiry = null;
+        try { pendingInquiry = pendingInquiryStr ? JSON.parse(pendingInquiryStr) : null; } catch(e){}
+
+        // Respostas afirmativas: 'tem sim', 'tem aqui', 'tem', 'achei', 'sim', 'encontrei'
+        const isAffirmative = /^(?:tem\s+sim|tem\s+aqui|tem|achei|sim|encontrei|tem\s+bastante|t[áa]\s+aqui)(?:[,.!\s]|$)/i.test(text.trim());
+
+        if (pendingInquiry && pendingInquiry.product && isAffirmative) {
+          const prodNome = pendingInquiry.product;
+          localStorage.setItem('financas_chat_awaiting_qty', JSON.stringify({ product: prodNome, timestamp: Date.now() }));
+          localStorage.removeItem('financas_chat_pending_inquiry');
+
+          msgs.push({
+            id: 'sys_' + Date.now(),
+            sender: 'No Mercado',
+            avatar: '🛒',
+            isMe: false,
+            text: `Tem sim! Quantas unidades de ${prodNome} você quer que eu leve no carrinho?`,
+            time: timeStr
+          });
+
+          handledByDialog = true;
+          playChatDing();
+        }
+      }
+
+      // 3. DETECTA PERGUNTA DE DISPONIBILIDADE (ex: 'Aí tem Farinha Láctea Nestlé?', 'tem leite desnatado aí')
+      if (!handledByDialog) {
+        const questionMatch = text.match(/^(?:(?:ol[áa]|oi|amor|amorzinho|filho|filha|m[ãa]e|pai)[,:]?\s*)?(?:a[íi]\s+)?(?:tem|voc[êe]\s+achou|achou|encontrou|ser[áa]\s+que\s+tem)\s+(.+)/i);
+        if (questionMatch) {
+          let inquiryProduct = questionMatch[1].replace(/[?!.,]+$/g, '').trim();
+          inquiryProduct = inquiryProduct.replace(/^(?:o|a|os|as|de|do|da)\s+/i, '').trim();
+          if (inquiryProduct.length >= 3) {
+            inquiryProduct = inquiryProduct.charAt(0).toUpperCase() + inquiryProduct.slice(1);
+            localStorage.setItem('financas_chat_pending_inquiry', JSON.stringify({ product: inquiryProduct, timestamp: Date.now() }));
+            
+            // Sugestão visual rápida / Assistente confirma recebimento
+            setTimeout(() => {
+              const currentMsgs = getCleanChatMessages();
+              currentMsgs.push({
+                id: 'sys_' + Date.now(),
+                sender: 'Assistente da Família',
+                avatar: '💡',
+                isMe: false,
+                text: `Perguntei para quem está no mercado sobre "${inquiryProduct}". Assim que responder "tem sim", incluiremos com a quantidade desejada!`,
+                time: timeStr
+              });
+              saveCleanChatMessages(currentMsgs);
+              renderCleanChatStream();
+              const feed = document.getElementById('chatMessagesFeed');
+              if (feed) feed.scrollTop = feed.scrollHeight;
+              playChatDing();
+            }, 600);
+
+            handledByDialog = true;
+          }
+        }
+      }
+
+      // 4. DETECÇÃO TRADICIONAL DE ITENS DE MERCADO (se não for diálogo de pergunta)
+      if (!handledByDialog) {
+        const detectedItems = parseGroceryItemsFromMessage(text);
+        let items = getActiveShoppingItems();
+        const addedNames = [];
+
+        detectedItems.forEach(it => {
+          const newItem = {
+            id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+            nome: it.nome,
+            qtdDesejada: it.qtd,
+            qtdComprada: it.qtd,
+            unidade: it.unidade,
+            marca: '',
+            precoUnitario: 0,
+            status: 'pendente',
+            pedidoPor: 'Família'
+          };
+          items.push(newItem);
+          addedNames.push(`${it.nome} (${it.qtd} ${it.unidade})`);
         });
+
+        if (detectedItems.length > 0) {
+          saveActiveShoppingItems(items);
+          updateCartSummaryUI();
+          msgs.push({
+            id: 'sys_' + Date.now(),
+            sender: 'Lista de Mercado',
+            avatar: '🛒',
+            isMe: false,
+            text: `✅ Adicionado à lista de compras: "${addedNames.join(', ')}"! Marque o preço na gôndola.`,
+            time: timeStr
+          });
+          playChatDing();
+        }
       }
 
       saveCleanChatMessages(msgs);
@@ -8936,45 +9164,96 @@
       let detectedText = '';
       let detectedPrice = 0;
       let detectedProductName = '';
+      let detectedByGemini = false;
 
-      // Tenta OCR com Tesseract.js se presente
-      if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+      const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+
+      // 1. TENTA RECONHECIMENTO MULTIMODAL COM GOOGLE GEMINI AI STUDIO SE HOUVER CHAVE
+      if (apiKey && photoData) {
         try {
-          const ocrResult = await Promise.race([
-            window.Tesseract.recognize(photoData, 'por'),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-          ]);
-          if (ocrResult && ocrResult.data && ocrResult.data.text) {
-            detectedText = ocrResult.data.text;
+          const parts = photoData.split(',');
+          const mimeMatch = photoData.match(/data:([^;]+);/);
+          const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+          const base64Data = parts.length > 1 ? parts[1] : parts[0];
+
+          const promptText = "Você é um assistente especialista em compras no supermercado brasileiro. Analise com máxima atenção a foto da embalagem ou da gôndola/etiqueta de preço. Extraia estritamente em formato JSON puro sem blocos markdown: {\"produto\": \"Nome completo do produto com marca e peso/volume ex: Farinha Láctea Nestlé 400g\", \"preco\": 14.90}. Se o preço estiver legível na etiqueta ou no produto, informe como número decimal float. Se não houver preço visível, retorne preco: 0. Retorne apenas o JSON puro.";
+
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: promptText },
+                  { inline_data: { mime_type: mimeType, data: base64Data } }
+                ]
+              }],
+              generationConfig: {
+                temperature: 0.1,
+                response_mime_type: "application/json"
+              }
+            })
+          });
+
+          if (response.ok) {
+            const resData = await response.json();
+            const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+            const cleanJson = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleanJson);
+
+            if (parsed.produto && parsed.produto.trim()) {
+              detectedProductName = parsed.produto.trim();
+              detectedPrice = parseFloat(parsed.preco) || 0;
+              detectedByGemini = true;
+            }
+          } else {
+            console.warn('Gemini Vision API status:', response.status);
           }
-        } catch(err) {
-          console.warn('OCR timeout ou fallback:', err);
+        } catch(geminiErr) {
+          console.warn('Erro na chamada Gemini Vision:', geminiErr);
         }
       }
 
-      // Analise inteligente de Preco e Produto
-      if (detectedText) {
-        const priceMatch = detectedText.match(/(?:R\$\s*|VALOR\s*|PRE[ÇC]O\s*)?(\d{1,3}[.,]\d{2})/i);
-        if (priceMatch) {
-          detectedPrice = parseFloat(priceMatch[1].replace(',', '.'));
-        }
-
-        const lines = detectedText.split('\n').map(l => l.trim()).filter(Boolean);
-        for (const line of lines) {
-          const lowerLine = line.toLowerCase();
-          for (const kw of GROCERY_KEYWORDS) {
-            if (lowerLine.includes(kw)) {
-              detectedProductName = line.replace(/R\$\s*\d+[.,]\d{2}/gi, '').replace(/[^\w\sà-úÀ-Ú-]/g, '').trim();
-              break;
+      // 2. FALLBACK COM TESSERACT OCR SE GEMINI NÃO ESTIVER DISPONÍVEL OU FALHAR
+      if (!detectedProductName) {
+        if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+          try {
+            const ocrResult = await Promise.race([
+              window.Tesseract.recognize(photoData, 'por'),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+            ]);
+            if (ocrResult && ocrResult.data && ocrResult.data.text) {
+              detectedText = ocrResult.data.text;
             }
+          } catch(err) {
+            console.warn('OCR timeout ou fallback:', err);
           }
-          if (detectedProductName) break;
         }
 
-        if (!detectedProductName && lines.length > 0) {
-          const candidate = lines.find(l => l.length > 3 && !/^\d+$/.test(l) && !/^R\$/i.test(l));
-          if (candidate) {
-            detectedProductName = candidate.replace(/R\$\s*\d+[.,]\d{2}/gi, '').trim();
+        // Analise inteligente de Preco e Produto
+        if (detectedText) {
+          const priceMatch = detectedText.match(/(?:R\$\s*|VALOR\s*|PRE[ÇC]O\s*)?(\d{1,3}[.,]\d{2})/i);
+          if (priceMatch) {
+            detectedPrice = parseFloat(priceMatch[1].replace(',', '.'));
+          }
+
+          const lines = detectedText.split('\n').map(l => l.trim()).filter(Boolean);
+          for (const line of lines) {
+            const lowerLine = line.toLowerCase();
+            for (const kw of GROCERY_KEYWORDS) {
+              if (lowerLine.includes(kw)) {
+                detectedProductName = line.replace(/R\$\s*\d+[.,]\d{2}/gi, '').replace(/[^\w\sà-úÀ-Ú-]/g, '').trim();
+                break;
+              }
+            }
+            if (detectedProductName) break;
+          }
+
+          if (!detectedProductName && lines.length > 0) {
+            const candidate = lines.find(l => l.length > 3 && !/^\d+$/.test(l) && !/^R\$/i.test(l));
+            if (candidate) {
+              detectedProductName = candidate.replace(/R\$\s*\d+[.,]\d{2}/gi, '').trim();
+            }
           }
         }
       }
@@ -8988,8 +9267,8 @@
       msgs.push({
         id: 'ocr_' + Date.now(),
         type: 'ocr_product_card',
-        sender: 'Reconhecimento na Gôndola',
-        avatar: '🏷️',
+        sender: detectedByGemini ? 'Google Gemini AI Studio' : 'Reconhecimento na Gôndola',
+        avatar: detectedByGemini ? '🤖' : '🏷️',
         isMe: false,
         nome: detectedProductName,
         preco: detectedPrice,
@@ -8999,6 +9278,7 @@
       });
       saveCleanChatMessages(msgs);
       renderCleanChatStream();
+      playChatDing();
 
       const feed = document.getElementById('chatMessagesFeed');
       if (feed) feed.scrollTop = feed.scrollHeight;
@@ -9889,7 +10169,7 @@
             </div>
             <div class="flex-1 flex items-center gap-2">
               <input type="file" id="inputAdminCustomLogo" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
-              <button type="button" onclick="document.getElementById('inputAdminCustomLogo').click()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1">
+              <button type="button" onclick="triggerLogoUpload()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all flex items-center gap-1 shadow-xs">
                 <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                 <span>Escolher Imagem</span>
               </button>
@@ -10089,6 +10369,17 @@
             <i data-lucide="share-2" class="w-4 h-4"></i>
             <span>Enviar Convite com Link no WhatsApp</span>
           </button>
+        </div>
+
+        <!-- SEÇÃO: MEMBROS ATIVOS DA FAMÍLIA COM OPÇÃO DE EXCLUIR -->
+        <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Participantes Ativos & Exclusão:</span>
+            <span class="text-[10px] text-slate-400 font-mono" id="modalFamilyMembersCount">2 membros</span>
+          </div>
+          <div id="modalFamilyMembersList" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+            <!-- Renderizado dinamicamente via renderFamilyMembersListInModal() -->
+          </div>
         </div>
       </div>
     </div>

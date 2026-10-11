@@ -83,6 +83,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
         _startNativeCameraOcr();
       } else if (action == 'pick_chat_photo') {
         _pickChatPhoto();
+      } else if (action == 'pick_logo_image') {
+        _pickLogoImage();
       } else if (action == 'authenticate_biometric') {
         _authenticateBiometric();
       }
@@ -182,6 +184,33 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao capturar foto: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickLogoImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 600,
+        maxHeight: 600,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+
+      final bytes = await image.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/png;base64,$base64Str';
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativeLogoResult === 'function') { window.onNativeLogoResult('$dataUrl'); }"
+      );
+    } catch (e) {
+      debugPrint('Erro ao selecionar logo: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao selecionar imagem: $e')),
         );
       }
     }
