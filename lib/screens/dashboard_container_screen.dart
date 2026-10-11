@@ -79,8 +79,12 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
 
       if (action == 'start_voice') {
         _startNativeVoiceRecording();
+      } else if (action == 'pick_invoice_camera') {
+        _pickInvoicePhoto(source: ImageSource.camera);
+      } else if (action == 'pick_invoice_gallery') {
+        _pickInvoicePhotosFromGallery();
       } else if (action == 'start_camera_ocr') {
-        _startNativeCameraOcr();
+        _pickInvoicePhoto(source: ImageSource.camera);
       } else if (action == 'pick_chat_photo') {
         _pickChatPhoto();
       } else if (action == 'pick_logo_image') {
@@ -134,32 +138,59 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
     );
   }
 
-  Future<void> _startNativeCameraOcr() async {
+  Future<void> _pickInvoicePhoto({required ImageSource source}) async {
     try {
       final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
+        source: source,
         preferredCameraDevice: CameraDevice.rear,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 85,
       );
       if (photo == null) return;
 
-      final ocrService = OcrService();
-      final result = await ocrService.processReceiptImage(photo.path);
-      ocrService.dispose();
+      final bytes = await photo.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/jpeg;base64,$base64Str';
 
-      final dataMap = {
-        'store': result.storeName ?? '',
-        'total': result.totalAmount ?? 0.0,
-        'date': result.date?.toIso8601String().split('T')[0] ?? '',
-      };
-      final jsonData = jsonEncode(dataMap);
       _controller.runJavaScript(
-        "if (typeof window.onNativeOcrResult === 'function') { window.onNativeOcrResult($jsonData); }"
+        "if (typeof window.onNativeInvoicePhotoCaptured === 'function') { window.onNativeInvoicePhotoCaptured('$dataUrl'); }"
       );
     } catch (e) {
-      debugPrint('Erro no OCR Nativo: $e');
+      debugPrint('Erro ao capturar foto da nota: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao acessar a câmera: $e')),
+          SnackBar(content: Text('Erro ao capturar foto da nota: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickInvoicePhotosFromGallery() async {
+    try {
+      final List<XFile> photos = await _picker.pickMultiImage(
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 85,
+      );
+      if (photos.isEmpty) return;
+
+      final List<String> dataUrls = [];
+      for (final p in photos) {
+        final bytes = await p.readAsBytes();
+        final base64Str = base64Encode(bytes);
+        dataUrls.add('data:image/jpeg;base64,$base64Str');
+      }
+
+      final jsonArray = jsonEncode(dataUrls);
+      _controller.runJavaScript(
+        "if (typeof window.onNativeInvoicePhotosCaptured === 'function') { window.onNativeInvoicePhotosCaptured($jsonArray); }"
+      );
+    } catch (e) {
+      debugPrint('Erro ao selecionar fotos da galeria: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao selecionar fotos: $e')),
         );
       }
     }

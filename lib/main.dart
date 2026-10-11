@@ -29,7 +29,7 @@ class FinancasCasalApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Finanças Casal • Rodrigo & Márcia',
+      title: 'PIgCtrl • Finanças Casal',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
