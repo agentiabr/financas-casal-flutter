@@ -2102,52 +2102,132 @@
         </button>
       </div>
 
-      <!-- Barra de Ações & Busca com Alto Contraste -->
-      <div class="pt-3.5 pb-3 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        <div class="flex items-center gap-2 flex-wrap">
-          <button type="button" onclick="openInvoiceScanModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs">
-            <i data-lucide="camera" class="w-4 h-4"></i>
-            <span>+ Ler Foto de Cupom</span>
-          </button>
-          <button type="button" onclick="openFamilyChatWithRequest('Filho, pode trazer os itens da feira para mim?')" class="px-3 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl flex items-center gap-1.5 transition-colors shadow-xs" title="Pedir itens no Chat da Família">
-            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-            <span>Pedir no Chat Familiar</span>
-          </button>
-          <button type="button" onclick="openManageStoresModal()"  class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
-            <i data-lucide="store" class="w-3.5 h-3.5 text-blue-400"></i>
-            <span>Gerenciar Lojas</span>
-          </button>
-        </div>
+      <!-- Abas Principais: Montar Lista para Mercado vs Comparador de Preços -->
+      <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mt-3 flex-shrink-0">
+        <button type="button" onclick="switchShoppingModalTab('builder')" id="tabBtnShoppingBuilder" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 transition-all">
+          <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+          <span>🛒 Montar Lista para o Mercado</span>
+          <span id="badgeBuilderSelectedCount" class="px-1.5 py-0.2 rounded-full bg-emerald-950 text-emerald-300 font-bold border border-emerald-800 text-[10px]">0</span>
+        </button>
 
-        <div class="relative flex-1 max-w-xs">
-          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-          <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar produto (ex: Leite, Arroz, Café)..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
-        </div>
+        <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/80 flex items-center gap-1.5 transition-all">
+          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+          <span>📊 Comparador de Preços por Loja</span>
+        </button>
       </div>
 
-      <!-- Filtro de Lojas (Chips de Estabelecimentos) -->
-      <div class="py-2.5 border-b border-slate-800 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
-        <!-- Injetado dinamicamente via JS -->
+      <!-- CONTAINER 1: MONTADOR INTELIGENTE DE LISTA DE COMPRAS -->
+      <div id="shoppingListBuilderContainer" class="flex flex-col flex-1 min-h-0 pt-3">
+        
+        <!-- Barra de Busca de Produtos Cadastrados e Ações Rápidas -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-800">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="filterBuilderSearch" oninput="renderShoppingListBuilder()" placeholder="Buscar produto registrado (ex: Arroz, Café, Leite, Azeite)..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          </div>
+
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <button type="button" onclick="selectAllBuilderItems(true)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold flex items-center gap-1 transition-colors">
+              <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Marcar Todos</span>
+            </button>
+            <button type="button" onclick="selectAllBuilderItems(false)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 text-xs font-bold transition-colors">
+              <span>Desmarcar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Linha Rápida para Adicionar Item Avulso que Não Está no Histórico -->
+        <div class="mt-2.5 p-2.5 bg-slate-950/70 border border-slate-800/90 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div class="flex-1">
+            <input type="text" id="inputNewBuilderProductName" placeholder="+ Adicionar item avulso (ex: Banana Nanica 1 dúzia)..." class="w-full px-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          </div>
+          <div class="flex items-center gap-1.5">
+            <input type="number" id="inputNewBuilderProductQtd" min="1" value="1" class="w-14 px-2 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-center focus:outline-none" title="Quantidade">
+            <select id="selectNewBuilderProductStore" class="px-2 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-xl text-slate-200 focus:outline-none">
+              <option value="Supermercados Roldão">Supermercados Roldão</option>
+              <option value="Assaí Atacadista">Assaí Atacadista</option>
+              <option value="Carrefour">Carrefour</option>
+              <option value="Pão de Açúcar">Pão de Açúcar</option>
+              <option value="Padaria Bella">Padaria Bella</option>
+              <option value="Feira / Hortifruti">Feira / Hortifruti</option>
+              <option value="Qualquer Mercado">Qualquer Mercado</option>
+            </select>
+            <button type="button" onclick="addCustomItemToBuilder()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm transition-all flex-shrink-0">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Adicionar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Grade de Produtos com Menor Preço e Último Preço -->
+        <div class="overflow-y-auto mt-3 custom-scrollbar flex-1 space-y-2 pr-1" id="builderProductsListContainer" style="max-height: 440px;">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+
+        <!-- Barra Fixa de Envio no Rodapé do Builder -->
+        <div class="mt-3 pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/90 rounded-2xl p-2.5 border border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-white" id="builderSummaryItemsCount">0 itens selecionados</span>
+            <span class="text-slate-500">•</span>
+            <span class="text-xs text-slate-400" id="builderSummaryStoresBreakdown">Nenhum mercado selecionado</span>
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="button" onclick="sendShoppingListToFamilyChat()" class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-all active:scale-95 cursor-pointer">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span>💬 Enviar Lista Separada para o Chat Familiar</span>
+            </button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Tabela de Comparativo de Preços com Alto Contraste -->
-      <div class="overflow-x-auto mt-2 custom-scrollbar flex-1">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-700 text-[11px]">
-              <th class="py-2.5 px-3">Produto / Item</th>
-              <th class="py-2.5 px-3">Estabelecimento</th>
-              <th class="py-2.5 px-3">Última Compra</th>
-              <th class="py-2.5 px-3 text-right">Preço Atual</th>
-              <th class="py-2.5 px-3 text-right">Preço Anterior</th>
-              <th class="py-2.5 px-3 text-center">Comparativo</th>
-              <th class="py-2.5 px-3 text-center w-24">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="priceHistoryTableBody" class="divide-y divide-slate-800/80">
-            <!-- Injetado dinamicamente via JS -->
-          </tbody>
-        </table>
+      <!-- CONTAINER 2: COMPARADOR DE PREÇOS POR LOJA (HISTÓRICO ORIGINAL) -->
+      <div id="shoppingListComparatorContainer" class="hidden flex flex-col flex-1 min-h-0 pt-3">
+        <!-- Barra de Ações & Busca com Alto Contraste -->
+        <div class="pb-3 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="openInvoiceScanModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+              <span>+ Ler Foto de Cupom</span>
+            </button>
+            <button type="button" onclick="openManageStoresModal()"  class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
+              <i data-lucide="store" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>Gerenciar Lojas</span>
+            </button>
+          </div>
+
+          <div class="relative flex-1 max-w-xs">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar no comparador (ex: Leite, Arroz, Café)..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-800/90 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+          </div>
+        </div>
+
+        <!-- Filtro de Lojas (Chips de Estabelecimentos) -->
+        <div class="py-2.5 border-b border-slate-800 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+
+        <!-- Tabela de Comparativo de Preços com Alto Contraste -->
+        <div class="overflow-x-auto mt-2 custom-scrollbar flex-1">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-700 text-[11px]">
+                <th class="py-2.5 px-3">Produto / Item</th>
+                <th class="py-2.5 px-3">Estabelecimento</th>
+                <th class="py-2.5 px-3">Última Compra</th>
+                <th class="py-2.5 px-3 text-right">Preço Atual</th>
+                <th class="py-2.5 px-3 text-right">Preço Anterior</th>
+                <th class="py-2.5 px-3 text-center">Comparativo</th>
+                <th class="py-2.5 px-3 text-center w-24">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="priceHistoryTableBody" class="divide-y divide-slate-800/80">
+              <!-- Injetado dinamicamente via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Rodapé do Modal com Botão de Fechar Extra -->
@@ -5886,12 +5966,17 @@
     let priceHistory = [];
     const INITIAL_PRICE_HISTORY = [
       { id: 1, produto: 'Leite Integral 1L', estabelecimento: 'Pão de Açúcar', data: '2026-10-06', preco: 5.80, precoAnterior: 4.90, unidade: '1L' },
-      { id: 2, produto: 'Arroz Tipo 1 5kg', estabelecimento: 'Pão de Açúcar', data: '2026-10-06', preco: 28.90, precoAnterior: 29.50, unidade: '5kg' },
-      { id: 3, produto: 'Café Torrado e Moído 500g', estabelecimento: 'Pão de Açúcar', data: '2026-10-06', preco: 19.50, precoAnterior: 16.90, unidade: '500g' },
-      { id: 4, produto: 'Azeite Extra Virgem 500ml', estabelecimento: 'Carrefour', data: '2026-09-28', preco: 42.00, precoAnterior: 36.50, unidade: '500ml' },
-      { id: 5, produto: 'Detergente Líquido 500ml', estabelecimento: 'Carrefour', data: '2026-09-28', preco: 2.89, precoAnterior: 2.89, unidade: '500ml' },
-      { id: 6, produto: 'Sabão em Pó 1.6kg', estabelecimento: 'Assaí Atacadista', data: '2026-10-02', preco: 21.90, precoAnterior: 24.50, unidade: '1.6kg' },
-      { id: 7, produto: 'Queijo Muçarela kg', estabelecimento: 'Padaria Bella', data: '2026-10-05', preco: 48.00, precoAnterior: 42.00, unidade: '1kg' }
+      { id: 2, produto: 'Leite Integral 1L', estabelecimento: 'Supermercados Roldão', data: '2026-10-08', preco: 5.19, precoAnterior: 5.40, unidade: '1L' },
+      { id: 3, produto: 'Arroz Tipo 1 5kg', estabelecimento: 'Pão de Açúcar', data: '2026-10-06', preco: 28.90, precoAnterior: 29.50, unidade: '5kg' },
+      { id: 4, produto: 'Arroz Tipo 1 5kg', estabelecimento: 'Supermercados Roldão', data: '2026-10-08', preco: 26.50, precoAnterior: 27.90, unidade: '5kg' },
+      { id: 5, produto: 'Café Torrado e Moído 500g', estabelecimento: 'Pão de Açúcar', data: '2026-10-06', preco: 19.50, precoAnterior: 16.90, unidade: '500g' },
+      { id: 6, produto: 'Café Torrado e Moído 500g', estabelecimento: 'Supermercados Roldão', data: '2026-10-08', preco: 17.80, precoAnterior: 18.50, unidade: '500g' },
+      { id: 7, produto: 'Azeite Extra Virgem 500ml', estabelecimento: 'Carrefour', data: '2026-09-28', preco: 42.00, precoAnterior: 36.50, unidade: '500ml' },
+      { id: 8, produto: 'Azeite Extra Virgem 500ml', estabelecimento: 'Assaí Atacadista', data: '2026-10-05', preco: 38.90, precoAnterior: 41.00, unidade: '500ml' },
+      { id: 9, produto: 'Detergente Líquido 500ml', estabelecimento: 'Carrefour', data: '2026-09-28', preco: 2.89, precoAnterior: 2.89, unidade: '500ml' },
+      { id: 10, produto: 'Sabão em Pó 1.6kg', estabelecimento: 'Assaí Atacadista', data: '2026-10-02', preco: 21.90, precoAnterior: 24.50, unidade: '1.6kg' },
+      { id: 11, produto: 'Sabão em Pó 1.6kg', estabelecimento: 'Supermercados Roldão', data: '2026-10-07', preco: 20.90, precoAnterior: 22.00, unidade: '1.6kg' },
+      { id: 12, produto: 'Queijo Muçarela kg', estabelecimento: 'Padaria Bella', data: '2026-10-05', preco: 48.00, precoAnterior: 42.00, unidade: '1kg' }
     ];
 
     let activeEstablishmentFilter = 'Todos';
@@ -5911,11 +5996,375 @@
     }
 
     
+    
+    // ==============================================================
+    // 21.1 MONTADOR INTELIGENTE DE LISTA DE COMPRAS & INTEGRAÇÃO CHAT
+    // ==============================================================
+    let activeShoppingModalTab = 'builder';
+    let builderSelectedItems = {}; // { [produtoNome]: { selected: bool, qtd: int, unidade: str, lojaNome: str, menorPreco: float, lojaMenorPreco: str, ultimoPreco: float, lojaUltimoPreco: str } }
+    let customBuilderProducts = [];
+
+    function switchShoppingModalTab(tab) {
+      activeShoppingModalTab = tab;
+      const btnB = document.getElementById('tabBtnShoppingBuilder');
+      const btnC = document.getElementById('tabBtnShoppingComparator');
+      const boxB = document.getElementById('shoppingListBuilderContainer');
+      const boxC = document.getElementById('shoppingListComparatorContainer');
+
+      if (tab === 'builder') {
+        if (btnB) btnB.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 transition-all';
+        if (btnC) btnC.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/80 flex items-center gap-1.5 transition-all';
+        if (boxB) boxB.classList.remove('hidden');
+        if (boxC) boxC.classList.add('hidden');
+        renderShoppingListBuilder();
+      } else {
+        if (btnB) btnB.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/80 flex items-center gap-1.5 transition-all';
+        if (btnC) btnC.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1.5 transition-all';
+        if (boxB) boxB.classList.add('hidden');
+        if (boxC) boxC.classList.remove('hidden');
+        renderPriceHistoryTable();
+      }
+      lucide.createIcons();
+    }
+
+    // Calcula a inteligência de preços para qualquer produto
+    function getProductPriceStats(productName) {
+      const clean = (productName || '').toLowerCase().trim();
+      const matches = priceHistory.filter(p => (p.produto || '').toLowerCase().trim() === clean);
+      if (matches.length === 0) return null;
+
+      // Menor preço registrado
+      const sortedByPrice = [...matches].sort((a, b) => a.preco - b.preco);
+      const cheapest = sortedByPrice[0];
+
+      // Último preço registrado (mais recente por data ou id)
+      const sortedByDate = [...matches].sort((a, b) => (b.data || '').localeCompare(a.data || '') || b.id - a.id);
+      const latest = sortedByDate[0];
+
+      return {
+        cheapestPrice: cheapest.preco,
+        cheapestStore: cheapest.estabelecimento,
+        latestPrice: latest.preco,
+        latestStore: latest.estabelecimento,
+        latestDate: latest.data
+      };
+    }
+
+    function renderShoppingListBuilder() {
+      const container = document.getElementById('builderProductsListContainer');
+      if (!container) return;
+
+      const search = (document.getElementById('filterBuilderSearch')?.value || '').toLowerCase().trim();
+
+      // Obter lista única de produtos do histórico
+      const uniqueNames = Array.from(new Set([
+        ...priceHistory.map(p => p.produto),
+        ...customBuilderProducts.map(p => p.produto)
+      ]));
+
+      let filteredNames = uniqueNames;
+      if (search) {
+        filteredNames = uniqueNames.filter(n => n.toLowerCase().includes(search));
+      }
+
+      if (filteredNames.length === 0) {
+        container.innerHTML = '<div class="py-8 text-center text-slate-400 text-xs">Nenhum produto encontrado. Adicione um item avulso acima!</div>';
+        updateBuilderSummaryUI();
+        return;
+      }
+
+      // Lojas disponíveis
+      const storesList = ['Supermercados Roldão', 'Assaí Atacadista', 'Carrefour', 'Pão de Açúcar', 'Padaria Bella', 'Feira / Hortifruti', 'Qualquer Mercado'];
+
+      container.innerHTML = filteredNames.map(name => {
+        const stats = getProductPriceStats(name);
+        const itemState = builderSelectedItems[name] || {
+          selected: false,
+          qtd: 1,
+          unidade: 'un',
+          lojaNome: (stats ? stats.cheapestStore : 'Supermercados Roldão')
+        };
+
+        const isChecked = itemState.selected;
+        const suggestedStore = itemState.lojaNome || (stats ? stats.cheapestStore : 'Supermercados Roldão');
+
+        let borderClass = isChecked ? 'border-emerald-600 bg-emerald-950/20' : 'border-slate-800 bg-slate-950/60';
+
+        return `
+          <div class="p-3 rounded-2xl border ${borderClass} transition-all flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            
+            <!-- Checkbox e Nome do Produto com Badges -->
+            <div class="flex items-start gap-2.5 flex-1 min-w-0">
+              <input type="checkbox" onchange="toggleBuilderItem('${name.replace(/'/g, "\'")}')" ${isChecked ? 'checked' : ''} class="w-4 h-4 mt-0.5 rounded text-emerald-600 bg-slate-800 border-slate-700 focus:ring-emerald-500 cursor-pointer flex-shrink-0">
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-black text-white">${name}</span>
+                  ${isChecked ? `<span class="text-[10px] px-1.5 py-0.2 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">Na Lista</span>` : ''}
+                </div>
+
+                <!-- Inteligência de Preços (Onde Estava Mais Barato & Último Preço) -->
+                <div class="mt-1 flex items-center gap-1.5 flex-wrap text-[10px]">
+                  ${stats ? `
+                    <span class="font-bold text-emerald-400 bg-emerald-950/70 border border-emerald-800/80 px-1.5 py-0.2 rounded flex items-center gap-1">
+                      <span>🟢 Mais barato:</span>
+                      <strong>${formatBRL(stats.cheapestPrice)}</strong>
+                      <span class="text-emerald-300">no ${stats.cheapestStore}</span>
+                    </span>
+
+                    <span class="text-slate-400 bg-slate-900 border border-slate-800 px-1.5 py-0.2 rounded flex items-center gap-1">
+                      <span>🏷️ Último:</span>
+                      <strong>${formatBRL(stats.latestPrice)}</strong>
+                      <span>no ${stats.latestStore}</span>
+                      <span class="text-slate-500">(${stats.latestDate ? stats.latestDate.substring(5) : ''})</span>
+                    </span>
+                  ` : `
+                    <span class="text-slate-500">Item avulso sem histórico prévio</span>
+                  `}
+                </div>
+              </div>
+            </div>
+
+            <!-- Controles: Seleção de Loja e Quantidade -->
+            <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+              <!-- Seletor de Loja Destino -->
+              <div class="flex flex-col text-left">
+                <span class="text-[9px] text-slate-400">Comprar no:</span>
+                <select onchange="updateBuilderItemStore('${name.replace(/'/g, "\'")}', this.value)" class="text-[11px] bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer">
+                  ${storesList.map(s => `
+                    <option value="${s}" ${s === suggestedStore ? 'selected' : ''}>${s}</option>
+                  `).join('')}
+                </select>
+              </div>
+
+              <!-- Stepper de Quantidade -->
+              <div class="flex flex-col text-left">
+                <span class="text-[9px] text-slate-400">Qtd:</span>
+                <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
+                  <button type="button" onclick="updateBuilderItemQtd('${name.replace(/'/g, "\'")}', -1)" class="px-2 py-1 text-slate-400 hover:text-white font-bold hover:bg-slate-700 transition-colors">-</button>
+                  <span class="px-2 py-1 text-xs font-bold text-white font-mono">${itemState.qtd || 1}</span>
+                  <button type="button" onclick="updateBuilderItemQtd('${name.replace(/'/g, "\'")}', 1)" class="px-2 py-1 text-slate-400 hover:text-white font-bold hover:bg-slate-700 transition-colors">+</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      updateBuilderSummaryUI();
+      lucide.createIcons();
+    }
+
+    function toggleBuilderItem(name) {
+      if (!builderSelectedItems[name]) {
+        const stats = getProductPriceStats(name);
+        builderSelectedItems[name] = {
+          selected: true,
+          qtd: 1,
+          unidade: 'un',
+          lojaNome: (stats ? stats.cheapestStore : 'Supermercados Roldão'),
+          menorPreco: stats ? stats.cheapestPrice : 0,
+          lojaMenorPreco: stats ? stats.cheapestStore : '',
+          ultimoPreco: stats ? stats.latestPrice : 0,
+          lojaUltimoPreco: stats ? stats.latestStore : ''
+        };
+      } else {
+        builderSelectedItems[name].selected = !builderSelectedItems[name].selected;
+      }
+      renderShoppingListBuilder();
+    }
+
+    function updateBuilderItemQtd(name, delta) {
+      if (!builderSelectedItems[name]) {
+        const stats = getProductPriceStats(name);
+        builderSelectedItems[name] = {
+          selected: true,
+          qtd: 1,
+          unidade: 'un',
+          lojaNome: (stats ? stats.cheapestStore : 'Supermercados Roldão'),
+          menorPreco: stats ? stats.cheapestPrice : 0,
+          lojaMenorPreco: stats ? stats.cheapestStore : '',
+          ultimoPreco: stats ? stats.latestPrice : 0,
+          lojaUltimoPreco: stats ? stats.latestStore : ''
+        };
+      }
+      builderSelectedItems[name].qtd = Math.max(1, (builderSelectedItems[name].qtd || 1) + delta);
+      builderSelectedItems[name].selected = true; // Auto-seleciona ao ajustar qtd
+      renderShoppingListBuilder();
+    }
+
+    function updateBuilderItemStore(name, storeName) {
+      if (!builderSelectedItems[name]) {
+        const stats = getProductPriceStats(name);
+        builderSelectedItems[name] = {
+          selected: true,
+          qtd: 1,
+          unidade: 'un',
+          lojaNome: storeName,
+          menorPreco: stats ? stats.cheapestPrice : 0,
+          lojaMenorPreco: stats ? stats.cheapestStore : '',
+          ultimoPreco: stats ? stats.latestPrice : 0,
+          lojaUltimoPreco: stats ? stats.latestStore : ''
+        };
+      } else {
+        builderSelectedItems[name].lojaNome = storeName;
+      }
+      updateBuilderSummaryUI();
+    }
+
+    function selectAllBuilderItems(checkAll) {
+      const uniqueNames = Array.from(new Set([
+        ...priceHistory.map(p => p.produto),
+        ...customBuilderProducts.map(p => p.produto)
+      ]));
+
+      uniqueNames.forEach(name => {
+        const stats = getProductPriceStats(name);
+        if (!builderSelectedItems[name]) {
+          builderSelectedItems[name] = {
+            selected: checkAll,
+            qtd: 1,
+            unidade: 'un',
+            lojaNome: (stats ? stats.cheapestStore : 'Supermercados Roldão'),
+            menorPreco: stats ? stats.cheapestPrice : 0,
+            lojaMenorPreco: stats ? stats.cheapestStore : '',
+            ultimoPreco: stats ? stats.latestPrice : 0,
+            lojaUltimoPreco: stats ? stats.latestStore : ''
+          };
+        } else {
+          builderSelectedItems[name].selected = checkAll;
+        }
+      });
+      renderShoppingListBuilder();
+    }
+
+    function addCustomItemToBuilder() {
+      const input = document.getElementById('inputNewBuilderProductName');
+      const qtdInput = document.getElementById('inputNewBuilderProductQtd');
+      const storeSelect = document.getElementById('selectNewBuilderProductStore');
+      const name = (input?.value || '').trim();
+      const qtd = parseInt(qtdInput?.value) || 1;
+      const store = storeSelect?.value || 'Supermercados Roldão';
+
+      if (!name) {
+        alert('Por favor, informe o nome do produto.');
+        return;
+      }
+
+      customBuilderProducts.push({ produto: name });
+      builderSelectedItems[name] = {
+        selected: true,
+        qtd: qtd,
+        unidade: 'un',
+        lojaNome: store,
+        menorPreco: 0,
+        lojaMenorPreco: '',
+        ultimoPreco: 0,
+        lojaUltimoPreco: ''
+      };
+
+      if (input) input.value = '';
+      if (qtdInput) qtdInput.value = '1';
+      renderShoppingListBuilder();
+      showToastUndo(`Produto "${name}" adicionado à lista!`, false);
+    }
+
+    function updateBuilderSummaryUI() {
+      const selected = Object.entries(builderSelectedItems).filter(([k, v]) => v.selected);
+      const countEl = document.getElementById('badgeBuilderSelectedCount');
+      const textEl = document.getElementById('builderSummaryItemsCount');
+      const breakdownEl = document.getElementById('builderSummaryStoresBreakdown');
+
+      if (countEl) countEl.textContent = selected.length;
+      if (textEl) textEl.textContent = `${selected.length} itens selecionados`;
+
+      if (breakdownEl) {
+        if (selected.length === 0) {
+          breakdownEl.textContent = 'Nenhum mercado selecionado';
+        } else {
+          const storeMap = {};
+          selected.forEach(([k, v]) => {
+            const l = v.lojaNome || 'Mercado';
+            storeMap[l] = (storeMap[l] || 0) + 1;
+          });
+          const str = Object.entries(storeMap).map(([l, c]) => `${c} no ${l}`).join(' • ');
+          breakdownEl.textContent = str;
+        }
+      }
+    }
+
+    function sendShoppingListToFamilyChat() {
+      const selected = Object.entries(builderSelectedItems).filter(([k, v]) => v.selected);
+      if (selected.length === 0) {
+        alert('Por favor, marque pelo menos um item para enviar para o Chat.');
+        return;
+      }
+
+      const senderName = (currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+
+      // 1. Converter para os itens ativos da gôndola
+      const chatItems = selected.map(([name, data], idx) => {
+        const stats = getProductPriceStats(name);
+        return {
+          id: 'item_built_' + Date.now() + '_' + idx,
+          nome: name,
+          qtdDesejada: data.qtd || 1,
+          unidade: data.unidade || 'un',
+          marca: '',
+          lojaId: (data.lojaNome || 'roldao').toLowerCase().replace(/\s+/g, '_'),
+          lojaNome: data.lojaNome || (stats ? stats.cheapestStore : 'Supermercados Roldão'),
+          menorPreco: stats ? stats.cheapestPrice : (data.menorPreco || 0),
+          lojaMenorPreco: stats ? stats.cheapestStore : (data.lojaMenorPreco || ''),
+          ultimoPreco: stats ? stats.latestPrice : (data.ultimoPreco || 0),
+          lojaUltimoPreco: stats ? stats.latestStore : (data.lojaUltimoPreco || ''),
+          status: 'pendente',
+          qtdComprada: 0,
+          precoUnitario: 0,
+          pedidoPor: senderName
+        };
+      });
+
+      saveActiveShoppingItems(chatItems);
+
+      // 2. Montar mensagem no chat agrupada por lojas
+      const storeMap = {};
+      chatItems.forEach(it => {
+        storeMap[it.lojaNome] = (storeMap[it.lojaNome] || 0) + 1;
+      });
+      const storeSummaryText = Object.entries(storeMap).map(([l, c]) => `${c} no ${l}`).join(' e ');
+
+      const newMsg = {
+        id: 'm_' + Date.now(),
+        sender: senderName,
+        avatar: senderName.toLowerCase().includes('marcia') ? '👩' : '👨',
+        isMe: true,
+        text: `🛒 Oi amor! Montei uma nova Lista de Compras dividida por mercado: ${storeSummaryText}. Com indicação de onde estava mais barato e o último preço registrado para economizarmos. Conforme for pegando na gôndola, vai marcando no chat! ❤️`,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      const msgs = getCleanChatMessages();
+      msgs.push(newMsg);
+      // Garante que o card da lista está no feed
+      if (!msgs.some(m => m.type === 'shopping_list_card')) {
+        msgs.push({ id: 'm_card_' + Date.now(), type: 'shopping_list_card', sender: 'Sistema', time: newMsg.time });
+      }
+      saveCleanChatMessages(msgs);
+
+      // 3. Fechar lista e abrir chat
+      closeShoppingListModal();
+      activeChatStoreFilter = 'Todos';
+      openFamilyChatModal();
+      showToastUndo(`Lista com ${chatItems.length} itens enviada para o Chat Familiar! 🛒`, false);
+      playChatDing();
+    }
+
+
     function openShoppingListModal() {
       const modal = document.getElementById('modalShoppingListHistory');
       if (modal) {
         modal.classList.remove('hidden');
-        renderPriceHistoryTable();
+        switchShoppingModalTab(activeShoppingModalTab || 'builder');
         lucide.createIcons();
       }
     }
@@ -8511,6 +8960,26 @@
     let ephemeralChatPhotos = []; // Fotos temporárias descartadas ao finalizar compras
     let isChatListExpanded = false;
 
+    let activeChatStoreFilter = 'Todos';
+
+    function setChatStoreFilter(storeName) {
+      activeChatStoreFilter = storeName;
+      renderCleanChatStream();
+    }
+
+    function changeItemStoreInChat(itemId, newStore) {
+      const items = getActiveShoppingItems();
+      const it = items.find(x => x.id === itemId);
+      if (it) {
+        it.lojaNome = newStore;
+        it.lojaId = newStore.toLowerCase().replace(/\s+/g, '_');
+        saveActiveShoppingItems(items);
+        renderCleanChatStream();
+        showToastUndo(`Item "${it.nome}" movido para ${newStore}!`, false);
+      }
+    }
+
+
     const INITIAL_ACTIVE_SHOPPING_LIST = [
       {
         id: "item_1",
@@ -8696,10 +9165,16 @@
 
       container.innerHTML = msgs.map(m => {
         if (m.type === 'shopping_list_card') {
-          // Card Interativo da Lista de Compras na Gôndola
+          // Descobrir lojas distintas presentes na lista
+          const distinctStores = ['Todos', ...Array.from(new Set(items.map(it => it.lojaNome || 'Supermercados Roldão')))];
+          
+          const displayedItems = (activeChatStoreFilter === 'Todos' || !activeChatStoreFilter)
+            ? items
+            : items.filter(it => (it.lojaNome || 'Supermercados Roldão') === activeChatStoreFilter);
+
           return `
             <div class="rounded-2xl bg-slate-900 border border-slate-800 p-3.5 shadow-xl my-2">
-              <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-800">
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-black text-white flex items-center gap-1.5">
                     <span>🛒</span> Lista de Mercado na Gôndola
@@ -8708,18 +9183,52 @@
                     R$ ${summary.total.toFixed(2).replace('.', ',')}
                   </span>
                 </div>
-                <button type="button" onclick="openAddNewItemPrompt()" class="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-[11px] font-bold flex items-center gap-1 transition-all">
-                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                  <span>+ Item</span>
-                </button>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="openShoppingListModal()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all" title="Abrir montador completo">
+                    <i data-lucide="list-plus" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span>+ Produtos</span>
+                  </button>
+                  <button type="button" onclick="openAddNewItemPrompt()" class="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-[11px] font-bold flex items-center gap-1 transition-all">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <span>Item</span>
+                  </button>
+                </div>
               </div>
 
-              <!-- Lista de itens da gôndola -->
+              <!-- BARRA DE FILTROS POR ESTABELECIMENTO NO CHAT (Ex: Roldão, Assaí, Padaria) -->
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 scrollbar-none border-b border-slate-800/80">
+                <span class="text-[10px] font-bold text-slate-400 flex-shrink-0 flex items-center gap-1">
+                  <span>🏪</span> Loja:
+                </span>
+                ${distinctStores.map(s => {
+                  const count = s === 'Todos' ? items.length : items.filter(it => (it.lojaNome || 'Supermercados Roldão') === s).length;
+                  const isActive = (activeChatStoreFilter || 'Todos') === s;
+                  const cls = isActive ? 'bg-emerald-600 text-white font-black shadow-xs' : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 border border-slate-700';
+                  return `
+                    <button type="button" onclick="setChatStoreFilter('${s}')" class="px-2.5 py-1 text-[11px] rounded-xl flex items-center gap-1 transition-all ${cls} flex-shrink-0">
+                      <span>${s === 'Todos' ? '📋 Todos' : s}</span>
+                      <span class="px-1.5 py-0.2 rounded-full ${isActive ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-emerald-400'} text-[10px] font-mono">${count}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Lista de itens filtrados da gôndola -->
               <div class="space-y-2">
-                ${items.map(it => {
+                ${displayedItems.length === 0 ? `
+                  <div class="p-3 text-center text-slate-400 text-xs">Nenhum item marcado para esta loja. Toque em "Todos" para ver a lista completa.</div>
+                ` : displayedItems.map(it => {
                   const isCart = it.status === 'no_carrinho';
                   const isOut = it.status === 'nao_tinha';
                   const statusBorder = isCart ? 'border-emerald-500/50 bg-emerald-950/20' : (isOut ? 'border-red-500/40 bg-red-950/20' : 'border-slate-800 bg-slate-950/60');
+
+                  const itemStore = it.lojaNome || 'Supermercados Roldão';
+                  let storeBadgeColor = 'bg-blue-950/70 text-blue-300 border-blue-800';
+                  if (itemStore.includes('Assaí')) storeBadgeColor = 'bg-amber-950/70 text-amber-300 border-amber-800';
+                  else if (itemStore.includes('Padaria') || itemStore.includes('Feira')) storeBadgeColor = 'bg-purple-950/70 text-purple-300 border-purple-800';
+                  else if (itemStore.includes('Carrefour')) storeBadgeColor = 'bg-indigo-950/70 text-indigo-300 border-indigo-800';
+
+                  const storesOptions = ['Supermercados Roldão', 'Assaí Atacadista', 'Carrefour', 'Pão de Açúcar', 'Padaria Bella', 'Feira / Hortifruti', 'Qualquer Mercado'];
 
                   return `
                     <div class="p-2 sm:p-2.5 rounded-xl border ${statusBorder} transition-all">
@@ -8746,6 +9255,37 @@
                               ${isOut ? `<span class="text-[9px] text-red-400 bg-red-950/80 border border-red-800 px-1.5 py-0.2 rounded font-black">Não Tinha</span>` : ''}
                               ${it.pedidoPor ? `<span class="text-[9px] text-slate-500">(@${it.pedidoPor})</span>` : ''}
                             </div>
+
+                            <!-- TAG DO MERCADO & SELETOR DE MUDANÇA RÁPIDA DE LOJA -->
+                            <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                              <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg border ${storeBadgeColor} flex items-center gap-1">
+                                <span>🏪</span> ${itemStore}
+                              </span>
+
+                              <select onchange="changeItemStoreInChat('${it.id}', this.value)" class="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer" title="Transferir este item para outro mercado">
+                                ${storesOptions.map(st => `
+                                  <option value="${st}" ${st === itemStore ? 'selected' : ''}>${st}</option>
+                                `).join('')}
+                              </select>
+                            </div>
+
+                            <!-- INTELIGÊNCIA DE PREÇOS (ONDE ESTAVA MAIS BARATO & ÚLTIMO PAGO) -->
+                            ${(it.menorPreco > 0 || it.ultimoPreco > 0) ? `
+                              <div class="mt-1 flex items-center gap-1.5 flex-wrap text-[10px]">
+                                ${it.menorPreco > 0 ? `
+                                  <span class="font-bold text-emerald-400 bg-emerald-950/70 border border-emerald-800/80 px-1.5 py-0.2 rounded flex items-center gap-1">
+                                    <span>🟢 Mais barato:</span>
+                                    <strong>${formatBRL(it.menorPreco)}</strong>
+                                    <span class="text-emerald-300">no ${it.lojaMenorPreco || 'Roldão'}</span>
+                                  </span>
+                                ` : ''}
+                                ${it.ultimoPreco > 0 ? `
+                                  <span class="text-slate-400 bg-slate-900 border border-slate-800 px-1.5 py-0.2 rounded flex items-center gap-1">
+                                    <span>🏷️ Último pago: ${formatBRL(it.ultimoPreco)} (${it.lojaUltimoPreco || ''})</span>
+                                  </span>
+                                ` : ''}
+                              </div>
+                            ` : ''}
 
                             <!-- Quando colocado no carrinho: Inputs rápidos de Qtd e Preço -->
                             ${isCart ? `
