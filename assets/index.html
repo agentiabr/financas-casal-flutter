@@ -1020,11 +1020,16 @@
             
             <!-- Tag Interativa do Ciclo Vigente (com Seletor e Alteração Integrados) -->
             <div class="relative inline-block mb-2.5">
-              <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-[11px] font-semibold text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 group cursor-pointer" title="Clique para trocar o ciclo vigente ou criar novo ciclo">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300"></i>
-                <span id="heroCycleTag">Ciclo Vigente • 05/Out a 04/Nov 2026</span>
-                <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wide">Trocar</span>
-                <i data-lucide="chevron-down" class="w-3 h-3 text-white/80 transition-transform group-hover:translate-y-0.5"></i>
+              <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-md text-white border border-white/25 dark:border-white/15 transition-all shadow-xs active:scale-95 group cursor-pointer text-left" title="Clique para trocar o ciclo vigente ou criar novo ciclo">
+                <i data-lucide="calendar" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
+                <div class="flex flex-col text-left leading-tight">
+                  <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-200/90">Ciclo Vigente</span>
+                  <span id="heroCycleTag" class="text-xs font-black text-white">05/Out a 04/Nov - 2026</span>
+                </div>
+                <div class="flex items-center gap-1 pl-1 ml-1 border-l border-white/20">
+                  <span class="px-1.5 py-0.5 rounded-md bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wide">Trocar</span>
+                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/80 transition-transform group-hover:translate-y-0.5"></i>
+                </div>
               </button>
 
               <!-- Dropdown Flutuante de Ciclos Integrado ao Card Azul -->
@@ -1942,7 +1947,7 @@
       </div>
     </section>
 
-    <section class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionCards">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionCards">
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
           <i data-lucide="credit-card" class="w-4 h-4 text-blue-600"></i>
@@ -1968,7 +1973,7 @@
       </div>
     </section>
 
-    <section class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionInstallments">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionInstallments">
       <div class="app-card rounded-none p-4 transition-all">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -2005,14 +2010,14 @@
 
     </div><!-- Fim dashboardSectionsContainer -->
     <!-- RODAPÉ OFICIAL CENTRALIZADO AGGENTIA LABS -->
-    <footer class="w-full py-6 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200/80 dark:border-slate-800/80 mt-10 mb-20 md:mb-6">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-1.5">
-        <div class="flex items-center gap-2 font-black text-xs tracking-tight text-slate-800 dark:text-slate-200">
-          <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+    <footer class="w-full py-2 text-center text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-slate-800/60 mt-3 mb-16 md:mb-2">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-0.5">
+        <div class="flex items-center gap-1.5 font-bold text-[11px] tracking-tight text-slate-700 dark:text-slate-300">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
           <span>Finanças Casal • Rodrigo & Márcia</span>
         </div>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400">
-          © 2026 Desenvolvido por <strong class="text-blue-600 dark:text-blue-400 font-bold">Aggentia Labs</strong> • Todos os direitos reservados.
+        <p class="text-[10px] text-slate-400 dark:text-slate-500">
+          © 2026 Desenvolvido por <strong class="text-blue-600 dark:text-blue-400 font-semibold">Aggentia Labs</strong> • Todos os direitos reservados.
         </p>
       </div>
     </footer>
@@ -5281,7 +5286,7 @@
       const heroMiniCompEl = document.getElementById('heroMiniComprometimento');
 
       if (heroSaldoEl) heroSaldoEl.textContent = formatBRL(saldoLivre, 'saldo');
-      if (heroCycleTagEl) heroCycleTagEl.textContent = `Ciclo Vigente • ${currentCycle}`;
+      if (heroCycleTagEl) heroCycleTagEl.textContent = currentCycle;
       if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}%`;
 
       // Regra Dinâmica: Alerta Vermelho se Saldo Negativo
@@ -7905,7 +7910,7 @@
       currentCycle = cycleName;
       localStorage.setItem('financas_active_cycle', currentCycle);
       const heroTag = document.getElementById('heroCycleTag');
-      if (heroTag) heroTag.textContent = `Ciclo Vigente • ${cycleName}`;
+      if (heroTag) heroTag.textContent = cycleName;
       const sel = document.getElementById('cycleSelector');
       if (sel) sel.value = cycleName;
       closeCycleMenu();
@@ -8305,6 +8310,44 @@
           `;
         }
 
+        // Card de Reconhecimento OCR de Produto e Preço na Gôndola
+        if (m.type === 'ocr_product_card') {
+          return `
+            <div class="rounded-2xl bg-slate-900 border border-emerald-500/40 p-3 shadow-lg my-2 text-slate-100">
+              <div class="flex items-center gap-2 mb-2 pb-1.5 border-b border-slate-800">
+                <span class="w-6 h-6 rounded-lg bg-emerald-600/30 text-emerald-300 flex items-center justify-center text-xs">🏷️</span>
+                <div>
+                  <span class="text-xs font-black text-white">Reconhecimento na Gôndola</span>
+                  <span class="block text-[9px] text-emerald-400 font-mono">Etiqueta e Produto Detectados</span>
+                </div>
+                <span class="text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.5 rounded font-mono ml-auto">OCR</span>
+              </div>
+              
+              <div class="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-black text-white truncate" id="ocrTitle_${m.id}">${m.nome}</div>
+                  <div class="text-xs font-mono font-bold text-emerald-400 mt-0.5 flex items-center gap-1">
+                    <span>Preço:</span>
+                    <span>${m.preco > 0 ? ('R$ ' + m.preco.toFixed(2).replace('.', ',')) : 'A combinar'}</span>
+                  </div>
+                </div>
+                ${m.photoUrl ? `<img src="${m.photoUrl}" class="w-10 h-10 rounded-lg object-cover border border-slate-800 flex-shrink-0">` : ''}
+              </div>
+
+              <div class="mt-2.5 flex items-center gap-2">
+                <button type="button" onclick="confirmAddOcrItemToCart('${m.id}', '${m.nome.replace(/'/g, "\\'")}', ${m.preco})" class="flex-1 py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                  <span>+ Adicionar ao Carrinho</span>
+                </button>
+                <button type="button" onclick="openEditItemModalWithValues('${m.nome.replace(/'/g, "\\'")}', ${m.preco})" class="py-1.5 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-colors flex items-center gap-1">
+                  <i data-lucide="edit-2" class="w-3 h-3"></i>
+                  <span>Ajustar</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
         // Mensagens normais de conversa
         if (m.isMe) {
           // Mensagem enviada (Verde à direita)
@@ -8314,7 +8357,13 @@
                 ${m.photoUrl ? `
                   <div class="mb-2">
                     <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-emerald-500/50">
-                    <span class="block text-[9px] text-emerald-200 mt-1">📸 Foto da gôndola (temporária)</span>
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-emerald-600/40">
+                      <span class="text-[9px] text-emerald-200">📸 Foto temporária</span>
+                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-red-200 hover:text-white bg-red-900/60 hover:bg-red-800 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors" title="Apagar foto da conversa">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        <span>Apagar foto</span>
+                      </button>
+                    </div>
                   </div>
                 ` : ''}
                 <p class="text-xs sm:text-[13px] leading-relaxed text-white">${m.text}</p>
@@ -8337,7 +8386,13 @@
                 ${m.photoUrl ? `
                   <div class="mb-2">
                     <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-slate-700">
-                    <span class="block text-[9px] text-slate-400 mt-1">📸 Foto da gôndola (temporária)</span>
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-800">
+                      <span class="text-[9px] text-slate-400">📸 Foto temporária</span>
+                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-red-300 hover:text-red-100 bg-red-950/80 hover:bg-red-900 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors" title="Apagar foto da conversa">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        <span>Apagar foto</span>
+                      </button>
+                    </div>
                   </div>
                 ` : ''}
                 <p class="text-xs sm:text-[13px] leading-relaxed text-slate-200">${m.text}</p>
@@ -8495,18 +8550,156 @@
     }
 
     // ==========================================
-    // NLP PARSER INTELIGENTE DE ITENS DE MERCADO NO CHAT
+    // CONTROLES DE FOTO, OCR E EDICAO NA GONDOLA (V1.5.2)
     // ==========================================
+    function deleteChatPhoto(msgId) {
+      let msgs = getCleanChatMessages();
+      const target = msgs.find(m => m.id === msgId);
+      if (target) {
+        if (target.photoUrl) {
+          ephemeralChatPhotos = ephemeralChatPhotos.filter(p => p !== target.photoUrl);
+          target.photoUrl = null;
+          target.text = target.text ? (target.text + ' (📸 Foto apagada)') : '(📸 Foto apagada)';
+        }
+        // Remove tambem card de OCR associado se houver
+        msgs = msgs.filter(m => m.photoMsgId !== msgId);
+        saveCleanChatMessages(msgs);
+        renderCleanChatStream();
+        showToastUndo('Foto apagada da conversa.', false);
+      }
+    }
+
+    function confirmAddOcrItemToCart(ocrCardId, nome, preco) {
+      let items = getActiveShoppingItems();
+      const pVal = parseFloat(preco) || 0;
+      const newItem = {
+        id: 'item_' + Date.now(),
+        nome: nome,
+        qtdDesejada: 1,
+        qtdComprada: 1,
+        unidade: 'un',
+        marca: '',
+        precoUnitario: pVal,
+        status: 'no_carrinho',
+        pedidoPor: 'Gôndola'
+      };
+      items.push(newItem);
+      saveActiveShoppingItems(items);
+      updateCartSummaryUI();
+
+      // Remove card OCR e adiciona confirmacao no chat
+      let msgs = getCleanChatMessages();
+      msgs = msgs.filter(m => m.id !== ocrCardId);
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const precoStr = pVal > 0 ? ` (R$ ${pVal.toFixed(2).replace('.', ',')})` : '';
+      msgs.push({
+        id: 'sys_' + Date.now(),
+        sender: 'Lista de Mercado',
+        avatar: '🛒',
+        isMe: false,
+        text: `✅ "${nome}"${precoStr} adicionado diretamente ao carrinho!`,
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+      renderCleanChatStream();
+      playChatDing();
+      showToastUndo(`"${nome}" colocado no carrinho!`, false);
+    }
+
+    function openEditItemModalWithValues(nome, preco) {
+      document.getElementById('modalEditItemTitle').textContent = 'Confirmar Produto & Preço';
+      document.getElementById('editItemId').value = '';
+      document.getElementById('editItemNome').value = nome || '';
+      document.getElementById('editItemQtd').value = '1';
+      document.getElementById('editItemUnidade').value = 'un';
+      document.getElementById('editItemMarca').value = '';
+      document.getElementById('editItemPreco').value = (preco && parseFloat(preco) > 0) ? parseFloat(preco).toFixed(2) : '';
+
+      const modal = document.getElementById('modalEditShoppingItem');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    // ==========================================
+    // NLP PARSER INTELIGENTE DE ITENS DE MERCADO NO CHAT (V1.5.2)
+    // ==========================================
+    const GROCERY_KEYWORDS = [
+      'leite', 'pão', 'pao', 'café', 'cafe', 'arroz', 'feijão', 'feijao', 'macarrão', 'macarrao',
+      'açúcar', 'acucar', 'sal', 'óleo', 'oleo', 'azeite', 'manteiga', 'margarina', 'queijo',
+      'presunto', 'carne', 'frango', 'peixe', 'ovo', 'ovos', 'alho', 'cebola', 'tomate',
+      'batata', 'cenoura', 'fruta', 'maçã', 'maca', 'banana', 'laranja', 'limão', 'limao',
+      'sabão', 'sabao', 'detergente', 'desinfetante', 'amaciante', 'água sanitária', 'agua sanitaria',
+      'papel higiênico', 'papel higienico', 'pasta de dente', 'escova', 'sabonete', 'shampoo',
+      'condicionador', 'iogurte', 'bolacha', 'biscoito', 'massa', 'molho', 'extrato',
+      'cerveja', 'vinho', 'suco', 'refrigerante', 'refrigerantes', 'água', 'agua', 'alface',
+      'iogurtes', 'requeijão', 'requeijao', 'danone', 'coca cola', 'coca', 'guaraná', 'guarana'
+    ];
+
+    const INTENT_PREFIXES = [
+      /\bcomprar\b/i, /\bcompre\b/i, /\bcompra\b/i, /\btrazer\b/i, /\btraga\b/i, /\btraz\b/i,
+      /\bpegar\b/i, /\bpega\b/i, /\blevar\b/i, /\bleva\b/i, /\badicionar\b/i, /\badiciona\b/i,
+      /\bnão esquece de\b/i, /\bnao esquece de\b/i, /\bfalta\b/i, /\+/
+    ];
+
+    const CHAT_COMMENT_PATTERNS = [
+      /\bt[áa]\s+(?:muito\s+)?car[oa]\b/i,
+      /\bachei\s+(?:muito\s+)?car[oa]\b/i,
+      /\bpreço\s+alto\b/i,
+      /\bj[áa]\s+peguei\b/i,
+      /\bj[áa]\s+comprei\b/i,
+      /\bn[ãa]o\s+achei\b/i,
+      /\bn[ãa]o\s+tem\b/i,
+      /\bacabou\b/i,
+      /\besgotad[oa]\b/i,
+      /\bestou\b/i,
+      /\bt[ôo]\b/i,
+      /\bcheguei\b/i,
+      /\bcorredor\b/i,
+      /\bvou\s+demorar\b/i,
+      /\bcad[êe]\b/i
+    ];
+
+    const GROCERY_UNITS = [
+      'pacote', 'pacotes', 'pct', 'pcts', 'caixa', 'caixas', 'cx', 'cxs', 'lata', 'latas',
+      'garrafa', 'garrafas', 'barra', 'barras', 'saco', 'sacos', 'kg', 'quilo', 'quilos',
+      'kilo', 'kilos', 'g', 'grama', 'gramas', 'l', 'litro', 'litros', 'ml', 'un', 'unidade', 'unidades'
+    ];
+
+    function isChatComment(text) {
+      if (!text) return true;
+      const t = text.toLowerCase().trim();
+      if (t.includes('?')) return true;
+      for (const p of CHAT_COMMENT_PATTERNS) {
+        if (p.test(t)) return true;
+      }
+      return false;
+    }
+
+    function isEligibleGroceryItem(text) {
+      if (!text) return false;
+      const t = text.toLowerCase().trim();
+      if (t.length < 2 || isChatComment(t)) return false;
+      for (const pat of INTENT_PREFIXES) {
+        if (pat.test(t)) return true;
+      }
+      for (const kw of GROCERY_KEYWORDS) {
+        if (new RegExp('\\b' + kw + '\\b', 'i').test(t)) {
+          const words = t.split(/\s+/);
+          if (words.length <= 5) return true;
+          const unitPat = new RegExp('\\b\\d+(?:[.,]\\d+)?\\s*(?:' + GROCERY_UNITS.join('|') + ')\\b', 'i');
+          if (unitPat.test(t)) return true;
+        }
+      }
+      const unitPat = new RegExp('\\b\\d+(?:[.,]\\d+)?\\s*(?:' + GROCERY_UNITS.join('|') + ')\\b', 'i');
+      if (unitPat.test(t)) return true;
+      return false;
+    }
+
     function parseSingleGroceryItem(text) {
       if (!text) return null;
       const original = text.trim();
       if (!original || original.length < 2) return null;
-      
-      const lower = original.toLowerCase();
-      // Ignora saudações, confirmações e perguntas conversacionais puras
-      if (original.includes('?') || ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'ok', 'beleza', 'sim', 'não', 'nao', 'tô aqui', 'cheguei', 'tá bom', 'valeu', 'obrigado', 'obrigada', 'já estou aqui', 'já cheguei', 'oi mãe', 'oi pai', 'oi amor', 'oi filho'].includes(lower)) {
-        return null;
-      }
+      if (isChatComment(original)) return null;
 
       // Remove vocativos no início (Filho, Mãe, Pai, Amor, etc.)
       let cleaned = original.replace(/^(?:(?:ol[áa]|oi|filho|filha|amor|m[ãa]e|pai|esposa|marido)\s*[,:]?\s*)/i, '').trim();
@@ -8566,18 +8759,43 @@
 
     function parseGroceryItemsFromMessage(text) {
       if (!text) return [];
-      const parts = text.split(/[\n,]/).map(p => p.trim()).filter(Boolean);
-      if (!parts.length) return [];
-      if (parts.length > 1) {
-        const list = [];
-        for (const p of parts) {
-          const it = parseSingleGroceryItem(p);
-          if (it) list.push(it);
+      const raw = text.trim();
+      if (isChatComment(raw)) return [];
+
+      let hasExplicitIntent = false;
+      for (const pat of INTENT_PREFIXES) {
+        if (new RegExp('^(?:(?:ol[áa]|oi|filho|filha|amor|m[ãa]e|pai)\\s*[,:]?\\s*)?(?:por favor\\s*[,:]?\\s*)?' + pat.source, 'i').test(raw)) {
+          hasExplicitIntent = true;
+          break;
         }
-        if (list.length > 0) return list;
       }
-      const single = parseSingleGroceryItem(text);
-      return single ? [single] : [];
+
+      let cleanedMsg = raw.replace(/^(?:(?:ol[áa]|oi|filho|filha|amor|m[ãa]e|pai)\s*[,:]?\s*)/i, '').trim();
+      for (const pat of INTENT_PREFIXES) {
+        cleanedMsg = cleanedMsg.replace(new RegExp('^(?:por favor\\s*[,:]?\\s*)?' + pat.source + '\\s*(?:pra mim|por favor)?\\s*', 'i'), '').trim();
+      }
+
+      // Separa por quebra de linha, vírgula, ponto e vírgula E pela conjunção ' e '
+      const parts = cleanedMsg.split(/[\n,;]|\s+e\s+(?=[a-z0-9à-ú])/i).map(p => p.trim()).filter(Boolean);
+      const results = [];
+
+      for (const p of parts) {
+        const cleanP = p.replace(/\s*(?:por\s+favor|pra\s+mim|viu|t[áa]\??|tamb[ée]m)\s*$/i, '').trim();
+        if (!cleanP || cleanP.length < 2) continue;
+        if (hasExplicitIntent) {
+          if (!isChatComment(cleanP)) {
+            const parsed = parseSingleGroceryItem(cleanP);
+            if (parsed) results.push(parsed);
+          }
+        } else {
+          if (isEligibleGroceryItem(cleanP)) {
+            const parsed = parseSingleGroceryItem(cleanP);
+            if (parsed) results.push(parsed);
+          }
+        }
+      }
+
+      return results;
     }
 
     function handleSendCleanChatMessage(e) {
@@ -8647,7 +8865,7 @@
     }
 
     // ==========================================
-    // CAPTURA DE FOTO NA GÔNDOLA (NATIVA + WEB)
+    // CAPTURA DE FOTO E RECONHECIMENTO OCR NA GÔNDOLA
     // ==========================================
     function triggerChatPhotoCapture() {
       // 1. Tenta canal nativo Flutter para abrir câmera do Android
@@ -8687,15 +8905,16 @@
 
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const photoMsgId = 'photo_' + Date.now();
 
       const msgs = getCleanChatMessages();
       msgs.push({
-        id: 'photo_' + Date.now(),
+        id: photoMsgId,
         sender: 'Eu',
         avatar: '👤',
         isMe: true,
         photoUrl: photoData,
-        text: 'Enviei foto da gôndola para confirmar a marca.',
+        text: 'Enviei foto da gôndola para confirmar o produto e preço.',
         time: timeStr
       });
       saveCleanChatMessages(msgs);
@@ -8705,6 +8924,84 @@
       if (feed) feed.scrollTop = feed.scrollHeight;
 
       triggerFamilyPushNotification('📸 Foto na Gôndola', 'Nova foto enviada no chat da família', '📷');
+
+      // Executa reconhecimento inteligente de produto e preco por foto
+      recognizeProductAndPriceFromPhoto(photoData, photoMsgId);
+    }
+
+    async function recognizeProductAndPriceFromPhoto(photoData, photoMsgId) {
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      let detectedText = '';
+      let detectedPrice = 0;
+      let detectedProductName = '';
+
+      // Tenta OCR com Tesseract.js se presente
+      if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+        try {
+          const ocrResult = await Promise.race([
+            window.Tesseract.recognize(photoData, 'por'),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+          ]);
+          if (ocrResult && ocrResult.data && ocrResult.data.text) {
+            detectedText = ocrResult.data.text;
+          }
+        } catch(err) {
+          console.warn('OCR timeout ou fallback:', err);
+        }
+      }
+
+      // Analise inteligente de Preco e Produto
+      if (detectedText) {
+        const priceMatch = detectedText.match(/(?:R\$\s*|VALOR\s*|PRE[ÇC]O\s*)?(\d{1,3}[.,]\d{2})/i);
+        if (priceMatch) {
+          detectedPrice = parseFloat(priceMatch[1].replace(',', '.'));
+        }
+
+        const lines = detectedText.split('\n').map(l => l.trim()).filter(Boolean);
+        for (const line of lines) {
+          const lowerLine = line.toLowerCase();
+          for (const kw of GROCERY_KEYWORDS) {
+            if (lowerLine.includes(kw)) {
+              detectedProductName = line.replace(/R\$\s*\d+[.,]\d{2}/gi, '').replace(/[^\w\sà-úÀ-Ú-]/g, '').trim();
+              break;
+            }
+          }
+          if (detectedProductName) break;
+        }
+
+        if (!detectedProductName && lines.length > 0) {
+          const candidate = lines.find(l => l.length > 3 && !/^\d+$/.test(l) && !/^R\$/i.test(l));
+          if (candidate) {
+            detectedProductName = candidate.replace(/R\$\s*\d+[.,]\d{2}/gi, '').trim();
+          }
+        }
+      }
+
+      if (!detectedProductName) {
+        detectedProductName = 'Produto na Gôndola';
+      }
+
+      // Adiciona card de reconhecimento OCR na conversa
+      const msgs = getCleanChatMessages();
+      msgs.push({
+        id: 'ocr_' + Date.now(),
+        type: 'ocr_product_card',
+        sender: 'Reconhecimento na Gôndola',
+        avatar: '🏷️',
+        isMe: false,
+        nome: detectedProductName,
+        preco: detectedPrice,
+        photoUrl: photoData,
+        photoMsgId: photoMsgId,
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+      renderCleanChatStream();
+
+      const feed = document.getElementById('chatMessagesFeed');
+      if (feed) feed.scrollTop = feed.scrollHeight;
     }
 
     function openFinishShoppingModal() {
@@ -8804,6 +9101,59 @@
       saveCleanChatMessages(msgs);
       renderCleanChatStream();
       showToastUndo('Lista de compras finalizada e fotos temporárias limpas.', false);
+    }
+
+    // ==========================================
+    // DESISTIR DA COMPRA NO CHAT (SAIR DO MERCADO SEM LANÇAR VALORES)
+    // ==========================================
+    function openAbandonShoppingModal() {
+      const modal = document.getElementById('modalConfirmAbandonShopping');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeAbandonShoppingModal() {
+      const modal = document.getElementById('modalConfirmAbandonShopping');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmAbandonShopping() {
+      closeAbandonShoppingModal();
+
+      // Reseta os itens pegos de volta para 'pendentes'
+      let items = getActiveShoppingItems();
+      items = items.map(it => {
+        if (it.status === 'no_carrinho') {
+          return { ...it, status: 'pendente' };
+        }
+        return it;
+      });
+      saveActiveShoppingItems(items);
+
+      // Limpa fotos temporárias
+      ephemeralChatPhotos = [];
+      let msgs = getCleanChatMessages();
+      msgs = msgs.map(m => {
+        if (m.photoUrl) {
+          return { ...m, photoUrl: null, text: m.text + ' (📸 Foto temporária descartada)' };
+        }
+        return m;
+      });
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      msgs.push({
+        id: 'abn_' + Date.now(),
+        sender: 'Sistema',
+        avatar: '🚪',
+        isMe: false,
+        text: '🚪 Compras interrompidas. A lista foi preservada para a próxima ida ao mercado e nenhum valor foi cobrado no ciclo financeiro.',
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+
+      updateCartSummaryUI();
+      renderCleanChatStream();
+      showToastUndo('Compras canceladas. Nenhum valor lançado no ciclo financeiro.', false);
     }
 
     
@@ -10123,15 +10473,20 @@
       </div>
 
       <!-- Placar ao Vivo do Carrinho na Gôndola (Evitar surpresa no caixa!) -->
-      <div id="chatShoppingSummaryBar" class="bg-slate-900/95 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between gap-2 flex-shrink-0">
-        <div class="flex items-center gap-2 min-w-0">
+      <div id="chatShoppingSummaryBar" class="bg-slate-900/95 border-b border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2 flex-shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <span class="text-xs font-bold text-slate-400">Carrinho:</span>
           <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-400 font-mono">R$ 0,00</span>
           <span class="text-[11px] text-slate-500 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
         </div>
-        <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95 flex-shrink-0">
-          <span>🏁 Finalizar Compras</span>
-        </button>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-red-950/70 text-slate-400 hover:text-red-300 border border-slate-700 hover:border-red-800/60 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
+            <span>🚪 Desistir</span>
+          </button>
+          <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95">
+            <span>🏁 Finalizar</span>
+          </button>
+        </div>
       </div>
 
       <!-- Feed de Conversa e Lista Interativa da Gôndola -->
@@ -10214,6 +10569,43 @@
         </button>
         <button type="button" onclick="closeFinishShoppingModal()" class="w-full py-1.5 text-[11px] text-slate-400 hover:text-white">
           Continuar Comprando
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DESISTIR DAS COMPRAS NO CHAT (SAIR DO MERCADO SEM LANÇAR VALORES) -->
+  <div id="modalConfirmAbandonShopping" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-5 text-white shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-2xl bg-amber-950 text-amber-400 border border-amber-800 flex items-center justify-center text-2xl mx-auto mb-3">
+        🚪
+      </div>
+      <h3 class="text-base font-black text-white">Desistir das compras agora?</h3>
+      <p class="text-xs text-slate-400 mt-1">
+        Precisou sair do mercado no meio da compra?
+      </p>
+
+      <div class="my-4 p-3 bg-slate-950 rounded-2xl border border-slate-800 text-left space-y-2 text-xs">
+        <div class="flex items-start gap-2 text-slate-300">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span><strong>Nenhum valor</strong> será lançado no seu ciclo ou nas despesas.</span>
+        </div>
+        <div class="flex items-start gap-2 text-slate-300">
+          <span class="text-blue-400 font-bold">✓</span>
+          <span>Os itens pegos voltarão para a lista como <strong>pendentes</strong> para a próxima compra.</span>
+        </div>
+        <div class="flex items-start gap-2 text-amber-300/90">
+          <span class="text-amber-400 font-bold">✓</span>
+          <span>As fotos temporárias da gôndola serão descartadas da memória.</span>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button type="button" onclick="confirmAbandonShopping()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 font-black text-xs text-white shadow-md transition-all active:scale-95">
+          🚪 Sim, Desistir e Sair do Mercado
+        </button>
+        <button type="button" onclick="closeAbandonShoppingModal()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-xs text-slate-300">
+          Continuar no Mercado
         </button>
       </div>
     </div>
