@@ -66,13 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
 
                   const Text(
-                    'Finanças Casal',
+                    'CtrlPig',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Rodrigo & Márcia • Acesso por E-mail e Senha',
+                    'Controle Financeiro Inteligente • Acesso Seguro',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
                   ),

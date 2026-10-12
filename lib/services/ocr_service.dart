@@ -8,12 +8,15 @@ class ReceiptItem {
   final double total;
   final String unidade;
 
+  final bool validated;
+
   ReceiptItem({
     required this.produto,
     required this.qtd,
     required this.preco,
     required this.total,
     this.unidade = 'un',
+    this.validated = true,
   });
 
   Map<String, dynamic> toJson() => {
@@ -22,6 +25,7 @@ class ReceiptItem {
     'preco': preco,
     'total': total,
     'unidade': unidade,
+    'validado': validated,
   };
 }
 
@@ -98,7 +102,7 @@ class OcrService {
     // 2. Detectar Valor Total da NF
     double? detectedTotal;
     final totalRegex = RegExp(
-      r'(?:VALOR\s+TOTAL(?:\s+DA\s+NOTA|\s+A\s+PAGAR|\s+PAGO|\s+L[ÍI]QUIDO)?|TOTAL\s+A\s+PAGAR|TOTAL\s+L[ÍI]QUIDO|TOTAL\s+PAGO|VALOR\s+A\s+PAGAR|VLR\s+TOTAL|TOTAL)\s*(?:R\$)?[\s:]*([0-9]{1,4}(?:\.[0-9]{3})*(?:,[0-9]{2})|[0-9]+[.,][0-9]{2})',
+      r'(?:VALOR\s+TOTAL(?:\s+DA\s+NOTA|\s+A\s+PAGAR|\s+PAGO|\s+L[ÍI]QUIDO)?|TOTAL\s+A\s+PAGAR|TOTAL\s+L[ÍI]QUIDO|TOTAL\s+PAGO|VALOR\s+A\s+PAGAR|VLR\s+TOTAL|TOTAL)\s*(?:R\$|RS|B\$)?[\s:]*([0-9]{1,4}(?:\.[0-9]{3})*(?:,[0-9]{2})|[0-9]+[.,\s][0-9]{2})',
       caseSensitive: false,
     );
     for (int i = lines.length - 1; i >= 0; i--) {
@@ -115,20 +119,42 @@ class OcrService {
       }
     }
 
-    // 3. Detectar Estabelecimento (primeiras linhas não fiscais)
+    // 3. Detectar Estabelecimento (Heurística de alta precisão com palavras comerciais)
     String? detectedStore;
     final fiscalKeywords = [
-      'cnpj', 'ie:', 'im:', 'danfe', 'cupom', 'emissao', 'extrato', 'sat', 'nfc-e', 'nfe',
+      'cnpj', 'ie:', 'im:', 'danfe', 'cupom', 'emissao', 'emissão', 'extrato', 'sat', 'nfc-e', 'nfe',
       'av ', 'rua ', 'alameda', 'rodovia', 'travessa', 'bairro', 'cep', 'tel', 'fone',
-      '---', '===', 'documento auxiliar', 'consumidor eletronica'
+      '---', '===', 'documento auxiliar', 'consumidor eletronica', 'consumidor eletrônica',
+      'via consumidor', 'protocolo', 'chave de acesso'
     ];
-    for (int i = 0; i < lines.length && i < 10; i++) {
+    final storeIndicators = [
+      'supermercado', 'supermercados', 'mercado', 'hipermercado', 'atacado', 'atacadão', 'atacadao',
+      'comercio', 'comércio', 'varejo', 'distribuidora', 'padaria', 'panificadora',
+      'drogaria', 'farmacia', 'farmácia', 'posto', 'restaurante', 'lanchonete',
+      'lojas', 'loja', 'ltda', 's.a.', 'sa', 'eireli', 'me', 'epp', 'açougue', 'hortifruti'
+    ];
+
+    // Prioridade 1: Linha do topo que contenha indicador comercial explícito
+    for (int i = 0; i < lines.length && i < 12; i++) {
       final l = lines[i];
       final lower = l.toLowerCase();
       if (fiscalKeywords.any((k) => lower.contains(k))) continue;
-      if (l.length >= 3 && RegExp(r'[a-zA-ZÀ-ÿ]{3,}').hasMatch(l)) {
-        detectedStore = l.replaceAll(RegExp(r'^[^\w]+|[^\w]+$'), '').trim();
+      if (storeIndicators.any((k) => lower.contains(k))) {
+        detectedStore = l.replaceAll(RegExp(r'^[^\wÀ-ÿ]+|[^\wÀ-ÿ]+$'), '').trim();
         break;
+      }
+    }
+
+    // Prioridade 2: Primeira linha legível do topo com nome próprio
+    if (detectedStore == null) {
+      for (int i = 0; i < lines.length && i < 8; i++) {
+        final l = lines[i];
+        final lower = l.toLowerCase();
+        if (fiscalKeywords.any((k) => lower.contains(k))) continue;
+        if (l.length >= 3 && RegExp(r'[a-zA-ZÀ-ÿ]{3,}').hasMatch(l)) {
+          detectedStore = l.replaceAll(RegExp(r'^[^\wÀ-ÿ]+|[^\wÀ-ÿ]+$'), '').trim();
+          break;
+        }
       }
     }
 
@@ -219,6 +245,9 @@ class OcrService {
   static double? _parseMoney(String valStr) {
     try {
       var s = valStr.trim();
+      s = s.replaceAll(RegExp(r'^(?:R\$|RS|B\$|\$)\s*'), '');
+      // Corrige caso de espaço entre inteiros e centavos (ex: "15 90" -> "15.90")
+      s = s.replaceAllMapped(RegExp(r'(\d+)\s+(\d{2})$'), (m) => '${m[1]}.${m[2]}');
       if (s.contains(',') && s.contains('.')) {
         s = s.replaceAll('.', '').replaceAll(',', '.');
       } else if (s.contains(',')) {

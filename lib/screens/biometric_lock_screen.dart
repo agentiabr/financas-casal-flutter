@@ -93,12 +93,12 @@ class _BiometricLockScreenState extends State<BiometricLockScreen> {
                 const SizedBox(height: 24),
 
                 const Text(
-                  'Finanças Casal',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  'CtrlPig',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Rodrigo & Márcia • Acesso Seguro',
+                  'Controle Financeiro Inteligente • Acesso Seguro',
                   style: TextStyle(fontSize: 14, color: AppTheme.textMuted),
                 ),
                 const SizedBox(height: 48),

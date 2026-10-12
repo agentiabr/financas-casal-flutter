@@ -87,8 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Finanças Casal', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              Text('Rodrigo & Márcia', style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+              Text('CtrlPig', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('Controle Financeiro Inteligente', style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
             ],
           ),
         ],
