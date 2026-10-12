@@ -29,7 +29,7 @@ class FinancasCasalApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PIgCtrl • Finanças Casal',
+      title: 'CtrlPig • Controle Financeiro Inteligente',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
