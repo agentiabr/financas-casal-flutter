@@ -21,7 +21,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
+  final OcrService _ocrService = OcrService();
   DateTime? _lastBackPressTime;
+
+  @override
+  void dispose() {
+    _ocrService.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -143,21 +150,35 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       final XFile? photo = await _picker.pickImage(
         source: source,
         preferredCameraDevice: CameraDevice.rear,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 85,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 88,
       );
       if (photo == null) return;
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativeOcrProcessingStart === 'function') { window.onNativeOcrProcessingStart(); }"
+      );
 
       final bytes = await photo.readAsBytes();
       final base64Str = base64Encode(bytes);
       final dataUrl = 'data:image/jpeg;base64,$base64Str';
 
-      _controller.runJavaScript(
-        "if (typeof window.onNativeInvoicePhotoCaptured === 'function') { window.onNativeInvoicePhotoCaptured('$dataUrl'); }"
-      );
+      // Executa OCR Google ML Kit no hardware nativo do dispositivo
+      final ocrResult = await _ocrService.processReceiptImage(photo.path);
+      final jsonResult = jsonEncode(ocrResult.toJson());
+      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+      final safeDataUrl = dataUrl.replaceAll("'", r"\'");
+
+      _controller.runJavaScript("""
+        if (typeof window.onNativeInvoiceOcrResult === 'function') {
+          window.onNativeInvoiceOcrResult('$safeJson', '$safeDataUrl');
+        } else if (typeof window.onNativeInvoicePhotoCaptured === 'function') {
+          window.onNativeInvoicePhotoCaptured('$safeDataUrl');
+        }
+      """);
     } catch (e) {
-      debugPrint('Erro ao capturar foto da nota: $e');
+      debugPrint('Erro ao capturar foto da nota com OCR: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao capturar foto da nota: $e')),
@@ -169,25 +190,64 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   Future<void> _pickInvoicePhotosFromGallery() async {
     try {
       final List<XFile> photos = await _picker.pickMultiImage(
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 85,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 88,
       );
       if (photos.isEmpty) return;
 
+      _controller.runJavaScript(
+        "if (typeof window.onNativeOcrProcessingStart === 'function') { window.onNativeOcrProcessingStart(); }"
+      );
+
       final List<String> dataUrls = [];
+      final List<ReceiptItem> allItems = [];
+      String? detectedStore;
+      DateTime? detectedDate;
+      double? detectedTotal;
+
       for (final p in photos) {
         final bytes = await p.readAsBytes();
         final base64Str = base64Encode(bytes);
         dataUrls.add('data:image/jpeg;base64,$base64Str');
+
+        try {
+          final ocr = await _ocrService.processReceiptImage(p.path);
+          if (ocr.storeName != null && detectedStore == null) detectedStore = ocr.storeName;
+          if (ocr.date != null && detectedDate == null) detectedDate = ocr.date;
+          if (ocr.totalAmount != null && ocr.totalAmount! > 0) detectedTotal = ocr.totalAmount;
+          allItems.addAll(ocr.items);
+        } catch (itemErr) {
+          debugPrint('Erro ao processar parte da nota: $itemErr');
+        }
       }
 
-      final jsonArray = jsonEncode(dataUrls);
-      _controller.runJavaScript(
-        "if (typeof window.onNativeInvoicePhotosCaptured === 'function') { window.onNativeInvoicePhotosCaptured($jsonArray); }"
+      if ((detectedTotal == null || detectedTotal <= 0) && allItems.isNotEmpty) {
+        detectedTotal = allItems.fold(0.0, (acc, item) => acc + item.total);
+      }
+
+      final combinedResult = ReceiptOcrResult(
+        storeName: detectedStore,
+        totalAmount: detectedTotal,
+        date: detectedDate ?? DateTime.now(),
+        items: allItems,
+        lines: [],
+        rawText: '',
       );
+
+      final jsonResult = jsonEncode(combinedResult.toJson());
+      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+      final jsonArray = jsonEncode(dataUrls);
+
+      _controller.runJavaScript("""
+        if (typeof window.onNativeInvoiceMultiOcrResult === 'function') {
+          window.onNativeInvoiceMultiOcrResult('$safeJson', $jsonArray);
+        } else if (typeof window.onNativeInvoicePhotosCaptured === 'function') {
+          window.onNativeInvoicePhotosCaptured($jsonArray);
+        }
+      """);
     } catch (e) {
-      debugPrint('Erro ao selecionar fotos da galeria: $e');
+      debugPrint('Erro ao selecionar fotos da galeria com OCR: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao selecionar fotos: $e')),
