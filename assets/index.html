@@ -1358,9 +1358,120 @@
       </div>
     </div>
 
+    <!-- ============================================================== -->
+    <!-- RÉGUA DE ACESSO RÁPIDO FINTECH (QUICK HUB DE SERVIÇOS & ROTINAS) -->
+    <!-- ============================================================== -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-1.5 w-full" id="fintechQuickHub">
+      <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-all">
+        <div class="flex items-center justify-between mb-2.5 px-0.5">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+            <h2 class="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <span>Serviços & Rotinas da Família</span>
+            </h2>
+          </div>
+          <span class="text-[11px] font-semibold text-slate-400 hidden xs:inline">Acesso Rápido Fintech</span>
+        </div>
+
+        <!-- Cards com cantos squircle elegantes e layout responsivo -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+          
+          <!-- 1. ÁREA PET (PANTONE) -->
+          <button type="button" onclick="openPetAreaModal()" class="flex flex-col text-left p-3 rounded-2xl bg-slate-50 hover:bg-amber-50/70 dark:bg-slate-800/80 dark:hover:bg-amber-950/30 border border-slate-200/80 dark:border-slate-700/80 hover:border-amber-400 dark:hover:border-amber-500/60 transition-all duration-200 shadow-2xs hover:shadow-sm group cursor-pointer active:scale-98">
+            <div class="flex items-center justify-between w-full mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-amber-500/30 group-hover:scale-105 transition-transform">
+                🐾
+              </div>
+              <span id="quickHubPetBadge" class="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                Vacinas em dia
+              </span>
+            </div>
+            <div class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              Pantone (Pet)
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5" id="quickHubPetSub">
+              Vacinas, perfil & despesas
+            </div>
+          </button>
+
+          <!-- 2. SAÚDE & REMÉDIOS CONTÍNUOS -->
+          <button type="button" onclick="openHealthMedsModal()" class="flex flex-col text-left p-3 rounded-2xl bg-slate-50 hover:bg-sky-50/70 dark:bg-slate-800/80 dark:hover:bg-sky-950/30 border border-slate-200/80 dark:border-slate-700/80 hover:border-sky-400 dark:hover:border-sky-500/60 transition-all duration-200 shadow-2xs hover:shadow-sm group cursor-pointer active:scale-98">
+            <div class="flex items-center justify-between w-full mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-sky-500/30 group-hover:scale-105 transition-transform">
+                💊
+              </div>
+              <span id="quickHubHealthBadge" class="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-800">
+                Próx: 20:00
+              </span>
+            </div>
+            <div class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+              Saúde & Remédios
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5" id="quickHubHealthSub">
+              Rotina & Alarme 10 min
+            </div>
+          </button>
+
+          <!-- 3. CHAT MERCADO & LISTA -->
+          <button type="button" onclick="openFamilyChatModal()" class="flex flex-col text-left p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/70 dark:bg-slate-800/80 dark:hover:bg-emerald-950/30 border border-slate-200/80 dark:border-slate-700/80 hover:border-emerald-400 dark:hover:border-emerald-500/60 transition-all duration-200 shadow-2xs hover:shadow-sm group cursor-pointer active:scale-98">
+            <div class="flex items-center justify-between w-full mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-emerald-500/30 group-hover:scale-105 transition-transform">
+                🛒
+              </div>
+              <span class="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                Ao vivo
+              </span>
+            </div>
+            <div class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              Chat Mercado
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+              Lista por voz & fotos
+            </div>
+          </button>
+
+          <!-- 4. CARTÕES DE CRÉDITO & FATURAS -->
+          <button type="button" onclick="openManageCardsModal()" class="flex flex-col text-left p-3 rounded-2xl bg-slate-50 hover:bg-violet-50/70 dark:bg-slate-800/80 dark:hover:bg-violet-950/30 border border-slate-200/80 dark:border-slate-700/80 hover:border-violet-400 dark:hover:border-violet-500/60 transition-all duration-200 shadow-2xs hover:shadow-sm group cursor-pointer active:scale-98">
+            <div class="flex items-center justify-between w-full mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-violet-500/30 group-hover:scale-105 transition-transform">
+                💳
+              </div>
+              <span class="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 border border-violet-300 dark:border-violet-800">
+                Faturas
+              </span>
+            </div>
+            <div class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+              Cartões & Faturas
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+              Limites e parcelas
+            </div>
+          </button>
+
+          <!-- 5. COFRINHOS & METAS -->
+          <button type="button" onclick="openCreatePiggyModal()" class="flex flex-col text-left p-3 rounded-2xl bg-slate-50 hover:bg-indigo-50/70 dark:bg-slate-800/80 dark:hover:bg-indigo-950/30 border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-400 dark:hover:border-indigo-500/60 transition-all duration-200 shadow-2xs hover:shadow-sm group cursor-pointer active:scale-98">
+            <div class="flex items-center justify-between w-full mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-700 text-white flex items-center justify-center font-bold text-lg shadow-sm shadow-indigo-500/30 group-hover:scale-105 transition-transform">
+                🎯
+              </div>
+              <span class="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">
+                Metas
+              </span>
+            </div>
+            <div class="font-black text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              Cofrinhos & Metas
+            </div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+              Poupança e sonhos
+            </div>
+          </button>
+
+        </div>
+      </div>
+    </div>
+
     <!-- BARRA DE CONTROLE E RESET DAS SEÇÕES DO DASHBOARD -->
     
-
     
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full" id="sectionMetrics">
       <div class="flex items-center justify-between mb-2">
@@ -2735,8 +2846,9 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Descrição / Estabelecimento</label>
-          <input type="text" id="newTxDescricao" required placeholder="Ex.: Restaurante Vila Palazzo, Supermercado..." class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Estabelecimento</label>
+          <input type="text" id="newTxDescricao" required oninput="checkPreviousExpenseHint(this.value, 'newTx')" placeholder="Ex.: Restaurante Vila Palazzo, IPTU, Seguro Carro..." class="w-full px-3 py-2 rounded-none border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100">
+          <div id="newTxPreviousHint" class="hidden mt-1.5"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -2929,8 +3041,9 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Descrição</label>
-          <input type="text" id="editTxDescricao" required class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição</label>
+          <input type="text" id="editTxDescricao" required oninput="checkPreviousExpenseHint(this.value, 'editTx')" class="w-full px-3 py-2 rounded-none border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100">
+          <div id="editTxPreviousHint" class="hidden mt-1.5"></div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -4766,6 +4879,7 @@
       tbody.innerHTML = items.map((t, idx) => {
         const isEven = idx % 2 === 0;
         const rowClass = isEven ? 'table-row-even' : 'table-row-odd';
+        const prevExp = typeof getPreviousExpenseInfo === 'function' ? getPreviousExpenseInfo(t) : null;
 
         let tipoBadge = '<span class="px-2 py-0.5 rounded-none text-[10px] font-bold bg-amber-100 text-amber-800">Variável</span>';
         if (t.tipo === 'Receita') tipoBadge = '<span class="px-2 py-0.5 rounded-none text-[10px] font-bold bg-emerald-100 text-emerald-800">Receita</span>';
@@ -4804,7 +4918,7 @@
           : '';
 
         const valorRealStr = Number(t.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        const valorCor = t.tipo === 'Receita' ? 'text-emerald-600 font-bold' : 'text-slate-800 font-bold';
+        const valorCor = t.tipo === 'Receita' ? 'text-emerald-600 font-bold' : 'text-slate-800 dark:text-slate-100 font-bold';
 
         const valorDisplay = isMaskedInTable ? `
           <span class="group relative cursor-help tracking-widest font-black select-none text-slate-400">
@@ -4821,9 +4935,14 @@
           descricao: `
             <td class="py-2.5 px-3">
               <div class="flex items-center gap-1.5">
-                <span class="font-bold text-slate-800">${t.descricao}</span>
+                <span class="font-bold text-slate-800 dark:text-slate-100">${t.descricao}</span>
                 ${extratoTag}
               </div>
+              ${prevExp ? `
+                <div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium tracking-tight mt-0.5">
+                  Paguei ${isMaskedInTable ? 'R$ •••••' : Number(prevExp.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} anteriormente${prevExp.ciclo && prevExp.ciclo !== t.ciclo ? ` <span class="opacity-75">(${prevExp.ciclo})</span>` : ''}
+                </div>
+              ` : ''}
             </td>
           `,
           categoria: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${t.categoria}</td>`,
@@ -4849,6 +4968,7 @@
       // Render Cards Mobile
       if (mobileCont) {
         mobileCont.innerHTML = items.map(t => {
+          const prevExp = typeof getPreviousExpenseInfo === 'function' ? getPreviousExpenseInfo(t) : null;
           const valorRealStr = Number(t.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
           const valorCor = t.tipo === 'Receita' ? 'text-emerald-600' : 'text-slate-800 dark:text-slate-100';
           const valorMobile = isMaskedInTable 
@@ -4880,6 +5000,11 @@
               <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/60">
                 <div>
                   <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs">${t.descricao}</h4>
+                  ${prevExp ? `
+                    <div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium tracking-tight mt-0.5">
+                      Paguei ${isMaskedInTable ? 'R$ •••••' : Number(prevExp.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} anteriormente${prevExp.ciclo && prevExp.ciclo !== t.ciclo ? ` <span class="opacity-75">(${prevExp.ciclo})</span>` : ''}
+                    </div>
+                  ` : ''}
                   <p class="text-[10px] text-slate-400 mt-0.5">${t.forma_pagamento || 'A Definir'} • ${t.responsavel || 'Comum'} ${extratoTag}</p>
                 </div>
                 <div class="flex items-center gap-1">
@@ -5009,10 +5134,14 @@
       document.getElementById('newTxResponsavel').value = 'Comum';
       document.getElementById('newTxPagamento').value = 'Cartão de Crédito';
       document.getElementById('newTxCartao').value = '';
+      const hint = document.getElementById('newTxPreviousHint');
+      if (hint) { hint.classList.add('hidden'); hint.innerHTML = ''; }
       document.getElementById('modalNewTx').classList.remove('hidden');
     }
 
     function closeNewTxModal() {
+      const hint = document.getElementById('newTxPreviousHint');
+      if (hint) { hint.classList.add('hidden'); hint.innerHTML = ''; }
       document.getElementById('modalNewTx').classList.add('hidden');
     }
 
@@ -5095,10 +5224,19 @@
       const rOrigem = document.querySelectorAll('input[name="editTxOrigem"]');
       rOrigem.forEach(ro => { ro.checked = (ro.value === (tx.origem_comprovante || 'com_nota')); });
 
+      const hint = document.getElementById('editTxPreviousHint');
+      if (hint) {
+        hint.classList.add('hidden');
+        hint.innerHTML = '';
+        if (tx.descricao) checkPreviousExpenseHint(tx.descricao, 'editTx');
+      }
+
       document.getElementById('modalEditTx').classList.remove('hidden');
     }
 
     function closeEditTxModal() {
+      const hint = document.getElementById('editTxPreviousHint');
+      if (hint) { hint.classList.add('hidden'); hint.innerHTML = ''; }
       document.getElementById('modalEditTx').classList.add('hidden');
     }
 
@@ -5742,6 +5880,10 @@
       document.getElementById('metricComprometimentoVal').textContent = `${percentGasto}%`;
       document.getElementById('metricComprometimentoBar').style.width = `${percentGasto}%`;
 
+      if (typeof updateQuickHubUI === 'function') {
+        updateQuickHubUI();
+      }
+
       // Atualiza Termômetro Orçamentário e Linha de Status
       const lblTerm = document.getElementById('labelTermometro');
       const barTerm = document.getElementById('barTermometro');
@@ -6139,6 +6281,202 @@
 
     function savePriceHistory() {
       localStorage.setItem('financas_price_history', JSON.stringify(priceHistory));
+    }
+
+    // ==============================================================
+    // 21.0 CONSULTA DE PREÇOS ANTERIORES (CHAT & DESPESAS REPETIDAS)
+    // ==============================================================
+    function getPreviousPurchaseInfo(productName) {
+      if (!productName) return null;
+      const clean = (productName || '').toLowerCase().trim();
+      const normInput = typeof normalizeProductName === 'function' ? normalizeProductName(clean).toLowerCase() : clean;
+
+      // 1. Procurar no priceHistory (do mais recente para o mais antigo)
+      if (Array.isArray(priceHistory) && priceHistory.length > 0) {
+        const sortedHistory = [...priceHistory].sort((a, b) => {
+          if (a.data && b.data) return b.data.localeCompare(a.data);
+          return (b.id || 0) - (a.id || 0);
+        });
+
+        let match = sortedHistory.find(p => {
+          const pNorm = typeof normalizeProductName === 'function' ? normalizeProductName(p.produto || '').toLowerCase() : (p.produto || '').toLowerCase();
+          return pNorm === normInput;
+        });
+
+        if (!match) {
+          match = sortedHistory.find(p => {
+            const pNorm = (p.produto || '').toLowerCase();
+            return pNorm.includes(clean) || clean.includes(pNorm);
+          });
+        }
+
+        if (!match) {
+          const words = clean.split(/\s+/).filter(w => w.length >= 4);
+          for (const w of words) {
+            match = sortedHistory.find(p => (p.produto || '').toLowerCase().includes(w));
+            if (match) break;
+          }
+        }
+
+        if (match && match.preco) {
+          return {
+            preco: match.preco,
+            estabelecimento: match.estabelecimento || ''
+          };
+        }
+      }
+
+      // 2. Procurar em transactions passadas
+      if (Array.isArray(transactions) && transactions.length > 0) {
+        const txMatch = transactions.find(t => {
+          if (t.tipo === 'Receita') return false;
+          const d = (t.descricao || '').toLowerCase();
+          return d.includes(clean) || clean.includes(d);
+        });
+
+        if (txMatch && txMatch.valor > 0) {
+          return {
+            preco: txMatch.valor,
+            estabelecimento: txMatch.cartao_nome || txMatch.forma_pagamento || ''
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function getPreviousExpenseInfo(currentTx) {
+      if (!currentTx || !currentTx.descricao) return null;
+      if (currentTx.tipo === 'Receita') return null;
+
+      const currentDesc = (currentTx.descricao || '').toLowerCase().trim();
+      const baseDesc = currentDesc.replace(/\s+\d+\/\d+.*$/i, '').trim();
+
+      const pastMatches = transactions.filter(other => {
+        if (other.id === currentTx.id) return false;
+        if (other.tipo === 'Receita') return false;
+        if (!other.descricao || !other.valor || other.valor <= 0) return false;
+
+        const isEarlier = (other.data && currentTx.data && other.data < currentTx.data) ||
+                          (other.id < currentTx.id) ||
+                          (other.ciclo && other.ciclo !== currentTx.ciclo);
+        if (!isEarlier) return false;
+
+        const oDesc = (other.descricao || '').toLowerCase().trim();
+        const oBase = oDesc.replace(/\s+\d+\/\d+.*$/i, '').trim();
+
+        if (currentTx.grupo_parcela_id && other.grupo_parcela_id && currentTx.grupo_parcela_id === other.grupo_parcela_id) {
+          return true;
+        }
+
+        if (oDesc === currentDesc) return true;
+
+        if (baseDesc.length >= 3 && oBase === baseDesc) return true;
+
+        if (baseDesc.length >= 4 && (oDesc.includes(baseDesc) || baseDesc.includes(oBase))) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (pastMatches.length === 0) return null;
+
+      pastMatches.sort((a, b) => {
+        if (a.data && b.data) return b.data.localeCompare(a.data);
+        return b.id - a.id;
+      });
+
+      const lastTx = pastMatches[0];
+      return {
+        valor: lastTx.valor,
+        ciclo: lastTx.ciclo,
+        data: lastTx.data,
+        descricao: lastTx.descricao
+      };
+    }
+
+    function findPreviousExpenseByText(text) {
+      if (!text || text.length < 3) return null;
+      const clean = text.toLowerCase().trim();
+      const baseClean = clean.replace(/\s+\d+\/\d+.*$/i, '').trim();
+
+      const matches = transactions.filter(t => {
+        if (t.tipo === 'Receita') return false;
+        if (!t.descricao || !t.valor || t.valor <= 0) return false;
+        const d = (t.descricao || '').toLowerCase().trim();
+        const dBase = d.replace(/\s+\d+\/\d+.*$/i, '').trim();
+
+        return d === clean || 
+               (baseClean.length >= 3 && dBase === baseClean) || 
+               d.includes(clean) || 
+               clean.includes(d);
+      });
+
+      if (matches.length > 0) {
+        matches.sort((a, b) => {
+          if (a.data && b.data) return b.data.localeCompare(a.data);
+          return b.id - a.id;
+        });
+        return matches[0];
+      }
+
+      if (Array.isArray(priceHistory) && priceHistory.length > 0) {
+        const phMatch = priceHistory.find(p => {
+          const pProd = (p.produto || '').toLowerCase().trim();
+          return pProd.includes(clean) || clean.includes(pProd);
+        });
+        if (phMatch && phMatch.preco) {
+          return {
+            valor: phMatch.preco,
+            ciclo: phMatch.estabelecimento,
+            data: phMatch.data,
+            descricao: phMatch.produto
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function checkPreviousExpenseHint(desc, prefix = 'newTx') {
+      const hintEl = document.getElementById(prefix + 'PreviousHint');
+      if (!hintEl) return;
+
+      const trimmed = (desc || '').trim();
+      if (trimmed.length < 3) {
+        hintEl.classList.add('hidden');
+        hintEl.innerHTML = '';
+        return;
+      }
+
+      const prev = findPreviousExpenseByText(trimmed);
+      if (!prev || !prev.valor) {
+        hintEl.classList.add('hidden');
+        hintEl.innerHTML = '';
+        return;
+      }
+
+      const valorFormatado = formatBRL(prev.valor);
+      const dataOuCiclo = prev.ciclo || (prev.data ? formatDateBR(prev.data) : '');
+
+      hintEl.classList.remove('hidden');
+      hintEl.innerHTML = `
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-medium transition-all shadow-2xs">
+          <span>🕒 Paguei <strong>${valorFormatado}</strong> anteriormente${dataOuCiclo ? ` (${dataOuCiclo})` : ''}</span>
+          <button type="button" onclick="applyPreviousPriceToInput('${prefix}Valor', ${prev.valor})" class="underline font-black text-blue-800 dark:text-blue-200 hover:text-blue-950 dark:hover:text-white cursor-pointer ml-1" title="Clique para preencher o valor automaticamente">
+            Usar valor
+          </button>
+        </span>
+      `;
+    }
+
+    function applyPreviousPriceToInput(inputId, valor) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.value = Number(valor).toFixed(2).replace('.', ',');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     
@@ -10675,6 +11013,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 ` : items.map((it, idx) => {
                   const isCart = it.status === 'no_carrinho';
                   const isOut = it.status === 'nao_tinha';
+                  const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(it.nome) : null;
                   // Cores intercaladas suaves (branco / slate-50)
                   const rowBg = isCart 
                     ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/60' 
@@ -10700,6 +11039,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                               </span>
                               ${it.pedidoPor ? `<span class="text-[9px] text-slate-400">(@${it.pedidoPor})</span>` : ''}
                             </div>
+                            ${prevPurch ? `
+                              <div onclick="updateItemPrice('${it.id}', ${prevPurch.preco})" class="text-[9px] text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1 mt-0.5 font-medium tracking-tight truncate cursor-pointer transition-colors" title="Clique para aplicar o valor anterior">
+                                <span>Comprei anteriormente por: <strong class="font-bold text-slate-600 dark:text-slate-300">R$ ${Number(prevPurch.preco).toFixed(2).replace('.', ',')}</strong></span>
+                                ${prevPurch.estabelecimento ? `<span class="truncate">no ${escapeHtml(prevPurch.estabelecimento)}</span>` : ''}
+                              </div>
+                            ` : ''}
                           </div>
                         </div>
 
@@ -12052,6 +12397,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-bold">⏳ Vence dia ${b.diaVencimento}</span>`;
         }
 
+        const prevBillExp = typeof findPreviousExpenseByText === 'function' ? findPreviousExpenseByText(b.nome) : null;
+
         return `
           <div class="p-3 rounded-2xl border ${rowBorder} transition-all">
             <div class="flex items-start justify-between gap-2.5">
@@ -12066,6 +12413,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 <div class="mt-1 flex items-center gap-3 text-xs text-slate-400 flex-wrap">
                   <span>📅 Vencimento: <strong class="text-white">Dia ${b.diaVencimento}</strong></span>
                   <span>💰 Valor Estimado: <strong class="text-emerald-400 font-mono">R$ ${(b.valorMedio || 0).toFixed(2).replace('.', ',')}</strong></span>
+                  ${prevBillExp && prevBillExp.valor ? `<span class="text-[10px] text-slate-400">🕒 Paguei <strong class="text-slate-300">R$ ${Number(prevBillExp.valor).toFixed(2).replace('.', ',')}</strong> anteriormente</span>` : ''}
                   <span>👤 Responsável: <strong class="text-slate-300">${b.responsavel || 'Ambos'}</strong></span>
                 </div>
               </div>
@@ -12342,6 +12690,997 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       } else {
         logoEl.setAttribute('title', 'CtrlPig • Saúde Financeira Positiva');
       }
+    }
+
+    // ==============================================================================
+    // MÓDULO PET (PANTONE): PERFIL, DESPESAS & CARTEIRA DE VACINAÇÃO DIGITAL ANUAL
+    // ==============================================================================
+    function formatDateBR(dateStr) {
+      if (!dateStr) return '';
+      try {
+        const parts = String(dateStr).split('T')[0].split('-');
+        if (parts.length === 3) {
+          return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+      } catch (e) {}
+      return String(dateStr);
+    }
+
+    const DEFAULT_PET_VACCINES = [
+      {
+        id: 'vac_v10',
+        nome: 'V10 / V8 (Polivalente Canina)',
+        descricao: 'Cinomose, Parvovirose, Hepatite e Coronavirose',
+        tipo: 'Vacina Anual Obrigatória',
+        ultimaDose: '2026-05-15',
+        proximaDose: '2027-05-15',
+        clinica: 'Wevets Clínica Veterinária'
+      },
+      {
+        id: 'vac_raiva',
+        nome: 'Antirrábica (Raiva Canina)',
+        descricao: 'Prevenção contra o vírus da raiva',
+        tipo: 'Vacina Anual Obrigatória',
+        ultimaDose: '2026-06-20',
+        proximaDose: '2027-06-20',
+        clinica: 'Wevets Clínica Veterinária'
+      },
+      {
+        id: 'vac_giardia',
+        nome: 'Giárdia (Giardiavax)',
+        descricao: 'Prevenção contra giardíase e problemas intestinais',
+        tipo: 'Vacina Anual Complementar',
+        ultimaDose: '2026-07-10',
+        proximaDose: '2027-07-10',
+        clinica: 'Wevets Clínica Veterinária'
+      },
+      {
+        id: 'vac_tosse',
+        nome: 'Tosse dos Canis (Gripe Canina / Pneumodog)',
+        descricao: 'Prevenção contra traqueobronquite infecciosa canina',
+        tipo: 'Vacina Anual Complementar',
+        ultimaDose: '2026-08-05',
+        proximaDose: '2027-08-05',
+        clinica: 'Wevets Clínica Veterinária'
+      }
+    ];
+
+    function getPetVaccines() {
+      try {
+        const stored = localStorage.getItem('ctrlpig_pet_vaccines');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return DEFAULT_PET_VACCINES;
+    }
+
+    function savePetVaccines(vaxList) {
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxList));
+      renderPetVaccinesList();
+      updateQuickHubUI();
+    }
+
+    function getPetProfile() {
+      return {
+        nome: 'Pantone',
+        especie: 'Cão',
+        raca: 'SRD / Pelagem Amarela',
+        foto: localStorage.getItem('ctrlpig_pet_pantone_photo') || '',
+        idade: '4 anos',
+        peso: '8.4 kg',
+        plano: 'Wevets Plano de Saúde'
+      };
+    }
+
+    function openPetAreaModal() {
+      const modal = document.getElementById('modalPetArea');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderPetProfileUI();
+        renderPetExpensesSummary();
+        renderPetVaccinesList();
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    function closePetAreaModal() {
+      const modal = document.getElementById('modalPetArea');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function selectPetPhoto(source) {
+      if (window.isNativeApp && window.FlutterBridge) {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'pick_pet_photo',
+            source: source || 'gallery'
+          }));
+          return;
+        } catch (e) {
+          console.warn('Erro ao chamar FlutterBridge para foto do pet:', e);
+        }
+      }
+      const input = document.getElementById('petPhotoFileInput');
+      if (input) input.click();
+    }
+
+    function handlePetPhotoFileInput(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        savePetPhoto(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function savePetPhoto(dataUrl) {
+      if (!dataUrl) return;
+      localStorage.setItem('ctrlpig_pet_pantone_photo', dataUrl);
+      renderPetProfileUI();
+      showToastNotification('Foto do Pantone atualizada com sucesso! 🐾');
+    }
+
+    window.onNativePetPhotoResult = function(dataUrl) {
+      savePetPhoto(dataUrl);
+    };
+
+    function renderPetProfileUI() {
+      const profile = getPetProfile();
+      const imgEl = document.getElementById('petProfileImg');
+      const emojiEl = document.getElementById('petProfileEmoji');
+      if (imgEl && emojiEl) {
+        if (profile.foto) {
+          imgEl.src = profile.foto;
+          imgEl.classList.remove('hidden');
+          emojiEl.classList.add('hidden');
+        } else {
+          imgEl.classList.add('hidden');
+          emojiEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    function renderPetExpensesSummary() {
+      const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+      const petTxs = activeTxs.filter(t => 
+        (t.tipo !== 'Receita') && 
+        (t.categoria === 'Pet' || (t.descricao && /wevets|pantone|ração|petisco|fralda|petz|cobasi|veterin/i.test(t.descricao)))
+      );
+
+      const totalPet = petTxs.reduce((acc, t) => acc + (t.valor || 0), 0);
+      const totalEl = document.getElementById('petTotalExpensesVal');
+      if (totalEl) totalEl.textContent = formatBRL(totalPet, 'gastos');
+
+      const countEl = document.getElementById('petExpensesCountBadge');
+      if (countEl) countEl.textContent = `${petTxs.length} lançamento${petTxs.length !== 1 ? 's' : ''}`;
+
+      const listEl = document.getElementById('petExpensesListFeed');
+      if (!listEl) return;
+
+      if (petTxs.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-3 text-center text-slate-400 text-xs bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+            Nenhuma despesa de Pet registrada no ciclo atual.
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = petTxs.map(t => `
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-xs flex-shrink-0">
+              🐾
+            </span>
+            <div class="min-w-0">
+              <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao || 'Despesa Pet'}</div>
+              <div class="text-[10px] text-slate-400">${t.data ? formatDateBR(t.data) : ''} • ${t.forma_pagamento || 'Boleto'}</div>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0 ml-2">
+            <div class="font-black text-xs text-slate-900 dark:text-white font-mono">${formatBRL(t.valor || 0, 'gastos')}</div>
+            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full ${t.status === 'Pago' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'}">
+              ${t.status || 'Pendente'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPetVaccinesList() {
+      const vaxes = getPetVaccines();
+      const listEl = document.getElementById('petVaccinesContainer');
+      if (!listEl) return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      listEl.innerHTML = vaxes.map((v) => {
+        const proxDate = new Date(v.proximaDose + 'T00:00:00');
+        const diffTime = proxDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        let statusClass = '';
+        let statusBadge = '';
+        let statusText = '';
+
+        if (diffDays < 0) {
+          statusClass = 'border-red-300 dark:border-red-900/60 bg-red-50/50 dark:bg-red-950/20';
+          statusBadge = 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-red-300 dark:border-red-800';
+          statusText = `🔴 Vencida há ${Math.abs(diffDays)} dia(s)!`;
+        } else if (diffDays <= 30) {
+          statusClass = 'border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20';
+          statusBadge = 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-800';
+          statusText = `🟡 Vence em ${diffDays} dia(s)`;
+        } else {
+          statusClass = 'border-emerald-200/80 dark:border-emerald-900/40 bg-emerald-50/30 dark:bg-emerald-950/10';
+          statusBadge = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
+          statusText = `🟢 Em dia (faltam ${diffDays} dias)`;
+        }
+
+        return `
+          <div class="p-3 rounded-2xl border ${statusClass} flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all">
+            <div class="flex items-start gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs mt-0.5">
+                💉
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">${v.nome}</h4>
+                  <span class="text-[9px] font-black px-2 py-0.5 rounded-full border ${statusBadge}">${statusText}</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${v.descricao || ''}</p>
+                <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400 mt-1 flex-wrap">
+                  <span>Última dose: <strong>${formatDateBR(v.ultimaDose)}</strong></span>
+                  <span>•</span>
+                  <span>Próxima dose anual: <strong class="text-slate-800 dark:text-slate-200">${formatDateBR(v.proximaDose)}</strong></span>
+                  ${v.clinica ? `<span>• <em>${v.clinica}</em></span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+              <button type="button" onclick="recordVaccineDoseNow('${v.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer" title="Registrar dose aplicada hoje e renovar para mais 1 ano">
+                <span>💉 Aplicada Hoje</span>
+              </button>
+              <button type="button" onclick="deletePetVaccine('${v.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer" title="Remover vacina">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function recordVaccineDoseNow(vaccineId) {
+      const vaxes = getPetVaccines();
+      const idx = vaxes.findIndex(v => v.id === vaccineId);
+      if (idx === -1) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const nextDate = new Date();
+      nextDate.setFullYear(nextDate.getFullYear() + 1);
+      const nextStr = nextDate.toISOString().split('T')[0];
+
+      vaxes[idx].ultimaDose = todayStr;
+      vaxes[idx].proximaDose = nextStr;
+
+      savePetVaccines(vaxes);
+      showToastNotification(`Dose de ${vaxes[idx].nome} registrada! Próxima dose calculada para ${formatDateBR(nextStr)}.`);
+    }
+
+    function deletePetVaccine(vaccineId) {
+      if (!confirm('Deseja realmente remover esta vacina da carteira de vacinação do Pantone?')) return;
+      const vaxes = getPetVaccines().filter(v => v.id !== vaccineId);
+      savePetVaccines(vaxes);
+      showToastNotification('Vacina removida.');
+    }
+
+    function openAddPetVaccineModal() {
+      const modal = document.getElementById('modalAddPetVaccine');
+      if (modal) {
+        modal.classList.remove('hidden');
+        const form = document.getElementById('formAddPetVaccine');
+        if (form) form.reset();
+        const inputDose = document.getElementById('inputVacUltimaDose');
+        if (inputDose) inputDose.value = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    function closeAddPetVaccineModal() {
+      const modal = document.getElementById('modalAddPetVaccine');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleSaveNewPetVaccine(event) {
+      event.preventDefault();
+      const nome = document.getElementById('inputVacNome').value.trim();
+      const desc = document.getElementById('inputVacDesc').value.trim();
+      const ultima = document.getElementById('inputVacUltimaDose').value;
+      const clinica = document.getElementById('inputVacClinica').value.trim() || 'Clínica Veterinária';
+
+      if (!nome || !ultima) return;
+
+      const uDate = new Date(ultima + 'T00:00:00');
+      const pDate = new Date(uDate);
+      pDate.setFullYear(pDate.getFullYear() + 1);
+      const proxima = pDate.toISOString().split('T')[0];
+
+      const newVac = {
+        id: 'vac_' + Date.now(),
+        nome: nome,
+        descricao: desc,
+        tipo: 'Vacina Anual',
+        ultimaDose: ultima,
+        proximaDose: proxima,
+        clinica: clinica
+      };
+
+      const vaxes = getPetVaccines();
+      vaxes.push(newVac);
+      savePetVaccines(vaxes);
+      closeAddPetVaccineModal();
+      showToastNotification(`Vacina ${nome} adicionada à carteira do Pantone!`);
+    }
+
+    function quickLaunchPetExpense() {
+      closePetAreaModal();
+      openNewTxModal();
+      setTimeout(() => {
+        const catSelect = document.getElementById('txCategoria');
+        if (catSelect) {
+          catSelect.value = 'Pet';
+        }
+        const descInput = document.getElementById('txDescricao');
+        if (descInput) {
+          descInput.value = 'Pantone - ';
+          descInput.focus();
+        }
+      }, 100);
+    }
+
+    function searchPetPrice(site) {
+      const termInput = document.getElementById('inputPetSearchQuery');
+      const term = (termInput ? termInput.value : '').trim() || 'Ração Premier Cães';
+      let url = '';
+      if (site === 'petz') {
+        url = `https://www.petz.com.br/busca?q=${encodeURIComponent(term)}`;
+      } else if (site === 'cobasi') {
+        url = `https://www.cobasi.com.br/pesquisa?terms=${encodeURIComponent(term)}`;
+      } else if (site === 'petlove') {
+        url = `https://www.petlove.com.br/busca?q=${encodeURIComponent(term)}`;
+      }
+      if (url) window.open(url, '_blank');
+    }
+
+    function addPetProductToShoppingList(productName, defaultQty, defaultPrice) {
+      const name = productName || 'Ração Pantone';
+      const items = getActiveShoppingItems();
+      const exists = items.some(i => i.nome.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        showToastNotification(`"${name}" já está na lista de compras!`);
+        return;
+      }
+      items.push({
+        id: 'pet_prod_' + Date.now(),
+        nome: name,
+        qtd: defaultQty || 1,
+        unidade: 'pct',
+        marca: 'Pet',
+        preco: defaultPrice || 0,
+        status: 'pendente',
+        dataAdicionado: new Date().toISOString()
+      });
+      saveActiveShoppingItems(items);
+      updateCartSummaryUI();
+      showToastNotification(`✓ "${name}" adicionado à Lista de Compras do Mercado! 🛒`);
+    }
+
+    // ==============================================================================
+    // MÓDULO SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO (ARADOIS, ANLODIPINO, HIDRO, GLIFAGE)
+    // ==============================================================================
+    const DEFAULT_HEALTH_MEDS = [
+      {
+        id: 'med_aradois',
+        nome: 'Aradois (Losartana Potássica)',
+        concentracao: '50mg',
+        tipo: 'Pressão Arterial',
+        indicacao: 'Controle de pressão arterial',
+        frequencia: '2x ao dia (de 12 em 12 horas)',
+        horariosPadrao: ['08:00', '20:00'],
+        dosePorVez: 1,
+        unidadeDose: 'comprimido',
+        estoqueAtual: 58,
+        estoqueAlerta: 14,
+        precoMedio: 28.50,
+        rotinas: ['morning', 'evening']
+      },
+      {
+        id: 'med_anlodipino',
+        nome: 'Besilato de Anlodipino',
+        concentracao: '5mg',
+        tipo: 'Pressão Arterial',
+        indicacao: 'Controle de pressão arterial',
+        frequencia: '2x ao dia (mesmo horário do Aradois)',
+        horariosPadrao: ['08:00', '20:00'],
+        dosePorVez: 1,
+        unidadeDose: 'comprimido',
+        estoqueAtual: 54,
+        estoqueAlerta: 14,
+        precoMedio: 15.90,
+        rotinas: ['morning', 'evening']
+      },
+      {
+        id: 'med_hidrocloro',
+        nome: 'Hidroclorotiazida',
+        concentracao: '25mg',
+        tipo: 'Pressão Arterial (Diurético)',
+        indicacao: 'Controle de pressão (diurético matinal)',
+        frequencia: '1x ao dia (pela manhã junto ao Aradois)',
+        horariosPadrao: ['08:00'],
+        dosePorVez: 1,
+        unidadeDose: 'comprimido',
+        estoqueAtual: 28,
+        estoqueAlerta: 7,
+        precoMedio: 8.50,
+        rotinas: ['morning']
+      },
+      {
+        id: 'med_glifage',
+        nome: 'Glifage XR (Cloridrato de Metformina)',
+        concentracao: '500mg',
+        tipo: 'Glicemia / Diabetes',
+        indicacao: 'Controle de glicemia',
+        frequencia: '1x ao dia (à noite junto ao Aradois)',
+        horariosPadrao: ['20:00'],
+        dosePorVez: 1,
+        unidadeDose: 'comprimido',
+        estoqueAtual: 27,
+        estoqueAlerta: 7,
+        precoMedio: 18.20,
+        rotinas: ['evening']
+      }
+    ];
+
+    function getHealthMeds() {
+      try {
+        const stored = localStorage.getItem('ctrlpig_health_meds');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return DEFAULT_HEALTH_MEDS;
+    }
+
+    function saveHealthMeds(medList) {
+      localStorage.setItem('ctrlpig_health_meds', JSON.stringify(medList));
+      renderHealthMedsUI();
+      updateQuickHubUI();
+    }
+
+    function getHealthScheduleSettings() {
+      try {
+        const stored = localStorage.getItem('ctrlpig_health_settings');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return {
+        morningTime: '08:00',
+        eveningTime: '20:00',
+        voiceAlarmEnabled: true,
+        lastMorningTakenDate: '',
+        lastMorningTakenTime: '',
+        lastEveningTakenDate: '',
+        lastEveningTakenTime: '',
+        lastAlarmNotification: ''
+      };
+    }
+
+    function saveHealthScheduleSettings(settings) {
+      localStorage.setItem('ctrlpig_health_settings', JSON.stringify(settings));
+      renderHealthMedsUI();
+      updateQuickHubUI();
+    }
+
+    function openHealthMedsModal() {
+      const modal = document.getElementById('modalHealthMeds');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderHealthMedsUI();
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    function closeHealthMedsModal() {
+      const modal = document.getElementById('modalHealthMeds');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function toggleHealthVoiceAlarm() {
+      const settings = getHealthScheduleSettings();
+      settings.voiceAlarmEnabled = !settings.voiceAlarmEnabled;
+      saveHealthScheduleSettings(settings);
+      showToastNotification(settings.voiceAlarmEnabled 
+        ? '🔔 Notificações e alarme de voz antecipado (10 min) ativados!' 
+        : '🔕 Alarme de voz desativado.');
+    }
+
+    function renderHealthMedsUI() {
+      const meds = getHealthMeds();
+      const settings = getHealthScheduleSettings();
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      // Atualiza Toggle de Voz
+      const voiceIcon = document.getElementById('healthVoiceAlarmIcon');
+      const voiceLabel = document.getElementById('healthVoiceAlarmLabel');
+      if (voiceIcon && voiceLabel) {
+        if (settings.voiceAlarmEnabled) {
+          voiceIcon.setAttribute('data-lucide', 'bell-ring');
+          voiceLabel.textContent = 'Alarme de Voz 10 min: Ativo';
+        } else {
+          voiceIcon.setAttribute('data-lucide', 'bell-off');
+          voiceLabel.textContent = 'Alarme de Voz: Silenciado';
+        }
+      }
+
+      // 1. ROTINA DA MANHÃ (08:00)
+      const morningMeds = meds.filter(m => m.rotinas && m.rotinas.includes('morning'));
+      const isMorningTakenToday = settings.lastMorningTakenDate === todayStr;
+      const morningStatusEl = document.getElementById('routineMorningStatusBadge');
+      const morningBtnEl = document.getElementById('btnTakeMorningRoutine');
+      const morningTimeEl = document.getElementById('routineMorningTimeDisplay');
+
+      if (morningTimeEl) morningTimeEl.textContent = settings.morningTime;
+
+      if (morningStatusEl) {
+        if (isMorningTakenToday) {
+          morningStatusEl.className = 'text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+          morningStatusEl.innerHTML = `🟢 Tomado hoje às ${settings.lastMorningTakenTime || '08:00'}`;
+        } else {
+          morningStatusEl.className = 'text-[10px] font-black px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-300 dark:border-sky-800';
+          morningStatusEl.innerHTML = `⚪ Pendente para às ${settings.morningTime}`;
+        }
+      }
+
+      if (morningBtnEl) {
+        if (isMorningTakenToday) {
+          morningBtnEl.className = 'px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-pointer hover:bg-slate-300';
+          morningBtnEl.innerHTML = `✓ Já Tomei às ${settings.lastMorningTakenTime || '08:00'}`;
+        } else {
+          morningBtnEl.className = 'px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer';
+          morningBtnEl.innerHTML = `✅ Marcar: Já Tomei a Dose`;
+        }
+      }
+
+      const morningListEl = document.getElementById('routineMorningMedsList');
+      if (morningListEl) {
+        morningListEl.innerHTML = morningMeds.map(m => `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                💊
+              </span>
+              <div class="min-w-0">
+                <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${m.nome}</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">${m.concentracao} • ${m.dosePorVez} ${m.unidadeDose} • <span class="text-sky-600 dark:text-sky-400 font-bold">${m.tipo}</span></div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-2">
+              <span class="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400">Estoque: <strong>${m.estoqueAtual}</strong> cp</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 2. ROTINA DA NOITE (20:00)
+      const eveningMeds = meds.filter(m => m.rotinas && m.rotinas.includes('evening'));
+      const isEveningTakenToday = settings.lastEveningTakenDate === todayStr;
+      const eveningStatusEl = document.getElementById('routineEveningStatusBadge');
+      const eveningBtnEl = document.getElementById('btnTakeEveningRoutine');
+      const eveningTimeEl = document.getElementById('routineEveningTimeDisplay');
+
+      if (eveningTimeEl) eveningTimeEl.textContent = settings.eveningTime;
+
+      if (eveningStatusEl) {
+        if (isEveningTakenToday) {
+          eveningStatusEl.className = 'text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+          eveningStatusEl.innerHTML = `🟢 Tomado hoje às ${settings.lastEveningTakenTime || '20:00'}`;
+        } else {
+          eveningStatusEl.className = 'text-[10px] font-black px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800';
+          eveningStatusEl.innerHTML = `⚪ Pendente para às ${settings.eveningTime}`;
+        }
+      }
+
+      if (eveningBtnEl) {
+        if (isEveningTakenToday) {
+          eveningBtnEl.className = 'px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-pointer hover:bg-slate-300';
+          eveningBtnEl.innerHTML = `✓ Já Tomei às ${settings.lastEveningTakenTime || '20:00'}`;
+        } else {
+          eveningBtnEl.className = 'px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer';
+          eveningBtnEl.innerHTML = `✅ Marcar: Já Tomei a Dose`;
+        }
+      }
+
+      const eveningListEl = document.getElementById('routineEveningMedsList');
+      if (eveningListEl) {
+        eveningListEl.innerHTML = eveningMeds.map(m => `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                💊
+              </span>
+              <div class="min-w-0">
+                <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${m.nome}</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">${m.concentracao} • ${m.dosePorVez} ${m.unidadeDose} • <span class="text-indigo-600 dark:text-indigo-400 font-bold">${m.tipo}</span></div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-2">
+              <span class="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400">Estoque: <strong>${m.estoqueAtual}</strong> cp</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 3. ESTOQUE & ADICIONAR À LISTA DE COMPRAS
+      const stockGridEl = document.getElementById('healthMedsStockGrid');
+      if (stockGridEl) {
+        stockGridEl.innerHTML = meds.map(m => {
+          const isLow = m.estoqueAtual <= m.estoqueAlerta;
+          return `
+            <div class="p-3 rounded-2xl border ${isLow ? 'border-amber-300 dark:border-amber-800 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850/60'} flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between gap-1 mb-1">
+                  <h5 class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${m.nome}</h5>
+                  <span class="text-[9px] font-black px-1.5 py-0.2 rounded-full ${isLow ? 'bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
+                    ${isLow ? '⚠️ Estoque Baixo' : '✓ OK'}
+                  </span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">${m.tipo} • ${m.frequencia}</div>
+                <div class="mt-2 flex items-center justify-between text-xs">
+                  <span class="text-slate-500 dark:text-slate-400">Restam:</span>
+                  <span class="font-black font-mono text-slate-900 dark:text-white text-sm">${m.estoqueAtual} comprimidos</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mt-1">
+                  <div class="h-full ${isLow ? 'bg-amber-500' : 'bg-emerald-500'}" style="width: ${Math.min(100, (m.estoqueAtual / 60) * 100)}%"></div>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between gap-2">
+                <span class="text-[10px] text-slate-400 font-mono">Ref: ${formatBRL(m.precoMedio || 0)}</span>
+                <button type="button" onclick="addMedToShoppingList('${m.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer" title="Adicionar este remédio à Lista de Compras do Mercado/Farmácia">
+                  <span>🛒 Comprar</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    let activeRoutineTaking = null;
+
+    function promptTakeRoutine(routineId) {
+      activeRoutineTaking = routineId;
+      const modal = document.getElementById('modalMedTakeConfirmation');
+      if (!modal) return;
+
+      const titleEl = document.getElementById('medTakeModalRoutineTitle');
+      const descEl = document.getElementById('medTakeModalRoutineDesc');
+      const timeNow = new Date();
+      const timeStr = String(timeNow.getHours()).padStart(2, '0') + ':' + String(timeNow.getMinutes()).padStart(2, '0');
+
+      if (titleEl) {
+        titleEl.textContent = routineId === 'morning' ? 'Dose da Manhã (Pressão)' : 'Dose da Noite (Pressão & Glicemia)';
+      }
+      if (descEl) {
+        descEl.innerHTML = `Horário atual do registro: <strong>${timeStr}</strong>.<br>Como deseja programar as próximas doses?`;
+      }
+
+      modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeMedTakeConfirmationModal() {
+      const modal = document.getElementById('modalMedTakeConfirmation');
+      if (modal) modal.classList.add('hidden');
+      activeRoutineTaking = null;
+    }
+
+    function confirmMedTakeChoice(choice) {
+      if (!activeRoutineTaking) return;
+
+      const routine = activeRoutineTaking;
+      const settings = getHealthScheduleSettings();
+      const meds = getHealthMeds();
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+      meds.forEach(m => {
+        if (m.rotinas && m.rotinas.includes(routine)) {
+          m.estoqueAtual = Math.max(0, (m.estoqueAtual || 0) - (m.dosePorVez || 1));
+        }
+      });
+      saveHealthMeds(meds);
+
+      if (routine === 'morning') {
+        settings.lastMorningTakenDate = todayStr;
+        settings.lastMorningTakenTime = timeStr;
+      } else {
+        settings.lastEveningTakenDate = todayStr;
+        settings.lastEveningTakenTime = timeStr;
+      }
+
+      let toastMsg = '';
+
+      if (choice === 'keep_habitual') {
+        settings.morningTime = '08:00';
+        settings.eveningTime = '20:00';
+        toastMsg = `✓ Dose registrada às ${timeStr}! Próximas doses mantidas nos horários habituais (8h e 20h).`;
+      } else if (choice === 'shift_12h') {
+        const nextTime = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+        const nextTimeStr = String(nextTime.getHours()).padStart(2, '0') + ':' + String(nextTime.getMinutes()).padStart(2, '0');
+
+        if (routine === 'morning') {
+          settings.eveningTime = nextTimeStr;
+        } else {
+          settings.morningTime = nextTimeStr;
+        }
+        toastMsg = `✓ Dose registrada às ${timeStr}! Próxima dose reprogramada para às ${nextTimeStr} (+12h de intervalo seguro).`;
+      }
+
+      saveHealthScheduleSettings(settings);
+      closeMedTakeConfirmationModal();
+      showToastNotification(toastMsg);
+    }
+
+    function testHealthVoiceAlarmNow() {
+      const settings = getHealthScheduleSettings();
+      const now = new Date();
+      const hour = now.getHours();
+      
+      let speech = '';
+      if (hour < 14) {
+        speech = `Atenção Rodrigo: faltam 10 minutos para tomar os seus remédios de pressão das ${settings.morningTime}. Você precisa tomar 3 comprimidos: 1 comprimido de Aradois, 1 de Besilato de Anlodipino e 1 de Hidroclorotiazida.`;
+      } else {
+        speech = `Atenção Rodrigo: faltam 10 minutos para tomar os seus remédios das ${settings.eveningTime}. Você precisa tomar 3 comprimidos: 1 comprimido de Aradois e 1 de Besilato de Anlodipino para pressão, e 1 comprimido de Glifage XR para glicemia.`;
+      }
+
+      speakAccessibility(speech);
+      showToastNotification(`🔊 Reproduzindo narração por voz da rotina de saúde!`);
+    }
+
+    function addMedToShoppingList(medId) {
+      const meds = getHealthMeds();
+      const med = meds.find(m => m.id === medId);
+      if (!med) return;
+
+      const items = getActiveShoppingItems();
+      const exists = items.some(i => i.nome.toLowerCase() === med.nome.toLowerCase());
+      if (exists) {
+        showToastNotification(`"${med.nome}" já está na lista de compras!`);
+        return;
+      }
+
+      items.push({
+        id: 'med_prod_' + Date.now(),
+        nome: `${med.nome} ${med.concentracao}`,
+        qtd: 1,
+        unidade: 'cx',
+        marca: 'Farmácia',
+        preco: med.precoMedio || 0,
+        status: 'pendente',
+        dataAdicionado: new Date().toISOString()
+      });
+
+      saveActiveShoppingItems(items);
+      updateCartSummaryUI();
+      showToastNotification(`✓ "${med.nome}" adicionado à Lista de Compras da Farmácia/Mercado! 🛒`);
+    }
+
+    function searchPharmaPrice(pharma) {
+      const termInput = document.getElementById('inputPharmaSearchQuery');
+      const term = (termInput ? termInput.value : '').trim() || 'Aradois 50mg';
+      let url = '';
+      if (pharma === 'drogasil') {
+        url = `https://www.drogasil.com.br/search?w=${encodeURIComponent(term)}`;
+      } else if (pharma === 'ultrafarma') {
+        url = `https://www.ultrafarma.com.br/busca?q=${encodeURIComponent(term)}`;
+      } else if (pharma === 'drogariasp') {
+        url = `https://www.drogariasaopaulo.com.br/${encodeURIComponent(term)}`;
+      } else if (pharma === 'paguemenos') {
+        url = `https://www.paguemenos.com.br/busca?termo=${encodeURIComponent(term)}`;
+      }
+      if (url) window.open(url, '_blank');
+    }
+
+    // ==============================================================================
+    // SCHEDULER: VERIFICADOR DE ALARME DE SAÚDE A CADA 30 SEGUNDOS (10 MIN ANTES)
+    // ==============================================================================
+    let healthSchedulerInterval = null;
+
+    function initHealthMedScheduler() {
+      if (healthSchedulerInterval) clearInterval(healthSchedulerInterval);
+      healthSchedulerInterval = setInterval(checkHealthScheduleTimers, 30000);
+      setTimeout(checkHealthScheduleTimers, 2000);
+    }
+
+    function checkHealthScheduleTimers() {
+      const settings = getHealthScheduleSettings();
+      if (!settings.voiceAlarmEnabled) return;
+
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const [mH, mM] = (settings.morningTime || '08:00').split(':').map(Number);
+      const morningTargetMinutes = mH * 60 + mM;
+
+      const [eH, eM] = (settings.eveningTime || '20:00').split(':').map(Number);
+      const eveningTargetMinutes = eH * 60 + eM;
+
+      const diffMorning = morningTargetMinutes - currentMinutes;
+      if (diffMorning >= 9 && diffMorning <= 10 && settings.lastAlarmNotification !== `morning_10min_${todayStr}`) {
+        settings.lastAlarmNotification = `morning_10min_${todayStr}`;
+        saveHealthScheduleSettings(settings);
+
+        const speech = `Atenção Rodrigo: faltam 10 minutos para o horário de tomar o seu remédio de pressão das ${settings.morningTime}. Você precisa tomar 1 comprimido de Aradois, 1 de Besilato de Anlodipino e 1 de Hidroclorotiazida.`;
+        speakAccessibility(speech);
+        showFloatingHealthAlarmBanner('☀️ Remédios de Pressão (08h)', 'Faltam 10 minutos para a dose da manhã: Aradois, Anlodipino e Hidroclorotiazida (3 comprimidos).', 'morning');
+      }
+
+      const diffEvening = eveningTargetMinutes - currentMinutes;
+      if (diffEvening >= 9 && diffEvening <= 10 && settings.lastAlarmNotification !== `evening_10min_${todayStr}`) {
+        settings.lastAlarmNotification = `evening_10min_${todayStr}`;
+        saveHealthScheduleSettings(settings);
+
+        const speech = `Atenção Rodrigo: faltam 10 minutos para tomar os seus remédios das ${settings.eveningTime}. Você precisa tomar 3 comprimidos: 1 comprimido de Aradois e 1 de Besilato de Anlodipino para pressão, e 1 comprimido de Glifage XR para glicemia.`;
+        speakAccessibility(speech);
+        showFloatingHealthAlarmBanner('🌙 Remédios da Noite (20h)', 'Faltam 10 minutos para a dose da noite: Aradois, Anlodipino e Glifage XR 500 (3 comprimidos).', 'evening');
+      }
+    }
+
+    function showFloatingHealthAlarmBanner(title, message, routine) {
+      let banner = document.getElementById('floatingHealthAlarmBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'floatingHealthAlarmBanner';
+        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-sky-400 flex flex-col gap-2.5 animate-bounce';
+        document.body.appendChild(banner);
+      }
+
+      banner.innerHTML = `
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">⏰</span>
+            <div>
+              <h4 class="font-black text-sm text-sky-300">${title}</h4>
+              <p class="text-xs text-slate-200 mt-0.5 leading-tight">${message}</p>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('floatingHealthAlarmBanner').remove()" class="p-1 text-slate-400 hover:text-white cursor-pointer">✕</button>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" onclick="promptTakeRoutine('${routine}'); document.getElementById('floatingHealthAlarmBanner').remove();" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 font-black text-xs text-white rounded-xl shadow-md transition-all cursor-pointer">
+            ✓ Já Tomei Agora
+          </button>
+          <button type="button" onclick="openHealthMedsModal(); document.getElementById('floatingHealthAlarmBanner').remove();" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl cursor-pointer">
+            Ver Rotina
+          </button>
+        </div>
+      `;
+
+      setTimeout(() => {
+        if (banner && banner.parentNode) banner.remove();
+      }, 30000);
+    }
+
+    // ==============================================================================
+    // ATUALIZAÇÃO DA RÉGUA DE ACESSO RÁPIDO FINTECH (QUICK HUB UI)
+    // ==============================================================================
+    function updateQuickHubUI() {
+      const vaxes = getPetVaccines();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let hasExpired = false;
+      let hasExpiringSoon = false;
+
+      vaxes.forEach(v => {
+        const pDate = new Date(v.proximaDose + 'T00:00:00');
+        const diffDays = Math.ceil((pDate - today) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) hasExpired = true;
+        else if (diffDays <= 30) hasExpiringSoon = true;
+      });
+
+      const petBadge = document.getElementById('quickHubPetBadge');
+      const petSub = document.getElementById('quickHubPetSub');
+      if (petBadge) {
+        if (hasExpired) {
+          petBadge.className = 'text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800 animate-pulse';
+          petBadge.textContent = 'Vacina vencida!';
+        } else if (hasExpiringSoon) {
+          petBadge.className = 'text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800';
+          petBadge.textContent = 'Vence em breve';
+        } else {
+          petBadge.className = 'text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+          petBadge.textContent = 'Vacinas em dia';
+        }
+      }
+
+      if (petSub) {
+        const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+        const petTxs = activeTxs.filter(t => (t.tipo !== 'Receita') && (t.categoria === 'Pet' || (t.descricao && /wevets|pantone|ração|petisco|fralda/i.test(t.descricao))));
+        const petTotal = petTxs.reduce((a, t) => a + (t.valor||0), 0);
+        petSub.textContent = petTotal > 0 ? `${formatBRL(petTotal, 'gastos')} no mês • 4 vacinas` : '4 vacinas registradas';
+      }
+
+      const healthSettings = getHealthScheduleSettings();
+      const currentHour = new Date().getHours();
+      const healthBadge = document.getElementById('quickHubHealthBadge');
+      const healthSub = document.getElementById('quickHubHealthSub');
+
+      if (healthBadge) {
+        if (currentHour < 14) {
+          healthBadge.textContent = `Próx: ${healthSettings.morningTime}`;
+        } else {
+          healthBadge.textContent = `Próx: ${healthSettings.eveningTime}`;
+        }
+      }
+
+      if (healthSub) {
+        if (currentHour < 14) {
+          healthSub.textContent = 'Pressão (3 comprimidos)';
+        } else {
+          healthSub.textContent = 'Pressão & Glicemia (3 cps)';
+        }
+      }
+    }
+
+    // Fechamento de qualquer modal ativo (suporte ao botão voltar do celular)
+    window.closeAnyActiveModal = function() {
+      const modalIds = [
+        'modalPetArea',
+        'modalHealthMeds',
+        'modalMedTakeConfirmation',
+        'modalAddPetVaccine',
+        'modalFamilyChat',
+        'modalBillsReminder',
+        'modalRegisterBill',
+        'modalDreamTripPlanner',
+        'modalPhotoGuidance',
+        'modalActionHub',
+        'modalTrash',
+        'modalNewCycle',
+        'modalAddUser',
+        'modalMemberAvatarPicker',
+        'modalManageCards',
+        'modalShoppingList',
+        'modalConfirmFinishShopping',
+        'modalConfirmAbandonShopping',
+        'modalEditShoppingItem',
+        'modalCanIBuy',
+        'modalInstallmentsDetail',
+        'modalBankCheck',
+        'modalCreatePiggy'
+      ];
+
+      for (let i = 0; i < modalIds.length; i++) {
+        const el = document.getElementById(modalIds[i]);
+        if (el && !el.classList.contains('hidden')) {
+          el.classList.add('hidden');
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Inicia agendador de saúde em segundo plano
+    try {
+      initHealthMedScheduler();
+    } catch (e) {
+      console.warn('Erro ao inicializar scheduler de saúde:', e);
     }
 
 </script>
@@ -13767,6 +15106,429 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 1: ÁREA PET (PANTONE) • PERFIL, GASTOS & CARTEIRA VACINAS -->
+  <!-- ============================================================== -->
+  <div id="modalPetArea" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetAreaModal()">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
+      
+      <!-- Cabeçalho do Pet com Foto e Ações -->
+      <div class="flex items-start justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="relative group/photo cursor-pointer flex-shrink-0" onclick="selectPetPhoto('gallery')" title="Toque para alterar a foto do Pantone">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-2 border-amber-400 flex items-center justify-center text-3xl font-bold overflow-hidden shadow-md">
+              <span id="petProfileEmoji">🐶</span>
+              <img id="petProfileImg" src="" alt="Pantone" class="hidden w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] shadow-sm border border-white">
+              📷
+            </div>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">Pantone</h3>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                🐾 Área Pet
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              Cão • 4 anos • 8.4 kg • <strong>Wevets Plano de Saúde</strong>
+            </p>
+            <div class="flex items-center gap-2 mt-1">
+              <button type="button" onclick="selectPetPhoto('camera')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>📸 Tirar Foto</span>
+              </button>
+              <span class="text-slate-300 dark:text-slate-700">•</span>
+              <button type="button" onclick="selectPetPhoto('gallery')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>🖼️ Galeria</span>
+              </button>
+              <input type="file" id="petPhotoFileInput" accept="image/*" class="hidden" onchange="handlePetPhotoFileInput(event)">
+            </div>
+          </div>
+        </div>
+
+        <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- SEÇÃO 1: RESUMO FINANCEIRO DO PANTONE NO CICLO ATUAL -->
+      <div class="py-3.5 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              Despesas com o Pantone no Ciclo
+            </h4>
+          </div>
+          <button type="button" onclick="quickLaunchPetExpense()" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>+ Lançar Gasto Pet</span>
+          </button>
+        </div>
+
+        <!-- Card de Total e Detalhe -->
+        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 mb-2.5 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Gasto no Mês:</span>
+            <div id="petTotalExpensesVal" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white font-mono mt-0.5">R$ 0,00</div>
+          </div>
+          <div class="text-right">
+            <span id="petExpensesCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+              0 lançamentos
+            </span>
+          </div>
+        </div>
+
+        <!-- Lista das Despesas Recentes com Pet -->
+        <div id="petExpensesListFeed" class="space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar">
+          <!-- Renderizado dinamicamente -->
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: CARTEIRA DE VACINAÇÃO DIGITAL ANUAL (NUNCA MAIS ESQUECER) -->
+      <div class="py-3.5 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm">💉</span>
+              <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                Carteira de Vacinação Anual Digital
+              </h4>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+              Acompanhamento de doses anuais para garantir a saúde do Pantone sem esquecer os prazos.
+            </p>
+          </div>
+          <button type="button" onclick="openAddPetVaccineModal()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition-colors flex-shrink-0">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>+ Vacina</span>
+          </button>
+        </div>
+
+        <!-- Lista de Vacinas em Dia / Atenção / Vencida -->
+        <div id="petVaccinesContainer" class="space-y-2 mt-2">
+          <!-- Renderizado dinamicamente -->
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: COMPARADOR DE PREÇOS PET & PRODUTOS (RAÇÃO, PETISCOS, FRALDA) -->
+      <div class="pt-3.5">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm">🔍</span>
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+              Comparador de Preços Pet (Cobasi, Petz & Petlove)
+            </h4>
+          </div>
+        </div>
+
+        <!-- Campo de Busca e Botões das Grandes Redes -->
+        <div class="flex flex-col sm:flex-row items-center gap-2 mb-3">
+          <div class="relative flex-1 w-full">
+            <input type="text" id="inputPetSearchQuery" placeholder="Ex: Ração Premier 15kg, Petisco Dentlife, Fralda Pet..." value="Ração Premier Cães Adultos" class="w-full pl-3 pr-2 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs focus:outline-none focus:border-amber-500">
+          </div>
+          <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+            <button type="button" onclick="searchPetPrice('petz')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Petz
+            </button>
+            <button type="button" onclick="searchPetPrice('cobasi')" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Cobasi
+            </button>
+            <button type="button" onclick="searchPetPrice('petlove')" class="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Petlove
+            </button>
+          </div>
+        </div>
+
+        <!-- Botão Direto para Adicionar à Lista de Compras do Chat -->
+        <div class="p-3 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex items-center justify-between flex-wrap gap-2">
+          <div class="text-[11px] text-amber-900 dark:text-amber-200">
+            <span>🛒 Precisa comprar itens do Pantone? Adicione direto na lista da família:</span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button type="button" onclick="addPetProductToShoppingList('Ração Pantone', 1, 55)" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10px] rounded-lg shadow-2xs cursor-pointer">
+              + Ração
+            </button>
+            <button type="button" onclick="addPetProductToShoppingList('Petisco Dentlife', 1, 60)" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10px] rounded-lg shadow-2xs cursor-pointer">
+              + Petisco
+            </button>
+            <button type="button" onclick="addPetProductToShoppingList('Fralda Pantone', 1, 30)" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10px] rounded-lg shadow-2xs cursor-pointer">
+              + Fralda
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
+  <!-- ============================================================== -->
+  <div id="modalHealthMeds" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
+      
+      <!-- Cabeçalho do Modal de Saúde -->
+      <div class="flex items-start justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-md flex-shrink-0">
+            💊
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">Saúde & Remédios Contínuos</h3>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-800">
+                Rotina Rodrigo
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              Pressão Arterial (Aradois, Anlodipino, Hidroclorotiazida) & Glicemia (Glifage XR).
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Toggle do Alarme de Voz (10 min antes) -->
+          <button type="button" onclick="toggleHealthVoiceAlarm()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer" title="Ativar ou desativar notificação e narração de voz antecipada">
+            <i data-lucide="bell-ring" id="healthVoiceAlarmIcon" class="w-3.5 h-3.5 text-sky-500"></i>
+            <span id="healthVoiceAlarmLabel" class="hidden sm:inline">Alarme 10 min: Ativo</span>
+          </button>
+          
+          <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- BANNER DE TESTE DO ALARME DE VOZ ANTECIPADO (10 MIN) -->
+      <div class="my-3 p-3 rounded-2xl bg-gradient-to-r from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/40 border border-sky-200 dark:border-sky-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="text-xl">🎙️</span>
+          <div>
+            <div class="font-extrabold text-xs text-sky-950 dark:text-sky-100">Alarme e Narração por Voz 10 Minutos Antes</div>
+            <div class="text-[11px] text-sky-700 dark:text-sky-300">O app avisa antes da hora falando os remédios e quantidades exatas.</div>
+          </div>
+        </div>
+        <button type="button" onclick="testHealthVoiceAlarmNow()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          <span>Ouvir Alarme Agora (Teste)</span>
+        </button>
+      </div>
+
+      <!-- SEÇÃO 1: ROTINAS DO DIA (MANHÃ E NOITE) COM CHECK-IN FLEXÍVEL -->
+      <div class="py-2.5 border-b border-slate-200 dark:border-slate-800 space-y-3.5">
+        
+        <!-- ROTINA DA MANHÃ (08:00) -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-base">☀️</span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Dose da Manhã</h4>
+                  <span class="font-mono font-black text-sky-600 dark:text-sky-400 text-xs">(<span id="routineMorningTimeDisplay">08:00</span>)</span>
+                  <span id="routineMorningStatusBadge" class="text-[10px] font-black px-2 py-0.2 rounded-full bg-sky-100 text-sky-800 border border-sky-300">Pendente</span>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Total: 3 comprimidos para controle da pressão arterial.</p>
+              </div>
+            </div>
+
+            <button type="button" id="btnTakeMorningRoutine" onclick="promptTakeRoutine('morning')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+              ✅ Marcar: Já Tomei a Dose
+            </button>
+          </div>
+
+          <!-- Remédios da Manhã -->
+          <div id="routineMorningMedsList" class="space-y-1.5">
+            <!-- Injetado dinamicamente -->
+          </div>
+        </div>
+
+        <!-- ROTINA DA NOITE (20:00) -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🌙</span>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Dose da Noite</h4>
+                  <span class="font-mono font-black text-indigo-600 dark:text-indigo-400 text-xs">(<span id="routineEveningTimeDisplay">20:00</span>)</span>
+                  <span id="routineEveningStatusBadge" class="text-[10px] font-black px-2 py-0.2 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300">Pendente</span>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Total: 3 comprimidos (2 de pressão + 1 de glicemia).</p>
+              </div>
+            </div>
+
+            <button type="button" id="btnTakeEveningRoutine" onclick="promptTakeRoutine('evening')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+              ✅ Marcar: Já Tomei a Dose
+            </button>
+          </div>
+
+          <!-- Remédios da Noite -->
+          <div id="routineEveningMedsList" class="space-y-1.5">
+            <!-- Injetado dinamicamente -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SEÇÃO 2: CONTROLE DE ESTOQUE & COMPRA DIRETA NA LISTA -->
+      <div class="py-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm">📦</span>
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+              Controle de Estoque & Adicionar à Lista de Compras
+            </h4>
+          </div>
+        </div>
+
+        <div id="healthMedsStockGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Injetado dinamicamente -->
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: COMPARADOR DE PREÇOS EM FARMÁCIAS ONLINE -->
+      <div class="pt-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm">🔍</span>
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+              Comparador de Preços em Farmácias (Drogasil, Ultrafarma, Drogaria SP, Pague Menos)
+            </h4>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <div class="relative flex-1 w-full">
+            <input type="text" id="inputPharmaSearchQuery" placeholder="Pesquisar remédio..." value="Aradois 50mg" class="w-full pl-3 pr-2 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+            <button type="button" onclick="searchPharmaPrice('drogasil')" class="px-2.5 py-1.5 bg-red-600 hover:bg-red-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Drogasil
+            </button>
+            <button type="button" onclick="searchPharmaPrice('ultrafarma')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Ultrafarma
+            </button>
+            <button type="button" onclick="searchPharmaPrice('drogariasp')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Drogaria SP
+            </button>
+            <button type="button" onclick="searchPharmaPrice('paguemenos')" class="px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white font-black text-[11px] rounded-xl transition-all cursor-pointer shadow-2xs">
+              Pague Menos
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL 3: POPUP DE CONFIRMAÇÃO COM REGRA DE HORÁRIO FLEXÍVEL    -->
+  <!-- ============================================================== -->
+  <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl text-center">
+      
+      <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+        ✅
+      </div>
+
+      <h3 class="text-base font-black text-slate-900 dark:text-white" id="medTakeModalRoutineTitle">Dose Registrada!</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="medTakeModalRoutineDesc">
+        Como deseja programar as próximas doses?
+      </p>
+
+      <!-- As Duas Escolhas Médicas Reais Solicitadas por Rodrigo -->
+      <div class="my-4 space-y-2.5 text-left text-xs">
+        
+        <!-- Opção A: Manter Horário Habitual -->
+        <button type="button" onclick="confirmMedTakeChoice('keep_habitual')" class="w-full p-3 rounded-2xl border-2 border-emerald-500/80 bg-emerald-50/50 dark:bg-emerald-950/30 hover:bg-emerald-100/60 transition-all text-left group cursor-pointer">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+            <div class="font-black text-slate-900 dark:text-white">Manter Horário Habitual Fixo (8h e 20h)</div>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 ml-6 leading-tight">
+            Preserva a rotina padrão fixa das 08:00 e 20:00 sem alterar os alarmes habituais.
+          </p>
+        </button>
+
+        <!-- Opção B: Reprogramar a partir de agora (+12 horas) -->
+        <button type="button" onclick="confirmMedTakeChoice('shift_12h')" class="w-full p-3 rounded-2xl border-2 border-sky-400/70 bg-sky-50/50 dark:bg-sky-950/30 hover:bg-sky-100/60 transition-all text-left group cursor-pointer">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-bold">⏰</span>
+            <div class="font-black text-slate-900 dark:text-white">Reprogramar a Partir de Agora (+12h)</div>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 ml-6 leading-tight">
+            Ideal caso tenha tomado atrasado: recalcula a próxima dose para daqui a 12 horas para respeitar o intervalo seguro da medicação.
+          </p>
+        </button>
+
+      </div>
+
+      <button type="button" onclick="closeMedTakeConfirmationModal()" class="w-full py-1.5 text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">
+        Cancelar
+      </button>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL 4: ADICIONAR NOVA VACINA OU ANTIPARASITÁRIO AO PANTONE   -->
+  <!-- ============================================================== -->
+  <div id="modalAddPetVaccine" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl">
+      <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
+        <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+          <span>💉</span> Nova Vacina / Antipulgas
+        </h4>
+        <button type="button" onclick="closeAddPetVaccineModal()" class="p-1 text-slate-400 hover:text-white cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="formAddPetVaccine" onsubmit="handleSaveNewPetVaccine(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nome da Vacina / Medicamento *</label>
+          <input type="text" id="inputVacNome" required placeholder="Ex: Bravecto, Nexgard, Giardiavax, Vermífugo" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Finalidade / Descrição</label>
+          <input type="text" id="inputVacDesc" placeholder="Ex: Proteção contra carrapatos, vermífugo semestral" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Data da Aplicação *</label>
+            <input type="date" id="inputVacUltimaDose" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Clínica / Local</label>
+            <input type="text" id="inputVacClinica" placeholder="Wevets" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <p class="text-[10px] text-slate-400">
+          💡 A próxima dose será calculada automaticamente para <strong>+1 ano</strong> a partir da data de aplicação.
+        </p>
+
+        <div class="pt-2 flex items-center gap-2">
+          <button type="button" onclick="closeAddPetVaccineModal()" class="flex-1 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black shadow-md cursor-pointer">
+            Salvar Vacina
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

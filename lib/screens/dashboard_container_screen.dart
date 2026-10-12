@@ -141,6 +141,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         final member = data['member'] as String? ?? 'rodrigo';
         final source = data['source'] as String? ?? 'gallery';
         _pickAvatarPhoto(member, source: source);
+      } else if (action == 'pick_pet_photo') {
+        final source = data['source'] as String? ?? 'gallery';
+        _pickPetPhoto(source: source);
       } else if (action == 'authenticate_biometric' || action == 'authenticate_biometrics') {
         _authenticateBiometric();
       } else if (action == 'sync_transaction') {
@@ -460,6 +463,34 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao selecionar foto do avatar: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickPetPhoto({String source = 'gallery'}) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        preferredCameraDevice: CameraDevice.rear,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (image == null) return;
+
+      final bytes = await image.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/jpeg;base64,$base64Str';
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativePetPhotoResult === 'function') { window.onNativePetPhotoResult('$dataUrl'); }"
+      );
+    } catch (e) {
+      debugPrint('Erro ao selecionar foto do pet: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao selecionar foto do pet: $e')),
         );
       }
     }
