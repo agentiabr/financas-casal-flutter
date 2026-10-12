@@ -9,6 +9,7 @@ import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
 import '../services/auth_service.dart';
+import '../models/transaction_model.dart';
 import '../providers/finance_provider.dart';
 
 class DashboardContainerScreen extends StatefulWidget {

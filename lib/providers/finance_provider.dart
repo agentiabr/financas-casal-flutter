@@ -6,6 +6,7 @@ import '../models/piggy_model.dart';
 import '../models/cycle_model.dart';
 import '../models/initial_data.dart';
 import '../config/supabase_config.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FinanceProvider extends ChangeNotifier {
   List<TransactionModel> _transactions = [];
