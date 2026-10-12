@@ -10,10 +10,13 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!-- Reconhecimento de Voz Android 11+ (Requisito de Visibilidade de Pacotes) -->
+    <!-- Reconhecimento de Voz & Síntese de Voz Android 11+ -->
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 
@@ -40,6 +43,33 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Atalhos Dinâmicos de Launcher: Positivo (Azul) vs Negativo (Vermelho) -->
+        <activity-alias
+            android:name=".MainActivityPositive"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_positive"
+            android:label="CtrlPig"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".MainActivityNegative"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_negative"
+            android:label="CtrlPig"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
         
         <meta-data
             android:name="flutterEmbedding"

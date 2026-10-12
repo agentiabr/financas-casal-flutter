@@ -2145,32 +2145,6 @@
     "cartao_nome": "Nubank Rodrigo"
   },
   {
-    "id": 166,
-    "data": "2026-09-05",
-    "ciclo": "05/Set a 04/Out 2026",
-    "tipo": "Despesa Variável",
-    "categoria": "Transporte",
-    "descricao": "Recargapay *bilh unic",
-    "valor": 54.0,
-    "responsavel": "Márcia",
-    "forma_pagamento": "Cartão Crédito",
-    "status": "Pago",
-    "cartao_nome": "XP Márcia"
-  },
-  {
-    "id": 167,
-    "data": "2026-09-05",
-    "ciclo": "05/Set a 04/Out 2026",
-    "tipo": "Despesa Variável",
-    "categoria": "Transporte",
-    "descricao": "Recargapay *bilh unic",
-    "valor": 222.0,
-    "responsavel": "Comum",
-    "forma_pagamento": "Cartão Crédito",
-    "status": "Pago",
-    "cartao_nome": "Itaú Click"
-  },
-  {
     "id": 168,
     "data": "2026-09-05",
     "ciclo": "05/Set a 04/Out 2026",
@@ -2386,19 +2360,6 @@
     "categoria": "Moradia",
     "descricao": "IPTU 8/10",
     "valor": 101.0,
-    "responsavel": "Comum",
-    "forma_pagamento": "Boleto",
-    "status": "Pago",
-    "cartao_nome": null
-  },
-  {
-    "id": 185,
-    "data": "2026-09-17",
-    "ciclo": "05/Set a 04/Out 2026",
-    "tipo": "Despesa Variável",
-    "categoria": "Alimentação",
-    "descricao": "MERCADO",
-    "valor": 900.0,
     "responsavel": "Comum",
     "forma_pagamento": "Boleto",
     "status": "Pago",
@@ -2769,23 +2730,6 @@
     "total_parcelas": 10,
     "parcela_atual": 9,
     "grupo_parcela_id": "PARC_IPTU_2026",
-    "cartao_nome": null
-  },
-  {
-    "id": 209,
-    "data": "2026-10-05",
-    "ciclo": "05/Out a 04/Nov 2026",
-    "tipo": "Despesa Variável",
-    "categoria": "Alimentação",
-    "descricao": "MERCADO",
-    "valor": 900.0,
-    "responsavel": "Comum",
-    "forma_pagamento": "Boleto",
-    "status": "Pendente",
-    "parcelado": false,
-    "total_parcelas": 1,
-    "parcela_atual": 1,
-    "grupo_parcela_id": null,
     "cartao_nome": null
   },
   {

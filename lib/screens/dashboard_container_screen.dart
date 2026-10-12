@@ -117,6 +117,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
 
       if (action == 'start_voice') {
         _startNativeVoiceRecording();
+      } else if (action == 'start_chat_voice') {
+        _startNativeChatVoiceRecording();
+      } else if (action == 'update_launcher_icon') {
+        final isPositive = data['isPositive'] as bool? ?? true;
+        try {
+          const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('setLauncherIcon', {'isPositive': isPositive});
+        } catch (e) {
+          debugPrint('Aviso ao atualizar ícone dinâmico do launcher: $e');
+        }
       } else if (action == 'pick_invoice_camera') {
         _pickInvoicePhoto(source: ImageSource.camera);
       } else if (action == 'pick_invoice_gallery') {
@@ -235,6 +245,26 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
           final safeTextJson = jsonEncode(text);
           _controller.runJavaScript(
             "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult($safeTextJson); }"
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _startNativeChatVoiceRecording() async {
+    final status = await Permission.microphone.request();
+    if (!status.isGranted) return;
+
+    final speech = Provider.of<SpeechService>(context, listen: false);
+    final available = await speech.initialize();
+    if (!available) return;
+
+    await speech.startListening(
+      onResult: (text) {
+        if (text.isNotEmpty) {
+          final safeTextJson = jsonEncode(text);
+          _controller.runJavaScript(
+            "if (typeof window.onNativeChatVoiceResult === 'function') { window.onNativeChatVoiceResult($safeTextJson); }"
           );
         }
       },
