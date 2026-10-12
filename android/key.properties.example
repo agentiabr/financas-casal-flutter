@@ -1,0 +1,10 @@
+# Exemplo de configuração de assinatura de Release segura para o Android
+# Para gerar uma chave:
+# keytool -genkey -v -keystore release.keystore -alias ctrlpig_release -keyalg RSA -keysize 2048 -validity 10000
+#
+# Renomeie este arquivo para key.properties e coloque na pasta android/
+# NUNCA adicione o arquivo key.properties ou a chave .keystore no repositório Git!
+keyAlias=ctrlpig_release
+keyPassword=SUA_SENHA_AQUI
+storeFile=release.keystore
+storePassword=SUA_SENHA_AQUI

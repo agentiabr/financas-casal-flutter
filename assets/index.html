@@ -2680,6 +2680,10 @@
           
           <!-- Status do OCR / IA -->
           <div id="invoiceOcrStatus" class="mt-2 text-[11px] font-semibold text-slate-600"></div>
+          <details id="invoiceOcrDiagnostics" class="hidden mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-700">
+            <summary class="cursor-pointer font-semibold">Diagn?stico do reconhecimento</summary>
+            <pre id="invoiceOcrRawText" class="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-words font-mono text-[10px]"></pre>
+          </details>
         </div>
 
         <!-- Galeria de Fotos Anexadas (Múltiplas Fotos) -->
@@ -3665,6 +3669,54 @@
     function saveData() {
       localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
     }
+
+    // ==========================================
+    // SINCRONIZAÇÃO NATIVA: WEBVIEW <-> FLUTTER <-> SUPABASE
+    // ==========================================
+    function syncTransactionToFlutter(tx) {
+      if (!tx) return;
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'sync_transaction',
+            transaction: tx
+          }));
+        } catch (e) {
+          console.warn('Erro ao sincronizar transação com Flutter:', e);
+        }
+      }
+    }
+
+    function deleteTransactionFromFlutter(id) {
+      if (!id) return;
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'delete_transaction',
+            id: id
+          }));
+        } catch (e) {
+          console.warn('Erro ao deletar transação no Flutter:', e);
+        }
+      }
+    }
+
+    window.onNativeSupabaseDataLoaded = function(supabaseTxs) {
+      if (!Array.isArray(supabaseTxs) || supabaseTxs.length === 0) return;
+      console.log('[CtrlPig] Sincronizando dados recebidos do Supabase:', supabaseTxs.length);
+      const map = new Map();
+      supabaseTxs.forEach(t => map.set(t.id, t));
+      transactions.forEach(t => {
+        if (!map.has(t.id)) {
+          map.set(t.id, t);
+        }
+      });
+      transactions = Array.from(map.values());
+      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
+      if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
+    };
 
     function resetToOfficialOct2026() {
       if (confirm('Deseja restaurar o orçamento oficial de Outubro 2026 com todas as 28 despesas e receitas cadastradas?')) {
@@ -4999,6 +5051,7 @@
 
       transactions.unshift(newTx);
       saveData();
+      syncTransactionToFlutter(newTx);
       closeNewTxModal();
       updateDashboard();
       showToastUndo(`Lançamento "${descricao}" salvo com sucesso!`, false);
@@ -5051,6 +5104,7 @@
       tx.origem_comprovante = document.querySelector('input[name="editTxOrigem"]:checked')?.value || 'com_nota';
 
       saveData();
+      syncTransactionToFlutter(tx);
       closeEditTxModal();
       updateDashboard();
       showToastUndo(`Lançamento "${tx.descricao}" atualizado!`, false);
@@ -5075,6 +5129,7 @@
 
       transactions.splice(idx, 1);
       saveData();
+      deleteTransactionFromFlutter(id);
       updateDashboard();
 
       showToastUndo(`"${deleted.descricao}" movido para a lixeira.`);
@@ -5086,6 +5141,7 @@
       trashTransactions = trashTransactions.filter(item => item.tx.id !== lastDeletedItem.id);
       localStorage.setItem('financas_trash_transactions', JSON.stringify(trashTransactions));
       saveData();
+      syncTransactionToFlutter(lastDeletedItem);
 
       const itemRecuperado = lastDeletedItem;
       lastDeletedItem = null;
@@ -5975,7 +6031,7 @@
       if (!parsedVoice) return;
       const maxId = transactions.length > 0 ? Math.max(...transactions.map(t => t.id || 0)) + 1 : 1;
 
-      transactions.unshift({
+      const newTx = {
         id: maxId,
         data: getLocalDateString(),
         ciclo: currentCycle,
@@ -5988,9 +6044,11 @@
         cartao_nome: parsedVoice.forma_pagamento === 'Cartão de Crédito' ? 'Nubank Rodrigo' : null,
         status: 'Pago',
         origem_comprovante: 'com_nota'
-      });
+      };
 
+      transactions.unshift(newTx);
       saveData();
+      syncTransactionToFlutter(newTx);
       closeVoiceModal();
       updateDashboard();
       showToastUndo(`Lançamento "${parsedVoice.descricao}" criado via voz!`, false);
@@ -6080,10 +6138,44 @@
       lucide.createIcons();
     }
 
-    // Calcula a inteligência de preços para qualquer produto
+    // Normalização semântica para comparação de produtos e unidades (elimina acentos, padroniza 1L vs 1 litro, etc.)
+    function normalizeProductName(name) {
+      if (!name) return '';
+      return name
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\b(1|um)\s*litro(s)?\b|\b1\s*l\b/gi, '1l')
+        .replace(/\b(litro|litros)\b/gi, 'l')
+        .replace(/\b(quilo|quilos|quilograma|quilogramas)\b/gi, 'kg')
+        .replace(/\b(grama|gramas)\b/gi, 'g')
+        .replace(/\b(unidade|unidades|unid)\b/gi, 'un')
+        .replace(/[^a-z0-9]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // Calcula a inteligência de preços para qualquer produto com correspondência flexível
     function getProductPriceStats(productName) {
-      const clean = (productName || '').toLowerCase().trim();
-      const matches = priceHistory.filter(p => (p.produto || '').toLowerCase().trim() === clean);
+      if (!productName) return null;
+      const clean = productName.toLowerCase().trim();
+      const normInput = normalizeProductName(productName);
+
+      // 1. Busca exata direta
+      let matches = priceHistory.filter(p => (p.produto || '').toLowerCase().trim() === clean);
+
+      // 2. Busca por nome normalizado (ex: "Leite 1L" == "leite 1 litro")
+      if (matches.length === 0 && normInput) {
+        matches = priceHistory.filter(p => normalizeProductName(p.produto) === normInput);
+      }
+
+      // 3. Busca por similaridade/inclusão para termos relevantes
+      if (matches.length === 0 && normInput.length > 4) {
+        matches = priceHistory.filter(p => {
+          const pNorm = normalizeProductName(p.produto);
+          return pNorm.includes(normInput) || normInput.includes(pNorm);
+        });
+      }
+
       if (matches.length === 0) return null;
 
       // Menor preço registrado
@@ -6599,6 +6691,11 @@
       const totalInput = document.getElementById('invoiceExtractedTotal');
       if (storeInput) storeInput.value = '';
       if (totalInput) totalInput.value = '';
+      extractedReceiptItems = [];
+      const diagnostics = document.getElementById('invoiceOcrDiagnostics');
+      const rawTextOutput = document.getElementById('invoiceOcrRawText');
+      if (diagnostics) diagnostics.classList.add('hidden');
+      if (rawTextOutput) rawTextOutput.textContent = '';
       const ocrStatus = document.getElementById('invoiceOcrStatus');
       if (ocrStatus) ocrStatus.textContent = 'Aguardando foto da câmera...';
       capturedInvoicePhotos = [];
@@ -6697,6 +6794,7 @@
 
       transactions.unshift(newTx);
       saveData();
+      syncTransactionToFlutter(newTx);
 
       // Salva itens discriminados individualmente na Lista de Compras / Comparador de Preços
       if (extractedReceiptItems && extractedReceiptItems.length > 0) {
@@ -7338,8 +7436,14 @@
       const dateInput = document.getElementById('invoiceExtractedDate');
       const ocrStatus = document.getElementById('invoiceOcrStatus');
 
+      const diagnostics = document.getElementById('invoiceOcrDiagnostics');
+      const rawTextOutput = document.getElementById('invoiceOcrRawText');
+      const rawText = typeof ocrData?.raw_text === 'string' ? ocrData.raw_text.trim() : '';
+      if (diagnostics) diagnostics.classList.remove('hidden');
+      if (rawTextOutput) rawTextOutput.textContent = rawText || 'O OCR nao retornou texto para esta imagem.';
+
       if (!ocrData) {
-        if (ocrStatus) ocrStatus.innerHTML = '<span class="text-amber-600 font-bold">⚠️ Foto capturada! Verifique ou preencha os dados abaixo.</span>';
+        if (ocrStatus) ocrStatus.innerHTML = '<span class="text-amber-700 font-bold">Nao foi possivel obter o resultado do OCR. Confira o diagnostico abaixo.</span>';
         if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
         return;
       }
@@ -7350,9 +7454,10 @@
       }
 
       // 2. Data da Compra
-      if (ocrData.data && dateInput) {
+      const dataReconhecida = ocrData.data_reconhecida !== false && !!ocrData.data;
+      if (dataReconhecida && dateInput) {
         dateInput.value = ocrData.data;
-      } else if (dateInput && !dateInput.value) {
+      } else if (dateInput) {
         dateInput.value = getLocalDateString();
       }
 
@@ -7381,12 +7486,22 @@
 
       if (ocrStatus) {
         const count = extractedReceiptItems.length;
+        const storeRecognized = !!ocrData.estabelecimento && ocrData.estabelecimento !== 'Supermercado';
+        const totalRecognized = Number(ocrData.valor_total) > 0;
+        const hasRecognizedData = count > 0 || storeRecognized || totalRecognized || dataReconhecida;
+        let statusHtml = '';
         if (count > 0) {
-          ocrStatus.innerHTML = `<span class="text-emerald-600 font-bold">✓ IA (Google ML Kit): ${count} ${count === 1 ? 'item identificado' : 'itens identificados'} com preços e quantidades!</span>`;
+          statusHtml = `<span class="text-emerald-700 font-bold">OCR reconheceu ${count} ${count === 1 ? 'item' : 'itens'}.</span>`;
           showToastUndo(`Nota lida: ${count} itens e total de ${formatBRL(ocrData.valor_total || 0)}!`, false);
+        } else if (hasRecognizedData) {
+          statusHtml = '<span class="text-amber-700 font-bold">Leitura parcial: nenhum produto foi identificado. Confira os dados e o diagnostico.</span>';
         } else {
-          ocrStatus.innerHTML = '<span class="text-emerald-600 font-bold">✓ Estabelecimento e total lidos com sucesso!</span>';
+          statusHtml = '<span class="text-red-700 font-bold">O OCR nao reconheceu dados desta foto. Confira o texto bruto no diagnostico abaixo.</span>';
         }
+        if (!dataReconhecida) {
+          statusHtml += '<div class="mt-1.5 text-[11px] font-semibold text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-300">Data nao identificada na nota; confira antes de salvar.</div>';
+        }
+        ocrStatus.innerHTML = statusHtml;
       }
     }
 
@@ -7736,69 +7851,10 @@
         }
       }
 
-      // 2. Leitor Inteligente Local e Preciso com Desduplicação Automática entre Partes
-      if (ocrStatus) ocrStatus.innerHTML = '<span class="text-emerald-600 font-bold">✓ IA de Cupons Ativada: produtos e valores extraídos com sucesso!</span>';
-
-      // Base rica de produtos comuns de supermercado brasileiro
-      const smartStores = ['Supermercados Roldão', 'Assaí Atacadista', 'Carrefour', 'Pão de Açúcar', 'Padaria Bella'];
-      const defaultStore = smartStores[0];
-      if (storeInput && (!storeInput.value || storeInput.value === 'Supermercado')) {
-        storeInput.value = defaultStore;
+      // Sem resposta valida da API, nao inventa produtos nem valores de demonstracao.
+      if (ocrStatus) {
+        ocrStatus.innerHTML = '<span class="text-amber-700 font-bold">Nao foi possivel ler a nota automaticamente. Confira a configuracao da IA ou preencha os dados manualmente.</span>';
       }
-
-      // Itens discriminados simulando leitura real das partes fotografadas
-      const multiPartsItems = [
-        // Parte 1 (Topo da nota)
-        { produto: 'Leite Integral 1L', preco: 5.19, qtd: 4, unidade: '1L' },
-        { produto: 'Arroz Tipo 1 5kg', preco: 26.50, qtd: 1, unidade: '5kg' },
-        { produto: 'Café Torrado e Moído 500g', preco: 17.80, qtd: 1, unidade: '500g' },
-        // Parte 2 (Meio da nota - com sobreposição natural de enquadramento)
-        { produto: 'Café Torrado e Moído 500g', preco: 17.80, qtd: 1, unidade: '500g' }, // Duplicado proposital da emenda
-        { produto: 'Feijão Carioca 1kg', preco: 8.50, qtd: 2, unidade: '1kg' },
-        { produto: 'Açúcar Refinado 1kg', preco: 4.80, qtd: 2, unidade: '1kg' },
-        { produto: 'Sabão em Pó 1.6kg', preco: 20.90, qtd: 1, unidade: 'un' },
-        // Parte 3 (Rodapé da nota)
-        ...(capturedInvoicePhotos.length > 2 ? [
-          { produto: 'Sabão em Pó 1.6kg', preco: 20.90, qtd: 1, unidade: 'un' }, // Duplicado
-          { produto: 'Detergente Líquido 500ml', preco: 2.79, qtd: 3, unidade: 'un' },
-          { produto: 'Amaciante Concentrado 1.5L', preco: 19.90, qtd: 1, unidade: 'un' }
-        ] : [])
-      ];
-
-      // Desduplicação inteligente
-      const uniqueItems = [];
-      const seen = new Set();
-      let dupsCount = 0;
-
-      multiPartsItems.forEach(it => {
-        const key = it.produto.toLowerCase().trim();
-        if (seen.has(key)) {
-          dupsCount++;
-        } else {
-          seen.add(key);
-          uniqueItems.push(it);
-        }
-      });
-
-      extractedReceiptItems = uniqueItems;
-      renderExtractedItemsPreview();
-
-      // Badge de desduplicação
-      const dedupBadge = document.getElementById('invoiceDeduplicationBadge');
-      const dedupText = document.getElementById('deduplicationCountText');
-      if (dedupBadge && dedupText) {
-        if (dupsCount > 0) {
-          dedupText.textContent = `✂️ Desduplicação Ativa: ${dupsCount} item(ns) repetidos nas emendas das fotos foram descartados!`;
-          dedupBadge.classList.remove('hidden');
-        } else {
-          dedupBadge.classList.add('hidden');
-        }
-      }
-
-      // Calcula e define o total geral
-      const totalAmount = uniqueItems.reduce((acc, it) => acc + (it.preco * (it.qtd || 1)), 0);
-      if (totalInput) totalInput.value = formatBRL(totalAmount).replace('R$', '').trim();
-      showToastUndo(`Leitura concluída com sucesso: ${uniqueItems.length} produtos identificados!`, false);
     }
 
     // ==========================================
@@ -7942,7 +7998,12 @@
       img.src = dataUrl;
     }
 
+    let isAppAlreadyInitialized = false;
+
     function initApp() {
+      if (isAppAlreadyInitialized) return;
+      isAppAlreadyInitialized = true;
+
       loadData();
       loadPriceHistory();
       updateFoodBudgetWidget();
@@ -7953,12 +8014,23 @@
       renderInstallments();
       updateAudioUI();
     }
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initApp);
     } else {
       initApp();
     }
     window.addEventListener('load', initApp);
+
+    // Revalidação de segurança ao retornar do segundo plano
+    window.onAppResumedFromBackground = function() {
+      const bioEnabled = localStorage.getItem('financas_biometrics_enabled') === 'true';
+      const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+      if (bioEnabled && !isLoggedOut) {
+        sessionStorage.removeItem('pigctrl_session_authenticated');
+        initAuthSession();
+      }
+    };
   
     // ==============================================================================
     // SUÍTE DE INTELIGÊNCIA E REGRAS DE NEGÓCIO V5.2
@@ -8649,6 +8721,45 @@
       openWelcomeQuickHub();
     }
 
+    window.onNativeAuthLoginResult = function(success, errorMessage, userData) {
+      if (success) {
+        currentUserSession = userData || {
+          nome: 'Usuário Conectado',
+          email: 'usuario@ctrlpig.app',
+          plano: 'CtrlPig Cloud'
+        };
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        localStorage.removeItem('financas_auth_logged_out');
+        document.documentElement.classList.remove('require-auth');
+        document.getElementById('authOverlayContainer').classList.add('hidden');
+        const bioModal = document.getElementById("modalBiometricPrompt");
+        if (bioModal) bioModal.classList.add("hidden");
+        showToastUndo(`Login verificado no Supabase! Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
+        openWelcomeQuickHub();
+      } else {
+        alert('Erro no login Supabase: ' + (errorMessage || 'Verifique suas credenciais.'));
+      }
+    };
+
+    window.onNativeAuthRegisterResult = function(success, errorMessage) {
+      if (success) {
+        showToastUndo('Cadastro realizado no Supabase com sucesso! Faça seu login.', false);
+        switchAuthTab('login');
+      } else {
+        alert('Erro ao cadastrar no Supabase: ' + (errorMessage || 'Verifique seus dados.'));
+      }
+    };
+
+    window.onNativeAuthForgotResult = function(success, errorMessage) {
+      if (success) {
+        alert('Instruções de redefinição de acesso enviadas para o seu e-mail pelo Supabase!');
+        switchAuthTab('login');
+      } else {
+        alert('Erro ao solicitar redefinição no Supabase: ' + (errorMessage || 'Tente novamente.'));
+      }
+    };
+
     function handleAuthLogin(e) {
       e.preventDefault();
       const idInput = document.getElementById('loginIdentifier').value.trim();
@@ -8659,7 +8770,17 @@
         return;
       }
 
-      // Procura nas contas cadastradas locais
+      // Se executando dentro do app com FlutterBridge e id for e-mail, autentica com Supabase
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function' && idInput.includes('@')) {
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'auth_login',
+          email: idInput,
+          password: pass
+        }));
+        return;
+      }
+
+      // Procura nas contas cadastradas locais (Fallback de desenvolvimento / offline)
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
 
@@ -8719,6 +8840,16 @@
         return;
       }
 
+      // Se estiver no Flutter com conexão Supabase, registra na nuvem
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'auth_signup',
+          email: email,
+          password: senha,
+          nome: nome
+        }));
+      }
+
       let plano = 'Plano Padrão';
       if (cupom) {
         let cupons = [];
@@ -8752,8 +8883,16 @@
       e.preventDefault();
       const ident = document.getElementById('forgotIdentifier').value.trim();
       if (!ident) return;
-      alert(`Instruções de redefinição de acesso enviadas para ${ident}! Verifique suas mensagens ou WhatsApp.`);
-      switchAuthTab('login');
+
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function' && ident.includes('@')) {
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'auth_reset_password',
+          email: ident
+        }));
+      } else {
+        alert(`Instruções de redefinição de acesso enviadas para ${ident}! Verifique suas mensagens.`);
+        switchAuthTab('login');
+      }
     }
 
     function togglePasswordVisibility(inputId, iconId) {
