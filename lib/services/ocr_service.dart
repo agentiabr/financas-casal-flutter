@@ -203,7 +203,7 @@ class OcrService {
 
     // Se o total não foi detectado mas encontramos itens, calcula o total da soma dos itens
     if ((detectedTotal == null || detectedTotal <= 0) && items.isNotEmpty) {
-      detectedTotal = items.fold(0.0, (acc, item) => acc + item.total);
+      detectedTotal = items.fold<double>(0.0, (double acc, item) => acc + item.total);
     }
 
     return ReceiptOcrResult(

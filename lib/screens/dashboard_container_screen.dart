@@ -223,7 +223,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       }
 
       if ((detectedTotal == null || detectedTotal <= 0) && allItems.isNotEmpty) {
-        detectedTotal = allItems.fold(0.0, (acc, item) => acc + item.total);
+        detectedTotal = allItems.fold<double>(0.0, (double acc, item) => acc + item.total);
       }
 
       final combinedResult = ReceiptOcrResult(
