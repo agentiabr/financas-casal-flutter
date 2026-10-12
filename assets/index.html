@@ -1274,16 +1274,17 @@
               </button>
             </div>
 
-            <!-- Balão Interativo de Dicas do Mascote Piggy (Chat, Mercado, OCR e Parcelas) -->
-            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all" id="heroPiggyTipCard">
+            <!-- Balão Interativo de Dicas do Mascote Piggy (Chat, Mercado, OCR, Parcelas e Mentor) -->
+            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
               <div class="flex items-center justify-between mb-1.5">
-                <div class="flex items-center gap-1.5">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs">💡</span>
-                  <span class="text-[11px] font-black uppercase tracking-wider text-amber-200">Dica do Piggy</span>
-                  <span id="piggyTipIndexBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white">1/4</span>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span id="piggyTipIconBadge" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs flex-shrink-0">💡</span>
+                  <span id="piggyTipCategoryBadge" class="text-[11px] font-black uppercase tracking-wider text-amber-200 truncate">Dica do Piggy</span>
+                  <span id="piggyTipIndexBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white flex-shrink-0">1/4</span>
+                  <span id="piggyTipPauseIndicator" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-400/30 text-amber-200 flex-shrink-0">Pausado</span>
                 </div>
                 <!-- Controles Anterior / Próxima -->
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1 flex-shrink-0">
                   <button type="button" onclick="navigatePiggyTip(-1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer" title="Dica anterior">
                     <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
                   </button>
@@ -1653,46 +1654,6 @@
         </div>
 
         <div id="sectionRemindersContent" class="collapsible-content">
-
-          <!-- ============================================================== -->
-          <!-- BANNER DO MENTOR FINANCEIRO INTELIGENTE & METAS DE VIDA        -->
-          <!-- ============================================================== -->
-          <div class="mb-3.5 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-900 text-white border border-blue-500/30 shadow-lg relative overflow-hidden">
-            <div class="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-              <div class="flex items-start gap-3">
-                <div class="relative w-11 h-11 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
-                  🎓
-                  <span class="absolute -bottom-1 -right-1 text-xs">🐷</span>
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-300 border border-blue-400/30">
-                      Mentor Financeiro do Casal
-                    </span>
-                    <span class="text-[10px] text-blue-300 font-bold" id="mentorTipCategory">✈️ Viagem dos Sonhos</span>
-                  </div>
-                  <h4 class="text-xs sm:text-sm font-black text-white mt-1 leading-snug" id="mentorTipMainQuote">
-                    "Você sabia que se organizar um valor mensal você consegue fazer a viagem dos seus sonhos? Deixa eu te ajudar!"
-                  </h4>
-                  <p class="text-[11px] text-blue-200/90 mt-0.5" id="mentorTipSubtext">
-                    Pequenas reservas mensais realizam passagens, hospedagem e passeios incríveis em casal sem dívidas.
-                  </p>
-                </div>
-              </div>
-
-              <!-- Ações do Mentor -->
-              <div class="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto">
-                <button type="button" onclick="openDreamTripPlannerModal()" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-md transition-transform active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
-                  <span>✈️ Planejar Viagem</span>
-                </button>
-                <button type="button" onclick="nextMentorTip()" class="px-2.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/15 flex items-center justify-center gap-1 transition-colors whitespace-nowrap" title="Próxima dica do mentor">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
-                  <span>Outra Dica</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
             
             <!-- Card 1: Gastos do Dia em Destaque -->
@@ -8505,6 +8466,7 @@
       renderCuponsAtivosList();
       renderFeedbacksAdminList();
       renderGeminiKeyUI();
+      renderAdminPiggyTipsList();
       const memCount = document.getElementById('adminMembrosCount');
       if (memCount) memCount.textContent = 'Ilimitado (Rodrigo Admin)';
       document.getElementById('modalAdminPanel').classList.remove('hidden');
@@ -8691,12 +8653,13 @@
     }, 7000);
 
     // ==============================================================================
-    // CARROSSEL INTERATIVO DE DICAS EDUCATIVAS DO MASCOTE PIGGY (HERO CARD)
+    // CARROSSEL INTERATIVO DE DICAS & MENTOR FINANCEIRO DO PIGGY (HERO CARD)
     // ==============================================================================
-    const PIGGY_TIPS_DATA = [
+    const DEFAULT_PIGGY_TIPS = [
       {
         id: 'mercado',
         icon: '🛒',
+        category: 'Economia',
         title: 'Lista de Mercado & Comparador',
         text: 'Monte listas inteligentes e compare preços entre estabelecimentos para economizar no mês!',
         buttonText: 'Abrir Mercado',
@@ -8705,6 +8668,7 @@
       {
         id: 'chat',
         icon: '💬',
+        category: 'Família',
         title: 'Chat Familiar em Tempo Real',
         text: 'Envie recados rápidos, lembretes de despesas e compartilhe listas de compras com a família.',
         buttonText: 'Abrir Chat',
@@ -8713,6 +8677,7 @@
       {
         id: 'ocr',
         icon: '📸',
+        category: 'Automação',
         title: 'Leitor Inteligente de Cupons (OCR)',
         text: 'Fotografe notas fiscais para registrar lançamentos e salvar itens validados no comparador.',
         buttonText: 'Ler Cupom Fiscal',
@@ -8721,49 +8686,113 @@
       {
         id: 'parcelas',
         icon: '💳',
+        category: 'Cartões',
         title: 'Controle de Parcelas & Cartões',
         text: 'Acompanhe as faturas futuras e a evolução de todas as compras parceladas do casal.',
         buttonText: 'Ver Cartões',
         action: 'goToCardsSection()'
+      },
+      {
+        id: 'viagem',
+        icon: '✈️',
+        category: 'Mentor Financeiro',
+        title: 'Viagem dos Sonhos do Casal',
+        text: 'Defina o destino, poupe juntos todo mês e realize a próxima grande conquista a dois!',
+        buttonText: 'Planejar Meta',
+        action: 'openDreamTripPlannerModal()'
+      },
+      {
+        id: 'reserva',
+        icon: '🛡️',
+        category: 'Mentor Financeiro',
+        title: 'Reserva de Emergência',
+        text: 'Mantenha o equivalente a 3 a 6 meses de custos fixos guardados para imprevistos e paz mental.',
+        buttonText: 'Ver Cofrinhos',
+        action: 'goToPiggySection()'
+      },
+      {
+        id: 'regra503020',
+        icon: '📊',
+        category: 'Mentor Financeiro',
+        title: 'Regra Financeira 50-30-20',
+        text: '50% para necessidades básicas, 30% para desejos pessoais e 20% para investimentos e futuro.',
+        buttonText: 'Ver Métricas',
+        action: 'goToMetricsSection()'
+      },
+      {
+        id: 'contas',
+        icon: '📅',
+        category: 'Mentor Financeiro',
+        title: 'Contas & Lembretes em Dia',
+        text: 'Pague seus boletos antes do vencimento para evitar juros e multas desnecessárias no orçamento.',
+        buttonText: 'Ver Lembretes',
+        action: 'goToRemindersSection()'
       }
     ];
 
     let currentPiggyTipIdx = 0;
+    let piggyAutoPlayTimer = null;
+    let isPiggyAutoPlayPaused = false;
+    const PIGGY_AUTOPLAY_DELAY = 8500; // 8.5 segundos para leitura confortável
+
+    function getActivePiggyTips() {
+      let custom = [];
+      try {
+        const stored = localStorage.getItem('financas_custom_piggy_tips');
+        if (stored) {
+          custom = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar dicas customizadas do Piggy:', e);
+      }
+      return [...DEFAULT_PIGGY_TIPS, ...custom];
+    }
 
     function renderPiggyTip(idx) {
+      const tips = getActivePiggyTips();
+      if (!tips || tips.length === 0) return;
+
       if (typeof idx === 'number') {
-        currentPiggyTipIdx = (idx + PIGGY_TIPS_DATA.length) % PIGGY_TIPS_DATA.length;
+        currentPiggyTipIdx = (idx + tips.length) % tips.length;
       }
       const contentEl = document.getElementById('piggyTipContentArea');
       const badgeEl = document.getElementById('piggyTipIndexBadge');
       const dotsEl = document.getElementById('piggyTipDots');
+      const catBadge = document.getElementById('piggyTipCategoryBadge');
+      const iconBadge = document.getElementById('piggyTipIconBadge');
       if (!contentEl) return;
 
-      const tip = PIGGY_TIPS_DATA[currentPiggyTipIdx];
+      const tip = tips[currentPiggyTipIdx];
       if (!tip) return;
 
+      if (catBadge) {
+        catBadge.textContent = tip.category || 'Mentor Financeiro';
+      }
+      if (iconBadge) {
+        iconBadge.textContent = tip.icon || '🐷';
+      }
       if (badgeEl) {
-        badgeEl.textContent = `${currentPiggyTipIdx + 1}/${PIGGY_TIPS_DATA.length}`;
+        badgeEl.textContent = `${currentPiggyTipIdx + 1}/${tips.length}`;
       }
 
       contentEl.innerHTML = `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all">
           <div class="flex items-start gap-2.5 flex-1 min-w-0">
-            <span class="text-xl sm:text-2xl leading-none flex-shrink-0 mt-0.5 select-none">${tip.icon}</span>
+            <span class="text-xl sm:text-2xl leading-none flex-shrink-0 mt-0.5 select-none">${tip.icon || '🐷'}</span>
             <div class="min-w-0">
               <h4 class="text-xs sm:text-sm font-bold text-white tracking-wide truncate">${tip.title}</h4>
               <p class="text-[11px] sm:text-xs text-white/85 line-clamp-2 leading-relaxed mt-0.5">${tip.text}</p>
             </div>
           </div>
-          <button type="button" onclick="${tip.action}" class="flex-shrink-0 self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
-            <span>${tip.buttonText}</span>
+          <button type="button" onclick="${tip.action || 'goToMetricsSection()'}" class="flex-shrink-0 self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+            <span>${tip.buttonText || 'Acessar'}</span>
             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       `;
 
       if (dotsEl) {
-        dotsEl.innerHTML = PIGGY_TIPS_DATA.map((_, i) => {
+        dotsEl.innerHTML = tips.map((_, i) => {
           const isActive = i === currentPiggyTipIdx;
           return `<button type="button" onclick="setPiggyTip(${i})" class="${isActive ? 'w-5 h-1.5 rounded-full bg-amber-300 shadow-xs' : 'w-1.5 h-1.5 rounded-full bg-white/30 hover:bg-white/50 cursor-pointer'} transition-all" title="Dica ${i + 1}"></button>`;
         }).join('');
@@ -8774,14 +8803,54 @@
       }
     }
 
-    function navigatePiggyTip(dir) {
-      renderPiggyTip(currentPiggyTipIdx + dir);
+    function navigatePiggyTip(dir, fromAutoPlay = false) {
+      const tips = getActivePiggyTips();
+      if (!tips || tips.length === 0) return;
+      currentPiggyTipIdx = (currentPiggyTipIdx + dir + tips.length) % tips.length;
+      renderPiggyTip(currentPiggyTipIdx);
+      if (!fromAutoPlay) {
+        startPiggyTipAutoPlay(); // Reinicia contagem ao navegar manualmente
+      }
     }
 
     function setPiggyTip(idx) {
       renderPiggyTip(idx);
+      startPiggyTipAutoPlay();
     }
 
+    // Autoplay & Pausa por Hover ou Toque
+    function startPiggyTipAutoPlay() {
+      if (piggyAutoPlayTimer) {
+        clearInterval(piggyAutoPlayTimer);
+        piggyAutoPlayTimer = null;
+      }
+      if (isPiggyAutoPlayPaused) return;
+
+      piggyAutoPlayTimer = setInterval(() => {
+        if (!isPiggyAutoPlayPaused) {
+          navigatePiggyTip(1, true);
+        }
+      }, PIGGY_AUTOPLAY_DELAY);
+    }
+
+    function pausePiggyTipAutoPlay() {
+      isPiggyAutoPlayPaused = true;
+      if (piggyAutoPlayTimer) {
+        clearInterval(piggyAutoPlayTimer);
+        piggyAutoPlayTimer = null;
+      }
+      const pauseEl = document.getElementById('piggyTipPauseIndicator');
+      if (pauseEl) pauseEl.classList.remove('hidden');
+    }
+
+    function resumePiggyTipAutoPlay() {
+      isPiggyAutoPlayPaused = false;
+      const pauseEl = document.getElementById('piggyTipPauseIndicator');
+      if (pauseEl) pauseEl.classList.add('hidden');
+      startPiggyTipAutoPlay();
+    }
+
+    // Navegação contextual para seções de interesse
     function goToCardsSection() {
       const el = document.getElementById('sectionCards') || document.getElementById('cardHeroInstallments');
       if (el) {
@@ -8791,8 +8860,309 @@
       }
     }
 
+    function goToPiggySection() {
+      const el = document.getElementById('sectionPiggy');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.classList.add('ring-2', 'ring-amber-400');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-amber-400'), 1500);
+      }
+    }
+
+    function goToMetricsSection() {
+      const el = document.getElementById('sectionMetrics');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.classList.add('ring-2', 'ring-indigo-400');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-indigo-400'), 1500);
+      }
+    }
+
+    function goToRemindersSection() {
+      const el = document.getElementById('sectionReminders');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.classList.add('ring-2', 'ring-emerald-400');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-400'), 1500);
+      }
+    }
+
+    function openDreamTripPlannerModal() {
+      if (typeof openCreatePiggyModal === 'function') {
+        openCreatePiggyModal();
+        setTimeout(() => {
+          const nameInput = document.getElementById('inputNovoPorquinhoNome');
+          if (nameInput && !nameInput.value) {
+            nameInput.value = '✈️ Viagem dos Sonhos';
+          }
+        }, 150);
+      } else {
+        goToPiggySection();
+      }
+    }
+
+    // ==============================================================================
+    // GESTÃO DE DICAS NO PAINEL ADMIN & GERADOR COM IA
+    // ==============================================================================
+    function renderAdminPiggyTipsList() {
+      const container = document.getElementById('listaAdminDicasPiggy');
+      const countEl = document.getElementById('adminPiggyTipsCount');
+      if (!container) return;
+
+      const allTips = getActivePiggyTips();
+      if (countEl) countEl.textContent = `${allTips.length} dicas`;
+
+      container.innerHTML = allTips.map((tip, idx) => {
+        const isCustom = !!tip.isCustom;
+        return `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800 border ${isCustom ? 'border-amber-300 dark:border-amber-600/60' : 'border-slate-200 dark:border-slate-700'} text-xs">
+            <div class="flex items-center gap-2 min-w-0 flex-1 mr-2">
+              <span class="text-base flex-shrink-0">${tip.icon || '🐷'}</span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-800 dark:text-slate-100 truncate">${tip.title}</span>
+                  <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full ${isCustom ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'} flex-shrink-0">${tip.category || 'Dica'}</span>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${tip.text}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <button type="button" onclick="setPiggyTip(${idx}); closeAdminModal();" class="px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300 hover:bg-blue-100 text-[10px] font-bold transition-all cursor-pointer" title="Ver esta dica no balão">
+                Ver
+              </button>
+              ${isCustom ? `
+                <button type="button" onclick="handleDeletePiggyTip('${tip.id}')" class="p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer" title="Excluir dica customizada">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    function handleAddCustomPiggyTip() {
+      const titInput = document.getElementById('inputAdminPiggyTitulo');
+      const txtInput = document.getElementById('inputAdminPiggyTexto');
+      const catInput = document.getElementById('inputAdminPiggyCategoria');
+      const emoInput = document.getElementById('inputAdminPiggyEmoji');
+      const btnInput = document.getElementById('inputAdminPiggyBotao');
+
+      const titulo = titInput ? titInput.value.trim() : '';
+      const texto = txtInput ? txtInput.value.trim() : '';
+      const categoria = catInput && catInput.value.trim() ? catInput.value.trim() : 'Mentor Financeiro';
+      const icon = emoInput && emoInput.value.trim() ? emoInput.value.trim() : '🐷';
+      const buttonText = btnInput && btnInput.value.trim() ? btnInput.value.trim() : 'Conferir';
+
+      if (!titulo || !texto) {
+        alert('Por favor, preencha o Título e a Mensagem da dica antes de salvar!');
+        return;
+      }
+
+      let customList = [];
+      try {
+        const stored = localStorage.getItem('financas_custom_piggy_tips');
+        if (stored) customList = JSON.parse(stored);
+      } catch (e) {}
+
+      const newTip = {
+        id: 'custom_' + Date.now(),
+        icon: icon,
+        category: categoria,
+        title: titulo,
+        text: texto,
+        buttonText: buttonText,
+        action: 'goToMetricsSection()',
+        isCustom: true
+      };
+
+      customList.push(newTip);
+      localStorage.setItem('financas_custom_piggy_tips', JSON.stringify(customList));
+
+      if (titInput) titInput.value = '';
+      if (txtInput) txtInput.value = '';
+
+      renderAdminPiggyTipsList();
+      const allTips = getActivePiggyTips();
+      renderPiggyTip(allTips.length - 1);
+      alert('✨ Dica do Piggy adicionada com sucesso ao balão do aplicativo!');
+    }
+
+    function handleDeletePiggyTip(id) {
+      if (!confirm('Deseja excluir esta dica customizada do balão?')) return;
+      let customList = [];
+      try {
+        const stored = localStorage.getItem('financas_custom_piggy_tips');
+        if (stored) customList = JSON.parse(stored);
+      } catch (e) {}
+
+      customList = customList.filter(t => t.id !== id);
+      localStorage.setItem('financas_custom_piggy_tips', JSON.stringify(customList));
+      renderAdminPiggyTipsList();
+      renderPiggyTip(0);
+    }
+
+    function handleResetPiggyTipsDefault() {
+      if (!confirm('Deseja restaurar as dicas do Piggy para o padrão do aplicativo? Todas as dicas adicionadas manualmente serão removidas.')) return;
+      localStorage.removeItem('financas_custom_piggy_tips');
+      renderAdminPiggyTipsList();
+      renderPiggyTip(0);
+    }
+
+    // Gerador de Dicas Financeiras com IA (Gemini ou Banco Especialista Nativo)
+    const SMART_FINANCIAL_AI_TIPS = [
+      {
+        titulo: 'Regra das 48 Horas',
+        categoria: 'Mentor Financeiro',
+        emoji: '⏳',
+        texto: 'Antes de qualquer compra não essencial acima de R$ 150, esperem 48 horas juntos. 80% das vontades passageiras evaporam!',
+        botao: 'Ver Métricas'
+      },
+      {
+        titulo: 'Dia Sem Compras (Zero Gastos)',
+        categoria: 'Mentor Financeiro',
+        emoji: '🎯',
+        texto: 'Elejam um dia da semana para custo zero de extras. O valor poupado vai direto para um jantar especial a dois!',
+        botao: 'Ver Cofrinhos'
+      },
+      {
+        titulo: 'Pague Seu Futuro Primeiro',
+        categoria: 'Mentor Financeiro',
+        emoji: '🌱',
+        texto: 'No mesmo dia que cair o salário, guardem a fatia dos investimentos antes de começar a pagar as contas da casa.',
+        botao: 'Ver Cofrinhos'
+      },
+      {
+        titulo: 'Compras de Barriga Cheia',
+        categoria: 'Economia',
+        emoji: '🛒',
+        texto: 'Nunca vão ao supermercado com fome! Ir de barriga vazia aumenta compras por impulso em até 30% no carrinho.',
+        botao: 'Abrir Mercado'
+      },
+      {
+        titulo: 'Alinhamento Semanal a Dois',
+        categoria: 'Mentor Financeiro',
+        emoji: '☕',
+        texto: 'Dediquem 10 minutinhos no domingo para olhar o CtrlPig juntos, celebrar as economias e ajustar metas da semana.',
+        botao: 'Abrir Chat'
+      },
+      {
+        titulo: 'Auditoria de Assinaturas',
+        categoria: 'Mentor Financeiro',
+        emoji: '✂️',
+        texto: 'Revisem serviços de streaming e aplicativos esquecidos. Cancelar o que vocês não usam gera mais de R$ 800 ao ano!',
+        botao: 'Ver Cartões'
+      },
+      {
+        titulo: 'Trocos Inteligentes',
+        categoria: 'Economia',
+        emoji: '🪙',
+        texto: 'Poupem os trocos e centavos de cada compra no cofrinho virtual. Pequenas gotas enchem o balde das grandes realizações!',
+        botao: 'Ver Cofrinhos'
+      },
+      {
+        titulo: 'Cartão de Crédito é Aliado',
+        categoria: 'Cartões',
+        emoji: '💳',
+        texto: 'Nunca encarem o limite do cartão como extensão do salário. Acompanhem as faturas futuras para evitar surpresas.',
+        botao: 'Ver Cartões'
+      },
+      {
+        titulo: 'Metas a Curto e Longo Prazo',
+        categoria: 'Mentor Financeiro',
+        emoji: '🏖️',
+        texto: 'Mantenham sempre um objetivo próximo (como um passeio no mês) e um grande (viagem ou casa). Isso mantém o casal motivado!',
+        botao: 'Planejar Meta'
+      },
+      {
+        titulo: 'Celebração de Vitórias',
+        categoria: 'Mentor Financeiro',
+        emoji: '🥂',
+        texto: 'Cada conta paga adiantada e cada meta mensal de mercado atingida é motivo de comemoração e orgulho para o casal!',
+        botao: 'Ver Métricas'
+      }
+    ];
+
+    let lastAITipIdx = -1;
+
+    async function generatePiggyTipWithAI() {
+      const btn = document.getElementById('btnGenerateTipAI');
+      const titInput = document.getElementById('inputAdminPiggyTitulo');
+      const txtInput = document.getElementById('inputAdminPiggyTexto');
+      const catInput = document.getElementById('inputAdminPiggyCategoria');
+      const emoInput = document.getElementById('inputAdminPiggyEmoji');
+      const btnInput = document.getElementById('inputAdminPiggyBotao');
+
+      const originalBtnText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = `<span>⏳ Consultando IA...</span>`;
+        btn.disabled = true;
+      }
+
+      let generated = null;
+      const apiKey = localStorage.getItem('financas_gemini_api_key');
+
+      if (apiKey && apiKey.startsWith('AIzaSy')) {
+        try {
+          const prompt = "Você é o Mentor Financeiro do casal Rodrigo e Márcia no aplicativo CtrlPig. Crie uma dica financeira curta, motivadora, prática e inteligente para o casal economizar, investir ou organizar as contas da casa. Responda ESTRITAMENTE em formato JSON puro sem blocos markdown ou código com os campos: {\"titulo\": \"...\", \"categoria\": \"Mentor Financeiro\", \"emoji\": \"...\", \"texto\": \"...\", \"botao\": \"...\"}. O campo texto deve ter no máximo 130 caracteres.";
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.7, maxOutputTokens: 250 }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResponse) {
+              const cleanJson = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+              generated = JSON.parse(cleanJson);
+            }
+          }
+        } catch (e) {
+          console.warn('Falha na chamada da Gemini API, usando acervo inteligente:', e);
+        }
+      }
+
+      // Se a API não estiver configurada ou falhar, seleciona do acervo inteligente
+      if (!generated || !generated.titulo || !generated.texto) {
+        let nextIdx = (lastAITipIdx + 1) % SMART_FINANCIAL_AI_TIPS.length;
+        if (SMART_FINANCIAL_AI_TIPS.length > 1 && nextIdx === lastAITipIdx) {
+          nextIdx = (nextIdx + 1) % SMART_FINANCIAL_AI_TIPS.length;
+        }
+        lastAITipIdx = nextIdx;
+        generated = SMART_FINANCIAL_AI_TIPS[nextIdx];
+      }
+
+      // Preenche os campos do formulário
+      if (titInput) titInput.value = generated.titulo || 'Conselho Financeiro';
+      if (txtInput) txtInput.value = generated.texto || '';
+      if (catInput) catInput.value = generated.categoria || 'Mentor Financeiro';
+      if (emoInput) emoInput.value = generated.emoji || '🐷';
+      if (btnInput) btnInput.value = generated.botao || 'Conferir';
+
+      if (btn) {
+        btn.innerHTML = originalBtnText;
+        btn.disabled = false;
+      }
+
+      // Feedback visual rápido
+      if (txtInput) {
+        txtInput.classList.add('ring-2', 'ring-amber-400');
+        setTimeout(() => txtInput.classList.remove('ring-2', 'ring-amber-400'), 1200);
+      }
+    }
+
     function initPiggyTips() {
       renderPiggyTip(0);
+      startPiggyTipAutoPlay();
     }
 
     // ==========================================
@@ -10019,22 +10389,22 @@
             : items.filter(it => (it.lojaNome || 'Supermercados Roldão') === activeChatStoreFilter);
 
           return `
-            <div class="rounded-2xl bg-slate-900 border border-slate-800 p-3.5 shadow-xl my-2">
-              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-3.5 shadow-md my-2 text-slate-800 dark:text-slate-100">
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-slate-750">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-black text-white flex items-center gap-1.5">
+                  <span class="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span>🛒</span> Lista de Mercado na Gôndola
                   </span>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold">
                     R$ ${summary.total.toFixed(2).replace('.', ',')}
                   </span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="openShoppingListModal()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all" title="Abrir montador completo">
-                    <i data-lucide="list-plus" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <button type="button" onclick="openShoppingListModal()" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all" title="Abrir montador completo">
+                    <i data-lucide="list-plus" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
                     <span>+ Produtos</span>
                   </button>
-                  <button type="button" onclick="openAddNewItemPrompt()" class="px-2 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-[11px] font-bold flex items-center gap-1 transition-all">
+                  <button type="button" onclick="openAddNewItemPrompt()" class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 dark:border-emerald-600 text-[11px] font-bold flex items-center gap-1 transition-all">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                     <span>Item</span>
                   </button>
@@ -10042,18 +10412,18 @@
               </div>
 
               <!-- BARRA DE FILTROS POR ESTABELECIMENTO NO CHAT (Ex: Roldão, Assaí, Padaria) -->
-              <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 scrollbar-none border-b border-slate-800/80">
-                <span class="text-[10px] font-bold text-slate-400 flex-shrink-0 flex items-center gap-1">
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 scrollbar-none border-b border-slate-200 dark:border-slate-750">
+                <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 flex-shrink-0 flex items-center gap-1">
                   <span>🏪</span> Loja:
                 </span>
                 ${distinctStores.map(s => {
                   const count = s === 'Todos' ? items.length : items.filter(it => (it.lojaNome || 'Supermercados Roldão') === s).length;
                   const isActive = (activeChatStoreFilter || 'Todos') === s;
-                  const cls = isActive ? 'bg-emerald-600 text-white font-black shadow-xs' : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 border border-slate-700';
+                  const cls = isActive ? 'bg-emerald-600 text-white font-black shadow-xs' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
                   return `
                     <button type="button" onclick="setChatStoreFilter('${s}')" class="px-2.5 py-1 text-[11px] rounded-xl flex items-center gap-1 transition-all ${cls} flex-shrink-0">
                       <span>${s === 'Todos' ? '📋 Todos' : s}</span>
-                      <span class="px-1.5 py-0.2 rounded-full ${isActive ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-emerald-400'} text-[10px] font-mono">${count}</span>
+                      <span class="px-1.5 py-0.2 rounded-full ${isActive ? 'bg-emerald-800 text-white' : 'bg-slate-200 dark:bg-slate-700 text-emerald-700 dark:text-emerald-400'} text-[10px] font-mono">${count}</span>
                     </button>
                   `;
                 }).join('')}
@@ -10225,13 +10595,13 @@
           // Mensagem enviada (Verde à direita)
           return `
             <div class="flex flex-col items-end">
-              <div class="max-w-[85%] rounded-2xl rounded-tr-xs p-3 shadow-md bg-emerald-700 text-white">
+              <div class="max-w-[85%] rounded-2xl rounded-tr-xs p-3 shadow-md bg-emerald-600 text-white">
                 ${m.photoUrl ? `
                   <div class="mb-2">
-                    <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-emerald-500/50">
-                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-emerald-600/40">
-                      <span class="text-[9px] text-emerald-200">📸 Foto temporária</span>
-                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-red-200 hover:text-white bg-red-900/60 hover:bg-red-800 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors" title="Apagar foto da conversa">
+                    <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-emerald-400/50">
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-emerald-500/40">
+                      <span class="text-[9px] text-emerald-100">📸 Foto temporária</span>
+                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-rose-200 hover:text-white bg-rose-900/60 hover:bg-rose-800 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors" title="Apagar foto da conversa">
                         <i data-lucide="trash-2" class="w-3 h-3"></i>
                         <span>Apagar foto</span>
                       </button>
@@ -10239,35 +10609,35 @@
                   </div>
                 ` : ''}
                 <p class="text-xs sm:text-[13px] leading-relaxed text-white">${m.text}</p>
-                <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-emerald-200 font-mono">
+                <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-emerald-100 font-mono">
                   <span>${m.time}</span>
-                  <i data-lucide="check-check" class="w-3.5 h-3.5 text-sky-300"></i>
+                  <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-200"></i>
                 </div>
               </div>
             </div>
           `;
         } else {
-          // Mensagem recebida (Cinza à esquerda)
+          // Mensagem recebida (Fundo Claro à esquerda)
           return `
             <div class="flex items-start gap-2 max-w-[85%]">
-              <div class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs flex-shrink-0 border border-slate-700 shadow-xs mt-1">
+              <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-white flex items-center justify-center text-xs flex-shrink-0 border border-slate-300 dark:border-slate-700 shadow-xs mt-1">
                 ${m.avatar || '👤'}
               </div>
-              <div class="rounded-2xl rounded-tl-xs p-3 shadow-md bg-slate-900 text-slate-100 border border-slate-800 flex-1 min-w-0">
-                <span class="block text-[11px] font-black text-emerald-400 mb-0.5">${m.sender}</span>
+              <div class="rounded-2xl rounded-tl-xs p-3 shadow-md bg-white dark:bg-slate-850 text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-750 flex-1 min-w-0">
+                <span class="block text-[11px] font-black text-emerald-600 dark:text-emerald-400 mb-0.5">${m.sender}</span>
                 ${m.photoUrl ? `
                   <div class="mb-2">
-                    <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-slate-700">
-                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-800">
-                      <span class="text-[9px] text-slate-400">📸 Foto temporária</span>
-                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-red-300 hover:text-red-100 bg-red-950/80 hover:bg-red-900 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors" title="Apagar foto da conversa">
+                    <img src="${m.photoUrl}" class="rounded-xl max-h-48 w-auto object-cover border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200 dark:border-slate-750">
+                      <span class="text-[9px] text-slate-500 dark:text-slate-400">📸 Foto temporária</span>
+                      <button type="button" onclick="deleteChatPhoto('${m.id}')" class="text-[10px] text-rose-600 hover:text-rose-700 dark:text-rose-300 dark:hover:text-rose-100 bg-rose-50 dark:bg-rose-950/80 px-1.5 py-0.5 rounded flex items-center gap-1 transition-colors border border-rose-200 dark:border-rose-800" title="Apagar foto da conversa">
                         <i data-lucide="trash-2" class="w-3 h-3"></i>
                         <span>Apagar foto</span>
                       </button>
                     </div>
                   </div>
                 ` : ''}
-                <p class="text-xs sm:text-[13px] leading-relaxed text-slate-200">${m.text}</p>
+                <p class="text-xs sm:text-[13px] leading-relaxed text-slate-800 dark:text-slate-200">${m.text}</p>
                 <div class="flex items-center justify-end gap-1 mt-1 text-[10px] text-slate-400 font-mono">
                   <span>${m.time}</span>
                 </div>
@@ -12075,6 +12445,77 @@
           </div>
         </div>
 
+        <!-- SEÇÃO: GESTÃO DE DICAS DO PIGGY & MENTOR FINANCEIRO COM IA -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span>🐷</span><span>Dicas do Piggy & Mentor com IA</span>
+            </h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">Interativo & IA</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
+            Cadastre novos conselhos para o mascote ou peça para a IA gerar dicas financeiras inteligentes para Rodrigo & Márcia:
+          </p>
+
+          <!-- Formulário de Nova Dica com IA -->
+          <div class="space-y-2.5 bg-white dark:bg-slate-850 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Adicionar / Sugerir Dica</span>
+              <button type="button" onclick="generatePiggyTipWithAI()" id="btnGenerateTipAI" class="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-lg text-[10px] shadow-xs transition-all flex items-center gap-1 cursor-pointer">
+                <span>✨ Sugerir com IA</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div class="col-span-2">
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Título da Dica</label>
+                <input type="text" id="inputAdminPiggyTitulo" placeholder="Ex: Reserva Estratégica" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Emoji</label>
+                <input type="text" id="inputAdminPiggyEmoji" maxlength="2" placeholder="🐷" value="🐷" class="w-full px-2 py-1.5 text-xs text-center font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Categoria</label>
+                <input type="text" id="inputAdminPiggyCategoria" placeholder="Ex: Mentor Financeiro" value="Mentor Financeiro" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Texto do Botão</label>
+                <input type="text" id="inputAdminPiggyBotao" placeholder="Ex: Saber Mais" value="Saber Mais" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Mensagem / Conselho do Piggy</label>
+              <textarea id="inputAdminPiggyTexto" rows="2" placeholder="Ex: Poupar 10% no início do mês garante que você pague seu futuro antes das contas gerais!" class="w-full px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white custom-scrollbar"></textarea>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+              <button type="button" onclick="handleAddCustomPiggyTip()" class="flex-1 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-1 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <span>Salvar Dica no Balão</span>
+              </button>
+              <button type="button" onclick="handleResetPiggyTipsDefault()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-xl text-xs transition-all border border-slate-300 dark:border-slate-700 cursor-pointer" title="Restaurar dicas originais">
+                Restaurar
+              </button>
+            </div>
+          </div>
+
+          <!-- Lista de Dicas Cadastradas -->
+          <div class="mt-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Dicas Ativas no Balão:</span>
+              <span id="adminPiggyTipsCount" class="text-[10px] font-extrabold text-slate-600 dark:text-slate-400">8 dicas</span>
+            </div>
+            <div id="listaAdminDicasPiggy" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -12578,23 +13019,23 @@
   <!-- ============================================================== -->
   <!-- MODAL: CHAT FAMILIAR & LISTA DE MERCADO NA GÔNDOLA (V1.4.9)   -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-slate-950 text-slate-100 border border-slate-800 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
+  <div id="modalFamilyChat" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
       
-      <!-- Cabeçalho Limpo Estilo WhatsApp -->
-      <div class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <!-- Cabeçalho Limpo Estilo WhatsApp com Fundo Claro e Alto Contraste -->
+      <div class="bg-white dark:bg-slate-850 border-b border-slate-200 dark:border-slate-750 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-xs">
         <div class="flex items-center gap-3 min-w-0">
           <div class="relative flex-shrink-0">
             <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-lg border border-emerald-400/40 shadow-sm">
               🛒
             </div>
-            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-900"></span>
+            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-850"></span>
           </div>
           <div class="min-w-0">
-            <h3 class="font-black text-sm sm:text-base text-white truncate flex items-center gap-1.5">
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white truncate flex items-center gap-1.5">
               Chat da Família & Mercado
             </h3>
-            <p class="text-[11px] text-slate-400 truncate" id="chatHeaderSubtitle">
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" id="chatHeaderSubtitle">
               Rodrigo, Márcia, Filho • online
             </p>
           </div>
@@ -12602,33 +13043,33 @@
 
         <div class="flex items-center gap-2 flex-shrink-0">
           <!-- Som / Áudio do Chat -->
-          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Ativar/Desativar sons do chat">
+          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-slate-700 shadow-xs" title="Ativar/Desativar sons do chat">
             <i data-lucide="volume-2" id="iconAppAudio" class="w-4 h-4"></i>
           </button>
 
           <!-- Alternar Visão: Chat vs Apenas Lista -->
-          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-colors" title="Ver Lista da Gôndola">
-            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 transition-colors" title="Ver Lista da Gôndola">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
             <span class="hidden xs:inline">Lista</span>
-            <span id="badgeChatListCount" class="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
+            <span id="badgeChatListCount" class="bg-emerald-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
           </button>
           
           <!-- Fechar -->
-          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Fechar Chat">
+          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-slate-700 shadow-xs" title="Fechar Chat">
             <i data-lucide="x" class="w-4.5 h-4.5"></i>
           </button>
         </div>
       </div>
 
-      <!-- Placar ao Vivo do Carrinho na Gôndola (Evitar surpresa no caixa!) -->
-      <div id="chatShoppingSummaryBar" class="bg-slate-900/95 border-b border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2 flex-shrink-0">
+      <!-- Placar ao Vivo do Carrinho na Gôndola (Fundo Suave Claro e Destaque) -->
+      <div id="chatShoppingSummaryBar" class="bg-emerald-50/90 dark:bg-slate-800/90 border-b border-emerald-100 dark:border-slate-700 px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-2 flex-shrink-0">
         <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-xs font-bold text-slate-400">Carrinho:</span>
-          <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-400 font-mono">R$ 0,00</span>
-          <span class="text-[11px] text-slate-500 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
+          <span class="text-xs font-bold text-slate-600 dark:text-slate-400">Carrinho:</span>
+          <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-700 dark:text-emerald-400 font-mono">R$ 0,00</span>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-red-950/70 text-slate-400 hover:text-red-300 border border-slate-700 hover:border-red-800/60 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
+          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-rose-50 dark:bg-slate-750 dark:hover:bg-rose-950/40 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
             <span>🚪 Desistir</span>
           </button>
           <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95">
@@ -12637,11 +13078,11 @@
         </div>
       </div>
 
-      <!-- Feed de Conversa e Lista Interativa da Gôndola -->
-      <div id="chatMessagesFeed" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar bg-slate-950/95">
+      <!-- Feed de Conversa e Lista Interativa da Gôndola (Fundo Claro WhatsApp) -->
+      <div id="chatMessagesFeed" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar bg-slate-100/90 dark:bg-slate-900/95">
         <!-- Divisor de Data -->
         <div class="flex justify-center my-1">
-          <span class="px-3 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-bold text-slate-400 shadow-xs">
+          <span class="px-3 py-0.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-500 dark:text-slate-400 shadow-xs">
             Hoje
           </span>
         </div>
@@ -12650,23 +13091,23 @@
         <div id="chatMessagesList" class="space-y-3"></div>
       </div>
 
-      <!-- Barra de Envio Limpa Estilo WhatsApp -->
-      <div class="p-3 bg-slate-900 border-t border-slate-800 flex-shrink-0">
+      <!-- Barra de Envio Limpa Estilo WhatsApp (Fundo Claro) -->
+      <div class="p-3 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-750 flex-shrink-0">
         <form onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2">
           <!-- Botão Câmera (Tirar Foto Temporária da Gôndola) -->
-          <button type="button" onclick="triggerChatPhotoCapture()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors flex-shrink-0 border border-slate-700 active:scale-95" title="Tirar foto na gôndola (temporária)">
+          <button type="button" onclick="triggerChatPhotoCapture()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors flex-shrink-0 border border-slate-200 dark:border-slate-700 active:scale-95" title="Tirar foto na gôndola (temporária)">
             <i data-lucide="camera" class="w-4.5 h-4.5"></i>
           </button>
           <input type="file" id="chatPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="handleChatPhotoUpload(event)">
 
           <!-- Botão + Item de Compra -->
-          <button type="button" onclick="openAddNewItemPrompt()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 flex items-center justify-center transition-colors flex-shrink-0 border border-slate-700" title="Adicionar item à Lista de Compras">
+          <button type="button" onclick="openAddNewItemPrompt()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-colors flex-shrink-0 border border-slate-200 dark:border-slate-700" title="Adicionar item à Lista de Compras">
             <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i>
           </button>
 
-          <!-- Campo de Digitação -->
+          <!-- Campo de Digitação com Fundo Claro -->
           <div class="flex-1 relative">
-            <input type="text" id="inputChatMessageClean" placeholder="Mensagem ou 'traz café 500g'..." autocomplete="off" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors">
+            <input type="text" id="inputChatMessageClean" placeholder="Mensagem ou 'traz café 500g'..." autocomplete="off" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-colors">
           </div>
 
           <!-- Botão Enviar -->
