@@ -28,6 +28,7 @@ class FinanceProvider extends ChangeNotifier {
     // Carrega os 212 lançamentos históricos de Rodrigo & Márcia como base inicial
     _transactions = List.from(initialTransactionsList);
     _fetchFromSupabase();
+    _subscribeRealtime();
 
     // Cartões padrão
     _cards = [
@@ -201,6 +202,26 @@ class FinanceProvider extends ChangeNotifier {
       } catch (e) {
         debugPrint('Erro ao deletar do Supabase: $e');
       }
+    }
+  }
+
+  void _subscribeRealtime() {
+    if (!SupabaseConfig.isConfigured) return;
+    try {
+      SupabaseConfig.client
+          .channel('public:transactions')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'transactions',
+            callback: (payload) {
+              debugPrint('Supabase Realtime alteração detectada: ${payload.eventType}');
+              _fetchFromSupabase();
+            },
+          )
+          .subscribe();
+    } catch (e) {
+      debugPrint('Aviso ao registrar Realtime no Supabase: $e');
     }
   }
 }

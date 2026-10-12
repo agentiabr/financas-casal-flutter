@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, espelho-codex ]
   workflow_dispatch: # Permite disparar a compilação manualmente com 1 clique no GitHub
 
 jobs:

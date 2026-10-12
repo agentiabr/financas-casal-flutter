@@ -50,6 +50,7 @@ class ReceiptOcrResult {
     return {
       'estabelecimento': storeName ?? 'Supermercado',
       'data': dateStr,
+      'data_reconhecida': date != null,
       'valor_total': totalAmount ?? 0.0,
       'itens': items.map((e) => e.toJson()).toList(),
       'linhas': lines,
@@ -93,7 +94,6 @@ class OcrService {
         detectedDate = DateTime(y, m, d);
       }
     }
-    detectedDate ??= DateTime.now();
 
     // 2. Detectar Valor Total da NF
     double? detectedTotal;

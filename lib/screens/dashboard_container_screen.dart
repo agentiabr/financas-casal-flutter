@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
+import '../services/auth_service.dart';
 import '../providers/finance_provider.dart';
 
 class DashboardContainerScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class DashboardContainerScreen extends StatefulWidget {
   State<DashboardContainerScreen> createState() => _DashboardContainerScreenState();
 }
 
-class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
+class _DashboardContainerScreenState extends State<DashboardContainerScreen> with WidgetsBindingObserver {
   late final WebViewController _controller;
   bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
@@ -26,6 +27,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ocrService.dispose();
     super.dispose();
   }
@@ -33,7 +35,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initWebViewController();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Revalida autenticação biométrica/sessão ao retornar do segundo plano
+      _controller.runJavaScript("""
+        if (typeof window.onAppResumedFromBackground === 'function') {
+          window.onAppResumedFromBackground();
+        }
+      """);
+    }
   }
 
   void _initWebViewController() {
@@ -77,6 +92,21 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
       console.log("Flutter Native Bridge conectada com sucesso!");
     ''';
     _controller.runJavaScript(jsBridge);
+
+    // Envia dados do Supabase carregados no Flutter para a interface Web
+    try {
+      final provider = Provider.of<FinanceProvider>(context, listen: false);
+      if (provider.transactions.isNotEmpty) {
+        final txListJson = jsonEncode(provider.transactions.map((t) => t.toJson()).toList());
+        _controller.runJavaScript("""
+          if (typeof window.onNativeSupabaseDataLoaded === 'function') {
+            window.onNativeSupabaseDataLoaded($txListJson);
+          }
+        """);
+      }
+    } catch (e) {
+      debugPrint('Aviso ao sincronizar inicial com WebView: $e');
+    }
   }
 
   Future<void> _handleJavaScriptMessage(JavaScriptMessage message) async {
@@ -100,8 +130,73 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
         final member = data['member'] as String? ?? 'rodrigo';
         final source = data['source'] as String? ?? 'gallery';
         _pickAvatarPhoto(member, source: source);
-      } else if (action == 'authenticate_biometric') {
+      } else if (action == 'authenticate_biometric' || action == 'authenticate_biometrics') {
         _authenticateBiometric();
+      } else if (action == 'sync_transaction') {
+        // Conexão Web -> Flutter -> Supabase
+        final txMap = data['transaction'];
+        if (txMap != null && txMap is Map<String, dynamic>) {
+          final tx = TransactionModel.fromJson(txMap);
+          final provider = Provider.of<FinanceProvider>(context, listen: false);
+          final exists = provider.transactions.any((t) => t.id == tx.id);
+          if (exists) {
+            provider.editTransaction(tx);
+          } else {
+            provider.addTransaction(tx);
+          }
+        }
+      } else if (action == 'delete_transaction') {
+        // Conexão Web -> Flutter -> Supabase Delete
+        final idVal = data['id'];
+        if (idVal != null) {
+          final id = idVal is int ? idVal : int.tryParse(idVal.toString()) ?? 0;
+          if (id > 0) {
+            final provider = Provider.of<FinanceProvider>(context, listen: false);
+            provider.deleteTransaction(id);
+          }
+        }
+      } else if (action == 'auth_login') {
+        final email = data['email'] as String? ?? '';
+        final password = data['password'] as String? ?? '';
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final err = await authService.signIn(email: email, password: password);
+        final success = err == null;
+        final user = authService.currentUser;
+        final userJson = jsonEncode({
+          'email': user?.email ?? email,
+          'id': user?.id ?? '',
+          'nome': user?.userMetadata?['nome'] ?? email.split('@')[0],
+        });
+        _controller.runJavaScript("""
+          if (typeof window.onNativeAuthLoginResult === 'function') {
+            window.onNativeAuthLoginResult($success, ${jsonEncode(err ?? '')}, $userJson);
+          }
+        """);
+      } else if (action == 'auth_signup') {
+        final email = data['email'] as String? ?? '';
+        final password = data['password'] as String? ?? '';
+        final nome = data['nome'] as String? ?? '';
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final err = await authService.signUp(email: email, password: password, nome: nome);
+        final success = err == null;
+        _controller.runJavaScript("""
+          if (typeof window.onNativeAuthRegisterResult === 'function') {
+            window.onNativeAuthRegisterResult($success, ${jsonEncode(err ?? '')});
+          }
+        """);
+      } else if (action == 'auth_reset_password') {
+        final email = data['email'] as String? ?? '';
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final err = await authService.resetPassword(email);
+        final success = err == null;
+        _controller.runJavaScript("""
+          if (typeof window.onNativeAuthForgotResult === 'function') {
+            window.onNativeAuthForgotResult($success, ${jsonEncode(err ?? '')});
+          }
+        """);
+      } else if (action == 'auth_signout') {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        await authService.signOut();
       }
     } catch (e) {
       debugPrint('Erro ao processar mensagem do JS: $e');
@@ -136,9 +231,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> {
     await speech.startListening(
       onResult: (text) {
         if (text.isNotEmpty) {
-          final safeText = text.replaceAll("'", "\\'");
+          final safeTextJson = jsonEncode(text);
           _controller.runJavaScript(
-            "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult('$safeText'); }"
+            "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult($safeTextJson); }"
           );
         }
       },
