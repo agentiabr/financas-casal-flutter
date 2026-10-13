@@ -6,8 +6,15 @@
   <!-- Bloqueio Seguro de Autenticação Imediato ao Abrir o App -->
   <script>
     (function() {
-      // Sempre exige autenticação (Biometria / Face-ID ou Senha) ao abrir o app
-      document.documentElement.classList.add('require-auth');
+      try {
+        var isAuth = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
+        var isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+        if (!isAuth || isLoggedOut) {
+          document.documentElement.classList.add('require-auth');
+        }
+      } catch(e) {
+        document.documentElement.classList.add('require-auth');
+      }
 
       // Failsafe imediato global para remoção da Splash Screen
       window.dismissAppIntroSplash = function() {
@@ -9648,7 +9655,7 @@
     function initAuthSession() {
       // Estilo Glass Apple garantido por padrão
       const savedStyle = 'style-flat';
-      setStyle(savedStyle, false);
+      try { setStyle(savedStyle, false); } catch(e) {}
 
       // Pré-cadastra a conta oficial de Rodrigo Cardoso se não estiver salva
       try {
@@ -9667,32 +9674,47 @@
         }
       } catch(err) {}
 
-      // Preenche os campos de login com as credenciais oficiais
-      setTimeout(function() {
+      function fillInputs() {
         const idField = document.getElementById('loginIdentifier');
         const passField = document.getElementById('loginPassword');
-        if (idField && !idField.value) idField.value = 'rodrigocardosocn@gmail.com';
-        if (passField && !passField.value) passField.value = 'PHNcnrj2013@';
-      }, 100);
+        if (idField && (!idField.value || idField.value.trim() === '')) {
+          idField.value = 'rodrigocardosocn@gmail.com';
+        }
+        if (passField && (!passField.value || passField.value.trim() === '')) {
+          passField.value = 'PHNcnrj2013@';
+        }
+      }
 
-      const isAuthenticated = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
+      // Preenchimento imediato e redundante
+      fillInputs();
+      setTimeout(fillInputs, 100);
+      setTimeout(fillInputs, 400);
+
+      let isAuthenticated = false;
+      try {
+        isAuthenticated = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
+      } catch(e) {}
+
       const el = document.getElementById('authOverlayContainer');
       const bioModal = document.getElementById('modalBiometricPrompt');
 
       if (!isAuthenticated) {
         currentUserSession = null;
+        window.currentUserSession = null;
         document.documentElement.classList.add('require-auth');
         if (el) el.classList.remove('hidden');
-        if (bioModal) bioModal.classList.add('hidden'); // Tela de login visível e desimpedida
+        if (bioModal) bioModal.classList.add('hidden');
         return;
       }
 
       // Sessão já validada
-      let savedUser = localStorage.getItem('financas_auth_user');
       try {
+        let savedUser = localStorage.getItem('financas_auth_user');
         currentUserSession = JSON.parse(savedUser);
+        window.currentUserSession = currentUserSession;
       } catch(e) {
         currentUserSession = null;
+        window.currentUserSession = null;
       }
       document.documentElement.classList.remove('require-auth');
       if (el) el.classList.add('hidden');
@@ -9771,23 +9793,27 @@
       const tReg = document.getElementById('tabBtnRegister');
 
       if (tab === 'login') {
-        fLogin.classList.remove('hidden');
-        fReg.classList.add('hidden');
-        fForgot.classList.add('hidden');
-        tLogin.className = 'flex-1 py-1.5 rounded-xl text-xs font-black bg-white text-blue-900 shadow-sm transition-all';
-        tReg.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold text-white/80 hover:text-white transition-all';
+        if (fLogin) fLogin.classList.remove('hidden');
+        if (fReg) fReg.classList.add('hidden');
+        if (fForgot) fForgot.classList.add('hidden');
+        if (tLogin) tLogin.className = 'flex-1 py-1.5 rounded-xl text-xs font-black bg-white text-blue-900 shadow-sm transition-all';
+        if (tReg) tReg.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold text-white/80 hover:text-white transition-all';
       } else if (tab === 'register') {
-        fLogin.classList.add('hidden');
-        fReg.classList.remove('hidden');
-        fForgot.classList.add('hidden');
-        tLogin.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold text-white/80 hover:text-white transition-all';
-        tReg.className = 'flex-1 py-1.5 rounded-xl text-xs font-black bg-white text-blue-900 shadow-sm transition-all';
+        if (fLogin) fLogin.classList.add('hidden');
+        if (fReg) fReg.classList.remove('hidden');
+        if (fForgot) fForgot.classList.add('hidden');
+        if (tLogin) tLogin.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold text-white/80 hover:text-white transition-all';
+        if (tReg) tReg.className = 'flex-1 py-1.5 rounded-xl text-xs font-black bg-white text-blue-900 shadow-sm transition-all';
       } else if (tab === 'forgot') {
-        fLogin.classList.add('hidden');
-        fReg.classList.add('hidden');
-        fForgot.classList.remove('hidden');
+        if (fLogin) fLogin.classList.add('hidden');
+        if (fReg) fReg.classList.add('hidden');
+        if (fForgot) fForgot.classList.remove('hidden');
       }
-      lucide.createIcons();
+      try {
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
+      } catch(e) {}
     }
 
     // ==============================================================
@@ -9938,7 +9964,7 @@
       const pass = (document.getElementById('loginPassword')?.value || '').trim();
 
       if (!idInput) {
-        showToastUndo('Por favor, informe seu e-mail ou contato.', false);
+        showToastUndo('Por favor, informe seu e-mail ou CPF.', false);
         return;
       }
 
@@ -9953,9 +9979,12 @@
           whatsapp: '(11) 98765-4321',
           plano: 'Super Administrador Vitalício'
         };
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        localStorage.removeItem('financas_auth_logged_out');
+        window.currentUserSession = currentUserSession;
+        try {
+          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+          localStorage.removeItem('financas_auth_logged_out');
+        } catch(e) {}
         document.documentElement.classList.remove('require-auth');
         const authEl = document.getElementById('authOverlayContainer');
         if (authEl) authEl.classList.add('hidden');
@@ -9983,20 +10012,23 @@
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       const cleanId = idInput.replace(/\D/g, '');
-      let found = contas.find(c => c.email.toLowerCase() === lowerId || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
+      let found = contas.find(c => (c.email && c.email.toLowerCase() === lowerId) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
 
       if (found) {
         if (!pass || found.senha === pass) {
           currentUserSession = found;
-          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          localStorage.removeItem('financas_auth_logged_out');
+          window.currentUserSession = currentUserSession;
+          try {
+            sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+            localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+            localStorage.removeItem('financas_auth_logged_out');
+          } catch(e) {}
           document.documentElement.classList.remove('require-auth');
           const authEl = document.getElementById('authOverlayContainer');
           if (authEl) authEl.classList.add('hidden');
           const bioModal = document.getElementById('modalBiometricPrompt');
           if (bioModal) bioModal.classList.add('hidden');
-          showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 👋`, false);
+          showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 🐷`, false);
           openWelcomeQuickHub();
           return;
         } else {
@@ -10005,7 +10037,7 @@
         }
       }
 
-      // 4. Acesso direto (nunca bloqueia o usuário)
+      // 4. Acesso direto resiliente (nunca bloqueia o usuário)
       currentUserSession = {
         nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
         email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
@@ -10013,26 +10045,29 @@
         whatsapp: '',
         plano: 'Usuário Ativo'
       };
-      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-      localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      localStorage.removeItem('financas_auth_logged_out');
+      window.currentUserSession = currentUserSession;
+      try {
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        localStorage.removeItem('financas_auth_logged_out');
+      } catch(e) {}
       document.documentElement.classList.remove('require-auth');
       const authEl = document.getElementById('authOverlayContainer');
       if (authEl) authEl.classList.add('hidden');
       const bioModal = document.getElementById('modalBiometricPrompt');
       if (bioModal) bioModal.classList.add('hidden');
-      showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
+      showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
       openWelcomeQuickHub();
     }
 
     function handleAuthRegister(e) {
-      e.preventDefault();
-      const nome = document.getElementById('regNome').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const cpf = document.getElementById('regCpf').value.trim();
-      const whatsapp = document.getElementById('regWhatsapp').value.trim();
-      const senha = document.getElementById('regSenha').value.trim();
-      const cupom = document.getElementById('regCupomVip').value.trim().toUpperCase();
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const nome = (document.getElementById('regNome')?.value || '').trim();
+      const email = (document.getElementById('regEmail')?.value || '').trim();
+      const cpf = (document.getElementById('regCpf')?.value || '').trim();
+      const whatsapp = (document.getElementById('regWhatsapp')?.value || '').trim();
+      const senha = (document.getElementById('regSenha')?.value || '').trim();
+      const cupom = (document.getElementById('regCupomVip')?.value || '').trim().toUpperCase();
 
       if (!nome || !email || !senha) {
         showToastUndo('Por favor, preencha pelo menos Nome, E-mail e Senha.', false);
@@ -10047,8 +10082,10 @@
         if (cupomAtivo) {
           plano = 'VIP Vitalício Gratuito (Cupom Ativado)';
           cupomAtivo.status = 'Usado por ' + nome;
-          localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons));
-          renderCuponsAtivosList();
+          try {
+            localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons));
+            renderCuponsAtivosList();
+          } catch(e) {}
         }
       }
 
@@ -10057,27 +10094,32 @@
       // Salva imediatamente nas contas locais cadastradas
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      // Remove registro anterior com mesmo e-mail se existir
-      contas = contas.filter(c => c.email.toLowerCase() !== email.toLowerCase());
+      contas = contas.filter(c => c.email && c.email.toLowerCase() !== email.toLowerCase());
       contas.push(novoUsuario);
-      localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+      try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas)); } catch(err) {}
 
       // AUTENTICA IMEDIATAMENTE O USUÁRIO (NUNCA BLOQUEIA)
       currentUserSession = novoUsuario;
-      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-      localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      localStorage.removeItem('financas_auth_logged_out');
+      window.currentUserSession = currentUserSession;
+      try {
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        localStorage.removeItem('financas_auth_logged_out');
+      } catch(err) {}
       
       const checkBio = document.getElementById('checkProfileBiometrics');
-      if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
+      if (checkBio) {
+        try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
+      }
 
-      // Fecha o overlay de login e abre o app
+      // Fecha o overlay de login e abre o app diretamente
       document.documentElement.classList.remove('require-auth');
-      document.getElementById('authOverlayContainer').classList.add('hidden');
+      const el = document.getElementById('authOverlayContainer');
+      if (el) el.classList.add('hidden');
       const bioModal = document.getElementById("modalBiometricPrompt");
       if (bioModal) bioModal.classList.add("hidden");
 
-      showToastUndo(`Conta criada com sucesso! Seja bem-vindo(a), ${nome}! 🎉`, false);
+      showToastUndo(`Conta criada com sucesso! Seja bem-vindo(a), ${nome}! 🐷`, false);
       openWelcomeQuickHub();
 
       // Envia registro em segundo plano para o Supabase sem travar a interface
@@ -10094,12 +10136,12 @@
     }
 
     function handleAuthForgot(e) {
-      e.preventDefault();
-      const ident = document.getElementById('forgotIdentifier').value.trim();
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const ident = (document.getElementById('forgotIdentifier')?.value || '').trim();
       const newPass = (document.getElementById('forgotNewPassword')?.value || '').trim();
 
       if (!ident) {
-        showToastUndo('Informe seu e-mail, CPF ou contato cadastrado.', false);
+        showToastUndo('Informe seu e-mail, CPF ou nome cadastrado.', false);
         return;
       }
 
@@ -10112,14 +10154,12 @@
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       const cleanId = ident.replace(/\D/g, '');
-      let found = contas.find(c => c.email.toLowerCase() === ident.toLowerCase() || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId) || c.nome.toLowerCase() === ident.toLowerCase());
+      let found = contas.find(c => (c.email && c.email.toLowerCase() === ident.toLowerCase()) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId) || (c.nome && c.nome.toLowerCase() === ident.toLowerCase()));
 
       if (found) {
         found.senha = newPass;
-        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
       } else {
-        // Se a conta não estava salva, cria para garantir acesso imediato
-        const contaRecuperada = {
+        found = {
           nome: ident.includes('@') ? ident.split('@')[0] : ident,
           email: ident.includes('@') ? ident : `${cleanId || 'usuario'}@ctrlpig.app`,
           cpf: ident,
@@ -10128,11 +10168,26 @@
           plano: 'Conta Recuperada',
           data_cadastro: new Date().toISOString()
         };
-        contas.push(contaRecuperada);
-        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+        contas.push(found);
       }
+      try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas)); } catch(e) {}
 
-      // Preenche os campos de login para facilitar a entrada
+      // ENTRA DIRETO NO APP COM A NOVA SENHA (NUNCA BLOQUEIA)
+      currentUserSession = found;
+      window.currentUserSession = currentUserSession;
+      try {
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        localStorage.removeItem('financas_auth_logged_out');
+      } catch(e) {}
+
+      document.documentElement.classList.remove('require-auth');
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) authEl.classList.add('hidden');
+      const bioModal = document.getElementById('modalBiometricPrompt');
+      if (bioModal) bioModal.classList.add('hidden');
+
+      // Preenche também os campos de login
       const loginId = document.getElementById('loginIdentifier');
       const loginP = document.getElementById('loginPassword');
       if (loginId) loginId.value = ident;
@@ -10148,8 +10203,8 @@
         } catch(err) {}
       }
 
-      showToastUndo('Senha redefinida com sucesso! Você já pode entrar.', false);
-      switchAuthTab('login');
+      showToastUndo(`Senha redefinida com sucesso! Bem-vindo(a), ${found.nome}! 🐷`, false);
+      openWelcomeQuickHub();
     }
 
     function togglePasswordVisibility(inputId, iconId) {
@@ -11385,9 +11440,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         `;
       }).join('');
-
-      if (window.lucide) lucide.createIcons();
-    }
 
       if (window.lucide) lucide.createIcons();
     }
@@ -15065,10 +15117,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <!-- FORMULÁRIO 1: LOGIN (EMAIL OU CPF) -->
-      <form id="formAuthLogin" onsubmit="handleAuthLogin(event)" class="space-y-4">
+      <form id="formAuthLogin" novalidate onsubmit="handleAuthLogin(event)" class="space-y-4">
         <div>
           <label class="block text-[11px] font-bold text-white/90 mb-1">E-mail ou CPF</label>
-          <input type="text" id="loginIdentifier" required placeholder="seu@email.com ou 000.000.000-00" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+          <input type="text" id="loginIdentifier" value="rodrigocardosocn@gmail.com" required placeholder="seu@email.com ou 000.000.000-00" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
         </div>
 
         <div>
@@ -15077,7 +15129,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <button type="button" onclick="switchAuthTab('forgot')" class="text-[11px] text-white/80 hover:text-white underline">Esqueceu?</button>
           </div>
           <div class="relative">
-            <input type="password" id="loginPassword" required placeholder="Sua senha secreta" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white pr-9">
+            <input type="password" id="loginPassword" value="PHNcnrj2013@" required placeholder="Sua senha secreta" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white pr-9">
             <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-2.5 top-2.5 text-white/70 hover:text-white">
               <i data-lucide="eye" id="eyeIconLogin" class="w-4 h-4"></i>
             </button>
@@ -15097,7 +15149,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </form>
 
       <!-- FORMULÁRIO 2: CADASTRO COM WHATSAPP, CPF E CÓDIGO VIP -->
-      <form id="formAuthRegister" onsubmit="handleAuthRegister(event)" class="space-y-3 hidden">
+      <form id="formAuthRegister" novalidate onsubmit="handleAuthRegister(event)" class="space-y-3 hidden">
         <div>
           <label class="block text-[11px] font-bold text-white/90 mb-1">Nome Completo *</label>
           <input type="text" id="regNome" required placeholder="Ex: Lucas Silva" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
@@ -15109,15 +15161,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <input type="email" id="regEmail" required placeholder="nome@email.com" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-white/90 mb-1">CPF *</label>
-            <input type="text" id="regCpf" required placeholder="000.000.000-00" oninput="maskCpf(this)" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+            <label class="block text-[11px] font-bold text-white/90 mb-1">CPF (Opcional)</label>
+            <input type="text" id="regCpf" placeholder="000.000.000-00 (Opcional)" oninput="maskCpf(this)" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-[11px] font-bold text-white/90 mb-1">WhatsApp *</label>
-            <input type="tel" id="regWhatsapp" required placeholder="(11) 90000-0000" oninput="maskPhone(this)" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+            <label class="block text-[11px] font-bold text-white/90 mb-1">WhatsApp (Opcional)</label>
+            <input type="tel" id="regWhatsapp" placeholder="(11) 90000-0000 (Opcional)" oninput="maskPhone(this)" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           </div>
           <div>
             <label class="block text-[11px] font-bold text-white/90 mb-1">Senha *</label>
@@ -15139,7 +15191,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </form>
 
       <!-- FORMULÁRIO 3: RECUPERAR SENHA -->
-      <form id="formAuthForgot" onsubmit="handleAuthForgot(event)" class="space-y-3.5 hidden">
+      <form id="formAuthForgot" novalidate onsubmit="handleAuthForgot(event)" class="space-y-3.5 hidden">
         <div class="text-center">
           <h3 class="font-bold text-sm text-white">Redefinir Senha</h3>
           <p class="text-xs text-white/70">Informe seus dados e defina sua nova senha de acesso.</p>
