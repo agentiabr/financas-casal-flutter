@@ -23,37 +23,7 @@ class MainActivity: FlutterFragmentActivity() {
     }
 
     private fun updateLauncherIcon(isPositive: Boolean) {
-        try {
-            val pm = packageManager
-            val positiveComponent = ComponentName(this, "com.antigravity.financas_casal_flutter.MainActivityPositive")
-            val negativeComponent = ComponentName(this, "com.antigravity.financas_casal_flutter.MainActivityNegative")
-
-            if (isPositive) {
-                pm.setComponentEnabledSetting(
-                    positiveComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP
-                )
-                pm.setComponentEnabledSetting(
-                    negativeComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP
-                )
-            } else {
-                pm.setComponentEnabledSetting(
-                    negativeComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP
-                )
-                pm.setComponentEnabledSetting(
-                    positiveComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP
-                )
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        // Ícone único padrão garantido para evitar duplicação no launcher do Android
     }
 }
 

@@ -44,32 +44,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Atalhos Dinâmicos de Launcher: Positivo (Azul) vs Negativo (Vermelho) -->
-        <activity-alias
-            android:name=".MainActivityPositive"
-            android:enabled="true"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher_positive"
-            android:label="CtrlPig"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
 
-        <activity-alias
-            android:name=".MainActivityNegative"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher_negative"
-            android:label="CtrlPig"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
         
         <meta-data
             android:name="flutterEmbedding"

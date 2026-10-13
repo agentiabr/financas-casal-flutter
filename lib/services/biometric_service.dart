@@ -51,7 +51,7 @@ class BiometricService {
           stickyAuth: true,
           biometricOnly: false, // Permite fallback para PIN/Padrão/Senha do aparelho
           useErrorDialogs: true,
-          sensitiveTransaction: true,
+          sensitiveTransaction: false, // Permite Face Unlock Class 2 / Android Face ID
         ),
       );
 
