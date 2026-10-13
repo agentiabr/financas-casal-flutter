@@ -1,7 +1,7 @@
 name: financas_casal_flutter
 description: "Aplicativo de Finanças do Casal • Rodrigo & Márcia (Flutter + Supabase)"
 publish_to: 'none'
-version: 1.6.8+33
+version: 1.6.9+34
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,8 +13,9 @@ dependencies:
   # Backend & Realtime
   supabase_flutter: ^2.8.0
 
-  # Reconhecimento de Voz Nativo (Hardware do Celular)
+  # Reconhecimento e Síntese de Voz Nativa (Hardware do Celular)
   speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.2
 
   # Câmera e OCR de Cupom Fiscal com Inteligência Artificial On-Device
   camera: ^0.11.0

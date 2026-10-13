@@ -42,7 +42,10 @@ class SpeechService extends ChangeNotifier {
     return _isAvailable;
   }
 
-  Future<void> startListening({required Function(String text) onResult}) async {
+  Future<void> startListening({
+    required Function(String text) onResult,
+    bool finalOnly = false,
+  }) async {
     if (!_isAvailable) {
       await initialize();
     }
@@ -52,9 +55,21 @@ class SpeechService extends ChangeNotifier {
 
     await _speech.listen(
       localeId: 'pt_BR',
+      pauseFor: const Duration(seconds: 8),
+      listenFor: const Duration(seconds: 60),
+      listenOptions: stt.SpeechListenOptions(
+        partialResults: !finalOnly,
+        listenMode: stt.ListenMode.dictation,
+      ),
       onResult: (result) {
         _lastWords = result.recognizedWords;
-        onResult(_lastWords);
+        if (finalOnly) {
+          if (result.finalResult && _lastWords.trim().isNotEmpty) {
+            onResult(_lastWords);
+          }
+        } else {
+          onResult(_lastWords);
+        }
         notifyListeners();
       },
     );

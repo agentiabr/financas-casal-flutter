@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -24,10 +26,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
+  FlutterTts? _flutterTts;
   DateTime? _lastBackPressTime;
+  Timer? _chatVoiceDebounceTimer;
+  String _lastChatRecognizedText = '';
 
   @override
   void dispose() {
+    _chatVoiceDebounceTimer?.cancel();
+    _flutterTts?.stop();
     WidgetsBinding.instance.removeObserver(this);
     _ocrService.dispose();
     super.dispose();
@@ -119,6 +126,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         _startNativeVoiceRecording();
       } else if (action == 'start_chat_voice') {
         _startNativeChatVoiceRecording();
+      } else if (action == 'speak_text') {
+        final text = data['text'] as String? ?? '';
+        if (text.isNotEmpty) {
+          _speakNativeTTS(text);
+        }
+      } else if (action == 'stop_speak') {
+        _flutterTts?.stop();
       } else if (action == 'update_launcher_icon') {
         final isPositive = data['isPositive'] as bool? ?? true;
         try {
@@ -211,6 +225,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       } else if (action == 'auth_signout') {
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.signOut();
+      } else if (action == 'speak_text') {
+        final text = data['text'] as String? ?? '';
+        if (text.isNotEmpty) {
+          _speakNativeTTS(text);
+        }
       }
     } catch (e) {
       debugPrint('Erro ao processar mensagem do JS: $e');
@@ -262,16 +281,43 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
     final available = await speech.initialize();
     if (!available) return;
 
+    _chatVoiceDebounceTimer?.cancel();
+    _lastChatRecognizedText = '';
+
     await speech.startListening(
+      finalOnly: false,
       onResult: (text) {
-        if (text.isNotEmpty) {
-          final safeTextJson = jsonEncode(text);
-          _controller.runJavaScript(
-            "if (typeof window.onNativeChatVoiceResult === 'function') { window.onNativeChatVoiceResult($safeTextJson); }"
-          );
+        final trimmed = text.trim();
+        if (trimmed.isNotEmpty) {
+          _lastChatRecognizedText = trimmed;
+          _chatVoiceDebounceTimer?.cancel();
+          // Aguarda 1.6s após a pessoa parar de falar para enviar o resultado final unificado
+          _chatVoiceDebounceTimer = Timer(const Duration(milliseconds: 1600), () {
+            speech.stopListening();
+            if (_lastChatRecognizedText.isNotEmpty) {
+              final safeTextJson = jsonEncode(_lastChatRecognizedText);
+              _controller.runJavaScript(
+                "if (typeof window.onNativeChatVoiceResult === 'function') { window.onNativeChatVoiceResult($safeTextJson); }"
+              );
+              _lastChatRecognizedText = '';
+            }
+          });
         }
       },
     );
+  }
+
+  Future<void> _speakNativeTTS(String text) async {
+    try {
+      _flutterTts ??= FlutterTts();
+      await _flutterTts!.setLanguage("pt-BR");
+      await _flutterTts!.setSpeechRate(0.5);
+      await _flutterTts!.setVolume(1.0);
+      await _flutterTts!.setPitch(1.0);
+      await _flutterTts!.speak(text);
+    } catch (e) {
+      debugPrint('Erro ao reproduzir TTS nativo: $e');
+    }
   }
 
   Future<void> _pickInvoicePhoto({required ImageSource source}) async {
