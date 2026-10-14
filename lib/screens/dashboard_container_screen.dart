@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -76,7 +77,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
             if (url.startsWith('file:') || url.contains('flutter_assets') || url == 'about:blank') {
               return NavigationDecision.navigate;
             }
-            debugPrint('Navegação externa bloqueada no WebView: $url');
+            debugPrint('Navegação externa aberta fora do WebView: $url');
+            _openExternalUrl(url);
             return NavigationDecision.prevent;
           },
           onWebResourceError: (WebResourceError error) {
@@ -94,9 +96,26 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       ..loadFlutterAsset('assets/index.html');
   }
 
+  Future<void> _openExternalUrl(String url) async {
+    try {
+      final uri = Uri.parse(url);
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok) debugPrint('Não foi possível abrir: $url');
+    } catch (e) {
+      debugPrint('Erro ao abrir link externo: $e');
+    }
+  }
+
   void _injectNativeBridge() {
     const jsBridge = '''
       window.isNativeApp = true;
+      // O WebView não abre novas janelas: redireciona window.open para o navegador do celular
+      window.open = function(url) {
+        if (url && window.FlutterBridge) {
+          FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url: String(url) }));
+        }
+        return null;
+      };
       console.log("Flutter Native Bridge conectada com sucesso!");
     ''';
     _controller.runJavaScript(jsBridge);
@@ -122,7 +141,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       final data = jsonDecode(message.message);
       final action = data['action'] as String?;
 
-      if (action == 'start_voice') {
+      if (action == 'open_external_url') {
+        final url = data['url'] as String? ?? '';
+        if (url.isNotEmpty) _openExternalUrl(url);
+      } else if (action == 'start_voice') {
         _startNativeVoiceRecording();
       } else if (action == 'start_chat_voice') {
         _startNativeChatVoiceRecording();

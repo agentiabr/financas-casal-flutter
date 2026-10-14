@@ -2705,6 +2705,10 @@
           <label class="block font-bold text-slate-700 mb-1">Nome do Objetivo</label>
           <input type="text" id="inputNewPiggyName" required placeholder="Ex.: Viagem de Férias, Reforma, Carro..." class="w-full px-3 py-2 rounded-none border border-slate-300">
         </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Destino da Viagem <span class="text-[10px] font-normal text-slate-400">(Opcional para Cofrinho de Viagem)</span></label>
+          <input type="text" id="inputNewPiggyDestino" placeholder="Ex.: Gramado, Maragogi, Orlando, Paris, Buenos Aires..." class="w-full px-3 py-2 rounded-none border border-slate-300">
+        </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Meta Alvo (R$)</label>
@@ -3006,13 +3010,14 @@
             <select id="newTxCategoria" class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
             <option value="">Selecione...</option>
             <option value="Pet">🐾 Pet / Veterinário / Pet Shop</option>
-<option value="Alimentação">Alimentação</option>
-              <option value="Moradia">Moradia</option>
-              <option value="Transporte">Transporte</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Lazer">Lazer</option>
-              <option value="Educação">Educação</option>
-              <option value="Salário">Salário</option>
+<option value="Alimentação">🛒 Alimentação (mercado, padaria, restaurante)</option>
+              <option value="Moradia">🏠 Moradia (aluguel, condomínio, luz, água)</option>
+              <option value="Veículo">🚗 Veículo (gasolina, IPVA, seguro, peças, oficina)</option>
+              <option value="Transporte">🚌 Transporte (Uber, ônibus, metrô)</option>
+              <option value="Educação">📚 Educação (mensalidade, material, cursos)</option>
+              <option value="Saúde">💊 Saúde (farmácia, consultas, plano)</option>
+              <option value="Lazer">🎉 Lazer (passeios, viagens, streaming)</option>
+              <option value="Salário">💰 Salário / Renda</option>
               <option value="Reserva">Reserva / Cofrinho 🐷</option>
               <option value="Outros">Outros</option>
             </select>
@@ -3198,13 +3203,14 @@
             <select id="editTxCategoria" class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
             <option value="">Selecione...</option>
             <option value="Pet">🐾 Pet / Veterinário / Pet Shop</option>
-<option value="Alimentação">Alimentação</option>
-              <option value="Moradia">Moradia</option>
-              <option value="Transporte">Transporte</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Lazer">Lazer</option>
-              <option value="Educação">Educação</option>
-              <option value="Salário">Salário</option>
+<option value="Alimentação">🛒 Alimentação (mercado, padaria, restaurante)</option>
+              <option value="Moradia">🏠 Moradia (aluguel, condomínio, luz, água)</option>
+              <option value="Veículo">🚗 Veículo (gasolina, IPVA, seguro, peças, oficina)</option>
+              <option value="Transporte">🚌 Transporte (Uber, ônibus, metrô)</option>
+              <option value="Educação">📚 Educação (mensalidade, material, cursos)</option>
+              <option value="Saúde">💊 Saúde (farmácia, consultas, plano)</option>
+              <option value="Lazer">🎉 Lazer (passeios, viagens, streaming)</option>
+              <option value="Salário">💰 Salário / Renda</option>
               <option value="Reserva">Reserva / Cofrinho 🐷</option>
               <option value="Outros">Outros</option>
             </select>
@@ -4501,6 +4507,11 @@
               <p class="text-[10px] text-slate-400 mt-1">${rem > 0 ? `Faltam ${formatBRL(rem)}` : '🎉 Meta alcançada!'}</p>
             </div>
 
+            ${(p.icone === '✈️' || (p.nome && p.nome.toLowerCase().includes('viagem')) || p.destino) ? `
+              <button type="button" onclick="openTravelQuotesModal('${p.id}')" class="w-full py-1.5 px-2 bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 font-bold text-xs border border-sky-200 dark:border-sky-800 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs">
+                <span>✈️ Ver Cotações & Pacotes Reais</span>
+              </button>
+            ` : ''}
             <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
               <button onclick="openPiggyDepositSpecificModal('${p.id}')" class="flex-1 py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-none text-xs transition-all flex items-center justify-center gap-1 border border-slate-300">
                 <span>➕ Guardar</span>
@@ -4534,6 +4545,7 @@
 
       if (!nome) return;
 
+      const destinoVal = (document.getElementById('inputNewPiggyDestino')?.value || '').trim();
       piggies.push({
         id: 'piggy_' + Date.now(),
         nome,
@@ -6345,7 +6357,11 @@
       let cat = entity ? entity.cat : 'Outros';
       if (/restaurante|palazzo|almoço|jantar|pizza|hambúrguer|padaria|mercado|supermercado|dia|açougue/i.test(lower)) cat = 'Alimentação';
       else if (/farmácia|droga|remédio|médico|consulta/i.test(lower)) cat = 'Saúde';
-      else if (/uber|posto|gasolina|combustível|estacionamento/i.test(lower)) cat = 'Transporte';
+      else if (/escola|mensalidade escolar|mensalidade|faculdade|curso|material escolar|apostila|livro|uniforme|matrícula|matricula|colégio|colegio|creche/i.test(lower)) cat = 'Educação';
+
+      else if (/gasolina|etanol|álcool|combustível|combustivel|posto|ipva|licenciamento|seguro do carro|seguro auto|mecânico|mecanico|oficina|pneu|peça|peças|revisão|revisao|troca de óleo|óleo|multa|estacionamento|lava.?jato|financiamento do carro|moto/i.test(lower)) cat = 'Veículo';
+
+      else if (/uber|99|ônibus|onibus|metrô|metro|táxi|taxi/i.test(lower)) cat = 'Transporte';
       else if (/cinema|show|viagem|hotel/i.test(lower)) cat = 'Lazer';
 
       parsedVoice = {
@@ -8884,7 +8900,11 @@
       if (/padaria|mercado|supermercado|açougue|hortifruti|carrefour|pão de açúcar|dia/i.test(low)) cat = 'Alimentação';
       else if (/restaurante|outback|mcdonald|pizza|hambúrguer|lanche|café|almoço|jantar/i.test(low)) cat = 'Alimentação';
       else if (/farmácia|droga|drogaria|remédio|médico|consulta|exame/i.test(low)) cat = 'Saúde';
-      else if (/uber|combustível|gasolina|estacionamento|posto|ônibus|metrô/i.test(low)) cat = 'Transporte';
+      else if (/escola|mensalidade escolar|mensalidade|faculdade|curso|material escolar|apostila|livro|uniforme|matrícula|matricula|colégio|colegio|creche/i.test(low)) cat = 'Educação';
+
+      else if (/gasolina|etanol|álcool|combustível|combustivel|posto|ipva|licenciamento|seguro do carro|seguro auto|mecânico|mecanico|oficina|pneu|peça|peças|revisão|revisao|troca de óleo|óleo|multa|estacionamento|lava.?jato|financiamento do carro|moto/i.test(low)) cat = 'Veículo';
+
+      else if (/uber|99|ônibus|onibus|metrô|metro|táxi|taxi/i.test(low)) cat = 'Transporte';
 
       return { desc, val, cat };
     }
@@ -10428,7 +10448,7 @@
       feeds.forEach((f, idx) => {
         msg += `${idx+1}. ⭐ Nota: ${f.rating}/5\n💬 "${f.texto}"\n📅 ${f.data ? f.data.split('T')[0] : ''}\n\n`;
       });
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+      openExternalUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
     }
 
     // ==========================================
@@ -10795,7 +10815,7 @@
       const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/latest';
       const msg = `Olá! Convite especial para sincronizar os gastos familiares no aplicativo CtrlPig (Aggentia Labs).\n\n📱 Baixe o app oficial aqui:\n${urlApp}\n\n🔑 Seu Código de Acesso do Casal: *${cupom}*\n\nAbra o app, conecte com o código e nossas finanças e listas de mercado estarão sempre sincronizadas em tempo real! 🐷✨`;
       const encoded = encodeURIComponent(msg);
-      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+      openExternalUrl(`https://api.whatsapp.com/send?text=${encoded}`);
     }
 
     function toggleCycleMenu(e) {
@@ -11286,9 +11306,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     let lastVoiceShoppingProcessedText = '';
     let lastVoiceShoppingTimestamp = 0;
 
-    let lastVoiceShoppingProcessedText = '';
-    let lastVoiceShoppingTimestamp = 0;
-
     function formatStoreSectionTitle(raw) {
       if (!raw) return '🛒 Supermercado';
       const low = raw.toLowerCase();
@@ -11506,7 +11523,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const localStr = storeLoc ? ` no ${storeLoc}` : '';
       const reminderMsg = `Oi! Atualizei a nossa Lista de Compras do CtrlPig${localStr}. Dá uma olhadinha no app quando puder! 🛒✨`;
       const url = 'https://wa.me/?text=' + encodeURIComponent(reminderMsg);
-      window.open(url, '_blank');
+      openExternalUrl(url);
       showToastUndo('Lembrete do WhatsApp aberto! 📱', false);
     }
 
@@ -13870,97 +13887,59 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       return 55.00 + mod;
     }
 
+    // Comparador honesto: nunca exibe preço inventado. Usa apenas o histórico real
+    // de lançamentos da família e abre a busca real no site de cada loja.
+    function getRealPaidHistory(query) {
+      const words = (query || '').toLowerCase().split(/\s+/).filter(w => w.length >= 4);
+      if (!words.length || typeof transactions === 'undefined') return [];
+      return transactions
+        .filter(t => t.tipo !== 'Receita' && t.descricao && words.some(w => t.descricao.toLowerCase().includes(w)))
+        .sort((a, b) => String(b.data).localeCompare(String(a.data)))
+        .slice(0, 3);
+    }
+
+    function renderHonestStoreComparison(query, catalog, container, addFnName) {
+      const hist = getRealPaidHistory(query);
+      const safeQ = escapeHtml(query).replace(/'/g, "\\'");
+      const fmt = v => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
+      container.innerHTML = `
+        <div class="p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-300 flex gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i>
+          <span>Os preços mudam todo dia e cada loja tem o seu. Toque em <strong>Ver preço</strong> para abrir a busca real de <strong>${escapeHtml(query)}</strong> no site da loja.</span>
+        </div>
+        ${hist.length ? `
+          <div class="p-3 rounded-2xl border border-emerald-400/50 bg-emerald-50/60 dark:bg-emerald-950/20">
+            <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 mb-1">O que vocês já pagaram (seus lançamentos):</div>
+            ${hist.map(t => `<div class="flex justify-between text-xs text-slate-700 dark:text-slate-200"><span class="truncate pr-2">${escapeHtml(t.descricao)} • ${escapeHtml(String(t.data || ''))}</span><strong class="font-mono">${fmt(t.valor)}</strong></div>`).join('')}
+          </div>` : ''}
+        <div class="grid grid-cols-2 gap-1.5 pt-1">
+          ${catalog.map(st => `
+            <button type="button" onclick="openExternalUrl('${st.getUrl(query)}')" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-850 hover:border-blue-400 flex items-center justify-between gap-1 cursor-pointer transition-all">
+              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md ${st.badgeBg} truncate">${st.name}</span>
+              <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 shrink-0">Ver preço <i data-lucide="external-link" class="w-3 h-3"></i></span>
+            </button>`).join('')}
+        </div>
+        <button type="button" onclick="${addFnName}('${safeQ}', 1, 0)" class="w-full mt-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black cursor-pointer">+ Adicionar na lista de compras</button>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Abre links externos no navegador do celular (o WebView do app bloqueia sites externos)
+    function openExternalUrl(url) {
+      if (!url) return;
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url: url }));
+      } else {
+        window.open(url, '_blank', 'noopener');
+      }
+    }
+
     function runPet10PriceComparison() {
       const input = document.getElementById('inputPetSearchQuery');
       const query = (input ? input.value : '').trim() || 'Ração Premier Cães Adultos';
       const container = document.getElementById('pet10ComparisonResults');
       if (!container) return;
-
-      const basePrice = getBasePriceForPetProduct(query);
-
-      let seed = 0;
-      for (let i = 0; i < query.length; i++) seed += query.charCodeAt(i);
-
-      const ranked = PET_STORES_CATALOG.map((st, idx) => {
-        const jitter = (((seed * (idx + 7)) % 15) - 7) / 100;
-        const finalPrice = Math.round((basePrice * st.factor * (1 + jitter)) * 100) / 100;
-        return {
-          ...st,
-          price: Math.max(2.50, finalPrice)
-        };
-      });
-
-      ranked.sort((a, b) => a.price - b.price);
-
-      const lowest = ranked[0];
-      const highest = ranked[ranked.length - 1];
-      const maxSavings = Math.max(0, highest.price - lowest.price);
-      const maxSavingsPct = highest.price > 0 ? Math.round((maxSavings / highest.price) * 100) : 0;
-
-      container.innerHTML = `
-        <div class="p-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-transparent border border-emerald-500/30 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">🥇</span>
-            <div>
-              <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Melhor Oferta em 10 Lojas Pet:</div>
-              <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-                ${lowest.name}: <span class="text-emerald-600 dark:text-emerald-400 font-mono">R$ ${lowest.price.toFixed(2).replace('.', ',')}</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100/80 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full inline-block">
-              Economia de até R$ ${maxSavings.toFixed(2).replace('.', ',')} (${maxSavingsPct}%)
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-1.5 pt-1">
-          ${ranked.map((st, idx) => {
-            const isWinner = idx === 0;
-            const diff = st.price - lowest.price;
-            const diffPct = lowest.price > 0 ? Math.round((diff / lowest.price) * 100) : 0;
-            const rankLabel = idx === 0 ? '🥇 1º' : idx === 1 ? '🥈 2º' : idx === 2 ? '🥉 3º' : `${idx + 1}º`;
-            const rowBorder = isWinner 
-              ? 'border-emerald-400/80 dark:border-emerald-600/80 bg-emerald-50/40 dark:bg-emerald-950/20' 
-              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850';
-
-            return `
-              <div class="p-2 sm:p-2.5 rounded-xl border ${rowBorder} flex items-center justify-between gap-2 transition-all hover:border-amber-400">
-                <div class="flex items-center gap-2 min-w-0 flex-1">
-                  <span class="text-[11px] font-black w-8 shrink-0 text-slate-600 dark:text-slate-300">${rankLabel}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${st.badgeBg} shrink-0">${st.name}</span>
-                  <div class="min-w-0 hidden xs:block truncate text-[11px] text-slate-500 dark:text-slate-400">
-                    ${escapeHtml(query)}
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                  <div class="text-right">
-                    <div class="font-mono font-black text-xs sm:text-sm ${isWinner ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}">
-                      R$ ${st.price.toFixed(2).replace('.', ',')}
-                    </div>
-                    <div class="text-[9px] font-semibold ${isWinner ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">
-                      ${isWinner ? '✓ Menor preço' : `+R$ ${diff.toFixed(2).replace('.', ',')} (+${diffPct}%)`}
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-1">
-                    <button type="button" onclick="addPetProductToShoppingList('${escapeHtml(query)} (${st.name})', 1, ${st.price})" class="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-black shadow-2xs transition-all cursor-pointer" title="Adicionar este produto à lista de compras da família">
-                      + Lista
-                    </button>
-                    <a href="${st.getUrl(query)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-0.5 cursor-pointer" title="Ir para o site da loja">
-                      <span>Ir</span> <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-
-      if (window.lucide) lucide.createIcons();
+      renderHonestStoreComparison(query, PET_STORES_CATALOG, container, 'addPetProductToShoppingList');
     }
 
     function setAndComparePet(term) {
@@ -13974,7 +13953,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const term = (termInput ? termInput.value : '').trim() || 'Ração Premier Cães';
       const store = PET_STORES_CATALOG.find(s => s.id === site);
       if (store) {
-        window.open(store.getUrl(term), '_blank');
+        openExternalUrl(store.getUrl(term));
       }
     }
 
@@ -14441,92 +14420,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const query = (input ? input.value : '').trim() || 'Aradois 50mg (Losartana)';
       const container = document.getElementById('pharma10ComparisonResults');
       if (!container) return;
-
-      const basePrice = getBasePriceForPharmaProduct(query);
-
-      let seed = 0;
-      for (let i = 0; i < query.length; i++) seed += query.charCodeAt(i);
-
-      const ranked = PHARMA_STORES_CATALOG.map((st, idx) => {
-        const jitter = (((seed * (idx + 5)) % 14) - 7) / 100;
-        const finalPrice = Math.round((basePrice * st.factor * (1 + jitter)) * 100) / 100;
-        return {
-          ...st,
-          price: Math.max(1.50, finalPrice)
-        };
-      });
-
-      ranked.sort((a, b) => a.price - b.price);
-
-      const lowest = ranked[0];
-      const highest = ranked[ranked.length - 1];
-      const maxSavings = Math.max(0, highest.price - lowest.price);
-      const maxSavingsPct = highest.price > 0 ? Math.round((maxSavings / highest.price) * 100) : 0;
-
-      container.innerHTML = `
-        <div class="p-3 rounded-2xl bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-transparent border border-sky-500/30 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">🥇</span>
-            <div>
-              <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Melhor Preço em 10 Redes Farmacêuticas:</div>
-              <div class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-                ${lowest.name}: <span class="text-sky-600 dark:text-sky-400 font-mono">R$ ${lowest.price.toFixed(2).replace('.', ',')}</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-100/80 dark:bg-sky-950/80 px-2 py-0.5 rounded-full inline-block">
-              Economia de até R$ ${maxSavings.toFixed(2).replace('.', ',')} (${maxSavingsPct}%)
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-1.5 pt-1">
-          ${ranked.map((st, idx) => {
-            const isWinner = idx === 0;
-            const diff = st.price - lowest.price;
-            const diffPct = lowest.price > 0 ? Math.round((diff / lowest.price) * 100) : 0;
-            const rankLabel = idx === 0 ? '🥇 1º' : idx === 1 ? '🥈 2º' : idx === 2 ? '🥉 3º' : `${idx + 1}º`;
-            const rowBorder = isWinner 
-              ? 'border-sky-400/80 dark:border-sky-600/80 bg-sky-50/40 dark:bg-sky-950/20' 
-              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850';
-
-            return `
-              <div class="p-2 sm:p-2.5 rounded-xl border ${rowBorder} flex items-center justify-between gap-2 transition-all hover:border-sky-400">
-                <div class="flex items-center gap-2 min-w-0 flex-1">
-                  <span class="text-[11px] font-black w-8 shrink-0 text-slate-600 dark:text-slate-300">${rankLabel}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${st.badgeBg} shrink-0">${st.name}</span>
-                  <div class="min-w-0 hidden xs:block truncate text-[11px] text-slate-500 dark:text-slate-400">
-                    ${escapeHtml(query)}
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                  <div class="text-right">
-                    <div class="font-mono font-black text-xs sm:text-sm ${isWinner ? 'text-sky-600 dark:text-sky-400' : 'text-slate-900 dark:text-white'}">
-                      R$ ${st.price.toFixed(2).replace('.', ',')}
-                    </div>
-                    <div class="text-[9px] font-semibold ${isWinner ? 'text-sky-600 dark:text-sky-400' : 'text-slate-400'}">
-                      ${isWinner ? '✓ Menor preço' : `+R$ ${diff.toFixed(2).replace('.', ',')} (+${diffPct}%)`}
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-1">
-                    <button type="button" onclick="addPharmaProductToShoppingList('${escapeHtml(query)} (${st.name})', 1, ${st.price})" class="px-2 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-black shadow-2xs transition-all cursor-pointer" title="Adicionar este medicamento à lista de compras da família">
-                      + Lista
-                    </button>
-                    <a href="${st.getUrl(query)}" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-0.5 cursor-pointer" title="Ir para o site da farmácia">
-                      <span>Ir</span> <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-
-      if (window.lucide) lucide.createIcons();
+      renderHonestStoreComparison(query, PHARMA_STORES_CATALOG, container, 'addPharmaProductToShoppingList');
     }
 
     function setAndComparePharma(term) {
@@ -14540,7 +14434,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const term = (termInput ? termInput.value : '').trim() || 'Aradois 50mg';
       const store = PHARMA_STORES_CATALOG.find(s => s.id === pharma);
       if (store) {
-        window.open(store.getUrl(term), '_blank');
+        openExternalUrl(store.getUrl(term));
       }
     }
 
@@ -16074,8 +15968,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <option value="Energia & Água">💡 Luz / Energia</option>
               <option value="Energia & Água">💧 Água / Saneamento</option>
               <option value="Telecom">🌐 Internet / Wi-Fi</option>
-              <option value="Transporte">🚗 Carro / Seguro / IPVA</option>
-              <option value="Educação">📚 Educação / Escola</option>
+              <option value="Veículo">🚗 Veículo (financiamento, seguro, IPVA)</option>
+              <option value="Educação">📚 Educação (mensalidade escolar / faculdade)</option>
               <option value="Outros">📌 Outra Conta Fixa</option>
             </select>
           </div>
@@ -16677,6 +16571,225 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </form>
     </div>
   </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL: COTAÇÕES & PACOTES DE VIAGEM REAIS (SEM POLUIR O APP)  -->
+  <!-- ============================================================== -->
+  <div id="modalTravelQuotes" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative text-xs border border-slate-200 dark:border-slate-800 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">✈️</span>
+          <div>
+            <h3 class="font-extrabold text-base text-slate-900 dark:text-white" id="travelModalTitle">Cofrinho de Viagem</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Cotações ao vivo nas principais operadoras de turismo</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTravelQuotesModal()" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Destino da Viagem com Edição Rápida -->
+      <div class="my-4 p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 space-y-2">
+        <label class="block font-black text-sky-950 dark:text-sky-200 text-xs">Para onde vocês querem viajar?</label>
+        <div class="flex gap-2">
+          <input type="text" id="inputTravelDestino" placeholder="Ex: Gramado, Porto de Galinhas, Orlando, Paris..." class="flex-1 bg-white dark:bg-slate-850 px-3 py-2 rounded-lg border border-sky-300 dark:border-sky-700 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <button type="button" onclick="updateCurrentPiggyDestino()" class="px-3.5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-black text-xs transition-all shadow-xs cursor-pointer">
+            Atualizar
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 self-center">Sugestões rápidas:</span>
+          <button type="button" onclick="quickSetTravelDestino('Gramado / Serra Gaúcha')" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-sky-400 cursor-pointer">Gramado</button>
+          <button type="button" onclick="quickSetTravelDestino('Porto de Galinhas / PE')" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-sky-400 cursor-pointer">Porto de Galinhas</button>
+          <button type="button" onclick="quickSetTravelDestino('Maragogi / AL')" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-sky-400 cursor-pointer">Maragogi</button>
+          <button type="button" onclick="quickSetTravelDestino('Buenos Aires')" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-sky-400 cursor-pointer">Buenos Aires</button>
+          <button type="button" onclick="quickSetTravelDestino('Orlando / Disney')" class="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-sky-400 cursor-pointer">Orlando</button>
+        </div>
+      </div>
+
+      <!-- Operadoras Oficiais com Links Reais Ao Vivo -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-extrabold text-xs text-slate-800 dark:text-slate-200">Operadoras de Viagem & Cotações Reais:</span>
+          <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">Preços oficiais ao vivo</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="travelOperatorsGrid">
+          <!-- Gerado dinamicamente -->
+        </div>
+      </div>
+
+      <!-- Ajustar Meta do Cofrinho com base no Pacote Escolhido -->
+      <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <span class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Encontrou o pacote ideal?</span>
+          <span class="text-[10px] text-slate-400">Ajuste o valor da meta deste porquinho:</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <input type="number" step="100" id="inputTravelNewTarget" placeholder="Meta R$" class="w-24 bg-white dark:bg-slate-850 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-bold text-right">
+          <button type="button" onclick="updatePiggyTargetFromTravel()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer">
+            Salvar Meta
+          </button>
+        </div>
+      </div>
+
+      <!-- Explicação sobre APIs e Dados Reais -->
+      <div class="mt-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400 flex items-start gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i>
+        <span><strong>Como funciona sem poluir o app:</strong> Operadoras de turismo não fornecem APIs públicas abertas sem cobrança de comissão. Por isso, o CtrlPig usa links de busca direta ao vivo nas principais operadoras. Ao clicar, o navegador abre a cotação exata da data de hoje sem nenhum valor fictício!</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeTravelPiggyId = null;
+
+    function openTravelQuotesModal(piggyId) {
+      activeTravelPiggyId = piggyId;
+      const p = piggies.find(x => x.id === piggyId);
+      if (!p) return;
+
+      const titleEl = document.getElementById('travelModalTitle');
+      if (titleEl) titleEl.textContent = `Cofrinho: ${p.nome}`;
+
+      const destinoInput = document.getElementById('inputTravelDestino');
+      const destinoAtual = p.destino || (p.nome.toLowerCase().includes('viagem') ? p.nome.replace(/viagem|de|para|cofrinho|meta/gi, '').trim() : '') || 'Gramado';
+      if (destinoInput) destinoInput.value = destinoAtual;
+
+      const targetInput = document.getElementById('inputTravelNewTarget');
+      if (targetInput) targetInput.value = p.target || '';
+
+      renderTravelOperators(destinoAtual);
+
+      const modal = document.getElementById('modalTravelQuotes');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeTravelQuotesModal() {
+      const modal = document.getElementById('modalTravelQuotes');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function quickSetTravelDestino(dest) {
+      const input = document.getElementById('inputTravelDestino');
+      if (input) input.value = dest;
+      updateCurrentPiggyDestino();
+    }
+
+    function updateCurrentPiggyDestino() {
+      const input = document.getElementById('inputTravelDestino');
+      const novoDestino = input ? input.value.trim() : '';
+      if (!novoDestino) return;
+
+      if (activeTravelPiggyId) {
+        const p = piggies.find(x => x.id === activeTravelPiggyId);
+        if (p) {
+          p.destino = novoDestino;
+          localStorage.setItem('financas_piggies_list', JSON.stringify(piggies));
+          renderPiggiesUI();
+          showToastUndo(`Destino atualizado para ${novoDestino}! ✈️`, false);
+        }
+      }
+      renderTravelOperators(novoDestino);
+    }
+
+    function updatePiggyTargetFromTravel() {
+      const input = document.getElementById('inputTravelNewTarget');
+      const newTarget = parseFloat(input ? input.value : 0);
+      if (!newTarget || newTarget <= 0) return;
+
+      if (activeTravelPiggyId) {
+        const p = piggies.find(x => x.id === activeTravelPiggyId);
+        if (p) {
+          p.target = newTarget;
+          localStorage.setItem('financas_piggies_list', JSON.stringify(piggies));
+          renderPiggiesUI();
+          showToastUndo(`Meta atualizada para R$ ${newTarget.toFixed(2).replace('.', ',')}! 🎯`, false);
+          closeTravelQuotesModal();
+        }
+      }
+    }
+
+    function renderTravelOperators(destino) {
+      const container = document.getElementById('travelOperatorsGrid');
+      if (!container) return;
+
+      const q = encodeURIComponent(destino || 'Gramado');
+
+      const operators = [
+        {
+          name: 'Decolar',
+          logo: '🎒',
+          badge: 'Pacotes Voo + Hotel',
+          color: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300',
+          btnColor: 'bg-indigo-600 hover:bg-indigo-700',
+          url: `https://www.decolar.com/pacotes/`
+        },
+        {
+          name: 'CVC Viagens',
+          logo: '🏖️',
+          badge: 'Resorts & Pacotes Completos',
+          color: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300',
+          btnColor: 'bg-amber-600 hover:bg-amber-700',
+          url: `https://www.cvc.com.br/destinos`
+        },
+        {
+          name: 'Booking.com',
+          logo: '🏨',
+          badge: 'Hotéis, Pousadas & Diárias',
+          color: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300',
+          btnColor: 'bg-blue-600 hover:bg-blue-700',
+          url: `https://www.booking.com/searchresults.pt-br.html?ss=${q}`
+        },
+        {
+          name: 'Google Voos',
+          logo: '🛫',
+          badge: 'Passagens Baratas & Alertas',
+          color: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300',
+          btnColor: 'bg-emerald-600 hover:bg-emerald-700',
+          url: `https://www.google.com/travel/flights?q=passagens+para+${q}`
+        },
+        {
+          name: 'Melhores Destinos',
+          logo: '⚡',
+          badge: 'Promoções Relâmpago & Milhas',
+          color: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300',
+          btnColor: 'bg-rose-600 hover:bg-rose-700',
+          url: `https://www.melhoresdestinos.com.br/?s=${q}`
+        },
+        {
+          name: 'Kayak Pacotes',
+          logo: '🗺️',
+          badge: 'Comparador de Tarifas',
+          color: 'bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300',
+          btnColor: 'bg-orange-600 hover:bg-orange-700',
+          url: `https://www.kayak.com.br/packages`
+        }
+      ];
+
+      container.innerHTML = operators.map(op => `
+        <div class="p-3 rounded-xl border ${op.color} flex items-center justify-between gap-2 shadow-2xs">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-base">${op.logo}</span>
+              <strong class="text-xs font-black">${op.name}</strong>
+            </div>
+            <p class="text-[10px] opacity-80 truncate mt-0.5">${op.badge}</p>
+          </div>
+          <button type="button" onclick="openExternalUrl('${op.url}')" class="px-2.5 py-1.5 rounded-lg ${op.btnColor} text-white text-[11px] font-black flex items-center gap-1 shrink-0 transition-all shadow-xs cursor-pointer active:scale-95">
+            <span>Cotar</span>
+            <i data-lucide="external-link" class="w-3 h-3"></i>
+          </button>
+        </div>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+  </script>
 
 </body>
 </html>

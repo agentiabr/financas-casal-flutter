@@ -1,7 +1,7 @@
 name: financas_casal_flutter
 description: "Aplicativo de Finanças do Casal • Rodrigo & Márcia (Flutter + Supabase)"
 publish_to: 'none'
-version: 1.7.4+39
+version: 1.7.4+40
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -36,6 +36,8 @@ dependencies:
   local_auth: ^2.3.0
   # Engine de Alta Fidelidade do Dashboard
   webview_flutter: ^4.14.1
+  # Abrir lojas, WhatsApp e sites externos fora do WebView
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
