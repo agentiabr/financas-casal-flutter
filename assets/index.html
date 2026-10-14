@@ -10968,15 +10968,14 @@
     }
 
     function logoutUser() {
-      if (confirm('Deseja desconectar do ControlPig?')) {
-        currentUserSession = null;
-        localStorage.removeItem('financas_auth_user');
-        localStorage.setItem('financas_auth_logged_out', 'true');
-        closeExitFeedbackModal();
-        document.documentElement.classList.add('require-auth'); document.getElementById('authOverlayContainer').classList.remove('hidden');
-        showToastUndo('Você foi deslogado com sucesso! 👋', false);
-        lucide.createIcons();
-      }
+      currentUserSession = null;
+      localStorage.removeItem('financas_auth_user');
+      localStorage.setItem('financas_auth_logged_out', 'true');
+      closeExitFeedbackModal();
+      document.documentElement.classList.add('require-auth');
+      document.getElementById('authOverlayContainer').classList.remove('hidden');
+      showToastUndo('Você foi desconectado com sucesso! 👋', false);
+      lucide.createIcons();
     }
 
     // ==========================================
@@ -13216,6 +13215,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
 
       renderCleanChatStream();
+      closeFamilyChatModal();
       showToastUndo(`Compras finalizadas! R$ ${summary.total.toFixed(2).replace('.', ',')} lançado nas despesas. Fotos apagadas. 🎉`, false);
       playChatDing();
     }
@@ -13246,6 +13246,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       });
       saveCleanChatMessages(msgs);
       renderCleanChatStream();
+      closeFamilyChatModal();
       showToastUndo('Lista de compras finalizada e fotos temporárias limpas.', false);
     }
 
@@ -13299,6 +13300,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       updateCartSummaryUI();
       renderCleanChatStream();
+      closeFamilyChatModal();
       showToastUndo('Compras canceladas. Nenhum valor lançado no ciclo financeiro.', false);
     }
 
@@ -14181,7 +14183,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     // ==============================================================================
-    // MÓDULO PET (PANTONE): PERFIL, DESPESAS & CARTEIRA DE VACINAÇÃO DIGITAL ANUAL
+    // MÓDULO PET MULTI-PET: SUPORTE A MÚLTIPLOS CÃES, GATOS E OUTROS ANIMAIS
     // ==============================================================================
     function formatDateBR(dateStr) {
       if (!dateStr) return '';
@@ -14194,9 +14196,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       return String(dateStr);
     }
 
+    const DEFAULT_PETS_LIST = [
+      {
+        id: 'pet_pantone',
+        nome: 'Pantone',
+        especie: 'Cachorro',
+        emoji: '🐶',
+        raca: 'SRD / Pelagem Amarela',
+        idade: '4 anos',
+        peso: '8.4 kg',
+        plano: 'Wevets Plano de Saúde',
+        foto: ''
+      }
+    ];
+
     const DEFAULT_PET_VACCINES = [
       {
         id: 'vac_v10',
+        petId: 'pet_pantone',
         nome: 'V10 / V8 (Polivalente Canina)',
         descricao: 'Cinomose, Parvovirose, Hepatite e Coronavirose',
         tipo: 'Vacina Anual Obrigatória',
@@ -14206,7 +14223,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       },
       {
         id: 'vac_raiva',
-        nome: 'Antirrábica (Raiva Canina)',
+        petId: 'pet_pantone',
+        nome: 'Antirrábica (Raiva)',
         descricao: 'Prevenção contra o vírus da raiva',
         tipo: 'Vacina Anual Obrigatória',
         ultimaDose: '2026-06-20',
@@ -14215,6 +14233,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       },
       {
         id: 'vac_giardia',
+        petId: 'pet_pantone',
         nome: 'Giárdia (Giardiavax)',
         descricao: 'Prevenção contra giardíase e problemas intestinais',
         tipo: 'Vacina Anual Complementar',
@@ -14224,7 +14243,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       },
       {
         id: 'vac_tosse',
-        nome: 'Tosse dos Canis (Gripe Canina / Pneumodog)',
+        petId: 'pet_pantone',
+        nome: 'Tosse dos Canis (Gripe Canina)',
         descricao: 'Prevenção contra traqueobronquite infecciosa canina',
         tipo: 'Vacina Anual Complementar',
         ultimaDose: '2026-08-05',
@@ -14233,36 +14253,83 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     ];
 
-    function getPetVaccines() {
+    function getRegisteredPets() {
+      try {
+        const stored = localStorage.getItem('ctrlpig_registered_pets');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      const oldPhoto = localStorage.getItem('ctrlpig_pet_pantone_photo');
+      if (oldPhoto) {
+        DEFAULT_PETS_LIST[0].foto = oldPhoto;
+      }
+      return DEFAULT_PETS_LIST;
+    }
+
+    function saveRegisteredPets(pets) {
+      localStorage.setItem('ctrlpig_registered_pets', JSON.stringify(pets));
+      renderPetCarouselTabs();
+      renderPetProfileUI();
+      renderPetVaccinesList();
+      renderPetExpensesSummary();
+      updateQuickHubUI();
+    }
+
+    function getActivePetId() {
+      const pets = getRegisteredPets();
+      const current = localStorage.getItem('ctrlpig_active_pet_id');
+      if (current && pets.some(p => p.id === current)) return current;
+      return pets[0]?.id || 'pet_pantone';
+    }
+
+    function setActivePetId(id) {
+      localStorage.setItem('ctrlpig_active_pet_id', id);
+      renderPetCarouselTabs();
+      renderPetProfileUI();
+      renderPetVaccinesList();
+      renderPetExpensesSummary();
+    }
+
+    function getActivePet() {
+      const pets = getRegisteredPets();
+      const activeId = getActivePetId();
+      return pets.find(p => p.id === activeId) || pets[0] || DEFAULT_PETS_LIST[0];
+    }
+
+    function getAllPetVaccines() {
       try {
         const stored = localStorage.getItem('ctrlpig_pet_vaccines');
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          const list = JSON.parse(stored);
+          if (Array.isArray(list) && list.length > 0) return list;
+        }
       } catch (e) {}
       return DEFAULT_PET_VACCINES;
     }
 
-    function savePetVaccines(vaxList) {
-      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxList));
-      renderPetVaccinesList();
-      updateQuickHubUI();
+    function getPetVaccines(targetPetId) {
+      const petId = targetPetId || getActivePetId();
+      const all = getAllPetVaccines();
+      return all.filter(v => v.petId === petId || (!v.petId && petId === 'pet_pantone'));
     }
 
-    function getPetProfile() {
-      return {
-        nome: 'Pantone',
-        especie: 'Cão',
-        raca: 'SRD / Pelagem Amarela',
-        foto: localStorage.getItem('ctrlpig_pet_pantone_photo') || '',
-        idade: '4 anos',
-        peso: '8.4 kg',
-        plano: 'Wevets Plano de Saúde'
-      };
+    function savePetVaccines(vaxList) {
+      const currentPetId = getActivePetId();
+      const all = getAllPetVaccines();
+      const others = all.filter(v => (v.petId && v.petId !== currentPetId) || (!v.petId && currentPetId !== 'pet_pantone'));
+      const combined = [...others, ...vaxList.map(v => ({ ...v, petId: v.petId || currentPetId }))];
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(combined));
+      renderPetVaccinesList();
+      updateQuickHubUI();
     }
 
     function openPetAreaModal() {
       const modal = document.getElementById('modalPetArea');
       if (modal) {
         modal.classList.remove('hidden');
+        renderPetCarouselTabs();
         renderPetProfileUI();
         renderPetExpensesSummary();
         renderPetVaccinesList();
@@ -14274,6 +14341,69 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     function closePetAreaModal() {
       const modal = document.getElementById('modalPetArea');
       if (modal) modal.classList.add('hidden');
+    }
+
+    function renderPetCarouselTabs() {
+      const container = document.getElementById('petsCarouselList');
+      const badge = document.getElementById('petCountBadge');
+      if (!container) return;
+
+      const pets = getRegisteredPets();
+      const activeId = getActivePetId();
+      if (badge) badge.textContent = `${pets.length} ${pets.length === 1 ? 'pet' : 'pets'}`;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      container.innerHTML = pets.map(p => {
+        const isActive = p.id === activeId;
+        const vaxes = getPetVaccines(p.id);
+        const hasExpired = vaxes.some(v => {
+          const prox = new Date(v.proximaDose + 'T00:00:00');
+          return (prox - today) < 0;
+        });
+
+        const activeCls = 'bg-amber-500 text-slate-950 font-black shadow-xs ring-2 ring-amber-400';
+        const inactiveCls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold';
+
+        return `
+          <button type="button" onclick="setActivePetId('${p.id}')" class="px-3.5 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isActive ? activeCls : inactiveCls}">
+            <span>${p.emoji || (p.especie === 'Gato' ? '🐱' : '🐶')}</span>
+            <span>${escapeHtml(p.nome)}</span>
+            ${hasExpired ? '<span class="w-2 h-2 rounded-full bg-red-600 animate-pulse ml-0.5" title="Vacina vencida!"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderPetProfileUI() {
+      const pet = getActivePet();
+      const imgEl = document.getElementById('petProfileImg');
+      const emojiEl = document.getElementById('petProfileEmoji');
+      const nameEl = document.getElementById('petProfileName');
+      const speciesBadge = document.getElementById('petProfileSpeciesBadge');
+      const detailsEl = document.getElementById('petProfileDetails');
+      const expensesTitle = document.getElementById('petExpensesSectionTitle');
+
+      if (nameEl) nameEl.textContent = pet.nome;
+      if (speciesBadge) speciesBadge.textContent = `🐾 ${pet.especie || 'Pet'}`;
+      if (expensesTitle) expensesTitle.textContent = `Despesas com ${pet.nome} no Ciclo`;
+
+      if (detailsEl) {
+        detailsEl.innerHTML = `${pet.especie || 'Pet'} • ${pet.raca || 'Sem raça'} • ${pet.idade || 'Idade n/i'} • ${pet.peso || 'Peso n/i'} • <strong>${pet.plano || 'Sem plano'}</strong>`;
+      }
+
+      if (imgEl && emojiEl) {
+        if (pet.foto) {
+          imgEl.src = pet.foto;
+          imgEl.classList.remove('hidden');
+          emojiEl.classList.add('hidden');
+        } else {
+          imgEl.classList.add('hidden');
+          emojiEl.classList.remove('hidden');
+          emojiEl.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
+        }
+      }
     }
 
     function selectPetPhoto(source) {
@@ -14304,85 +14434,73 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function savePetPhoto(dataUrl) {
       if (!dataUrl) return;
-      localStorage.setItem('ctrlpig_pet_pantone_photo', dataUrl);
-      renderPetProfileUI();
-      showToastNotification('Foto do Pantone atualizada com sucesso! 🐾');
+      const pets = getRegisteredPets();
+      const activeId = getActivePetId();
+      const pet = pets.find(p => p.id === activeId);
+      if (pet) {
+        pet.foto = dataUrl;
+        saveRegisteredPets(pets);
+        showToastNotification(`Foto de ${pet.nome} atualizada com sucesso! 🐾`);
+      }
     }
 
     window.onNativePetPhotoResult = function(dataUrl) {
       savePetPhoto(dataUrl);
     };
 
-    function renderPetProfileUI() {
-      const profile = getPetProfile();
-      const imgEl = document.getElementById('petProfileImg');
-      const emojiEl = document.getElementById('petProfileEmoji');
-      if (imgEl && emojiEl) {
-        if (profile.foto) {
-          imgEl.src = profile.foto;
-          imgEl.classList.remove('hidden');
-          emojiEl.classList.add('hidden');
+    function renderPetExpensesSummary() {
+      const pet = getActivePet();
+      const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+      
+      const petRegex = new RegExp(`wevets|petz|cobasi|veterin|ração|petisco|fralda|${pet.nome}`, 'i');
+      const petTxs = activeTxs.filter(t => (t.tipo !== 'Receita') && (t.categoria === 'Pet' || (t.descricao && petRegex.test(t.descricao))));
+
+      const total = petTxs.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
+
+      const valEl = document.getElementById('petTotalExpensesVal');
+      const badgeEl = document.getElementById('petExpensesCountBadge');
+      const feedEl = document.getElementById('petExpensesListFeed');
+
+      if (valEl) valEl.textContent = formatBRL(total, 'gastos');
+      if (badgeEl) badgeEl.textContent = `${petTxs.length} ${petTxs.length === 1 ? 'lançamento' : 'lançamentos'}`;
+
+      if (feedEl) {
+        if (petTxs.length === 0) {
+          feedEl.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhuma despesa de pet registrada neste ciclo.</div>`;
         } else {
-          imgEl.classList.add('hidden');
-          emojiEl.classList.remove('hidden');
+          feedEl.innerHTML = petTxs.slice(0, 5).map(t => `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 text-xs">
+              <div class="min-w-0 flex-1">
+                <span class="font-bold text-slate-900 dark:text-white truncate block">${escapeHtml(t.descricao)}</span>
+                <span class="text-[10px] text-slate-400">${formatDateBR(t.data)} • ${t.forma_pagamento || 'Cartão'}</span>
+              </div>
+              <span class="font-black font-mono text-slate-900 dark:text-white">${formatBRL(t.valor, 'gastos')}</span>
+            </div>
+          `).join('');
         }
       }
     }
 
-    function renderPetExpensesSummary() {
-      const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
-      const petTxs = activeTxs.filter(t => 
-        (t.tipo !== 'Receita') && 
-        (t.categoria === 'Pet' || (t.descricao && /wevets|pantone|ração|petisco|fralda|petz|cobasi|veterin/i.test(t.descricao)))
-      );
-
-      const totalPet = petTxs.reduce((acc, t) => acc + (t.valor || 0), 0);
-      const totalEl = document.getElementById('petTotalExpensesVal');
-      if (totalEl) totalEl.textContent = formatBRL(totalPet, 'gastos');
-
-      const countEl = document.getElementById('petExpensesCountBadge');
-      if (countEl) countEl.textContent = `${petTxs.length} lançamento${petTxs.length !== 1 ? 's' : ''}`;
-
-      const listEl = document.getElementById('petExpensesListFeed');
-      if (!listEl) return;
-
-      if (petTxs.length === 0) {
-        listEl.innerHTML = `
-          <div class="p-3 text-center text-slate-400 text-xs bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-            Nenhuma despesa de Pet registrada no ciclo atual.
-          </div>
-        `;
-        return;
-      }
-
-      listEl.innerHTML = petTxs.map(t => `
-        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-xs flex-shrink-0">
-              🐾
-            </span>
-            <div class="min-w-0">
-              <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao || 'Despesa Pet'}</div>
-              <div class="text-[10px] text-slate-400">${t.data ? formatDateBR(t.data) : ''} • ${t.forma_pagamento || 'Boleto'}</div>
-            </div>
-          </div>
-          <div class="text-right flex-shrink-0 ml-2">
-            <div class="font-black text-xs text-slate-900 dark:text-white font-mono">${formatBRL(t.valor || 0, 'gastos')}</div>
-            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full ${t.status === 'Pago' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'}">
-              ${t.status || 'Pendente'}
-            </span>
-          </div>
-        </div>
-      `).join('');
-    }
-
     function renderPetVaccinesList() {
-      const vaxes = getPetVaccines();
+      const pet = getActivePet();
+      const vaxes = getPetVaccines(pet.id);
       const listEl = document.getElementById('petVaccinesContainer');
       if (!listEl) return;
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+
+      if (vaxes.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-4 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 space-y-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Nenhuma vacina cadastrada ainda para <strong>${escapeHtml(pet.nome)}</strong>.</p>
+            <button type="button" onclick="loadDefaultVaccinePresetsForPet('${pet.id}', '${pet.especie}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer">
+              <span>💉 Adicionar Pacote Padrão de Vacinas (${escapeHtml(pet.especie || 'Pet')})</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
 
       listEl.innerHTML = vaxes.map((v) => {
         const proxDate = new Date(v.proximaDose + 'T00:00:00');
@@ -14432,39 +14550,183 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <button type="button" onclick="recordVaccineDoseNow('${v.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer" title="Registrar dose aplicada hoje e renovar para mais 1 ano">
                 <span>💉 Aplicada Hoje</span>
               </button>
-              <button type="button" onclick="deletePetVaccine('${v.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer" title="Remover vacina">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <button type="button" onclick="deletePetVaccine('${v.id}')" class="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer" title="Remover vacina">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
           </div>
         `;
       }).join('');
-
       if (window.lucide) lucide.createIcons();
     }
 
     function recordVaccineDoseNow(vaccineId) {
-      const vaxes = getPetVaccines();
-      const idx = vaxes.findIndex(v => v.id === vaccineId);
-      if (idx === -1) return;
-
       const todayStr = new Date().toISOString().split('T')[0];
-      const nextDate = new Date();
-      nextDate.setFullYear(nextDate.getFullYear() + 1);
-      const nextStr = nextDate.toISOString().split('T')[0];
+      const pDate = new Date();
+      pDate.setFullYear(pDate.getFullYear() + 1);
+      const proximaStr = pDate.toISOString().split('T')[0];
 
-      vaxes[idx].ultimaDose = todayStr;
-      vaxes[idx].proximaDose = nextStr;
+      let vaxes = getAllPetVaccines();
+      vaxes = vaxes.map(v => {
+        if (v.id === vaccineId) {
+          return {
+            ...v,
+            ultimaDose: todayStr,
+            proximaDose: proximaStr
+          };
+        }
+        return v;
+      });
 
-      savePetVaccines(vaxes);
-      showToastNotification(`Dose de ${vaxes[idx].nome} registrada! Próxima dose calculada para ${formatDateBR(nextStr)}.`);
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxes));
+      renderPetVaccinesList();
+      updateQuickHubUI();
+      showToastNotification('Dose registrada com sucesso! Renovada por mais 1 ano. 💉🐾');
     }
 
     function deletePetVaccine(vaccineId) {
-      if (!confirm('Deseja realmente remover esta vacina da carteira de vacinação do Pantone?')) return;
-      const vaxes = getPetVaccines().filter(v => v.id !== vaccineId);
-      savePetVaccines(vaxes);
-      showToastNotification('Vacina removida.');
+      let vaxes = getAllPetVaccines().filter(v => v.id !== vaccineId);
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxes));
+      renderPetVaccinesList();
+      updateQuickHubUI();
+      showToastNotification('Vacina removida da carteira.');
+    }
+
+    function loadDefaultVaccinePresetsForPet(petId, especie) {
+      const isCat = (especie || '').toLowerCase().includes('gato');
+      const today = new Date().toISOString().split('T')[0];
+      const nextYear = new Date();
+      nextYear.setFullYear(nextYear.getFullYear() + 1);
+      const nextStr = nextYear.toISOString().split('T')[0];
+
+      let presets = [];
+      if (isCat) {
+        presets = [
+          { id: 'vac_cat_v5_' + Date.now(), petId: petId, nome: 'V4 / V5 Quádrupla Felina', descricao: 'Panleucopenia, Rinotraqueíte, Calicivirose e Clamidiose', tipo: 'Vacina Anual Obrigatória', ultimaDose: today, proximaDose: nextStr, clinica: 'Clínica Veterinária' },
+          { id: 'vac_cat_raiva_' + Date.now(), petId: petId, nome: 'Antirrábica Felina (Raiva)', descricao: 'Prevenção contra o vírus da raiva em felinos', tipo: 'Vacina Anual Obrigatória', ultimaDose: today, proximaDose: nextStr, clinica: 'Clínica Veterinária' }
+        ];
+      } else {
+        presets = [
+          { id: 'vac_dog_v10_' + Date.now(), petId: petId, nome: 'V10 / V8 Polivalente Canina', descricao: 'Cinomose, Parvovirose, Hepatite e Coronavirose', tipo: 'Vacina Anual Obrigatória', ultimaDose: today, proximaDose: nextStr, clinica: 'Clínica Veterinária' },
+          { id: 'vac_dog_raiva_' + Date.now(), petId: petId, nome: 'Antirrábica Canina', descricao: 'Prevenção contra a raiva', tipo: 'Vacina Anual Obrigatória', ultimaDose: today, proximaDose: nextStr, clinica: 'Clínica Veterinária' }
+        ];
+      }
+
+      const all = getAllPetVaccines();
+      const updated = [...all, ...presets];
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(updated));
+      renderPetVaccinesList();
+      updateQuickHubUI();
+      showToastNotification('Pacote padrão de vacinas adicionado para o pet! 💉');
+    }
+
+    // Modal de Cadastro / Edição de Pet
+    function openAddPetModal(petToEdit) {
+      const modal = document.getElementById('modalAddEditPet');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      const title = document.getElementById('modalAddPetTitle');
+      const idInput = document.getElementById('inputPetId');
+      const nomeInput = document.getElementById('inputPetNome');
+      const especieSelect = document.getElementById('inputPetEspecie');
+      const racaInput = document.getElementById('inputPetRaca');
+      const idadeInput = document.getElementById('inputPetIdade');
+      const pesoInput = document.getElementById('inputPetPeso');
+      const planoInput = document.getElementById('inputPetPlano');
+
+      if (petToEdit) {
+        if (title) title.textContent = 'Editar Dados do Pet';
+        if (idInput) idInput.value = petToEdit.id;
+        if (nomeInput) nomeInput.value = petToEdit.nome || '';
+        if (especieSelect) especieSelect.value = petToEdit.especie || 'Cachorro';
+        if (racaInput) racaInput.value = petToEdit.raca || '';
+        if (idadeInput) idadeInput.value = petToEdit.idade || '';
+        if (pesoInput) pesoInput.value = petToEdit.peso || '';
+        if (planoInput) planoInput.value = petToEdit.plano || '';
+      } else {
+        if (title) title.textContent = 'Cadastrar Novo Pet da Família';
+        if (idInput) idInput.value = '';
+        if (nomeInput) nomeInput.value = '';
+        if (especieSelect) especieSelect.value = 'Gato';
+        if (racaInput) racaInput.value = '';
+        if (idadeInput) idadeInput.value = '';
+        if (pesoInput) pesoInput.value = '';
+        if (planoInput) planoInput.value = '';
+      }
+    }
+
+    function closeAddPetModal() {
+      const modal = document.getElementById('modalAddEditPet');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleSavePetForm(event) {
+      event.preventDefault();
+      const id = document.getElementById('inputPetId')?.value;
+      const nome = document.getElementById('inputPetNome')?.value.trim();
+      const especie = document.getElementById('inputPetEspecie')?.value || 'Cachorro';
+      const raca = document.getElementById('inputPetRaca')?.value.trim() || 'SRD';
+      const idade = document.getElementById('inputPetIdade')?.value.trim() || '';
+      const peso = document.getElementById('inputPetPeso')?.value.trim() || '';
+      const plano = document.getElementById('inputPetPlano')?.value.trim() || '';
+
+      if (!nome) return;
+
+      const emojiMap = {
+        'Cachorro': '🐶',
+        'Gato': '🐱',
+        'Pássaro': '🦜',
+        'Outro': '🐰'
+      };
+      const emoji = emojiMap[especie] || '🐾';
+
+      let pets = getRegisteredPets();
+      if (id) {
+        pets = pets.map(p => {
+          if (p.id === id) {
+            return { ...p, nome, especie, emoji, raca, idade, peso, plano };
+          }
+          return p;
+        });
+        showToastNotification(`Dados de ${nome} atualizados com sucesso! 🐾`);
+      } else {
+        const newPet = {
+          id: 'pet_' + Date.now(),
+          nome,
+          especie,
+          emoji,
+          raca,
+          idade,
+          peso,
+          plano,
+          foto: ''
+        };
+        pets.push(newPet);
+        setActivePetId(newPet.id);
+        showToastNotification(`Pet ${nome} cadastrado com sucesso! 🎉🐾`);
+      }
+
+      saveRegisteredPets(pets);
+      closeAddPetModal();
+    }
+
+    function editCurrentPet() {
+      const pet = getActivePet();
+      if (pet) openAddPetModal(pet);
+    }
+
+    function deleteCurrentPet() {
+      const pets = getRegisteredPets();
+      if (pets.length <= 1) {
+        showToastNotification('Você deve manter pelo menos um pet cadastrado.');
+        return;
+      }
+      const pet = getActivePet();
+      const updated = pets.filter(p => p.id !== pet.id);
+      saveRegisteredPets(updated);
+      setActivePetId(updated[0].id);
+      showToastNotification(`Pet ${pet.nome} removido.`);
     }
 
     function openAddPetVaccineModal() {
@@ -14511,7 +14773,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       vaxes.push(newVac);
       savePetVaccines(vaxes);
       closeAddPetVaccineModal();
-      showToastNotification(`Vacina ${nome} adicionada à carteira do Pantone!`);
+      showToastNotification(`Vacina ${nome} adicionada à carteira do pet!`);
     }
 
     function quickLaunchPetExpense() {
@@ -14524,7 +14786,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         }
         const descInput = document.getElementById('txDescricao');
         if (descInput) {
-          descInput.value = 'Pantone - ';
+          const p = getActivePet();
+          descInput.value = (p ? p.nome : 'Pet') + ' - ';
           descInput.focus();
         }
       }, 100);
@@ -15346,7 +15609,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
         const petTxs = activeTxs.filter(t => (t.tipo !== 'Receita') && (t.categoria === 'Pet' || (t.descricao && /wevets|pantone|ração|petisco|fralda/i.test(t.descricao))));
         const petTotal = petTxs.reduce((a, t) => a + (t.valor||0), 0);
-        petSub.textContent = petTotal > 0 ? `${formatBRL(petTotal, 'gastos')} no mês • 4 vacinas` : '4 vacinas registradas';
+        const registeredPets = (typeof getRegisteredPets === 'function') ? getRegisteredPets() : [];
+        const pCount = registeredPets.length;
+        const petLabel = pCount <= 1 ? (registeredPets[0]?.nome || 'Pet') : `${pCount} pets`;
+        petSub.textContent = petTotal > 0 ? `${formatBRL(petTotal, 'gastos')} no ciclo • ${petLabel}` : `${petLabel} cadastrado(s)`;
       }
 
       const healthSettings = getHealthScheduleSettings();
@@ -16998,13 +17264,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalPetArea" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetAreaModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
-      <!-- Cabeçalho do Pet com Foto e Ações -->
-      <div class="flex items-start justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+      <!-- BARRA DE SELEÇÃO / CARROSSEL MULTI-PET (CÃES, GATOS, ETC.) -->
+      <div class="pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Meus Pets</span>
+            <span id="petCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">1</span>
+          </div>
+          <button type="button" onclick="openAddPetModal()" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>+ Adicionar Pet</span>
+          </button>
+        </div>
+        
+        <!-- Trilho Horizontal de Pets (Permite navegar facilmente entre 10 gatos, 3 cachorros, etc) -->
+        <div id="petsCarouselList" class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1">
+          <!-- Injetado dinamicamente via renderPetCarouselTabs() -->
+        </div>
+      </div>
+
+      <!-- PERFIL DO PET SELECIONADO COM FOTO E CONTROLES -->
+      <div class="flex items-start justify-between py-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="relative group/photo cursor-pointer flex-shrink-0" onclick="selectPetPhoto('gallery')" title="Toque para alterar a foto do Pantone">
+          <div class="relative group/photo cursor-pointer flex-shrink-0" onclick="selectPetPhoto('gallery')" title="Toque para alterar a foto do pet">
             <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-2 border-amber-400 flex items-center justify-center text-3xl font-bold overflow-hidden shadow-md">
               <span id="petProfileEmoji">🐶</span>
-              <img id="petProfileImg" src="" alt="Pantone" class="hidden w-full h-full object-cover">
+              <img id="petProfileImg" src="" alt="Pet" class="hidden w-full h-full object-cover">
             </div>
             <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] shadow-sm border border-white">
               📷
@@ -17013,28 +17298,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
           <div class="min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">Pantone</h3>
-              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+              <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white" id="petProfileName">Pantone</h3>
+              <span id="petProfileSpeciesBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                 🐾 Área Pet
               </span>
             </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="petProfileDetails">
               Cão • 4 anos • 8.4 kg • <strong>Wevets Plano de Saúde</strong>
             </p>
-            <div class="flex items-center gap-2 mt-1">
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
               <button type="button" onclick="selectPetPhoto('camera')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer">
-                <span>📸 Tirar Foto</span>
+                <span>📸 Foto</span>
               </button>
               <span class="text-slate-300 dark:text-slate-700">•</span>
-              <button type="button" onclick="selectPetPhoto('gallery')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer">
-                <span>🖼️ Galeria</span>
+              <button type="button" onclick="editCurrentPet()" class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>✏️ Editar Pet</span>
+              </button>
+              <span class="text-slate-300 dark:text-slate-700">•</span>
+              <button type="button" onclick="deleteCurrentPet()" class="text-[10px] font-bold text-rose-500 hover:underline flex items-center gap-1 cursor-pointer">
+                <span>🗑️ Remover</span>
               </button>
               <input type="file" id="petPhotoFileInput" accept="image/*" class="hidden" onchange="handlePetPhotoFileInput(event)">
             </div>
           </div>
         </div>
 
-        <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
+        <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar Área Pet">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -17044,8 +17333,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-            <h4 class="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Despesas com o Pantone no Ciclo
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300" id="petExpensesSectionTitle">
+              Despesas com Pet no Ciclo
             </h4>
           </div>
           <button type="button" onclick="quickLaunchPetExpense()" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
@@ -17084,7 +17373,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </h4>
             </div>
             <p class="text-[11px] text-slate-500 dark:text-slate-400">
-              Acompanhamento de doses anuais para garantir a saúde do Pantone sem esquecer os prazos.
+              Acompanhamento de doses anuais para garantir a saúde dos pets sem esquecer os prazos.
             </p>
           </div>
           <button type="button" onclick="openAddPetVaccineModal()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition-colors flex-shrink-0">
@@ -17388,6 +17677,73 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- ============================================================== -->
   <!-- MODAL 4: ADICIONAR NOVA VACINA OU ANTIPARASITÁRIO AO PANTONE   -->
+  <!-- ============================================================== -->
+  <!-- MODAL: CADASTRAR / EDITAR PET DA FAMÍLIA (MULTI-PET)           -->
+  <!-- ============================================================== -->
+  <div id="modalAddEditPet" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeAddPetModal()">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3.5">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🐾</span>
+          <h3 class="font-black text-sm text-slate-900 dark:text-white" id="modalAddPetTitle">Cadastrar Novo Pet</h3>
+        </div>
+        <button type="button" onclick="closeAddPetModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSavePetForm(event)" class="space-y-3">
+        <input type="hidden" id="inputPetId" value="">
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Nome do Pet *</label>
+          <input type="text" id="inputPetNome" required placeholder="Ex: Pantone, Mingau, Luna, Thor..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-bold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Espécie *</label>
+            <select id="inputPetEspecie" class="w-full px-2.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+              <option value="Cachorro">🐶 Cachorro</option>
+              <option value="Gato">🐱 Gato</option>
+              <option value="Pássaro">🦜 Pássaro</option>
+              <option value="Outro">🐰 Coelho / Outro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Raça / Pelagem</label>
+            <input type="text" id="inputPetRaca" placeholder="Ex: Siamês, SRD, Golden..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Idade</label>
+            <input type="text" id="inputPetIdade" placeholder="Ex: 3 anos, 8 meses..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Peso Estimado</label>
+            <input type="text" id="inputPetPeso" placeholder="Ex: 4.5 kg, 12 kg..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Plano de Saúde ou Clínica</label>
+          <input type="text" id="inputPetPlano" placeholder="Ex: Wevets, Porto Pet, Clínica Bicho Bom..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer">
+            Salvar Pet
+          </button>
+          <button type="button" onclick="closeAddPetModal()" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl cursor-pointer">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ============================================================== -->
   <div id="modalAddPetVaccine" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl">
