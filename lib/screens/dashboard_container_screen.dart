@@ -67,10 +67,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
-            setState(() {
-              _isLoading = false;
-            });
             _injectNativeBridge();
+            // Garante exibição mínima de 1.8 segundos da tela de splash com ícone pulsando
+            Future.delayed(const Duration(milliseconds: 1800), () {
+              if (mounted) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
+            });
           },
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url;
@@ -99,10 +104,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   Future<void> _openExternalUrl(String url) async {
     try {
       final uri = Uri.parse(url);
-      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!ok) debugPrint('Não foi possível abrir: $url');
+      bool ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok) {
+        ok = await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+      if (!ok) {
+        debugPrint('Não foi possível abrir externamente: $url');
+      }
     } catch (e) {
       debugPrint('Erro ao abrir link externo: $e');
+      try {
+        await launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
+      } catch (_) {}
     }
   }
 
@@ -333,9 +346,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
     try {
       _flutterTts ??= FlutterTts();
       await _flutterTts!.setLanguage("pt-BR");
-      await _flutterTts!.setSpeechRate(0.5);
+      await _flutterTts!.setSpeechRate(0.48);
       await _flutterTts!.setVolume(1.0);
       await _flutterTts!.setPitch(1.0);
+      _flutterTts!.setCompletionHandler(() {
+        _controller.runJavaScript("""
+          if (typeof window.onNativeTtsCompleted === 'function') {
+            window.onNativeTtsCompleted();
+          }
+        """);
+      });
       await _flutterTts!.speak(text);
     } catch (e) {
       debugPrint('Erro ao reproduzir TTS nativo: $e');
@@ -636,12 +656,116 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
             child: Stack(
               children: [
                 WebViewWidget(controller: _controller),
-                if (_isLoading)
-                  const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF1D4ED8),
+                AnimatedOpacity(
+                  opacity: _isLoading ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeOut,
+                  child: IgnorePointer(
+                    ignoring: !_isLoading,
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF020617),
+                            Color(0xFF06183B),
+                            Color(0xFF0F172A),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Ícone Animado Pulsando
+                            TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0.94, end: 1.06),
+                              duration: const Duration(milliseconds: 900),
+                              curve: Curves.easeInOut,
+                              builder: (context, scale, child) {
+                                return Transform.scale(
+                                  scale: scale,
+                                  child: child,
+                                );
+                              },
+                              child: Container(
+                                width: 92,
+                                height: 92,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+                                      blurRadius: 28,
+                                      spreadRadius: 6,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.asset(
+                                    'assets/ICONE CELULAR - AZUL POSITIVO.png',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset('assets/app_icon.png'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 22),
+                            // Logo CtrlPig
+                            const Text(
+                              'CtrlPig',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            // Subtítulo Oficial
+                            const Text(
+                              'Controle Financeiro Inteligente',
+                              style: TextStyle(
+                                color: Color(0xFF93C5FD),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                            const SizedBox(height: 36),
+                            // Indicador de Carregamento Discreto
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF60A5FA),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Carregando seu painel...',
+                                  style: TextStyle(
+                                    color: Color(0xFF64748B),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
