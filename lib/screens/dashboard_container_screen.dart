@@ -260,6 +260,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       } else if (action == 'auth_signout') {
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.signOut();
+      } else if (action == 'exit_app') {
+        SystemNavigator.pop();
       } else if (action == 'speak_text') {
         final text = data['text'] as String? ?? '';
         if (text.isNotEmpty) {
