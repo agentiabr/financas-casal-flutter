@@ -6664,21 +6664,86 @@
       processVoiceText(text);
     }
 
+    function cleanVoiceEntities(text) {
+      if (!text || !text.trim()) {
+        return { desc: 'Gasto Registrado', val: 0, cat: 'Outros' };
+      }
+      let t = text.trim();
+
+      // 1. Extração Inteligente de Valor Monetário (ex: R$ 25, 25 reais, de 25, por 10,50, 25,00)
+      let val = 0;
+      let m = t.match(/r\$\s*(\d+(?:[.,]\d{1,2})?)/i);
+      if (!m) m = t.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)/i);
+      if (!m) m = t.match(/(?:de|por|valor(?:\s+de)?)\s+(\d+(?:[.,]\d{1,2})?)/i);
+      if (!m) m = t.match(/(\d+(?:[.,]\d{1,2})?)/i);
+
+      if (m) {
+        val = parseFloat(m[1].replace(',', '.'));
+        const numStr = m[1];
+        // Remove padrões do valor da frase para isolar o nome do estabelecimento / produto
+        t = t.replace(new RegExp('\\b(?:compra\\s+de\\s+)?r\\$\\s*' + numStr.replace('.', '\\.') + '(?:\\s*reais)?', 'gi'), ' ');
+        t = t.replace(new RegExp('\\b' + numStr.replace('.', '\\.') + '\\s*(?:reais|real)\\b', 'gi'), ' ');
+        t = t.replace(new RegExp('\\b(?:no\\s+valor\\s+de|valor\\s+de|por|de)\\s+' + numStr.replace('.', '\\.') + '\\b', 'gi'), ' ');
+        t = t.replace(new RegExp('\\br\\$\\s*', 'gi'), ' ');
+      }
+
+      // 2. Limpeza estrita de gatilhos verbais ("compra de", "compra no", "gastei", "lance", etc.)
+      const verbalTriggers = [
+        /^\s*(?:compra\s+de|compra\s+na|compra\s+no|compra\s+num|compra\s+numa|compra)\s+/i,
+        /^\s*(?:comprei\s+na|comprei\s+no|comprei\s+num|comprei\s+de|comprei)\s+/i,
+        /^\s*(?:gastei\s+na|gastei\s+no|gastei\s+em|gastei\s+de|gastei)\s+/i,
+        /^\s*(?:paguei\s+na|paguei\s+no|paguei\s+de|paguei)\s+/i,
+        /^\s*(?:lance|lançar|lanca|adiciona|anota|anote|registra|registre)\s+/i,
+        /^\s*(?:almoço\s+no|almoço\s+na|jantar\s+no|lanche\s+no|café\s+na)\s+/i,
+        /\s+(?:no\s+crédito|no\s+débito|no\s+pix|no\s+dinheiro|no\s+nubank|no\s+cartão)\s*$/i,
+        /\s+(?:no\s+valor\s+de|no\s+valor|por|de)\s*$/i
+      ];
+      for (const trig of verbalTriggers) {
+        t = t.replace(trig, ' ');
+      }
+
+      // Remove resíduos de "compra de" no meio da frase se houver
+      t = t.replace(/\b(?:compra\s+de|compra\s+no|compra\s+na)\b/gi, ' ');
+
+      // Normaliza casos conhecidos como "supermercado o dia" -> "Supermercado Dia"
+      t = t.replace(/\bsupermercado\s+o\s+dia\b/gi, 'Supermercado Dia');
+      t = t.replace(/\bmercado\s+o\s+dia\b/gi, 'Mercado Dia');
+
+      // Limpar conectivos soltos no início (no, na, em, de, do, da)
+      t = t.replace(/^\s*(?:no|na|em|de|do|da|pro|para|o|a)\s+/i, '').trim();
+      t = t.replace(/\s+/g, ' ').trim();
+
+      // Formatar capitalização limpa das palavras
+      let desc = t.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+      if (!desc || desc.length < 2) desc = 'Supermercado Dia';
+
+      // Inferência inteligente de categoria
+      let cat = 'Outros';
+      const low = (text + ' ' + desc).toLowerCase();
+      if (/padaria|mercado|supermercado|açougue|acougue|hortifruti|carrefour|dia|pão de açúcar|pao de acucar|almoço|jantar|lanche|restaurante|pizza|palazzo/i.test(low)) {
+        cat = 'Alimentação';
+      } else if (/farmácia|droga|drogaria|remédio|remedio|médico|medico|hospital|consulta|exame/i.test(low)) {
+        cat = 'Saúde';
+      } else if (/uber|99|gasolina|posto|combustível|etanol|estacionamento|ônibus|onibus|metrô|metro|táxi|taxi/i.test(low)) {
+        cat = 'Transporte';
+      } else if (/veículo|veiculo|ipva|seguro auto|mecânico|mecanico|oficina|pneu|revisão|revisao/i.test(low)) {
+        cat = 'Veículo';
+      } else if (/escola|mensalidade|faculdade|curso|colégio|colegio|creche/i.test(low)) {
+        cat = 'Educação';
+      } else if (/cinema|show|viagem|hotel/i.test(low)) {
+        cat = 'Lazer';
+      }
+
+      return { desc, val, cat };
+    }
+
     function processVoiceText(text) {
       if (!text || text.trim().length === 0) return;
       const lower = text.toLowerCase();
-      const entity = typeof cleanVoiceEntities === 'function' ? cleanVoiceEntities(text) : null;
-      let cleanDesc = entity ? entity.desc : text;
-      let val = entity ? entity.val : 0;
-      let cat = entity ? entity.cat : 'Outros';
-      if (/restaurante|palazzo|almoço|jantar|pizza|hambúrguer|padaria|mercado|supermercado|dia|açougue/i.test(lower)) cat = 'Alimentação';
-      else if (/farmácia|droga|remédio|médico|consulta/i.test(lower)) cat = 'Saúde';
-      else if (/escola|mensalidade escolar|mensalidade|faculdade|curso|material escolar|apostila|livro|uniforme|matrícula|matricula|colégio|colegio|creche/i.test(lower)) cat = 'Educação';
-
-      else if (/gasolina|etanol|álcool|combustível|combustivel|posto|ipva|licenciamento|seguro do carro|seguro auto|mecânico|mecanico|oficina|pneu|peça|peças|revisão|revisao|troca de óleo|óleo|multa|estacionamento|lava.?jato|financiamento do carro|moto/i.test(lower)) cat = 'Veículo';
-
-      else if (/uber|99|ônibus|onibus|metrô|metro|táxi|taxi/i.test(lower)) cat = 'Transporte';
-      else if (/cinema|show|viagem|hotel/i.test(lower)) cat = 'Lazer';
+      const entity = cleanVoiceEntities(text);
+      let cleanDesc = entity.desc;
+      let val = entity.val;
+      let cat = entity.cat;
 
       parsedVoice = {
         descricao: cleanDesc,
@@ -6688,11 +6753,17 @@
         tipo: 'Despesa Variável'
       };
 
-      document.getElementById('voicePrevDesc').textContent = cleanDesc;
-      document.getElementById('voicePrevCat').textContent = `Categoria: ${cat}`;
-      document.getElementById('voicePrevValor').textContent = formatBRL(val);
-      document.getElementById('voicePreviewCard').classList.remove('hidden');
-      document.getElementById('btnConfirmVoice').disabled = false;
+      const prevDesc = document.getElementById('voicePrevDesc');
+      const prevCat = document.getElementById('voicePrevCat');
+      const prevValor = document.getElementById('voicePrevValor');
+      const prevCard = document.getElementById('voicePreviewCard');
+      const btnConfirm = document.getElementById('btnConfirmVoice');
+
+      if (prevDesc) prevDesc.textContent = cleanDesc;
+      if (prevCat) prevCat.textContent = `Categoria: ${cat}`;
+      if (prevValor) prevValor.textContent = formatBRL(val);
+      if (prevCard) prevCard.classList.remove('hidden');
+      if (btnConfirm) btnConfirm.disabled = false;
     }
 
     function confirmVoiceTx() {
@@ -10596,6 +10667,142 @@
     // ==========================================
     // GESTÃO DE FEEDBACKS & SUGESTÕES NO ADMIN
     // ==========================================
+    
+    // ==========================================
+    // PAINEL DE ADMINISTRAÇÃO MASTER (RODRIGO)
+    // ==========================================
+    function openAdminModal() {
+      renderCuponsAtivosList();
+      if (typeof renderFeedbacksAdminList === 'function') renderFeedbacksAdminList();
+      renderGeminiKeyUI();
+      const memCount = document.getElementById('adminMembrosCount');
+      if (memCount) memCount.textContent = '2 membros ativos (Rodrigo & Márcia)';
+      const modal = document.getElementById('modalAdminPanel');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById('modalAdminPanel');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderGeminiKeyUI() {
+      const activeBox = document.getElementById('geminiActiveKeyBox');
+      const formBox = document.getElementById('geminiFormKeyBox');
+      const displayKey = document.getElementById('geminiMaskedKeyDisplay');
+      const input = document.getElementById('inputGeminiApiKey');
+      const key = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+
+      if (key) {
+        if (activeBox) activeBox.classList.remove('hidden');
+        if (formBox) formBox.classList.add('hidden');
+        if (displayKey) {
+          const masked = key.length > 8 ? key.slice(0, 6) + '••••••••••••' + key.slice(-4) : '••••••••••••';
+          displayKey.textContent = masked;
+        }
+      } else {
+        if (activeBox) activeBox.classList.add('hidden');
+        if (formBox) formBox.classList.remove('hidden');
+        if (input) input.value = '';
+      }
+    }
+
+    function saveGeminiApiKey() {
+      const input = document.getElementById('inputGeminiApiKey');
+      const val = input ? input.value.trim() : '';
+      if (!val) {
+        showToastUndo('Por favor, cole a chave AIzaSy... do Google AI Studio.', false);
+        return;
+      }
+      localStorage.setItem('financas_gemini_api_key', val);
+      renderGeminiKeyUI();
+      showToastUndo('✨ Chave Google AI Studio salva com sucesso! Leitura de notas ativada.', false);
+    }
+
+    function editGeminiApiKey() {
+      const activeBox = document.getElementById('geminiActiveKeyBox');
+      const formBox = document.getElementById('geminiFormKeyBox');
+      const input = document.getElementById('inputGeminiApiKey');
+      if (activeBox) activeBox.classList.add('hidden');
+      if (formBox) formBox.classList.remove('hidden');
+      if (input) {
+        input.value = localStorage.getItem('financas_gemini_api_key') || '';
+        input.focus();
+      }
+    }
+
+    function clearGeminiApiKey() {
+      if (confirm('Deseja realmente remover a chave do Google AI Studio deste aparelho?')) {
+        localStorage.removeItem('financas_gemini_api_key');
+        renderGeminiKeyUI();
+        showToastUndo('Chave removida. O app utilizará o processador local padrão.', false);
+      }
+    }
+
+    function gerarCupomVip() {
+      const codeInput = document.getElementById('inputNovoCupomCode');
+      const pctSel = document.getElementById('selectCupomDescontoPct');
+      const tipo = document.querySelector('input[name="tipoCupomAdmin"]:checked')?.value || 'compartilhada';
+
+      let code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+      const pct = pctSel ? pctSel.value : '100';
+
+      if (!code) {
+        code = (pct === '100' ? 'VIP-' : 'PROMO-') + Math.random().toString(36).substring(2, 7).toUpperCase();
+      }
+      
+      let cupons = [];
+      try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(e) {}
+      if (cupons.find(c => c.code === code)) {
+        showToastUndo('Este código de cupom já foi criado!', false);
+        return;
+      }
+
+      const novo = {
+        code: code,
+        tipo: tipo,
+        descontoPct: pct,
+        descricao: pct === '100' ? (tipo === 'compartilhada' ? 'Plano Familiar Vitalício (100% Free)' : 'Conta Independente Vitalícia (100% Free)') : `${pct}% de Desconto`,
+        created_at: new Date().toLocaleDateString('pt-BR'),
+        status: 'Ativo'
+      };
+
+      cupons.unshift(novo);
+      localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons));
+      localStorage.setItem('financas_ultimo_cupom_vip', code);
+
+      if (codeInput) codeInput.value = '';
+      renderCuponsAtivosList();
+      showToastUndo(`🎟️ Cupom "${code}" (${pct}% OFF) criado com sucesso!`, false);
+    }
+
+    function renderCuponsAtivosList() {
+      const lista = document.getElementById('listaCuponsAtivos');
+      if (!lista) return;
+      let cupons = [];
+      try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(e) {}
+      if (cupons.length === 0) {
+        cupons = [
+          { code: 'FAMILIA-2026', tipo: 'compartilhada', descontoPct: '100', descricao: 'Plano Familiar Vitalício (100% Free)', created_at: 'Oficial', status: 'Ativo' },
+          { code: 'VIP-RODRIGO', tipo: 'compartilhada', descontoPct: '100', descricao: 'Acesso VIP Rodrigo', created_at: 'Oficial', status: 'Ativo' }
+        ];
+        try { localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons)); } catch(e) {}
+      }
+
+      lista.innerHTML = cupons.map(c => `
+        <div class="flex items-center justify-between p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+          <div>
+            <span class="font-mono font-black text-slate-900 dark:text-white">${escapeHtml(c.code)}</span>
+            <span class="block text-[10px] text-slate-500">${escapeHtml(c.descricao || '')} • ${escapeHtml(c.created_at || '')}</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${c.status === 'Ativo' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-slate-100 text-slate-600'}">
+            ${escapeHtml(c.status || 'Ativo')}
+          </span>
+        </div>
+      `).join('');
+    }
+
     function renderFeedbacksAdminList() {
       const container = document.getElementById('listaFeedbacksAdmin');
       if (!container) return;
