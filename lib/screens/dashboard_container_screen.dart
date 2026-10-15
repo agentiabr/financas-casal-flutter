@@ -68,8 +68,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         NavigationDelegate(
           onPageFinished: (String url) {
             _injectNativeBridge();
-            // Garante exibição mínima de 1.8 segundos da tela de splash com ícone pulsando
-            Future.delayed(const Duration(milliseconds: 1800), () {
+            // Abertura imediata e suave do painel financeiro
+            Future.delayed(const Duration(milliseconds: 600), () {
               if (mounted) {
                 setState(() {
                   _isLoading = false;
