@@ -4219,6 +4219,8 @@
       isPrivacyGlobal = !isPrivacyGlobal;
       localStorage.setItem('financas_privacy_global', isPrivacyGlobal);
 
+      // Quando o olhinho principal abre/fecha, sincroniza todos os cards e a tabela
+      // Se fecha o principal, fecha todos os valores. Se abre o principal, abre todos os que estavam fechados.
       for (const k in cardPrivacyStates) {
         cardPrivacyStates[k] = isPrivacyGlobal;
       }
@@ -4231,6 +4233,8 @@
       updateBankCheckUI();
       renderPiggiesUI();
       updateDashboard();
+      renderTransactionsTable();
+      updateFoodBudgetWidget();
     }
 
     function toggleAllMetricsPrivacy() {
@@ -4244,19 +4248,24 @@
     }
 
     function toggleCardPrivacy(cardKey) {
+      // Abre ou fecha individualmente o card clicado, independente do estado do olhinho principal
       cardPrivacyStates[cardKey] = !cardPrivacyStates[cardKey];
       localStorage.setItem('financas_card_privacy', JSON.stringify(cardPrivacyStates));
       updateCardPrivacyUI(cardKey);
       if (cardKey === 'piggy') renderPiggiesUI();
       updateDashboard();
+      if (window.lucide) lucide.createIcons();
     }
 
     function toggleTablePrivacy(e) {
       if (e) e.stopPropagation();
+      // Abre ou fecha individualmente a tabela de transações
       isTablePrivacy = !isTablePrivacy;
       localStorage.setItem('financas_table_privacy', isTablePrivacy);
       updateTablePrivacyUI();
-      renderTransactionsTable(); updateFoodBudgetWidget();
+      renderTransactionsTable();
+      updateFoodBudgetWidget();
+      if (window.lucide) lucide.createIcons();
     }
 
     function updatePrivacyUI() {
@@ -4284,7 +4293,8 @@
     function updateCardPrivacyUI(cardKey) {
       const eyeIcon = document.getElementById('eyeCard_' + cardKey);
       if (eyeIcon) {
-        const isHidden = cardPrivacyStates[cardKey] || isPrivacyGlobal;
+        // O olhinho do card reflete exatamente o estado individual do card
+        const isHidden = !!cardPrivacyStates[cardKey];
         eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
       }
     }
@@ -4292,14 +4302,21 @@
     function updateTablePrivacyUI() {
       const icon = document.getElementById('eyeTableColumn');
       if (icon) {
-        const isHidden = isTablePrivacy || isPrivacyGlobal;
+        // O olhinho da tabela reflete o estado individual da tabela
+        const isHidden = !!isTablePrivacy;
         icon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
         lucide.createIcons();
       }
     }
 
     function formatBRL(val, cardKey = null) {
-      const isMasked = isPrivacyGlobal || (cardKey && cardPrivacyStates[cardKey]);
+      // Se um cardKey foi informado, seu estado individual prevalece permitindo abri-lo individualmente!
+      let isMasked = false;
+      if (cardKey && cardPrivacyStates.hasOwnProperty(cardKey)) {
+        isMasked = !!cardPrivacyStates[cardKey];
+      } else {
+        isMasked = isPrivacyGlobal;
+      }
       if (isMasked) return 'R$ •••••';
       if (val === undefined || val === null || isNaN(val)) return 'R$ 0,00';
       return Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -5453,38 +5470,33 @@
     // SELETOR DE TILES ESTILIZADOS (CATEGORIA, RESPONSÁVEL, FORMA PAGAMENTO, CARTÃO)
     // ==============================================================================
     let currentTileField = null;
+    let currentTilePrefix = 'newTx';
 
     const TILE_DATA = {
       categoria: {
         title: 'Selecione a Categoria',
-        subtitle: 'Classifique seu lançamento para gráficos e orçamentos',
+        subtitle: 'Classifique o gasto de forma limpa e sóbria',
         icon: '🏷️',
-        selectId: 'newTxCategoria',
-        valId: 'tileValCategoria',
-        iconId: 'tileIconCategoria',
         options: [
-          { value: 'Alimentação', label: 'Alimentação (mercado, padaria, delivery)', icon: '🛒' },
-          { value: 'Moradia', label: 'Moradia (aluguel, condomínio, luz, água)', icon: '🏠' },
-          { value: 'Veículo', label: 'Veículo (gasolina, IPVA, seguro, oficina)', icon: '🚗' },
-          { value: 'Transporte', label: 'Transporte (Uber, metrô, ônibus)', icon: '🚌' },
-          { value: 'Educação', label: 'Educação (mensalidade, material, cursos)', icon: '📚' },
-          { value: 'Saúde', label: 'Saúde (farmácia, consultas, plano)', icon: '💊' },
-          { value: 'Pet', label: 'Pet (veterinário, ração, banho e tosa)', icon: '🐾' },
-          { value: 'Lazer', label: 'Lazer (passeios, viagens, streaming)', icon: '🎉' },
-          { value: 'Salário', label: 'Salário / Renda Principal', icon: '💰' },
-          { value: 'Reserva', label: 'Reserva / Cofrinho 🐷', icon: '🐷' },
-          { value: 'Outros', label: 'Outros Gastos', icon: '📦' }
+          { value: 'Alimentação', label: 'Alimentação', icon: '🛒' },
+          { value: 'Moradia', label: 'Moradia', icon: '🏠' },
+          { value: 'Veículo', label: 'Veículo', icon: '🚗' },
+          { value: 'Transporte', label: 'Transporte', icon: '🚌' },
+          { value: 'Educação', label: 'Educação', icon: '📚' },
+          { value: 'Saúde', label: 'Saúde', icon: '💊' },
+          { value: 'Pet', label: 'Pet', icon: '🐾' },
+          { value: 'Lazer', label: 'Lazer', icon: '🎉' },
+          { value: 'Salário', label: 'Salário / Renda', icon: '💰' },
+          { value: 'Reserva', label: 'Reserva / Cofrinho', icon: '🐷' },
+          { value: 'Outros', label: 'Outros', icon: '📦' }
         ]
       },
       responsavel: {
         title: 'Selecione o Responsável',
         subtitle: 'Quem realizou ou é responsável por esta conta',
         icon: '👥',
-        selectId: 'newTxResponsavel',
-        valId: 'tileValResponsavel',
-        iconId: 'tileIconResponsavel',
         options: [
-          { value: 'Comum', label: 'Comum (Casal / Compartilhado)', icon: '👥' },
+          { value: 'Comum', label: 'Comum (Casal)', icon: '👥' },
           { value: 'Rodrigo', label: 'Rodrigo', icon: '👨' },
           { value: 'Márcia', label: 'Márcia', icon: '👩' }
         ]
@@ -5493,31 +5505,26 @@
         title: 'Forma de Pagamento',
         subtitle: 'Como o valor foi ou será liquidado',
         icon: '💳',
-        selectId: 'newTxPagamento',
-        valId: 'tileValPagamento',
-        iconId: 'tileIconPagamento',
         options: [
           { value: 'Cartão de Crédito', label: 'Cartão de Crédito', icon: '💳' },
-          { value: 'PIX', label: 'PIX Instantâneo', icon: '⚡' },
+          { value: 'PIX', label: 'PIX', icon: '⚡' },
           { value: 'Cartão de Débito', label: 'Cartão de Débito', icon: '💳' },
-          { value: 'Dinheiro', label: 'Dinheiro em Espécie', icon: '💵' },
-          { value: 'Boleto', label: 'Boleto Bancário', icon: '📄' },
+          { value: 'Dinheiro', label: 'Dinheiro', icon: '💵' },
+          { value: 'Boleto', label: 'Boleto', icon: '📄' },
           { value: 'A Definir', label: 'A Definir', icon: '⚠️' }
         ]
       },
       cartao: {
         title: 'Selecione o Cartão',
-        subtitle: 'Vincule a despesa à fatura correta',
+        subtitle: 'Vincule a despesa à fatura correspondente',
         icon: '💳',
-        selectId: 'newTxCartao',
-        valId: 'tileValCartao',
-        iconId: 'tileIconCartao',
         options: []
       }
     };
 
-    function openTilePicker(field) {
+    function openTilePicker(field, prefix = 'newTx') {
       currentTileField = field;
+      currentTilePrefix = prefix;
       const cfg = TILE_DATA[field];
       if (!cfg) return;
 
@@ -5533,24 +5540,29 @@
       if (field === 'cartao') {
         const customCards = typeof getCustomCardsList === 'function' ? getCustomCardsList() : [];
         cfg.options = [
-          { value: '', label: 'Padrão do Responsável (Automático)', icon: '💳' },
+          { value: '', label: 'Padrão do Responsável', icon: '💳' },
           ...customCards.map(c => ({ value: c.nome, label: `${c.nome} (${c.titular || 'Casal'})`, icon: '💳' }))
         ];
       }
 
-      const currentVal = document.getElementById(cfg.selectId)?.value || '';
+      const selectId = prefix + (field === 'categoria' ? 'Categoria' : (field === 'responsavel' ? 'Responsavel' : (field === 'pagamento' ? 'Pagamento' : 'Cartao')));
+      const currentVal = document.getElementById(selectId)?.value || '';
 
       if (listEl) {
-        // Estilo sóbrio e elegante inspirado na caixa do Ciclo Vigente (font-medium, cores discretas)
+        // Estilo sóbrio idêntico ao da caixa do Ciclo Vigente (sem poluição, fonte compacta)
         listEl.innerHTML = cfg.options.map(opt => {
           const isSelected = opt.value === currentVal;
           return `
-            <button type="button" onclick="selectTileOption('${field}', '${opt.value}', '${opt.label.replace(/'/g, "\'")}', '${opt.icon}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${isSelected ? 'bg-slate-200 dark:bg-slate-700/90 border border-slate-400 dark:border-slate-500 text-slate-900 dark:text-white font-extrabold shadow-2xs' : 'bg-slate-100/80 hover:bg-slate-200/60 dark:bg-slate-800/70 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 font-semibold'} cursor-pointer text-left">
+            <button type="button" onclick="selectTileOption('${field}', '${opt.value}', '${opt.label.replace(/'/g, "\'")}', '${opt.icon}')" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              isSelected 
+                ? 'bg-slate-200 dark:bg-slate-700/90 border border-slate-400 dark:border-slate-500 text-slate-900 dark:text-white font-extrabold shadow-2xs' 
+                : 'bg-slate-100/70 hover:bg-slate-200/80 dark:bg-slate-800/70 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 font-semibold'
+            } cursor-pointer text-left">
               <div class="flex items-center gap-2.5 min-w-0">
                 <span class="text-sm opacity-80 flex-shrink-0">${opt.icon}</span>
-                <span class="text-xs truncate">${opt.label}</span>
+                <span class="text-xs truncate font-medium">${opt.label}</span>
               </div>
-              ${isSelected ? '<span class="text-slate-800 dark:text-slate-200 font-black text-xs">✓ Selecionado</span>' : ''}
+              ${isSelected ? '<span class="text-slate-800 dark:text-slate-200 font-black text-xs flex-shrink-0">✓ Selecionado</span>' : ''}
             </button>
           `;
         }).join('');
@@ -5566,54 +5578,51 @@
     }
 
     function selectTileOption(field, value, label, icon) {
-      const cfg = TILE_DATA[field];
-      if (cfg) {
-        const selectEl = document.getElementById(cfg.selectId);
-        if (selectEl) {
-          selectEl.value = value;
-          selectEl.dispatchEvent(new Event('change'));
-        }
-        const valEl = document.getElementById(cfg.valId);
-        if (valEl) valEl.textContent = label.split(' (')[0];
-        const iconEl = document.getElementById(cfg.iconId);
-        if (iconEl) iconEl.textContent = icon;
+      const prefix = currentTilePrefix || 'newTx';
+      const selectId = prefix + (field === 'categoria' ? 'Categoria' : (field === 'responsavel' ? 'Responsavel' : (field === 'pagamento' ? 'Pagamento' : 'Cartao')));
+      const valElId = `displayVal_${prefix}_${field}`;
+      const iconElId = `displayIcon_${prefix}_${field}`;
+
+      const selectEl = document.getElementById(selectId);
+      if (selectEl) {
+        selectEl.value = value;
+        selectEl.dispatchEvent(new Event('change'));
       }
+      const valEl = document.getElementById(valElId);
+      if (valEl) valEl.textContent = label.split(' (')[0];
+      const iconEl = document.getElementById(iconElId);
+      if (iconEl) iconEl.textContent = icon;
+
       closeTilePicker();
     }
 
-    function syncTileDisplayValues() {
-      const catVal = document.getElementById('newTxCategoria')?.value || 'Alimentação';
-      const catOpt = TILE_DATA.categoria.options.find(o => o.value === catVal);
-      if (catOpt) {
-        const valEl = document.getElementById('tileValCategoria');
-        if (valEl) valEl.textContent = catOpt.label.split(' (')[0];
-        const iconEl = document.getElementById('tileIconCategoria');
-        if (iconEl) iconEl.textContent = catOpt.icon;
-      }
+    function syncTileDisplayValues(prefix = 'newTx') {
+      const catVal = document.getElementById(prefix + 'Categoria')?.value || 'Alimentação';
+      const catOpt = TILE_DATA.categoria.options.find(o => o.value === catVal) || { label: catVal, icon: '🏷️' };
+      const catValEl = document.getElementById(`displayVal_${prefix}_categoria`);
+      const catIconEl = document.getElementById(`displayIcon_${prefix}_categoria`);
+      if (catValEl) catValEl.textContent = catOpt.label.split(' (')[0];
+      if (catIconEl) catIconEl.textContent = catOpt.icon;
 
-      const respVal = document.getElementById('newTxResponsavel')?.value || 'Comum';
-      const respOpt = TILE_DATA.responsavel.options.find(o => o.value === respVal);
-      if (respOpt) {
-        const valEl = document.getElementById('tileValResponsavel');
-        if (valEl) valEl.textContent = respOpt.label.split(' (')[0];
-        const iconEl = document.getElementById('tileIconResponsavel');
-        if (iconEl) iconEl.textContent = respOpt.icon;
-      }
+      const respVal = document.getElementById(prefix + 'Responsavel')?.value || 'Comum';
+      const respOpt = TILE_DATA.responsavel.options.find(o => o.value === respVal) || { label: respVal, icon: '👥' };
+      const respValEl = document.getElementById(`displayVal_${prefix}_responsavel`);
+      const respIconEl = document.getElementById(`displayIcon_${prefix}_responsavel`);
+      if (respValEl) respValEl.textContent = respOpt.label.split(' (')[0];
+      if (respIconEl) respIconEl.textContent = respOpt.icon;
 
-      const pagVal = document.getElementById('newTxPagamento')?.value || 'Cartão de Crédito';
-      const pagOpt = TILE_DATA.pagamento.options.find(o => o.value === pagVal);
-      if (pagOpt) {
-        const valEl = document.getElementById('tileValPagamento');
-        if (valEl) valEl.textContent = pagOpt.label;
-        const iconEl = document.getElementById('tileIconPagamento');
-        if (iconEl) iconEl.textContent = pagOpt.icon;
-      }
+      const pagVal = document.getElementById(prefix + 'Pagamento')?.value || 'Cartão de Crédito';
+      const pagOpt = TILE_DATA.pagamento.options.find(o => o.value === pagVal) || { label: pagVal, icon: '💳' };
+      const pagValEl = document.getElementById(`displayVal_${prefix}_pagamento`);
+      const pagIconEl = document.getElementById(`displayIcon_${prefix}_pagamento`);
+      if (pagValEl) pagValEl.textContent = pagOpt.label;
+      if (pagIconEl) pagIconEl.textContent = pagOpt.icon;
 
-      const cartaoVal = document.getElementById('newTxCartao')?.value || '';
-      const cartaoValEl = document.getElementById('tileValCartao');
-      if (cartaoValEl) cartaoValEl.textContent = cartaoVal || 'Padrão do Responsável';
-      const cartaoIconEl = document.getElementById('tileIconCartao');
-      if (cartaoIconEl) cartaoIconEl.textContent = '💳';
+      const cardVal = document.getElementById(prefix + 'Cartao')?.value || '';
+      const cardValEl = document.getElementById(`displayVal_${prefix}_cartao`);
+      const cardIconEl = document.getElementById(`displayIcon_${prefix}_cartao`);
+      if (cardValEl) cardValEl.textContent = cardVal || 'Padrão do Responsável';
+      if (cardIconEl) cardIconEl.textContent = '💳';
     }
 
     function openNewTxModal() {
@@ -10588,7 +10597,13 @@
 
     function navigateToQuickHubOption(destination) {
       closeWelcomeQuickHub();
-      if (destination === 'shopping') {
+      if (destination === 'table') {
+        const tableSec = document.getElementById('sectionTransactions');
+        if (tableSec) {
+          tableSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        showToastUndo('Tabela de Lançamentos aberta! O cérebro financeiro do app.', false);
+      } else if (destination === 'shopping') {
         openShoppingListModal();
       } else if (destination === 'chat') {
         openFamilyChatModal();
@@ -12242,11 +12257,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                         const isOut = it.status === 'nao_tinha';
                         const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(it.nome) : null;
                         
-                        // Cores de estado:
-                        // - Pego no carrinho: verde
-                        // - Não tem na gôndola: âmbar/coral destacado
-                        // - Pendente: neutro intercalado
-                        let rowBg = 'bg-white dark:bg-slate-850 border-slate-200/70 dark:border-slate-750';
+                        let rowBg = 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750';
                         if (isCart) {
                           rowBg = 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/60';
                         } else if (isOut) {
@@ -12255,82 +12266,59 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                           rowBg = 'bg-slate-50/80 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-750';
                         }
 
-                        return `
-                          <div class="p-2.5 sm:p-3 rounded-xl border ${rowBg} transition-all space-y-2">
-                            <!-- Linha 1: Checkbox, Nome, Qtd, Autor e Lixeira -->
-                            <div class="flex items-center justify-between gap-2">
-                              <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                                <button type="button" onclick="toggleItemInCart('${it.id}')" class="w-6 h-6 rounded-full flex items-center justify-center transition-all ${isCart ? 'bg-emerald-600 text-white shadow-xs' : 'border-2 border-slate-300 dark:border-slate-600 text-transparent hover:border-emerald-500'} cursor-pointer flex-shrink-0" title="${isCart ? 'Item marcado como pego (toque para desmarcar)' : 'Marcar como pego no carrinho'}">
-                                  <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
-                                </button>
-                                <div class="min-w-0 flex-1 flex items-center gap-1.5 flex-wrap">
-                                  <span class="text-xs sm:text-sm font-bold truncate ${isCart ? 'line-through text-slate-400 dark:text-slate-500' : (isOut ? 'text-amber-900 dark:text-amber-200' : 'text-slate-900 dark:text-white')}">
-                                    ${escapeHtml(it.nome)}
-                                  </span>
-                                  <!-- Stepper de Quantidade Direto no Chat (Permite alterar na gôndola se estiver caro) -->
-                                  <div class="inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 p-0.5 text-xs shadow-2xs">
-                                    <button type="button" onclick="stepItemQuantity('${it.id}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir quantidade">
-                                      −
-                                    </button>
-                                    <span class="px-1.5 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200" title="Quantidade para comprar">
-                                      ${it.qtdComprada || it.qtdDesejada || 1} ${escapeHtml(it.unidade || 'un')}
-                                    </span>
-                                    <button type="button" onclick="stepItemQuantity('${it.id}', 1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar quantidade">
-                                      +
-                                    </button>
-                                  </div>
+                        // Setinha indicadora de comparação de preço com a compra anterior (conforme solicitado pelo usuário):
+                        // - Se maior: setinha vermelha para cima (▲)
+                        // - Se mais barato: setinha azul para baixo (▼)
+                        let priceArrowHtml = '';
+                        const curPrice = parseFloat(it.precoUnitario) || 0;
+                        const oldPrice = prevPurch ? (parseFloat(prevPurch.preco) || 0) : 0;
+                        if (curPrice > 0 && oldPrice > 0) {
+                          if (curPrice > oldPrice) {
+                            const diff = (curPrice - oldPrice).toFixed(2).replace('.', ',');
+                            priceArrowHtml = `<span class="text-rose-500 font-black text-xs px-0.5 cursor-help" title="Mais caro que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • +R$ ${diff}">▲</span>`;
+                          } else if (curPrice < oldPrice) {
+                            const diff = (oldPrice - curPrice).toFixed(2).replace('.', ',');
+                            priceArrowHtml = `<span class="text-blue-500 dark:text-sky-400 font-black text-xs px-0.5 cursor-help" title="Mais barato que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • Economia de R$ ${diff}!">▼</span>`;
+                          }
+                        }
 
-                                  ${(it.qtdComprada && it.qtdDesejada && parseInt(it.qtdComprada) !== parseInt(it.qtdDesejada)) ? `
-                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
-                                      Pegou ${it.qtdComprada} (pedido: ${it.qtdDesejada})
-                                    </span>
-                                  ` : ''}
-                                  ${isOut ? `
-                                    <span class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
-                                      ⚠️ Não tem
-                                    </span>
-                                  ` : ''}
-                                  ${it.pedidoPor ? `<span class="text-[9px] text-slate-400 font-medium">@${escapeHtml(it.pedidoPor)}</span>` : ''}
-                                </div>
-                              </div>
-                              <button type="button" onclick="removeItemFromChatList('${it.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition-colors flex-shrink-0 cursor-pointer" title="Remover item da lista">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        return `
+                          <div class="p-2 sm:p-2.5 rounded-xl border ${rowBg} transition-all flex items-center justify-between gap-1.5 sm:gap-2">
+                            <!-- Lado Esquerdo: Checkbox + Produto (Nome) -->
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                              <button type="button" onclick="toggleItemInCart('${it.id}')" class="w-5 h-5 rounded-full flex items-center justify-center transition-all ${isCart ? 'bg-emerald-600 text-white shadow-2xs' : 'border-2 border-slate-300 dark:border-slate-600 text-transparent hover:border-emerald-500'} cursor-pointer flex-shrink-0" title="${isCart ? 'Desmarcar' : 'Marcar como pego'}">
+                                <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
                               </button>
+                              <span class="text-xs sm:text-sm font-bold truncate ${isCart ? 'line-through text-slate-400 dark:text-slate-500' : (isOut ? 'text-amber-900 dark:text-amber-200' : 'text-slate-900 dark:text-white')}" title="${escapeHtml(it.nome)}">
+                                ${escapeHtml(it.nome)}
+                              </span>
+                              ${isOut ? '<span class="text-[9px] font-black uppercase px-1 py-0.2 rounded bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200">Não tem</span>' : ''}
                             </div>
 
-                            <!-- Linha 2: Referência Anterior / Onde Comprado + Botão Não Tem / Desmarcar + Preço Pago -->
-                            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800/80">
-                              <div class="flex items-center gap-1.5 min-w-0 flex-wrap">
-                                ${prevPurch ? `
-                                  <span onclick="updateItemPrice('${it.id}', ${prevPurch.preco})" class="text-[10px] text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer font-medium tracking-tight" title="Toque para preencher R$ ${Number(prevPurch.preco).toFixed(2).replace('.', ',')}">
-                                    Estava <strong class="font-bold text-slate-700 dark:text-slate-200">R$ ${Number(prevPurch.preco).toFixed(2).replace('.', ',')}</strong>
-                                  </span>
-                                  ${prevPurch.estabelecimento ? `
-                                    <button type="button" onclick="showStoreInfoToast('${escapeHtml(it.nome).replace(/'/g, "\\'")}', ${prevPurch.preco}, '${escapeHtml(prevPurch.estabelecimento).replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-[9px] font-semibold transition-colors cursor-pointer" title="Ver onde foi comprado">
-                                      <i data-lucide="map-pin" class="w-2.5 h-2.5 text-blue-500"></i>
-                                      <span>🏪 Loja</span>
-                                    </button>
-                                  ` : ''}
-                                ` : `
-                                  <span class="text-[10px] text-slate-400 italic">Novo item</span>
-                                `}
+                            <!-- Lado Direito: Quantidade + (!) Exclamação com Balão + Campo de Valor com Setinha + Lixeira -->
+                            <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                              <!-- Stepper de Quantidade -->
+                              <div class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 text-xs shadow-2xs">
+                                <button type="button" onclick="stepItemQuantity('${it.id}', -1)" class="w-4 h-4 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
+                                <span class="px-1 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200">${it.qtdComprada || it.qtdDesejada || 1}</span>
+                                <button type="button" onclick="stepItemQuantity('${it.id}', 1)" class="w-4 h-4 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar">+</button>
                               </div>
 
-                              <div class="flex items-center gap-1.5 flex-shrink-0">
-                                ${isOut ? `
-                                  <button type="button" onclick="toggleItemMissing('${it.id}')" class="px-2 py-0.5 rounded-lg bg-amber-200 hover:bg-amber-300 dark:bg-amber-900/80 dark:hover:bg-amber-800 text-amber-900 dark:text-amber-100 text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 shadow-2xs" title="Voltar produto para a lista">
-                                    <i data-lucide="rotate-ccw" class="w-2.5 h-2.5"></i>
-                                    <span>Desmarcar</span>
-                                  </button>
-                                ` : `
-                                  <button type="button" onclick="toggleItemMissing('${it.id}')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-amber-100 dark:bg-slate-800 dark:hover:bg-amber-950/60 text-slate-600 hover:text-amber-700 dark:text-slate-400 dark:hover:text-amber-300 text-[10px] font-semibold transition-all cursor-pointer flex items-center gap-1" title="Marcar que o produto não foi encontrado na gôndola">
-                                    <span>⚠️ Não tem</span>
-                                  </button>
-                                `}
-                                <div class="relative">
-                                  <input type="number" step="0.01" min="0" placeholder="R$ 0,00" value="${it.precoUnitario > 0 ? it.precoUnitario.toFixed(2) : ''}" onchange="updateItemPrice('${it.id}', this.value)" class="w-20 text-right text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-emerald-500">
-                                </div>
+                              <!-- Botão de Exclamação (!) para Balão de Informações -->
+                              <button type="button" onclick="openItemInfoBalloon('${it.id}', event)" class="w-5 h-5 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-950/60 text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-300 font-black text-[11px] flex items-center justify-center transition-colors cursor-pointer border border-slate-300 dark:border-slate-700" title="Informações do produto (preço anterior, mercados, etc.)">
+                                !
+                              </button>
+
+                              <!-- Campo para Valor (R$) com Setinha Indicadora -->
+                              <div class="inline-flex items-center">
+                                <input type="number" step="0.01" min="0" placeholder="R$ 0,00" value="${it.precoUnitario > 0 ? it.precoUnitario.toFixed(2) : ''}" onchange="updateItemPrice('${it.id}', this.value)" class="w-16 sm:w-20 text-right text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-1.5 py-1 text-slate-900 dark:text-white font-mono font-bold focus:outline-none focus:border-emerald-500">
+                                ${priceArrowHtml}
                               </div>
+
+                              <!-- Botão Lixeira -->
+                              <button type="button" onclick="removeItemFromChatList('${it.id}')" class="p-1 text-slate-400 hover:text-rose-500 transition-colors flex-shrink-0 cursor-pointer" title="Remover item">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                              </button>
                             </div>
                           </div>
                         `;
@@ -12803,6 +12791,124 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       return results;
     }
 
+        // ==============================================================================
+    // BALÃO DE INFORMAÇÕES DO PRODUTO (BOTÃO ! NO CHAT DA LISTA DE COMPRAS)
+    // ==============================================================================
+    function openItemInfoBalloon(itemId, event) {
+      if (event) event.stopPropagation();
+      const items = getActiveShoppingItems();
+      const item = items.find(it => it.id === itemId);
+      if (!item) return;
+
+      const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(item.nome) : null;
+      const stats = typeof getProductPriceStats === 'function' ? getProductPriceStats(item.nome) : null;
+
+      const balloonModal = document.getElementById('modalItemInfoBalloon');
+      const titleEl = document.getElementById('balloonItemTitle');
+      const bodyEl = document.getElementById('balloonItemContent');
+
+      if (titleEl) titleEl.textContent = item.nome;
+      if (bodyEl) {
+        const prevPriceText = prevPurch ? `R$ ${Number(prevPurch.preco).toFixed(2).replace('.', ',')}` : 'Primeira compra registrada';
+        const storeText = prevPurch && prevPurch.estabelecimento ? prevPurch.estabelecimento : 'Não especificado';
+        const dateText = prevPurch && prevPurch.data ? prevPurch.data : 'Recente';
+        const bestPriceText = stats && stats.cheapestPrice ? `R$ ${stats.cheapestPrice.toFixed(2).replace('.', ',')} (${stats.cheapestStore})` : 'Consultando histórico';
+
+        bodyEl.innerHTML = `
+          <div class="space-y-2.5 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500 dark:text-slate-400">💰 Preço Anterior:</span>
+                <strong class="text-slate-900 dark:text-white font-mono font-bold">${prevPriceText}</strong>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500 dark:text-slate-400">🏪 Supermercado:</span>
+                <span class="text-slate-800 dark:text-slate-200 font-semibold">${escapeHtml(storeText)}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500 dark:text-slate-400">📅 Última Compra:</span>
+                <span class="text-slate-800 dark:text-slate-200">${escapeHtml(dateText)}</span>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-slate-200/70 dark:border-slate-700/60">
+                <span class="text-emerald-600 dark:text-emerald-400 font-medium">📉 Menor Preço:</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">${escapeHtml(bestPriceText)}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5 pt-1">
+              ${prevPurch && prevPurch.preco ? `
+                <button type="button" onclick="applyPreviousPriceToItem('${item.id}', ${prevPurch.preco})" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                  <span>💵 Preencher com Preço Anterior (${prevPriceText})</span>
+                </button>
+              ` : ''}
+              <button type="button" onclick="toggleItemMissingFromBalloon('${item.id}')" class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-amber-100 dark:bg-slate-800 dark:hover:bg-amber-950/60 text-slate-700 hover:text-amber-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer">
+                <span>⚠️ ${item.status === 'nao_tinha' ? 'Desmarcar "Não tem na gôndola"' : 'Marcar "Não tem na gôndola"'}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      if (balloonModal) balloonModal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeItemInfoBalloon() {
+      const balloonModal = document.getElementById('modalItemInfoBalloon');
+      if (balloonModal) balloonModal.classList.add('hidden');
+    }
+
+    function applyPreviousPriceToItem(itemId, price) {
+      updateItemPrice(itemId, price);
+      closeItemInfoBalloon();
+      showToastUndo(`Preço de R$ ${Number(price).toFixed(2).replace('.', ',')} aplicado!`, false);
+    }
+
+    function toggleItemMissingFromBalloon(itemId) {
+      toggleItemMissing(itemId);
+      closeItemInfoBalloon();
+    }
+
+    // ==============================================================================
+    // TRATAMENTO DE PRODUTO REPETIDO NO CHAT
+    // ==============================================================================
+    function addMoreUnitsToDuplicateItem(itemId, extraQtd, promptId) {
+      let items = getActiveShoppingItems();
+      const item = items.find(it => it.id === itemId);
+      if (item) {
+        item.qtdComprada = (item.qtdComprada || item.qtdDesejada || 1) + extraQtd;
+        item.qtdDesejada = (item.qtdDesejada || 1) + extraQtd;
+        saveActiveShoppingItems(items);
+        updateCartSummaryUI();
+      }
+      dismissDuplicateItemPrompt(promptId);
+      const msgs = getCleanChatMessages();
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      msgs.push({
+        id: 'sys_' + Date.now(),
+        sender: 'Assistente de Compras',
+        avatar: '🛒',
+        isMe: false,
+        text: `✅ Quantidade atualizada! Agora são ${item ? item.qtdComprada : ''} unidades de "${item ? item.nome : ''}" na lista.`,
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+      renderCleanChatStream();
+      if (typeof playChatDing === 'function') playChatDing();
+    }
+
+    function dismissDuplicateItemPrompt(promptId) {
+      let msgs = getCleanChatMessages();
+      const target = msgs.find(m => m.id === promptId);
+      if (target) {
+        target.actions = null;
+        saveCleanChatMessages(msgs);
+        renderCleanChatStream();
+      }
+    }
+
+
     function handleSendCleanChatMessage(e) {
       e.preventDefault();
       const input = document.getElementById('inputChatMessageClean');
@@ -12943,29 +13049,57 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         }
       }
 
-      // 4. DETECÇÃO TRADICIONAL DE ITENS DE MERCADO (se não for diálogo de pergunta)
+      // 4. DETECÇÃO INTELIGENTE DE ITENS COM SUPORTE A PRODUTOS REPETIDOS
       if (!handledByDialog) {
         const detectedItems = parseGroceryItemsFromMessage(text);
         let items = getActiveShoppingItems();
         const addedNames = [];
 
         detectedItems.forEach(it => {
-          const newItem = {
-            id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-            nome: it.nome,
-            qtdDesejada: it.qtd,
-            qtdComprada: it.qtd,
-            unidade: it.unidade,
-            marca: '',
-            precoUnitario: 0,
-            status: 'pendente',
-            pedidoPor: 'Família'
-          };
-          items.push(newItem);
-          addedNames.push(`${it.nome} (${it.qtd} ${it.unidade})`);
+          // Verifica se o produto já existe na lista
+          const existingItem = items.find(x => x.nome.toLowerCase().trim() === it.nome.toLowerCase().trim());
+          if (existingItem) {
+            // Conforme solicitado: "se pedirem pelo chat produto repetido, falar que o produto já está na lista, deseja incluir mais unidades?"
+            const currentQtd = existingItem.qtdComprada || existingItem.qtdDesejada || 1;
+            const extraQtd = it.qtd || 1;
+            const promptId = 'dup_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            msgs.push({
+              id: promptId,
+              sender: 'Assistente de Compras',
+              avatar: '🛒',
+              isMe: false,
+              text: `O produto "<strong>${escapeHtml(existingItem.nome)}</strong>" já está na lista (atualmente com ${currentQtd} ${escapeHtml(existingItem.unidade || 'un')}). Deseja incluir mais ${extraQtd} unidades?`,
+              actions: [
+                {
+                  label: `➕ Sim, adicionar +${extraQtd} un`,
+                  onClick: `addMoreUnitsToDuplicateItem('${existingItem.id}', ${extraQtd}, '${promptId}')`
+                },
+                {
+                  label: `Manter como está`,
+                  onClick: `dismissDuplicateItemPrompt('${promptId}')`
+                }
+              ],
+              time: timeStr
+            });
+            playChatDing();
+          } else {
+            const newItem = {
+              id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+              nome: it.nome,
+              qtdDesejada: it.qtd,
+              qtdComprada: it.qtd,
+              unidade: it.unidade,
+              marca: '',
+              precoUnitario: 0,
+              status: 'pendente',
+              pedidoPor: 'Família'
+            };
+            items.push(newItem);
+            addedNames.push(`${it.nome} (${it.qtd} ${it.unidade})`);
+          }
         });
 
-        if (detectedItems.length > 0) {
+        if (addedNames.length > 0) {
           saveActiveShoppingItems(items);
           updateCartSummaryUI();
           msgs.push({
@@ -16384,17 +16518,36 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <i data-lucide="chevron-right" class="w-5 h-5 text-white/50 group-hover:translate-x-1 transition-transform"></i>
       </button>
 
-      <!-- Botão 3: Controle Financeiro Completo -->
+      <!-- Botão 3: Tabela Geral de Lançamentos (O Cérebro do App) -->
+      <button type="button" onclick="navigateToQuickHubOption('table')" class="w-full p-4.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-98 border border-purple-400/30 backdrop-blur-xl flex items-center gap-4 transition-all text-left shadow-xl cursor-pointer group">
+        <div class="w-13 h-13 rounded-2xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-500/35 transition-colors">
+          <i data-lucide="table-properties" class="w-7 h-7 text-purple-300"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-extrabold text-white group-hover:text-purple-300 transition-colors">
+              Tabela de Lançamentos
+            </h3>
+            <span class="px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/40 text-[10px] font-extrabold uppercase">Cérebro do App</span>
+          </div>
+          <p class="text-xs text-white/70 mt-0.5">
+            O coração financeiro onde todos os gastos e receitas são registrados e distribuídos para os gráficos
+          </p>
+        </div>
+        <i data-lucide="chevron-right" class="w-5 h-5 text-white/50 group-hover:translate-x-1 transition-transform"></i>
+      </button>
+
+      <!-- Botão 4: Controle Financeiro Completo -->
       <button type="button" onclick="navigateToQuickHubOption('dashboard')" class="w-full p-4.5 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-98 border border-white/20 backdrop-blur-xl flex items-center gap-4 transition-all text-left shadow-xl cursor-pointer group">
         <div class="w-13 h-13 rounded-2xl bg-blue-500/25 border border-blue-400/40 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500/35 transition-colors">
           <i data-lucide="wallet" class="w-7 h-7 text-sky-400"></i>
         </div>
         <div class="flex-1 min-w-0">
           <h3 class="text-base font-extrabold text-white group-hover:text-sky-300 transition-colors">
-            Controle Financeiro
+            Painel Geral &amp; Gráficos
           </h3>
           <p class="text-xs text-white/70 mt-0.5">
-            Dashboard geral, saldos, cartões, metas e gráficos
+            Dashboard consolidado, saldos, cartões, cofrinhos e metas
           </p>
         </div>
         <i data-lucide="chevron-right" class="w-5 h-5 text-white/50 group-hover:translate-x-1 transition-transform"></i>
@@ -17212,6 +17365,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
   </div>
 
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL: BALÃO DE INFORMAÇÕES DO PRODUTO (BOTÃO !) NO CHAT       -->
+  <!-- ============================================================== -->
+  <div id="modalItemInfoBalloon" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeItemInfoBalloon()">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full p-4 shadow-2xl border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-base">💡</span>
+          <h4 id="balloonItemTitle" class="font-black text-sm text-slate-900 dark:text-white truncate">Informações do Produto</h4>
+        </div>
+        <button type="button" onclick="closeItemInfoBalloon()" class="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+      <div id="balloonItemContent">
+        <!-- Injetado dinamicamente via openItemInfoBalloon -->
+      </div>
+    </div>
+  </div>
   <!-- ============================================================== -->
   <!-- MODAL CADASTRAR NOVO REMÉDIO CONTÍNUO (MINHA SAÚDE)            -->
   <!-- ============================================================== -->
