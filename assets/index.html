@@ -2151,8 +2151,8 @@
       </div>
     </section>
     <!-- MODAL DEDICADO: LISTA DE COMPRAS & COMPARADOR DE PREÇOS (RECURSO PLUS) -->
-  <div id="modalShoppingListHistory" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeShoppingListModal()">
-    <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative h-[90vh] max-h-[820px] border border-slate-200 dark:border-slate-800 text-xs flex flex-col overflow-hidden">
+  <div id="modalShoppingListHistory" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
+    <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative my-auto border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
       <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
@@ -2254,7 +2254,7 @@
         </div>
 
         <!-- LISTA CLEAN DE PRODUTOS ESTILO CARDS DO CHAT (SEM SCROLL INTERNO TRAVADO, DESCE A TELA NORMAL) -->
-        <div id="builderProductsListContainer" class="space-y-2 flex-1 min-h-0 overflow-y-auto pt-1 pb-4 pr-1 custom-scrollbar">
+        <div id="builderProductsListContainer" class="space-y-2.5 pt-1 pb-4 w-full">
           <!-- Injetado dinamicamente via renderShoppingListBuilder() -->
         </div>
 
@@ -2315,24 +2315,9 @@
           <!-- Injetado dinamicamente via JS -->
         </div>
 
-        <!-- Tabela de Comparativo de Preços com Alto Contraste -->
-        <div class="overflow-x-auto mt-2 custom-scrollbar flex-1">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold border-b border-slate-200 dark:border-slate-700 text-[11px]">
-                <th class="py-2.5 px-3">Produto / Item</th>
-                <th class="py-2.5 px-3">Estabelecimento</th>
-                <th class="py-2.5 px-3">Última Compra</th>
-                <th class="py-2.5 px-3 text-right">Preço Atual</th>
-                <th class="py-2.5 px-3 text-right">Preço Anterior</th>
-                <th class="py-2.5 px-3 text-center">Comparativo</th>
-                <th class="py-2.5 px-3 text-center w-24">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="priceHistoryTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- Injetado dinamicamente via JS -->
-            </tbody>
-          </table>
+        <!-- Grade de Cards Responsivos de Histórico de Preços (100% Ajustado ao Celular, Sem Scroll Horizontal) -->
+        <div id="priceHistoryCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-3">
+          <!-- Injetado dinamicamente via JS (renderPriceHistoryTable) -->
         </div>
       </div>
 
@@ -3701,8 +3686,8 @@
     let currentStyle = 'style-flat';
     const BASE_ROOT_FONT_SIZE = 16;
     let fontScale = 1.0;
-    let isPrivacyGlobal = false;
-    let isTablePrivacy = false;
+    let isPrivacyGlobal = true;
+    let isTablePrivacy = true;
     let cardPrivacyStates = {
       receitas: false,
       fixas: false,
@@ -3952,17 +3937,20 @@
       }
       applyFontScale();
 
-      // Privacidade Global
-      isPrivacyGlobal = localStorage.getItem('financas_privacy_global') === 'true';
+      // Privacidade Global (Por padrão Inicia Oculto para Máxima Privacidade)
+      const savedPrivGlobal = localStorage.getItem('financas_privacy_global');
+      isPrivacyGlobal = (savedPrivGlobal === null) ? true : (savedPrivGlobal === 'true');
 
       // Privacidade na Tabela
       const savedTablePriv = localStorage.getItem('financas_table_privacy');
-      if (savedTablePriv !== null) isTablePrivacy = savedTablePriv === 'true';
+      isTablePrivacy = (savedTablePriv === null) ? true : (savedTablePriv === 'true');
 
       // Privacidade por Card
       const savedCardPrivacy = localStorage.getItem('financas_card_privacy');
       if (savedCardPrivacy) {
         try { cardPrivacyStates = JSON.parse(savedCardPrivacy); } catch(e) {}
+      } else {
+        cardPrivacyStates = { receitas: true, fixas: true, variaveis: true, gastos: true, saldo: true, piggy: true };
       }
 
       // Ordem das Colunas
@@ -7501,10 +7489,10 @@
     }
 
     function renderPriceHistoryTable() {
-      const tbody = document.getElementById('priceHistoryTableBody');
+      const container = document.getElementById('priceHistoryCardsContainer');
       const pillContainer = document.getElementById('establishmentPillFilters');
       const datalist = document.getElementById('storesDatalist');
-      if (!tbody) return;
+      if (!container) return;
 
       const stores = ['Todos', ...Array.from(new Set(priceHistory.map(p => p.estabelecimento)))];
 
@@ -7512,12 +7500,12 @@
         pillContainer.innerHTML = stores.map(s => {
           const isActive = s === activeEstablishmentFilter;
           const cls = isActive ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700';
-          return `<button onclick="setEstablishmentFilter('${s}')" class="px-3 py-1 text-[11px] rounded-xl transition-all ${cls}">${s}</button>`;
+          return `<button onclick="setEstablishmentFilter('${escapeHtml(s)}')" class="px-3 py-1 text-[11px] rounded-xl transition-all cursor-pointer ${cls}">${escapeHtml(s)}</button>`;
         }).join('');
       }
 
       if (datalist) {
-        datalist.innerHTML = stores.filter(s => s !== 'Todos').map(s => `<option value="${s}">`).join('');
+        datalist.innerHTML = stores.filter(s => s !== 'Todos').map(s => `<option value="${escapeHtml(s)}">`).join('');
       }
 
       const search = (document.getElementById('filterPriceItemSearch')?.value || '').toLowerCase().trim();
@@ -7530,45 +7518,67 @@
       }
 
       if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400 text-xs">Nenhum produto encontrado para este estabelecimento.</td></tr>';
+        container.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 text-xs">Nenhum produto encontrado neste filtro.</div>';
         return;
       }
 
-      tbody.innerHTML = list.map(item => {
+      container.innerHTML = list.map(item => {
         let diffPct = 0;
-        let diffBadge = '<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg">🏷️ Estável</span>';
+        let diffBadge = '<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg">🏷️ Estável</span>';
 
         if (item.precoAnterior && item.precoAnterior > 0) {
           diffPct = Math.round(((item.preco - item.precoAnterior) / item.precoAnterior) * 100);
           if (diffPct > 0) {
-            diffBadge = `<span class="text-[10px] font-bold px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg">🔺 Subiu (+${diffPct}%)</span>`;
+            diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg">🔺 Mais caro (+${diffPct}%)</span>`;
           } else if (diffPct < 0) {
-            diffBadge = `<span class="text-[10px] font-bold px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg">🔵 Baixou (${diffPct}%)</span>`;
+            diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg">🔵 Mais barato (${diffPct}%)</span>`;
           }
         }
 
         return `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-            <td class="py-2.5 px-3 font-bold text-slate-900 dark:text-slate-100">${item.produto}</td>
-            <td class="py-2.5 px-3 text-slate-600 dark:text-slate-400">${item.estabelecimento}</td>
-            <td class="py-2.5 px-3 text-slate-400 dark:text-slate-500 text-[11px]">${item.data}</td>
-            <td class="py-2.5 px-3 text-right font-black text-slate-900 dark:text-white tabular-nums">${formatBRL(item.preco)}</td>
-            <td class="py-2.5 px-3 text-right text-slate-500 dark:text-slate-400 tabular-nums">${item.precoAnterior ? formatBRL(item.precoAnterior) : '-'}</td>
-            <td class="py-2.5 px-3 text-center">${diffBadge}</td>
-            <td class="py-2.5 px-3 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <button onclick="openEditPriceItemModal(${item.id})" title="Editar dados ou corrigir preço/loja" class="p-1 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+          <div class="p-3 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-blue-300 transition-all shadow-2xs flex flex-col justify-between gap-2.5">
+            <!-- Linha Superior: Nome do Produto e Botões de Ação -->
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white leading-tight break-words">
+                  ${escapeHtml(item.produto)}
+                </h4>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span class="font-semibold text-slate-700 dark:text-slate-300">🏪 ${escapeHtml(item.estabelecimento)}</span>
+                  <span>•</span>
+                  <span>📅 ${escapeHtml(item.data || 'Recente')}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1 flex-shrink-0">
+                <button type="button" onclick="openEditPriceItemModal(${item.id})" title="Editar ou corrigir preço" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
                   <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                 </button>
-                <button onclick="deletePriceItemWithUndo(${item.id})" title="Excluir este registro" class="p-1 text-slate-400 hover:text-red-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <button type="button" onclick="deletePriceItemWithUndo(${item.id})" title="Excluir este registro" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
-            </td>
-          </tr>
+            </div>
+
+            <!-- Linha Inferior: Preço Atual, Preço Anterior e Comparativo -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[9px] uppercase font-bold text-slate-400 block">Preço Atual</span>
+                <span class="font-black font-mono text-sm text-slate-900 dark:text-white">${formatBRL(item.preco)}</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase font-bold text-slate-400 block">Anterior</span>
+                <span class="font-semibold font-mono text-xs text-slate-500 dark:text-slate-400">${item.precoAnterior ? formatBRL(item.precoAnterior) : '-'}</span>
+              </div>
+              <div class="flex-shrink-0">
+                ${diffBadge}
+              </div>
+            </div>
+          </div>
         `;
       }).join('');
-      lucide.createIcons();
+
+      if (window.lucide) lucide.createIcons();
     }
 
     // Modal de Edição de Preços
@@ -9175,7 +9185,7 @@
       const icon = document.getElementById('mascotMoodIcon');
       const label = document.getElementById('mascotMoodLabel');
       const speech = document.getElementById('mascotSpeechText');
-      if (!img || !badge) return;
+      if (!img) return;
 
       if (!window.ORIGINAL_MASCOT_SRC) {
         window.ORIGINAL_MASCOT_SRC = img.getAttribute('src');
@@ -9189,27 +9199,30 @@
       const eyeLeft = document.getElementById('mascotEyeLeft');
       const eyeRight = document.getElementById('mascotEyeRight');
 
-      if (saldoLivre < 0 || comprometimento >= 100) {
-        // Estado NO VERMELHO: Mascote Pifado / Destruído (piggy-pifado.png) com Fumacinhas Brancas e Cinza
+      // Verificação infalível: saldo negativo ou mais de 100% comprometido
+      const isInTheRed = (saldoLivre < 0) || (comprometimento >= 100);
+
+      if (isInTheRed) {
+        // Estado NO VERMELHO: Mascote Pifado / Destruído (piggy-pifado.png)
         img.classList.add('mascote-estado-vermelho', 'mascote-explodido');
         if (mascotContainer) mascotContainer.classList.add('mascote-olhos-tristes');
         if (smokeEl) smokeEl.classList.remove('hidden');
 
-        // Troca dinamicamente a imagem para o mascote destruído criado por Rodrigo
+        // Carrega o DataURI Base64 do mascote destruído
         if (window.MASCOT_PIFADO_DATAURI) {
           img.src = window.MASCOT_PIFADO_DATAURI;
         }
 
-        // Esconde overlays artificiais para destacar a arte detalhada do piggy-pifado
+        // Esconde overlays artificiais para destacar a arte do piggy-pifado
         if (chestLight) chestLight.classList.add('hidden');
         if (sadMouth) sadMouth.classList.add('hidden');
         if (eyeLeft) eyeLeft.classList.add('hidden');
         if (eyeRight) eyeRight.classList.add('hidden');
 
-        badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-red-100 text-red-800 border-red-300';
+        if (badge) badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-red-100 text-red-800 border-red-300';
         if (icon) icon.textContent = '🚨';
         if (label) label.textContent = 'No Vermelho! Alerta';
-        if (speech) speech.textContent = 'Atenção! Entramos no vermelho neste mês. O Piggy pifou! Hora do Plano de Resgate! 🚨🐷';
+        if (speech) speech.textContent = 'Atenção! Entramos no vermelho neste mês. O Piggy pifou! Hora da Mentoria de Resgate! 🚨🐷';
       } else {
         // Restaura imagem original do mascote sadio
         if (window.ORIGINAL_MASCOT_SRC) {
@@ -9218,463 +9231,20 @@
         if (smokeEl) smokeEl.classList.add('hidden');
         if (mascotContainer) mascotContainer.classList.remove('mascote-olhos-tristes');
         if (chestLight) chestLight.classList.remove('hidden');
-        if (sadMouth) sadMouth.classList.add('hidden');
-        if (eyeLeft) eyeLeft.classList.remove('hidden');
-        if (eyeRight) eyeRight.classList.remove('hidden');
 
-        if (comprometimento >= 75) {
-          // Estado ALERTA
+        if (comprometimento >= 85) {
           img.classList.add('mascote-estado-alerta');
-          badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-amber-100 text-amber-800 border-amber-300';
+          if (badge) badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-amber-100 text-amber-800 border-amber-300';
           if (icon) icon.textContent = '⚠️';
-          if (label) label.textContent = 'Atenção! Limite Próximo';
-          if (speech) speech.textContent = 'Atenção! Já gastamos quase 80% da receita. Vamos segurar as pontas! 🧐';
+          if (label) label.textContent = 'Atenção ao Limite';
+          if (speech) speech.textContent = 'Fiquem atentos! Mais de 85% da renda comprometida neste ciclo.';
         } else {
-          // Estado POSITIVO
           img.classList.add('mascote-estado-positivo');
-          badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-emerald-100 text-emerald-800 border-emerald-300';
-          if (icon) icon.textContent = '👍';
-          if (label) label.textContent = 'Jóia! Sob Controle';
-          if (speech) speech.textContent = 'Finanças no azul! Parabéns pelo controle das despesas! 🐷✨';
+          if (badge) badge.className = 'absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-md flex items-center gap-1 border bg-emerald-100 text-emerald-800 border-emerald-300';
+          if (icon) icon.textContent = '✨';
+          if (label) label.textContent = 'Tudo Equilibrado!';
+          if (speech) speech.textContent = 'Parabéns casal! Finanças sob controle e no azul!';
         }
-      }
-    }
-
-    // 3. REVERSÃO DE COMPRA PARCELADA POR ENGANO
-    function confirmarReversaoParcelamento() {
-      const txId = parseInt(document.getElementById('editTxId').value);
-      const tx = transactions.find(t => t.id === txId);
-      if (!tx) return;
-
-      const excluirFuturas = document.getElementById('checkExcluirFuturas').checked;
-      const match = tx.descricao.match(/^(.*?)\s*\((\d+)\/(\d+)\)$/);
-      const baseDesc = match ? match[1].trim() : tx.descricao.replace(/\s*\(\d+\/\d+\)/, '').trim();
-      const totalParcelas = match ? parseInt(match[3]) : (tx.total_parcelas || 1);
-
-      if (confirm(`Deseja converter "${baseDesc}" em compra À VISTA?${excluirFuturas ? '\nTodas as parcelas futuras vinculadas serão excluídas.' : ''}`)) {
-        tx.descricao = baseDesc;
-        tx.parcelado = false;
-        delete tx.total_parcelas;
-        delete tx.parcela_atual;
-
-        if (excluirFuturas && totalParcelas > 1) {
-          transactions = transactions.filter(t => {
-            if (t.id === tx.id) return true;
-            const irmamatch = t.descricao.match(/^(.*?)\s*\((\d+)\/(\d+)\)$/);
-            if (irmamatch && irmamatch[1].trim().toLowerCase() === baseDesc.toLowerCase()) {
-              return false; // Remove parcela irmã
-            }
-            return true;
-          });
-        }
-
-        saveData();
-        closeEditTxModal();
-        updateDashboard();
-        renderTransactionsTable();
-        showToastUndo(`Parcelamento desfeito! "${baseDesc}" agora é compra À Vista.`, false);
-      }
-    }
-
-    // 4. FILTRO DE CATEGORIAS COM SUBTOTAL DINÂMICO
-    let currentCategoryFilter = 'Todas';
-
-    function filterTableByCategory(categoria) {
-      currentCategoryFilter = categoria;
-      document.querySelectorAll('.category-chip').forEach(btn => {
-        btn.className = 'category-chip px-3 py-1.5 rounded-full font-semibold text-xs bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:border-blue-500 whitespace-nowrap shadow-2xs transition-all';
-      });
-
-      const banner = document.getElementById('bannerSubtotalCategoria');
-      if (categoria === 'Todas') {
-        const chipTodas = document.getElementById('chipCat_Todas');
-        if (chipTodas) chipTodas.className = 'category-chip px-3 py-1.5 rounded-full font-bold text-xs bg-blue-600 text-white shadow-2xs whitespace-nowrap transition-all';
-        if (banner) banner.classList.add('hidden');
-      } else {
-        const activeChip = Array.from(document.querySelectorAll('.category-chip')).find(b => b.textContent.includes(categoria));
-        if (activeChip) activeChip.className = 'category-chip px-3 py-1.5 rounded-full font-extrabold text-xs bg-blue-600 text-white shadow-xs whitespace-nowrap transition-all';
-
-        const activeTxs = transactions.filter(t => t.ciclo === currentCycle && t.tipo !== 'Receita');
-        const catTxs = activeTxs.filter(t => (t.categoria || '').toLowerCase() === categoria.toLowerCase());
-        const totalCat = catTxs.reduce((sum, t) => sum + (t.valor || 0), 0);
-
-        if (banner) {
-          banner.classList.remove('hidden');
-          document.getElementById('subtotalCategoriaNome').textContent = `${categoria}:`;
-          document.getElementById('subtotalCategoriaContagem').textContent = `${catTxs.length} lançamento(s)`;
-          document.getElementById('subtotalCategoriaValor').textContent = formatBRL(totalCat);
-        }
-      }
-      renderTransactionsTable();
-    }
-
-    // 5. BOTÃO DE QUITAR DESPESAS FIXAS EM 1 CLIQUE
-    function toggleQuitarFixa(txId) {
-      const tx = transactions.find(t => t.id === txId);
-      if (!tx) return;
-      const novoStatus = (tx.status === 'Pago' || tx.status === 'Recebido') ? 'Pendente' : 'Pago';
-      tx.status = novoStatus;
-      saveData();
-      updateDashboard();
-      renderTransactionsTable();
-      showToastUndo(novoStatus === 'Pago' ? `Conta "${tx.descricao}" quitada com sucesso! ✓` : `Conta "${tx.descricao}" reaberta como pendente.`, false);
-    }
-
-    // 6. NLP LIMPO DE VOZ (REMOVE RUÍDOS E EXTRAI ESTABELECIMENTO + VALOR)
-    function cleanVoiceEntities(text) {
-      if (!text) return { desc: 'Despesa Registrada', val: 0, cat: 'Outros' };
-      let t = text;
-
-      // 1. Extrair valor numérico
-      let val = 0;
-      const valMatch = t.match(/(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)?/i);
-      if (valMatch) {
-        val = parseFloat(valMatch[1].replace(',', '.'));
-        t = t.replace(valMatch[0], '');
-      }
-
-      // 2. Limpar gatilhos verbais
-      const triggers = [
-        /^\s*(?:compra na|compra no|compra num|compra numa|compra de|compra)\s+/i,
-        /^\s*(?:comprei na|comprei no|comprei num|comprei de|comprei)\s+/i,
-        /^\s*(?:gastei na|gastei no|gastei em|gastei)\s+/i,
-        /^\s*(?:paguei na|paguei no|paguei de|paguei)\s+/i,
-        /^\s*(?:almoço no|almoço na|jantar no|lanche no|café na)\s+/i,
-        /\s+(?:no crédito|no débito|no pix|no dinheiro|no nubank|no cartão)\s*$/i,
-        /\s+(?:no valor de|no valor|por|de)\s*$/i
-      ];
-      for (let trig of triggers) {
-        t = t.replace(trig, '');
-      }
-
-      // Limpar conectivos iniciais soltos (no/na/em)
-      t = t.replace(/^\s*(?:no|na|em|de)\s+/i, '').trim();
-
-      // Formatar descrição capitalizada
-      let desc = t.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-      if (!desc) desc = 'Gasto Registrado';
-
-      // Inferir categoria
-      let cat = 'Outros';
-      const low = text.toLowerCase();
-      if (/padaria|mercado|supermercado|açougue|hortifruti|carrefour|pão de açúcar|dia/i.test(low)) cat = 'Alimentação';
-      else if (/restaurante|outback|mcdonald|pizza|hambúrguer|lanche|café|almoço|jantar/i.test(low)) cat = 'Alimentação';
-      else if (/farmácia|droga|drogaria|remédio|médico|consulta|exame/i.test(low)) cat = 'Saúde';
-      else if (/escola|mensalidade escolar|mensalidade|faculdade|curso|material escolar|apostila|livro|uniforme|matrícula|matricula|colégio|colegio|creche/i.test(low)) cat = 'Educação';
-
-      else if (/gasolina|etanol|álcool|combustível|combustivel|posto|ipva|licenciamento|seguro do carro|seguro auto|mecânico|mecanico|oficina|pneu|peça|peças|revisão|revisao|troca de óleo|óleo|multa|estacionamento|lava.?jato|financiamento do carro|moto/i.test(low)) cat = 'Veículo';
-
-      else if (/uber|99|ônibus|onibus|metrô|metro|táxi|taxi/i.test(low)) cat = 'Transporte';
-
-      return { desc, val, cat };
-    }
-
-    // 7. GESTÃO DE CUPONS VIP & ADMINISTRAÇÃO DO RODRIGO
-    
-    // GESTÃO DE CHAVE GOOGLE AI STUDIO NO PAINEL ADMIN
-    function renderGeminiKeyUI() {
-      const activeBox = document.getElementById('geminiActiveKeyBox');
-      const inputFormBox = document.getElementById('geminiInputFormBox');
-      const displayKey = document.getElementById('displayGeminiActiveKey');
-      const key = (localStorage.getItem('financas_gemini_api_key') || '').trim();
-
-      if (key) {
-        if (activeBox) activeBox.classList.remove('hidden');
-        if (inputFormBox) inputFormBox.classList.add('hidden');
-        if (displayKey) {
-          const masked = key.length > 10 ? key.slice(0, 6) + '••••••••••••••••••••' + key.slice(-4) : '••••••••••••';
-          displayKey.textContent = masked;
-        }
-      } else {
-        if (activeBox) activeBox.classList.add('hidden');
-        if (inputFormBox) inputFormBox.classList.remove('hidden');
-      }
-    }
-
-    function salvarGeminiKey() {
-      const input = document.getElementById('inputGeminiApiKey');
-      const val = input ? input.value.trim() : '';
-      if (!val) {
-        alert('Por favor, cole sua chave do Google AI Studio.');
-        return;
-      }
-      localStorage.setItem('financas_gemini_api_key', val);
-      if (input) input.value = '';
-      renderGeminiKeyUI();
-      showToastUndo('Chave Google AI Studio salva com sucesso! Leitura de notas ativada.', false);
-    }
-
-    function editGeminiApiKey() {
-      const activeBox = document.getElementById('geminiActiveKeyBox');
-      const inputFormBox = document.getElementById('geminiInputFormBox');
-      const input = document.getElementById('inputGeminiApiKey');
-      if (activeBox) activeBox.classList.add('hidden');
-      if (inputFormBox) inputFormBox.classList.remove('hidden');
-      if (input) {
-        input.value = localStorage.getItem('financas_gemini_api_key') || '';
-        input.focus();
-      }
-    }
-
-    function removeGeminiApiKey() {
-      if (confirm('Deseja remover a chave da Google AI Studio deste aparelho?')) {
-        localStorage.removeItem('financas_gemini_api_key');
-        renderGeminiKeyUI();
-        showToastUndo('Chave removida. O app usará o leitor inteligente padrão.', false);
-      }
-    }
-
-    
-    function openUserProfileModal() {
-      const u = currentUserSession || { nome: 'Rodrigo', plano: 'Super Administrador Vitalício' };
-      const pName = document.getElementById('profileModalUserName'); if (pName) pName.textContent = u.nome || 'Meu Perfil';
-      const pPlan = document.getElementById('profileModalUserPlan'); if (pPlan) pPlan.textContent = u.plano || 'Plano Padrão';
-      document.getElementById('inputProfileNome').value = u.nome || '';
-      document.getElementById('inputProfileWhatsapp').value = u.whatsapp || '';
-      document.getElementById('inputProfileIdade').value = u.idade || '';
-      const checkBio = document.getElementById('checkProfileBiometrics'); if (checkBio) checkBio.checked = localStorage.getItem('financas_biometrics_enabled') === 'true';
-      document.getElementById('modalUserProfile').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeUserProfileModal() {
-      document.getElementById('modalUserProfile').classList.add('hidden');
-    }
-
-    function selectProfileAvatar(emoji) {
-      document.getElementById('inputProfileAvatarChosen').value = emoji;
-      showToastUndo(`Avatar ${emoji} selecionado!`, false);
-    }
-
-    function handleSaveUserProfile(e) {
-      e.preventDefault();
-      const nome = document.getElementById('inputProfileNome').value.trim();
-      const whatsapp = document.getElementById('inputProfileWhatsapp').value.trim();
-      const idade = document.getElementById('inputProfileIdade').value.trim();
-      const nSenha = document.getElementById('inputProfileNovaSenha').value.trim();
-      const cSenha = document.getElementById('inputProfileConfirmaSenha').value.trim();
-      const avatar = document.getElementById('inputProfileAvatarChosen').value;
-
-      if (nSenha) {
-        if (nSenha.length < 6) {
-          alert('A nova senha deve possuir no mínimo 6 dígitos.');
-          return;
-        }
-        if (nSenha !== cSenha) {
-          alert('A confirmação da nova senha não confere.');
-          return;
-        }
-      }
-
-      if (!currentUserSession) currentUserSession = {};
-      currentUserSession.nome = nome;
-      currentUserSession.whatsapp = whatsapp;
-      currentUserSession.idade = idade;
-      currentUserSession.avatar = avatar;
-      if (nSenha) currentUserSession.senha = nSenha;
-
-      localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      const checkBio = document.getElementById('checkProfileBiometrics'); if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
-      
-      // Atualiza avatar do Rodrigo ou Marcia se aplicável
-      if (currentUserSession.nome === 'Rodrigo') {
-        const el = document.getElementById('avatarInitialsRodrigo');
-        if (el) el.textContent = avatar;
-      } else if (currentUserSession.nome === 'Márcia') {
-        const el = document.getElementById('avatarInitialsMarcia');
-        if (el) el.textContent = avatar;
-      }
-
-      closeUserProfileModal();
-      showToastUndo('Perfil e dados cadastrais atualizados com sucesso!', false);
-    }
-
-    function openAdminModal() {
-      const isMaster = currentUserSession && currentUserSession.email && currentUserSession.email.toLowerCase() === 'rodrigocardosocn@gmail.com';
-      
-      const masterView = document.getElementById('adminMasterView');
-      const userView = document.getElementById('adminUserView');
-      const titleEl = document.getElementById('adminPanelMainTitle');
-      const descEl = document.getElementById('adminPanelMainDesc');
-
-      if (isMaster) {
-        if (masterView) masterView.classList.remove('hidden');
-        if (userView) userView.classList.add('hidden');
-        if (titleEl) titleEl.textContent = 'Painel Master do Administrador';
-        if (descEl) descEl.textContent = 'Gestão completa do sistema: cupons VIP, IA Mentor, feedbacks e banco de dados.';
-        renderCuponsAtivosList();
-        renderFeedbacksAdminList();
-        renderGeminiKeyUI();
-        renderAdminPiggyTipsList();
-        const memCount = document.getElementById('adminMembrosCount');
-        if (memCount) memCount.textContent = 'Ilimitado (Rodrigo Master Admin)';
-      } else {
-        if (masterView) masterView.classList.add('hidden');
-        if (userView) userView.classList.remove('hidden');
-        if (titleEl) titleEl.textContent = 'Configurações da Conta & Família';
-        if (descEl) descEl.textContent = 'Gerencie seu perfil, preferências familiares, segurança e notificações.';
-        populateUserProfileData();
-      }
-
-      document.getElementById('modalAdminPanel').classList.remove('hidden');
-      if (window.lucide && typeof lucide.createIcons === 'function') {
-        try { lucide.createIcons(); } catch(e) {}
-      }
-    }
-
-    function populateUserProfileData() {
-      const user = currentUserSession || { nome: 'Usuário', email: 'usuario@ctrlpig.app' };
-      const nameInput = document.getElementById('inputUserPerfilNome');
-      const emailInput = document.getElementById('inputUserPerfilEmail');
-      const whatsappInput = document.getElementById('inputUserPerfilWhatsapp');
-      if (nameInput) nameInput.value = user.nome || '';
-      if (emailInput) emailInput.value = user.email || '';
-      if (whatsappInput) whatsappInput.value = user.whatsapp || '';
-    }
-
-    function salvarPerfilUsuarioSimples() {
-      const name = (document.getElementById('inputUserPerfilNome')?.value || '').trim();
-      const whatsapp = (document.getElementById('inputUserPerfilWhatsapp')?.value || '').trim();
-      if (!name) {
-        showToastUndo('Por favor, informe seu nome.', false);
-        return;
-      }
-      if (currentUserSession) {
-        currentUserSession.nome = name;
-        if (whatsapp) currentUserSession.whatsapp = whatsapp;
-        try {
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        } catch(e) {}
-      }
-      showToastUndo('Perfil atualizado com sucesso! 🐷', false);
-      closeAdminModal();
-    }
-
-    function closeAdminModal() {
-      document.getElementById('modalAdminPanel').classList.add('hidden');
-    }
-
-    function gerarCupomVip() {
-      const codeInput = document.getElementById('inputNovoCupomCode');
-      const pctSel = document.getElementById('selectCupomDescontoPct');
-      const tipo = document.querySelector('input[name="tipoCupomAdmin"]:checked')?.value || 'compartilhada';
-
-      let code = codeInput ? codeInput.value.trim().toUpperCase() : '';
-      const pct = pctSel ? pctSel.value : '100';
-
-      if (!code) {
-        code = (pct === '100' ? 'VIP-' : 'PROMO-') + Math.random().toString(36).substring(2, 7).toUpperCase();
-      }
-      
-      let cupons = [];
-      try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(e) {}
-      if (cupons.find(c => c.code === code)) {
-        alert('Este código de cupom já foi criado!');
-        return;
-      }
-
-      const novo = {
-        code: code,
-        tipo: tipo,
-        descontoPct: pct,
-        descricao: pct === '100' ? (tipo === 'compartilhada' ? 'Plano Familiar Vitalício (100% Free)' : 'Conta Independente Vitalícia (100% Free)') : `${pct}% de Desconto`,
-        created_at: new Date().toLocaleDateString('pt-BR'),
-        status: 'Ativo'
-      };
-
-      cupons.unshift(novo);
-      localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons));
-      localStorage.setItem('financas_ultimo_cupom_vip', code);
-
-      if (codeInput) codeInput.value = '';
-      renderCuponsAtivosList();
-      showToastUndo(`Cupom "${code}" (${pct}% OFF) criado com sucesso!`, false);
-    }
-
-    function renderCuponsAtivosList() {
-      const lista = document.getElementById('listaCuponsAtivos');
-      if (!lista) return;
-      let cupons = [];
-      try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(e) {}
-      if (cupons.length === 0) {
-        cupons = [
-          { code: 'FAMILIA-2026', tipo: 'compartilhada', descontoPct: '100', descricao: 'Plano Familiar Vitalício (100% Free)', created_at: 'Oficial' },
-          { code: 'PROMO-50', tipo: 'compartilhada', descontoPct: '50', descricao: '50% de Desconto Promocional', created_at: 'Oficial' }
-        ];
-      }
-      lista.innerHTML = cupons.map(c => `
-        <div class="flex items-center justify-between p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-          <div>
-            <span class="font-mono font-black text-blue-600 dark:text-blue-400">${c.code}</span>
-            <span class="ml-1 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">${c.descontoPct || '100'}% OFF</span>
-            <p class="text-[10px] text-slate-500 mt-0.5">${c.descricao}</p>
-          </div>
-          <button type="button" onclick="copiarCupom('${c.code}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-bold transition-colors">
-            Copiar
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function salvarGeminiKey() {
-      const gemInput = document.getElementById('inputGeminiApiKey');
-      if (gemInput) {
-        localStorage.setItem('financas_gemini_api_key', gemInput.value.trim());
-        alert('Chave Google Gemini salva com sucesso! O OCR usará o modelo Vision gratuito.');
-      }
-    }
-
-    // 8. MODAL DE FEEDBACK AO SAIR
-    let selectedRating = 4;
-    function openExitFeedbackModal() {
-      document.getElementById('modalExitFeedback').classList.remove('hidden');
-    }
-    function closeExitFeedbackModal() {
-      document.getElementById('modalExitFeedback').classList.add('hidden');
-    }
-    function setFeedbackRating(r) {
-      selectedRating = r;
-      for (let i = 1; i <= 5; i++) {
-        const star = document.getElementById('feedbackStar_' + i);
-        if (star) {
-          if (i <= r) {
-            star.classList.remove('opacity-30', 'grayscale');
-            star.classList.add('opacity-100', 'scale-110');
-          } else {
-            star.classList.add('opacity-30', 'grayscale');
-            star.classList.remove('opacity-100', 'scale-110');
-          }
-        }
-      }
-      const lbl = document.getElementById('feedbackRatingLabel');
-      if (lbl) lbl.textContent = `Avaliação selecionada: ${r} estrela${r > 1 ? 's' : ''} ${'⭐'.repeat(r)}`;
-    }
-
-    function handleSaveExitFeedback() {
-      const input = document.getElementById('inputFeedbackSugestao');
-      const sugestao = input ? input.value.trim() : '';
-      const r = selectedRating || 5;
-
-      let feeds = [];
-      try { feeds = JSON.parse(localStorage.getItem('financas_beta_feedbacks') || '[]'); } catch(e) {}
-      feeds.unshift({
-        rating: r,
-        texto: sugestao || `Avaliação rápida do usuário: ${r} estrelas ⭐`,
-        data: new Date().toISOString()
-      });
-      localStorage.setItem('financas_beta_feedbacks', JSON.stringify(feeds));
-      if (input) input.value = '';
-      if (typeof renderFeedbacksAdminList === 'function') renderFeedbacksAdminList();
-
-      // Encerra completamente o aplicativo via canal nativo do Flutter (sem voltar para login)
-      directExitApp();
-    }
-
-    function directExitApp() {
-      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-        window.FlutterBridge.postMessage(JSON.stringify({ action: 'exit_app' }));
-      } else {
-        logoutUser();
       }
     }
 
@@ -9889,15 +9459,28 @@
     let isPiggyAutoPlayPaused = false;
     const PIGGY_AUTOPLAY_DELAY = 8500; // 8.5 segundos para leitura confortável
 
+    function isUserCurrentlyInTheRed() {
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0) {
+        const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+        const rec = activeTxs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+        const gas = activeTxs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+        const saldo = rec - gas;
+        const comp = rec > 0 ? (gas / rec) * 100 : (gas > 0 ? 100 : 0);
+        return (saldo < 0) || (comp >= 100);
+      }
+      return false;
+    }
+
     function getActivePiggyTips() {
       let custom = [];
       try {
         const stored = localStorage.getItem('financas_custom_piggy_tips');
-        if (stored) {
-          custom = JSON.parse(stored);
-        }
-      } catch (e) {
-        console.warn('Erro ao carregar dicas customizadas do Piggy:', e);
+        if (stored) custom = JSON.parse(stored);
+      } catch (e) {}
+
+      // Se estiver no vermelho, prioriza as dicas de MENTORIA DE RESGATE
+      if (isUserCurrentlyInTheRed()) {
+        return [...RESCUE_PIGGY_TIPS, ...custom];
       }
       return [...DEFAULT_PIGGY_TIPS, ...custom];
     }
@@ -11916,97 +11499,144 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       return '📍 ' + raw.charAt(0).toUpperCase() + raw.slice(1);
     }
 
-    function processVoiceShoppingInput(spokenText) {
+    async function parseVoiceShoppingWithGeminiAI(spokenText, apiKey) {
+      try {
+        const prompt = `Você é um assistente especializado em compras familiares de supermercado e feira.
+Extraia da seguinte frase falada pelo usuário todos os produtos solicitados e seus valores se houver.
+Ignore vocativos e saudações como "Amor", "traz", "pega", "por favor", "meu bem", "vida", etc.
+Se houver indicação de preço ("a 5 reais", "por 10 e 50"), extraia o campo preco como float. Se não houver, coloque 0.00.
+Retorne estritamente em JSON puro sem formatação markdown:
+[
+  {
+    "nome": "Nome do Produto (ex: Leite Integral, Pão Francês, Arroz Branco)",
+    "qtd": 1,
+    "unidade": "un | litros | kg | pct | dúzia | cx",
+    "preco": 0.00,
+    "estabelecimento": "🛒 Supermercado | 🥖 Padaria | 🥩 Açougue | 💊 Farmácia"
+  }
+]
+Frase falada: "${spokenText}"`;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const rawJson = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawJson) {
+            return JSON.parse(rawJson);
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback voz: Gemini Flash não respondeu, usando extrator local inteligente:', e);
+      }
+      return null;
+    }
+
+    async function processVoiceShoppingInput(spokenText) {
       if (!spokenText || !spokenText.trim()) return;
 
       const cleanSpoken = spokenText.trim().toLowerCase();
       const nowTs = Date.now();
-      // Debounce de 3 segundos para evitar repetições no Android Speech
       if (cleanSpoken === lastVoiceShoppingProcessedText && (nowTs - lastVoiceShoppingTimestamp) < 3000) {
-        console.log('Ignorando comando de voz repetido:', cleanSpoken);
         return;
       }
       lastVoiceShoppingProcessedText = cleanSpoken;
       lastVoiceShoppingTimestamp = nowTs;
 
-      let text = spokenText.trim();
-      let recipient = 'a Família';
-      let sender = 'Mãe';
-
-      // 1. Detecta vocativo inicial: meu filho, filho, filha, amor, mãe, pai, rodrigo, márcia
-      const vocMatch = text.match(/^(?:ol[áa]|oi\s+)?(?:meu\s+|minha\s+)?(f[ií]?lh[oa]|amor|m[ãa]m?[ãa]e|papai|pai|rodrigo|m[áa]rcia)[:,]?\s*/i);
-      if (vocMatch) {
-        const term = vocMatch[1].toLowerCase();
-        if (term.includes('lh')) recipient = term.endsWith('o') ? 'Filho' : 'Filha';
-        else if (term.includes('amor')) recipient = 'Amor';
-        else if (term.includes('m')) recipient = 'Mamãe';
-        else if (term.includes('pai')) recipient = 'Papai';
-        else if (term.includes('rodrigo')) recipient = 'Rodrigo';
-        else if (term.includes('rcia')) recipient = 'Márcia';
-        text = text.substring(vocMatch[0].length).trim();
-      }
-
-      // 2. Detecta quem pediu: "traz pra mamãe", "traz pro papai", etc.
-      const reqMatch = text.match(/^(?:traz|traga|compra|compre|pega|pegue|leva|leve)\s+(?:pra\s+mim|para\s+mim|pra\s+m[ãa]m?[ãa]e|pro\s+papai|pro\s+pai|pro\s+rodrigo|pra\s+m[áa]rcia)[:,]?\s*/i);
-      if (reqMatch) {
-        const rawReq = reqMatch[0].toLowerCase();
-        if (rawReq.includes('mam')) sender = 'Mamãe';
-        else if (rawReq.includes('pai')) sender = 'Papai';
-        else if (rawReq.includes('rodrigo')) sender = 'Rodrigo';
-        else if (rawReq.includes('marcia') || rawReq.includes('márcia')) sender = 'Márcia';
-        text = text.substring(reqMatch[0].length).trim();
-      } else {
-        text = text.replace(/^(?:traz|traga|compra|compre|pega|pegue|leva|leve)\s+/i, '').trim();
-      }
-
-      // 3. Segmentação por estabelecimentos (Ex: "quando passar no posto de gasolina, traz...")
-      const storePattern = /(?:,\s*|\s+)(?:e\s+)?(?:quando\s+passar\s+(?:no|na|em|pelo|pela)\s+|depois\s+(?:passa|vai)\s+(?:no|na|em)\s+|aproveita\s+e\s+(?:passa|vai)\s+(?:no|na|em)\s+|(?:passa|vai)\s+tamb[ée]m\s+(?:no|na|em)\s+|al[ée]m\s+disso\s+(?:no|na|em)\s+|(?:no|na)\s+)(posto\s+de\s+gasolina|posto|farm[áa]cia|drogaria|a[çc]ougue|padaria|hortifr[úu]ti|hortifruti|sacol[ãa]o|feira|pet\s*shop|agropecu[áa]ria|supermercado|mercado|atacado|atacad[ãa]o)[,:]?\s*(?:traz|traga|pega|compra)?\s*/gi;
-
-      const segments = [];
-      const matches = [];
-      let m;
-      while ((m = storePattern.exec(text)) !== null) {
-        matches.push({ index: m.index, length: m[0].length, store: m[1] });
-      }
-
-      if (matches.length === 0) {
-        segments.push({ store: '🥖 Padaria / Supermercado', content: text });
-      } else {
-        const firstPart = text.substring(0, matches[0].index).trim();
-        if (firstPart) {
-          segments.push({ store: '🥖 Padaria / Supermercado', content: firstPart });
-        }
-        for (let i = 0; i < matches.length; i++) {
-          const storeName = formatStoreSectionTitle(matches[i].store);
-          const startIdx = matches[i].index + matches[i].length;
-          const endIdx = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
-          let partContent = text.substring(startIdx, endIdx).trim();
-          partContent = partContent.replace(/^(?:traz|traga|pega|compra)\s+/i, '').trim();
-          if (partContent) {
-            segments.push({ store: storeName, content: partContent });
-          }
-        }
-      }
-
+      let sender = 'Rodrigo';
       const activeItems = getActiveShoppingItems();
-      const newCreatedItems = [];
+      const addedNames = [];
 
-      segments.forEach(seg => {
-        const rawParts = seg.content
+      // 1. TENTA PROCESSAMENTO VIA GOOGLE GEMINI FLASH (GOOGLE AI STUDIO)
+      const geminiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+      let extractedItems = null;
+
+      if (geminiKey) {
+        extractedItems = await parseVoiceShoppingWithGeminiAI(spokenText, geminiKey);
+      }
+
+      // 2. SE O GEMINI EXTRAIU COM SUCESSO:
+      if (Array.isArray(extractedItems) && extractedItems.length > 0) {
+        extractedItems.forEach(item => {
+          const nome = (item.nome || '').trim();
+          if (!nome) return;
+          const qtd = parseFloat(item.qtd) || 1;
+          const unidade = item.unidade || 'un';
+          const preco = parseFloat(item.preco) || 0;
+          const loja = item.estabelecimento || '🛒 Supermercado';
+
+          // Se já existe na lista, soma unidades
+          const existing = activeItems.find(it => it.nome.toLowerCase() === nome.toLowerCase() && it.status !== 'nao_tinha');
+          if (existing) {
+            existing.qtdDesejada = (existing.qtdDesejada || 1) + qtd;
+            existing.qtdComprada = existing.qtdDesejada;
+            if (preco > 0) existing.precoUnitario = preco;
+            addedNames.push(`${existing.nome} (+${qtd})`);
+            return;
+          }
+
+          const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(nome) : null;
+          const finalPrice = preco > 0 ? preco : (prevPurch ? (prevPurch.preco || 0) : 0);
+
+          activeItems.push({
+            id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+            nome: nome,
+            qtdDesejada: qtd,
+            unidade: unidade,
+            marca: '',
+            status: 'pendente',
+            qtdComprada: qtd,
+            precoUnitario: finalPrice,
+            pedidoPor: sender,
+            estabelecimento: loja
+          });
+
+          // Se o usuário falou o preço, salva também na tabela de histórico de preços!
+          if (preco > 0 && typeof priceHistory !== 'undefined') {
+            const todayStr = new Date().toISOString().split('T')[0];
+            priceHistory.unshift({
+              id: Date.now() + Math.floor(Math.random() * 1000),
+              produto: nome,
+              estabelecimento: loja,
+              data: todayStr,
+              preco: preco,
+              precoAnterior: prevPurch ? (prevPurch.preco || null) : null,
+              unidade: unidade
+            });
+            savePriceHistory();
+          }
+
+          addedNames.push(`${qtd} ${unidade} ${nome}${preco > 0 ? ` (R$ ${preco.toFixed(2).replace('.', ',')})` : ''}`);
+        });
+      } else {
+        // FALLBACK LOCAL: Limpeza de vocativos e fatiamento local
+        let text = spokenText.trim();
+        text = text.replace(/^(?:ol[áa]|oi\s+)?(?:meu\s+|minha\s+)?(?:amor|vida|bem|querido|querida|filho|filha|m[ãa]m?[ãa]e|papai|pai|rodrigo|m[áa]rcia)\s*[,:]?\s*/i, '');
+        text = text.replace(/^(?:por\s+favor|pfv|faz\s+um\s+favor)\s*[,:]?\s*/i, '');
+        text = text.replace(/^(?:traz|traga|pega|pegue|compra|compre|leva|leve|preciso\s+de|precisamos\s+de|adiciona|inclui)\s*(?:pra\s+mim|para\s+mim|pra\s+gente|pro\s+almo[çc]o|pra\s+janta|no\s+mercado)?\s*[,:]?\s*/i, '');
+
+        const rawParts = text
           .split(/\s*,\s*|\s+e\s+|\s*;\s*|\n+/i)
           .map(p => p.trim())
           .filter(p => p.length > 1);
 
-        rawParts.forEach((part, pIdx) => {
-          let cleanPart = part.replace(/\b(?:tamb[ée]m|pra\s+mim|para\s+mim)\b/gi, '').trim();
+        rawParts.forEach(part => {
+          let cleanPart = part.replace(/\b(?:tamb[ée]m|pra\s+mim|para\s+mim|pra\s+casa)\b/gi, '').trim();
+          cleanPart = cleanPart.replace(/^(?:traz|traga|pega|pegue|compra|compre)\s+/i, '').trim();
           if (!cleanPart) return;
 
           let qtd = 1;
           let unidade = 'un';
           let nome = cleanPart;
 
-          // Extração precisa de quantidade e unidade (unidades longas antes das abreviadas)
-          const matchQtd = cleanPart.match(/^(\d+(?:[.,]\d+)?)\s*(litros?|quilos?|gramas?|latas?|pacotes?|unidades?|potes?|caixas?|garrafas?|sacos?|p[ãa]es|paezinhos|kg|pct|cx|un|l|g)?\s*(?:de\s+)?(.*)/i);
+          const matchQtd = cleanPart.match(/^(\d+(?:[.,]\d+)?)\s*(litros?|quilos?|gramas?|latas?|pacotes?|unidades?|potes?|caixas?|garrafas?|sacos?|d[uú]zias?|p[ãa]es|paezinhos|kg|pct|cx|un|l|g)?\s*(?:de\s+)?(.*)/i);
           if (matchQtd) {
             qtd = parseFloat(matchQtd[1].replace(',', '.')) || 1;
             const rawU = matchQtd[2] ? matchQtd[2].toLowerCase() : '';
@@ -12014,7 +11644,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
             if (rawU.includes('pã') || rawU.includes('paez')) {
               unidade = 'un';
-              nome = 'Pão' + (rawNome ? ' (' + rawNome + ')' : '');
+              nome = 'Pão Francês' + (rawNome ? ' (' + rawNome + ')' : '');
+            } else if (rawU.startsWith('dúzia') || rawU.startsWith('duzia')) {
+              unidade = 'dúzia';
+              nome = rawNome || cleanPart;
             } else if (rawU === 'l' || rawU.startsWith('litro')) {
               unidade = 'litros';
               nome = rawNome || cleanPart;
@@ -12023,9 +11656,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               nome = rawNome || cleanPart;
             } else if (rawU === 'g' || rawU.startsWith('grama')) {
               unidade = 'g';
-              nome = rawNome || cleanPart;
-            } else if (rawU.startsWith('lata')) {
-              unidade = 'lata';
               nome = rawNome || cleanPart;
             } else if (rawU.startsWith('pacote') || rawU === 'pct') {
               unidade = 'pct';
@@ -12043,75 +11673,49 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
           nome = nome.charAt(0).toUpperCase() + nome.slice(1);
 
-          // Se já existe na lista com o mesmo status ativo, incrementa quantidade
-          const existing = activeItems.find(it => it.nome.toLowerCase() === nome.toLowerCase() && it.status !== 'nao_tinha' && it.estabelecimento === seg.store);
+          const existing = activeItems.find(it => it.nome.toLowerCase() === nome.toLowerCase() && it.status !== 'nao_tinha');
           if (existing) {
-            existing.qtdDesejada += qtd;
-            newCreatedItems.push(existing);
+            existing.qtdDesejada = (existing.qtdDesejada || 1) + qtd;
+            existing.qtdComprada = existing.qtdDesejada;
+            addedNames.push(`${existing.nome} (+${qtd})`);
             return;
           }
 
-          const newItem = {
+          const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(nome) : null;
+          activeItems.push({
             id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
             nome: nome,
             qtdDesejada: qtd,
             unidade: unidade,
             marca: '',
             status: 'pendente',
-            qtdComprada: 0,
-            precoUnitario: 0,
+            qtdComprada: qtd,
+            precoUnitario: prevPurch ? (prevPurch.preco || 0) : 0,
             pedidoPor: sender,
-            estabelecimento: seg.store
-          };
+            estabelecimento: '🛒 Supermercado'
+          });
 
-          activeItems.push(newItem);
-          newCreatedItems.push(newItem);
+          addedNames.push(`${qtd} ${unidade} ${nome}`);
         });
-      });
+      }
 
       saveActiveShoppingItems(activeItems);
 
-      // Registra mensagem formatada no chat com divisão por loja estilo WhatsApp
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const msgs = getCleanChatMessages();
-
-      // Agrupa mensagem por loja
-      let formattedListMsg = `🛒 *Pedido por voz de ${sender} para ${recipient}:*\n`;
-      const groupedForMsg = {};
-      newCreatedItems.forEach(it => {
-        const st = it.estabelecimento || '🛒 Supermercado';
-        if (!groupedForMsg[st]) groupedForMsg[st] = [];
-        groupedForMsg[st].push(it);
-      });
-
-      Object.keys(groupedForMsg).forEach(storeHeader => {
-        formattedListMsg += `\n*${storeHeader}:*\n`;
-        groupedForMsg[storeHeader].forEach(it => {
-          formattedListMsg += `• ${it.qtdDesejada} ${it.unidade} ${it.nome}\n`;
-        });
-      });
-
       msgs.push({
         id: 'm_' + Date.now(),
         sender: sender,
-        avatar: sender === 'Mamãe' ? '👩' : (sender === 'Papai' ? '👨' : '👤'),
+        avatar: '🎙️',
         isMe: true,
-        text: formattedListMsg.trim(),
-        time: timeStr,
-        isVoiceList: true,
-        rawListText: formattedListMsg.trim()
+        text: `🎙️ Lista de compras atualizada: ${addedNames.join(', ')}.`,
+        time: timeStr
       });
-
       saveCleanChatMessages(msgs);
+
       renderCleanChatStream();
-
-      const feed = document.getElementById('chatMessagesFeed');
-      if (feed) feed.scrollTop = feed.scrollHeight;
-
-      // Notificação e feedback
-      triggerFamilyPushNotification('🛒 Pedido da ' + sender, `${newCreatedItems.length} itens divididos por loja para ${recipient}`, '🛒');
-      showToastUndo(`Pedido com ${newCreatedItems.length} itens dividido por lojas adicionado!`, false);
+      showToastUndo(`🎙️ Itens adicionados com sucesso à lista de compras!`, false);
       if (typeof playChatDing === 'function') playChatDing();
     }
 
