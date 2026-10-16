@@ -163,9 +163,53 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         _startNativeChatVoiceRecording();
       } else if (action == 'speak_text') {
         final text = data['text'] as String? ?? '';
+        final forceWithoutHeadphones = data['forceSpeaker'] as bool? ?? false;
+        if (text.isNotEmpty) {
+          if (forceWithoutHeadphones) {
+            _speakNativeTTS(text);
+          } else {
+            bool hasHeadphones = false;
+            try {
+              hasHeadphones = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                      .invokeMethod<bool>('isHeadphonesConnected') ??
+                  false;
+            } catch (_) {}
+            if (hasHeadphones) {
+              _speakNativeTTS(text);
+            } else {
+              _controller.runJavaScript("""
+                if (typeof window.onHeadphonesRequiredWarning === 'function') {
+                  window.onHeadphonesRequiredWarning();
+                }
+              """);
+            }
+          }
+        }
+      } else if (action == 'speak_alarm') {
+        final text = data['text'] as String? ?? '';
         if (text.isNotEmpty) {
           _speakNativeTTS(text);
         }
+      } else if (action == 'check_headphones') {
+        bool hasHeadphones = false;
+        try {
+          hasHeadphones = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                  .invokeMethod<bool>('isHeadphonesConnected') ??
+              false;
+        } catch (_) {}
+        _controller.runJavaScript("""
+          if (typeof window.onNativeHeadphonesStatus === 'function') {
+            window.onNativeHeadphonesStatus($hasHeadphones);
+          }
+        """);
+      } else if (action == 'request_notification_permission') {
+        final status = await Permission.notification.request();
+        final granted = status.isGranted;
+        _controller.runJavaScript("""
+          if (typeof window.onNativeNotificationPermissionResult === 'function') {
+            window.onNativeNotificationPermissionResult($granted);
+          }
+        """);
       } else if (action == 'stop_speak') {
         _flutterTts?.stop();
       } else if (action == 'update_launcher_icon') {
@@ -262,11 +306,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         await authService.signOut();
       } else if (action == 'exit_app') {
         SystemNavigator.pop();
-      } else if (action == 'speak_text') {
-        final text = data['text'] as String? ?? '';
-        if (text.isNotEmpty) {
-          _speakNativeTTS(text);
-        }
       }
     } catch (e) {
       debugPrint('Erro ao processar mensagem do JS: $e');
@@ -682,52 +721,17 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Ícone Animado Pulsando
-                            TweenAnimationBuilder<double>(
-                              tween: Tween<double>(begin: 0.94, end: 1.06),
-                              duration: const Duration(milliseconds: 900),
-                              curve: Curves.easeInOut,
-                              builder: (context, scale, child) {
-                                return Transform.scale(
-                                  scale: scale,
-                                  child: child,
-                                );
-                              },
-                              child: Container(
-                                width: 92,
-                                height: 92,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
-                                      blurRadius: 28,
-                                      spreadRadius: 6,
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(24),
-                                  child: Image.asset(
-                                    'assets/ICONE CELULAR - AZUL POSITIVO.png',
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Image.asset('assets/app_icon.png'),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 22),
-                            // Logo CtrlPig
+                            // Logo CtrlPig Limpo sem repetir o ícone quadrado do celular
                             const Text(
                               'CtrlPig',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 28,
+                                fontSize: 32,
                                 fontWeight: FontWeight.w900,
-                                letterSpacing: 0.8,
+                                letterSpacing: 1.0,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 8),
                             // Subtítulo Oficial
                             const Text(
                               'Controle Financeiro Inteligente',
@@ -738,29 +742,24 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
                                 letterSpacing: 0.6,
                               ),
                             ),
-                            const SizedBox(height: 36),
+                            const SizedBox(height: 32),
+                            const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF38BDF8)),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
                             // Indicador de Carregamento Discreto
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF60A5FA),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Carregando seu painel...',
-                                  style: TextStyle(
-                                    color: Color(0xFF64748B),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                            const Text(
+                              'Carregando seu painel...',
+                              style: TextStyle(
+                                color: Color(0xFF94A3B8),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),

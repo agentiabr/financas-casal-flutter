@@ -25,6 +25,33 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentBottomNavIndex = 0;
   final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: r'R$');
 
+  final List<Map<String, dynamic>> _accordionItems = [
+    {
+      'id': 'resumo_contas',
+      'title': 'Resumo das Contas do Mês',
+      'subtitle': 'Visão geral de receitas, despesas fixas e variáveis',
+      'expanded': false,
+    },
+    {
+      'id': 'cofrinho_casal',
+      'title': 'Cofrinho do Casal',
+      'subtitle': 'Organize suas metas (viagem, carro, casa, etc)',
+      'expanded': false,
+    },
+    {
+      'id': 'orcamento_previsto',
+      'title': 'Orçamento Previsto',
+      'subtitle': 'Mercado & Alimentação',
+      'expanded': false,
+    },
+    {
+      'id': 'carteira_cartoes',
+      'title': 'Carteira de Cartões',
+      'subtitle': 'Organize seus gastos com cartões de crédito e débito',
+      'expanded': false,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     final finance = Provider.of<FinanceProvider>(context);
@@ -53,16 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHeroCard(finance, isNegative),
               const SizedBox(height: 12),
 
-              // 3. Card Flat de Compras Parceladas no Topo
+              // 3. Accordion Estável Reordenável no Meio da Tela
+              _buildMiddleReorderableAccordion(finance),
+              const SizedBox(height: 12),
+
+              // 4. Card Flat de Compras Parceladas
               _buildInstallmentsHighlightCard(finance),
-              const SizedBox(height: 12),
-
-              // 4. Orçamento de Mercado / Alimentação
-              const FoodBudgetCard(),
-              const SizedBox(height: 12),
-
-              // 5. Métricas do Ciclo
-              _buildMetricsSummary(finance),
             ],
           ),
         ),
@@ -535,6 +558,146 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildMiddleReorderableAccordion(FinanceProvider finance) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
+          proxyDecorator: (Widget child, int index, Animation<double> animation) {
+            return Material(
+              color: Colors.transparent,
+              elevation: 0,
+              child: child,
+            );
+          },
+          itemCount: _accordionItems.length,
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) newIndex -= 1;
+              final item = _accordionItems.removeAt(oldIndex);
+              _accordionItems.insert(newIndex, item);
+            });
+          },
+          itemBuilder: (BuildContext context, int index) {
+            final item = _accordionItems[index];
+            final String itemId = item['id'] as String;
+            final bool isExpanded = item['expanded'] as bool;
+
+            return Container(
+              key: ValueKey<String>(itemId),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () {
+                      setState(() {
+                        item['expanded'] = !isExpanded;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      child: Row(
+                        children: [
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Icon(Icons.drag_indicator_rounded, color: Color(0xFF94A3B8), size: 20),
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item['title'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF082F49),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  item['subtitle'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontStyle: FontStyle.italic,
+                                    color: Color(0xFF94A3B8),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          AnimatedRotation(
+                            turns: isExpanded ? 0.5 : 0.0,
+                            duration: const Duration(milliseconds: 260),
+                            curve: Curves.easeInOut,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: Color(0xFF38BDF8),
+                              size: 26,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (isExpanded)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: _buildAccordionBody(itemId, finance),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccordionBody(String itemId, FinanceProvider finance) {
+    switch (itemId) {
+      case 'resumo_contas':
+        return _buildMetricsSummary(finance);
+      case 'orcamento_previsto':
+        return const FoodBudgetCard();
+      case 'cofrinho_casal':
+        return const Text('Acesse suas metas e cofrinhos do casal.', style: TextStyle(fontSize: 12));
+      case 'carteira_cartoes':
+        return Column(
+          children: finance.cards
+              .map((c) => ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(c.nome, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    subtitle: Text('${c.titular} • final ${c.final4}', style: const TextStyle(fontSize: 11)),
+                    trailing: Text(_currencyFormat.format(c.limite), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  ))
+              .toList(),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   void _openCardsModal() {
