@@ -1143,31 +1143,34 @@
     /* NOVO DESIGN HARMONIOSO CTRLPIG (AZUL MARINHO + SOBREPOSIÇÕES REFINADAS)    */
     /* ========================================================================== */
     :root {
-      --navy-header-bg: #0B192C;
-      --navy-header-sub: #07111E;
-      --navy-header-top: #050B14;
+      --navy-header-bg: #064066;
+      --navy-header-sub: #064066;
+      --navy-header-top: #042D48;
     }
 
-    /* 1. Cabeçalho Fixo em Azul Marinho Executivo */
+    /* 1. Cabeçalho Fixo em Azul #064066 com profundidade para passar por trás do hero card */
     header.seamless-fintech-header {
-      background: #0B192C !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      background: #064066 !important;
+      border-bottom: none !important;
       color: #FFFFFF !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+      box-shadow: 0 4px 20px rgba(6, 64, 102, 0.35) !important;
+      position: sticky;
+      top: 0;
+      z-index: 20; /* Fica por trás do hero card (z-index: 30) */
     }
     header.seamless-fintech-header .app-header-top-bar {
-      background: #050B14 !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      background: #042D48 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
       color: #E2E8F0 !important;
     }
     header.seamless-fintech-header .app-header-main-bar {
-      background: #0B192C !important;
+      background: #064066 !important;
     }
     header.seamless-fintech-header .app-header-sub-bar {
-      background: #07111E !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-      padding-bottom: 2rem !important; /* Estende o azul marinho para ultrapassar sob o card azul */
+      background: #064066 !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-bottom: none !important;
+      padding-bottom: 70px !important; /* Estende o azul #064066 por trás do card herói até a altura de Olá Família */
     }
 
     /* Botão Admin com tom Azul Nobre combinando */
@@ -1181,42 +1184,42 @@
       background: linear-gradient(135deg, #0369A1 0%, #075985 100%) !important;
     }
 
-    /* Área de Membros estilizada combinando com o Azul Marinho */
+    /* Área de Membros estilizada combinando com o Azul #064066 */
     #userSelectorBar button {
-      background: rgba(255, 255, 255, 0.10) !important;
-      border-color: rgba(255, 255, 255, 0.18) !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
       color: #FFFFFF !important;
     }
     #userSelectorBar button:hover {
-      background: rgba(255, 255, 255, 0.20) !important;
-      border-color: rgba(255, 255, 255, 0.30) !important;
+      background: rgba(255, 255, 255, 0.22) !important;
+      border-color: rgba(255, 255, 255, 0.35) !important;
     }
     #userSelectorBar button .font-extrabold,
     #userSelectorBar button span {
       color: #FFFFFF !important;
     }
     #btnUserFilter_Todos {
-      background: #2563EB !important;
-      border-color: #3B82F6 !important;
+      background: #0284C7 !important;
+      border-color: #38BDF8 !important;
       color: #FFFFFF !important;
     }
 
-    /* 2. Bloco Hero Azul que ultrapassa e sobrepõe o cabeçalho azul marinho */
+    /* 2. Bloco Hero Azul Claro que sobrepõe o cabeçalho #064066, ficando por cima dele */
     .hero-card-banner {
-      background: linear-gradient(180deg, #1E40AF 0%, #2563EB 55%, #3B82F6 100%) !important;
+      background: linear-gradient(180deg, #1D4ED8 0%, #2563EB 55%, #3B82F6 100%) !important;
       border-radius: 1.75rem !important;
-      box-shadow: 0 16px 36px -4px rgba(37, 99, 235, 0.40) !important;
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 0 16px 36px -4px rgba(37, 99, 235, 0.45) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.40) !important;
       position: relative;
-      z-index: 20;
-      margin-top: -22px !important; /* Ultrapassa e sobrepõe o cabeçalho conforme mockup */
+      z-index: 30; /* Fica claramente SOBREPOSTO POR CIMA do azul #064066 */
+      margin-top: -60px !important; /* Sobe por cima do cabeçalho até onde tem Olá, Família */
       padding-bottom: 2.75rem !important;
     }
 
     /* 3. Carrossel de Rotinas que sobrepõe o bloco azul onde está o porquinho */
     #fintechQuickHub {
       position: relative;
-      z-index: 30;
+      z-index: 40; /* Fica acima do hero card */
       margin-top: -42px !important; /* Sobreposição destacada no bloco azul do porquinho */
     }
 
