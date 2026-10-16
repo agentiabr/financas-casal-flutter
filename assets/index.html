@@ -146,6 +146,31 @@
       background: #475569 !important;
     }
 
+  
+    /* Acessibilidade Touch Target 48x48px & Leitores de Tela (WCAG AAA) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    button, [role="button"], a {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+    }
+    header.seamless-fintech-header button {
+      min-height: 44px;
+    }
+    .decolar-card {
+      min-height: 175px;
+    }
+
   </style>
 
   <title>CtrlPig • Controle Financeiro Inteligente</title>
@@ -1313,6 +1338,31 @@
         flex: 0 0 calc(14.28% - 0.75rem);
         min-width: 160px;
       }
+    }
+
+  
+    /* Acessibilidade Touch Target 48x48px & Leitores de Tela (WCAG AAA) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    button, [role="button"], a {
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+    }
+    header.seamless-fintech-header button {
+      min-height: 44px;
+    }
+    .decolar-card {
+      min-height: 175px;
     }
 
   </style>
@@ -10956,6 +11006,35 @@
       });
     }
 
+    
+    // ==========================================
+    // SISTEMA DE ACESSIBILIDADE WCAG / ARIA LIVE
+    // ==========================================
+    function announceA11y(message, assertive = false) {
+      if (!message) return;
+      let liveRegion = document.getElementById('a11yLiveAnnouncer');
+      if (!liveRegion) {
+        liveRegion = document.createElement('div');
+        liveRegion.id = 'a11yLiveAnnouncer';
+        liveRegion.setAttribute('aria-live', assertive ? 'assertive' : 'polite');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        liveRegion.className = 'sr-only';
+        liveRegion.style.position = 'absolute';
+        liveRegion.style.width = '1px';
+        liveRegion.style.height = '1px';
+        liveRegion.style.padding = '0';
+        liveRegion.style.margin = '-1px';
+        liveRegion.style.overflow = 'hidden';
+        liveRegion.style.clip = 'rect(0, 0, 0, 0)';
+        liveRegion.style.border = '0';
+        document.body.appendChild(liveRegion);
+      }
+      liveRegion.textContent = '';
+      setTimeout(() => {
+        liveRegion.textContent = message;
+      }, 50);
+    }
+
     function renderGeminiKeyUI() {
       const activeBox = document.getElementById('geminiActiveKeyBox');
       const formBox = document.getElementById('geminiFormKeyBox');
@@ -11977,18 +12056,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     async function parseVoiceShoppingWithGeminiAI(spokenText, apiKey) {
       try {
-        const prompt = `Você é um assistente especializado em compras familiares de supermercado e feira.
-Extraia da seguinte frase falada pelo usuário todos os produtos solicitados e seus valores se houver.
-Ignore vocativos e saudações como "Amor", "traz", "pega", "por favor", "meu bem", "vida", etc.
-Se houver indicação de preço ("a 5 reais", "por 10 e 50"), extraia o campo preco como float. Se não houver, coloque 0.00.
-Retorne estritamente em JSON puro sem formatação markdown:
+        const prompt = `Você é um assistente sênior especializado em compras familiares, produtos e preços em estabelecimentos brasileiros (Supermercados, Padarias, Farmácias, Postos, Açougues).
+Analise a frase falada pelo usuário e extraia com máxima precisão os itens, quantidades, valores e estabelecimentos.
+CRITÉRIOS OBRIGATÓRIOS:
+1. Suprima vocativos, saudações e prefixos coloquiais como "compra de", "comprei", "compre", "traz", "pega", "amor", "por favor", etc.
+2. Identifique o nome do estabelecimento real se mencionado (Ex: "no supermercado o dia" -> estabelecimento: "Supermercado O Dia", "na padaria estrela" -> estabelecimento: "Padaria Estrela", "no carrefour" -> estabelecimento: "Carrefour").
+3. Se a frase for no formato "compra de R$ 25 no supermercado o dia", retorne:
+   - nome: "Compras Diversas" (ou o produto específico se citado, ex: "Arroz", "Pão", "Carne")
+   - preco: 25.00
+   - estabelecimento: "Supermercado O Dia"
+   - qtd: 1, unidade: "un"
+4. Se o usuário falar produtos com preço (ex: "Leite a 5 reais no Assaí"), extraia o preço e o estabelecimento corretamente.
+Retorne ESTRITAMENTE em formato JSON puro sem blocos markdown:
 [
   {
-    "nome": "Nome do Produto (ex: Leite Integral, Pão Francês, Arroz Branco)",
+    "nome": "Nome do Produto limpo e sem 'compra de'",
     "qtd": 1,
     "unidade": "un | litros | kg | pct | dúzia | cx",
     "preco": 0.00,
-    "estabelecimento": "🛒 Supermercado | 🥖 Padaria | 🥩 Açougue | 💊 Farmácia"
+    "estabelecimento": "Nome da Loja identificado ou 🛒 Supermercado"
   }
 ]
 Frase falada: "${spokenText}"`;
@@ -12092,7 +12178,51 @@ Frase falada: "${spokenText}"`;
           addedNames.push(`${qtd} ${unidade} ${nome}${preco > 0 ? ` (R$ ${preco.toFixed(2).replace('.', ',')})` : ''}`);
         });
       } else {
-        // FALLBACK LOCAL: Limpeza de vocativos e fatiamento local
+        // FALLBACK LOCAL INTELIGENTE: Limpeza de vocativos, detecção de loja e valores
+        let text = spokenText.trim();
+
+        // 1. Detectar padrão especial: "compra de R$ 25 no supermercado X" ou "gasto de 50 na padaria Y"
+        const compraLojaMatch = text.match(/(?:compra|gasto|despesa|paguei)?\s*(?:de\s+)?(?:r\$\s*)?(\d+(?:[.,]\d+)?)\s*(?:reais)?\s+(?:no|na|em|para\s+o|para\s+a)\s+(.+)/i);
+        if (compraLojaMatch) {
+          const valorDetectado = parseFloat(compraLojaMatch[1].replace(',', '.')) || 0;
+          let lojaDetectada = compraLojaMatch[2].trim();
+          lojaDetectada = lojaDetectada.replace(/[.,;]$/, '').trim();
+          lojaDetectada = lojaDetectada.charAt(0).toUpperCase() + lojaDetectada.slice(1);
+
+          activeItems.push({
+            id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+            nome: 'Compras Diversas',
+            qtdDesejada: 1,
+            unidade: 'un',
+            marca: '',
+            status: 'pendente',
+            qtdComprada: 1,
+            precoUnitario: valorDetectado,
+            pedidoPor: sender,
+            estabelecimento: lojaDetectada
+          });
+
+          if (valorDetectado > 0 && typeof priceHistory !== 'undefined') {
+            const todayStr = new Date().toISOString().split('T')[0];
+            priceHistory.unshift({
+              id: Date.now() + Math.floor(Math.random() * 1000),
+              produto: 'Compras Diversas',
+              estabelecimento: lojaDetectada,
+              data: todayStr,
+              preco: valorDetectado,
+              precoAnterior: null,
+              unidade: 'un'
+            });
+            savePriceHistory();
+          }
+
+          addedNames.push(`Compras Diversas (R$ ${valorDetectado.toFixed(2).replace('.', ',')} no ${lojaDetectada})`);
+        } else {
+          // Processamento padrão de produtos múltiplos
+          text = text.replace(/^(?:ol[áa]|oi\s+)?(?:meu\s+|minha\s+)?(?:amor|vida|bem|querido|querida|filho|filha|m[ãa]m?[ãa]e|papai|pai|rodrigo|m[áa]rcia)\s*[,:]?\s*/i, '');
+          text = text.replace(/^(?:por\s+favor|pfv|faz\s+um\s+favor)\s*[,:]?\s*/i, '');
+          text = text.replace(/^(?:traz|traga|pega|pegue|compra|compre|leva|leve|preciso\s+de|precisamos\s+de|adiciona|inclui)\s*(?:pra\s+mim|para\s+mim|pra\s+gente|pro\s+almo[çc]o|pra\s+janta|no\s+mercado)?\s*[,:]?\s*/i, '');
+          text = text.replace(/^(?:compra\s+de|gasto\s+de)\s+/i, '');
         let text = spokenText.trim();
         text = text.replace(/^(?:ol[áa]|oi\s+)?(?:meu\s+|minha\s+)?(?:amor|vida|bem|querido|querida|filho|filha|m[ãa]m?[ãa]e|papai|pai|rodrigo|m[áa]rcia)\s*[,:]?\s*/i, '');
         text = text.replace(/^(?:por\s+favor|pfv|faz\s+um\s+favor)\s*[,:]?\s*/i, '');
@@ -12173,6 +12303,7 @@ Frase falada: "${spokenText}"`;
 
           addedNames.push(`${qtd} ${unidade} ${nome}`);
         });
+        }
       }
 
       saveActiveShoppingItems(activeItems);
