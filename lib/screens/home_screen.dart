@@ -29,25 +29,31 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       'id': 'resumo_contas',
       'title': 'Resumo das Contas do Mês',
-      'subtitle': 'Visão geral de receitas, despesas fixas e variáveis',
-      'expanded': false,
+      'icon': Icons.bar_chart_outlined,
+      'expanded': true,
+    },
+    {
+      'id': 'analise_visual',
+      'title': 'Análise Visual & Categorias',
+      'icon': Icons.pie_chart_outline_rounded,
+      'expanded': true,
     },
     {
       'id': 'cofrinho_casal',
       'title': 'Cofrinho do Casal',
-      'subtitle': 'Organize suas metas (viagem, carro, casa, etc)',
+      'icon': Icons.savings_outlined,
       'expanded': false,
     },
     {
       'id': 'orcamento_previsto',
       'title': 'Orçamento Previsto',
-      'subtitle': 'Mercado & Alimentação',
+      'icon': Icons.shopping_basket_outlined,
       'expanded': false,
     },
     {
       'id': 'carteira_cartoes',
       'title': 'Carteira de Cartões',
-      'subtitle': 'Organize seus gastos com cartões de crédito e débito',
+      'icon': Icons.credit_card_outlined,
       'expanded': false,
     },
   ];
@@ -586,74 +592,65 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (BuildContext context, int index) {
             final item = _accordionItems[index];
             final String itemId = item['id'] as String;
-            final bool isExpanded = item['expanded'] as bool;
+            final bool isOpen = item['expanded'] as bool;
 
-            return Container(
+            return Padding(
               key: ValueKey<String>(itemId),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0F172A).withValues(alpha: 0.05),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   InkWell(
-                    borderRadius: BorderRadius.circular(20),
                     onTap: () {
                       setState(() {
-                        item['expanded'] = !isExpanded;
+                        item['expanded'] = !isOpen;
                       });
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: isOpen ? Colors.transparent : const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Row(
                         children: [
                           ReorderableDragStartListener(
                             index: index,
-                            child: const Padding(
-                              padding: EdgeInsets.only(right: 10),
-                              child: Icon(Icons.drag_indicator_rounded, color: Color(0xFF94A3B8), size: 20),
+                            child: Icon(
+                              Icons.drag_indicator,
+                              color: Colors.grey.shade400,
+                              size: 22,
                             ),
                           ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            item['icon'] as IconData,
+                            color: Colors.grey.shade700,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item['title'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF082F49),
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  item['subtitle'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontStyle: FontStyle.italic,
-                                    color: Color(0xFF94A3B8),
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              item['title'] as String,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: isOpen ? FontWeight.bold : FontWeight.w500,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
                           AnimatedRotation(
-                            turns: isExpanded ? 0.5 : 0.0,
-                            duration: const Duration(milliseconds: 260),
+                            turns: isOpen ? 0.5 : 0.0,
+                            duration: const Duration(milliseconds: 200),
                             curve: Curves.easeInOut,
-                            child: const Icon(
+                            child: Icon(
                               Icons.keyboard_arrow_down_rounded,
-                              color: Color(0xFF38BDF8),
+                              color: Colors.grey.shade600,
                               size: 26,
                             ),
                           ),
@@ -661,11 +658,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  if (isExpanded)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: _buildAccordionBody(itemId, finance),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.fastOutSlowIn,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: isOpen ? null : 0,
+                      child: isOpen
+                          ? Padding(
+                              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 12.0),
+                              child: _buildAccordionBody(itemId, finance),
+                            )
+                          : const SizedBox.shrink(),
                     ),
+                  ),
                 ],
               ),
             );
