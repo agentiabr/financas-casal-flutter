@@ -1138,78 +1138,204 @@
       animation: particleFloatUp 0.85s ease-out forwards;
     }
 
-    /* ============================================================== */
-    /* CABEÇALHO CONTÍNUO FINTECH (COR UNIFICADA ATÉ OS ÍCONES FLAT)   */
-    /* ============================================================== */
+    
+    /* ========================================================================== */
+    /* NOVO DESIGN HARMONIOSO CTRLPIG (CABECALHO PETROL + HERO & CARROSSEL SOBREPOSTOS) */
+    /* ========================================================================== */
+    :root {
+      --petrol-header-bg: #073B4C;
+      --petrol-header-sub: #052F3D;
+      --hero-blue-solid: linear-gradient(180deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%);
+    }
+
+    /* 1. Header Fixo em Azul Petróleo Nobre */
     header.seamless-fintech-header {
-      background: var(--hero-gradient) !important;
-      border-bottom: none !important;
-      color: #FFFFFF !important;
-      box-shadow: none !important;
-    }
-    header.seamless-fintech-header .app-header-top-bar {
-      background: rgba(0, 0, 0, 0.2) !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-      color: #FFFFFF !important;
-    }
-    header.seamless-fintech-header .app-header-main-bar {
-      background: transparent !important;
-      color: #FFFFFF !important;
-    }
-    header.seamless-fintech-header .app-header-sub-bar {
-      background: rgba(0, 0, 0, 0.12) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+      background: #073B4C !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
       color: #FFFFFF !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
     }
-    header.seamless-fintech-header .nav-text-main,
-    header.seamless-fintech-header .nav-text-muted,
-    header.seamless-fintech-header h1,
-    header.seamless-fintech-header h2,
-    header.seamless-fintech-header span,
-    header.seamless-fintech-header p {
-      color: #FFFFFF !important;
+    header.seamless-fintech-header .app-header-top-bar {
+      background: #052F3D !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #E2E8F0 !important;
+    }
+    header.seamless-fintech-header .app-header-main-bar {
+      background: #073B4C !important;
+    }
+    header.seamless-fintech-header .app-header-sub-bar {
+      background: #052F3D !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
     }
 
-    /* O Card Herói e o Quick Hub fluem naturalmente com a cor de fundo */
-    .hero-card-banner {
-      background: var(--hero-gradient) !important;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25) !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    /* Botão Admin com tom Azul Nobre combinando */
+    #btnAdminHeader {
+      background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+      color: #FFFFFF !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3) !important;
+    }
+    #btnAdminHeader:hover {
+      background: linear-gradient(135deg, #0369A1 0%, #075985 100%) !important;
     }
 
-    #fintechQuickHub > div {
-      background: var(--hero-gradient) !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2) !important;
-      color: #FFFFFF !important;
-    }
-    #fintechQuickHub h2,
-    #fintechQuickHub span {
-      color: #FFFFFF !important;
-    }
-    #fintechQuickHub button {
+    /* Área de Membros estilizada combinando com o Petrol */
+    #userSelectorBar button {
       background: rgba(255, 255, 255, 0.12) !important;
       border-color: rgba(255, 255, 255, 0.2) !important;
       color: #FFFFFF !important;
-      backdrop-filter: blur(10px);
     }
-    #fintechQuickHub button:hover {
+    #userSelectorBar button:hover {
       background: rgba(255, 255, 255, 0.22) !important;
       border-color: rgba(255, 255, 255, 0.35) !important;
-      transform: translateY(-2px);
     }
-    #fintechQuickHub button .font-extrabold,
-    #fintechQuickHub button .font-bold,
-    #fintechQuickHub button .font-medium,
-    #fintechQuickHub button span,
-    #fintechQuickHub button div {
+    #userSelectorBar button .font-extrabold,
+    #userSelectorBar button span {
       color: #FFFFFF !important;
     }
-    #fintechQuickHub button span[class*="rounded-full"] {
-      background: rgba(255, 255, 255, 0.2) !important;
-      border-color: rgba(255, 255, 255, 0.3) !important;
+    #btnUserFilter_Todos {
+      background: #2563EB !important;
+      border-color: #3B82F6 !important;
       color: #FFFFFF !important;
+    }
+
+    /* 2. Bloco Hero Azul que fica um pouco por cima do cabeçalho petrol */
+    .hero-card-banner {
+      background: linear-gradient(180deg, #1E40AF 0%, #2563EB 55%, #3B82F6 100%) !important;
+      border-radius: 1.75rem !important;
+      box-shadow: 0 12px 32px -4px rgba(37, 99, 235, 0.35) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      position: relative;
+      z-index: 20;
+      margin-top: -12px !important; /* SOBREPOSIÇÃO NO TOPO */
+      padding-bottom: 2.5rem !important;
+    }
+
+    /* 3. Carrossel de Rotinas que fica um pouco por cima do bloco azul onde está o porquinho */
+    #fintechQuickHub {
+      position: relative;
+      z-index: 30;
+      margin-top: -36px !important; /* SOBREPOSIÇÃO NO BLOCO AZUL DO PORQUINHO */
+    }
+
+    /* Trilho de rolagem horizontal fluida com o dedo */
+    .carousel-rotinas-track {
+      display: flex;
+      gap: 0.85rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem 0.25rem 0.85rem 0.25rem;
+      scrollbar-width: none;
+    }
+    .carousel-rotinas-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Cards Brancos com Cantos Arredondados e Sombra Suave (Estilo Mockup) */
+    .rotina-carousel-card {
+      flex: 0 0 175px;
+      min-width: 175px;
+      max-width: 195px;
+      scroll-snap-align: start;
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      padding: 1.1rem 0.85rem 0.95rem 0.85rem;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .rotina-carousel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -4px rgba(37, 99, 235, 0.18);
+      border-color: #3B82F6;
+    }
+    .rotina-carousel-card:active {
+      transform: scale(0.97);
+    }
+    .dark .rotina-carousel-card,
+    body.theme-dark .rotina-carousel-card {
+      background: #0F172A !important;
+      border-color: #1E293B !important;
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5) !important;
+    }
+    .dark .rotina-carousel-card:hover,
+    body.theme-dark .rotina-carousel-card:hover {
+      border-color: #38BDF8 !important;
+    }
+
+    /* Halo das Ilustrações Flat Vetoriais */
+    .rotina-illustration-halo {
+      width: 76px;
+      height: 76px;
+      border-radius: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(219, 234, 254, 0.6) 100%);
+      border: 1px solid rgba(191, 219, 254, 0.8);
+      transition: transform 0.25s ease;
+      box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.8);
+    }
+    .rotina-carousel-card:hover .rotina-illustration-halo {
+      transform: scale(1.08) rotate(1deg);
+    }
+    .dark .rotina-illustration-halo,
+    body.theme-dark .rotina-illustration-halo {
+      background: rgba(30, 41, 59, 0.85) !important;
+      border-color: rgba(56, 189, 248, 0.3) !important;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Botão Acessar estilo Mockup */
+    .rotina-action-btn {
+      margin-top: 0.65rem;
+      width: 100%;
+      padding: 0.42rem 0.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-align: center;
+      border: 1.5px solid #2563EB;
+      color: #2563EB;
+      background: #EFF6FF;
+      transition: all 0.2s ease;
+    }
+    .rotina-carousel-card:hover .rotina-action-btn {
+      background: #2563EB;
+      color: #FFFFFF;
+    }
+    .dark .rotina-action-btn,
+    body.theme-dark .rotina-action-btn {
+      border-color: #38BDF8 !important;
+      color: #38BDF8 !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+    }
+    .dark .rotina-carousel-card:hover .rotina-action-btn,
+    body.theme-dark .rotina-carousel-card:hover .rotina-action-btn {
+      background: #38BDF8 !important;
+      color: #0F172A !important;
+    }
+
+    /* Alerta Vermelho Dinâmico Total no Novo Design */
+    body.theme-negative-alert header.seamless-fintech-header {
+      background: #4C0519 !important;
+    }
+    body.theme-negative-alert header.seamless-fintech-header .app-header-top-bar,
+    body.theme-negative-alert header.seamless-fintech-header .app-header-sub-bar {
+      background: #380312 !important;
+    }
+    body.theme-negative-alert .hero-card-banner {
+      background: linear-gradient(180deg, #881337 0%, #BE123C 55%, #E11D48 100%) !important;
+      box-shadow: 0 12px 32px -4px rgba(225, 29, 72, 0.35) !important;
     }
 
   </style>
@@ -1278,9 +1404,10 @@
             <span id="trashBadgeCount" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">0</span>
           </button>
 
-          <!-- Botão Administrador Rodrigo -->
-          <button onclick="openAdminModal()" class="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-900 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm transition-all flex-shrink-0" title="Painel Administrativo: Sugestões, Cupons VIP & Configurações">
-            <span>👑 Admin</span>
+          <!-- Botão Administrador Rodrigo com Estilo Azul Nobre Harmonizado -->
+          <button onclick="openAdminModal()" id="btnAdminHeader" class="px-2.5 py-1 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm transition-all flex-shrink-0 active:scale-95 cursor-pointer" title="Painel Administrativo: Sugestões, Cupons VIP & Configurações">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-200"></i>
+            <span>Admin</span>
           </button>
 
           <!-- Botão Sair / Deslogar com Alta Visibilidade sem Cortes -->
@@ -1463,21 +1590,21 @@
               </span>
             </div>
 
-            <!-- 3 Botões de Ação Rápida (Voz, Foto da Nota, Digitar) -->
-            <div class="mt-4 grid grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:gap-2.5">
-              <button onclick="openVoiceRecordModal()" class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 text-xs sm:text-sm font-bold shadow-sm transition-all" title="Lançar despesa ou receita falando por Voz">
-                <i data-lucide="mic" class="w-3.5 h-3.5 flex-shrink-0"></i>
-                <span class="truncate">Por Voz</span>
+            <!-- 3 Botões de Ação do Novo Mockup (Família, + Receitas, - Gastos) -->
+            <div class="mt-4 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+              <button onclick="openFamilyChatModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95" title="Abrir Chat e Rotina da Família">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-sky-200"></i>
+                <span class="truncate">Família</span>
               </button>
 
-              <button onclick="openInvoiceScanModal()" class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 text-xs sm:text-sm font-bold shadow-sm transition-all" title="Fotografar Cupom ou Nota Fiscal">
-                <i data-lucide="camera" class="w-3.5 h-3.5 flex-shrink-0"></i>
-                <span class="truncate">Foto Nota</span>
+              <button onclick="openNewTxModal('Receita')" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-100 backdrop-blur-md border border-emerald-400/40 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95" title="Cadastrar nova Receita ou Salário">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-300"></i>
+                <span class="truncate">+ Receitas</span>
               </button>
 
-              <button onclick="openNewTxModal()" class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl bg-white text-blue-700 hover:bg-blue-50 text-xs sm:text-sm font-extrabold shadow-md transition-all" title="Digitar dados do lançamento manualmente">
-                <i data-lucide="plus" class="w-3.5 h-3.5 flex-shrink-0"></i>
-                <span class="truncate">Digitar</span>
+              <button onclick="openNewTxModal('Despesa Variável')" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-white text-blue-700 hover:bg-blue-50 text-xs sm:text-sm font-extrabold shadow-md transition-all active:scale-95" title="Lançar novo Gasto ou Despesa">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span class="truncate">- Gastos</span>
               </button>
             </div>
 
@@ -1573,182 +1700,241 @@
     <!-- ============================================================== -->
     <!-- RÉGUA DE ACESSO RÁPIDO FINTECH (QUICK HUB DE SERVIÇOS & ROTINAS) -->
     <!-- ============================================================== -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-1.5 w-full" id="fintechQuickHub">
-      <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200/90 dark:border-slate-800 shadow-xs transition-all">
-        <div class="flex items-center justify-between mb-2.5 px-0.5">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-            <h2 class="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-              <span>Rotinas da Família</span>
-            </h2>
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-3 w-full" id="fintechQuickHub">
+      
+      <!-- Carrossel Sobreposto ao Card Azul com Rolagem com o Dedo (Estilo Mockup) -->
+      <div class="carousel-rotinas-track" id="quickHubCarouselTrack" onscroll="updateQuickHubDots()">
+
+        <!-- 1. LISTA DE COMPRAS -->
+        <div onclick="openShoppingListModal();" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Sacola de Supermercado & Itens -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="22" width="36" height="34" rx="8" fill="#3B82F6" fill-opacity="0.2"/>
+              <path d="M16 26C16 23.7909 17.7909 22 20 22H44C46.2091 22 48 23.7909 48 26V50C48 53.3137 45.3137 56 42 56H22C18.6863 56 16 53.3137 16 50V26Z" fill="#2563EB"/>
+              <path d="M24 22V16C24 11.5817 27.5817 8 32 8C36.4183 8 40 11.5817 40 16V22" stroke="#60A5FA" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="32" cy="38" r="8" fill="#93C5FD"/>
+              <path d="M30 35L34 38L30 41" stroke="#1E40AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <span class="text-[11px] font-semibold text-slate-400 hidden xs:inline">8 Módulos Integrados</span>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Lista de Compras
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center">
+            Itens e gôndola
+          </div>
+          <span id="quickHubShoppingBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+            Lista ativa
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
         </div>
 
-        <!-- 8 Cards Flat com cantos squircle elegantes e design sóbrio -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
-          
-          <!-- 1. PETS & VACINAS -->
-          <button type="button" onclick="openPetAreaModal()" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="paw-print" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Pets &amp;<br>Vacinas
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center" id="quickHubPetSub">
-              Vacinas, perfil & saúde
-            </div>
-            <div class="mt-2 flex items-center">
-              <span id="quickHubPetBadge" class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Vacinas em dia
-              </span>
-            </div>
-          </button>
-
-          <!-- 2. MINHA SAÚDE -->
-          <button type="button" onclick="openHealthMedsModal()" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="pill" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Minha<br>Saúde
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center" id="quickHubHealthSub">
-              Remédios & rotina
-            </div>
-            <div class="mt-2 flex items-center">
-              <span id="quickHubHealthBadge" class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Próx: 20:00
-              </span>
-            </div>
-          </button>
-
-          <!-- 3. LISTA DE COMPRAS -->
-          <button type="button" onclick="openShoppingListModal();" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Lista de<br>Compras
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center">
-              Itens na gôndola
-            </div>
-            <div class="mt-2 flex items-center">
-              <span id="quickHubShoppingBadge" class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Lista ativa
-              </span>
-            </div>
-          </button>
-
-          <!-- 4. CHAT DA FAMÍLIA -->
-          <button type="button" onclick="openFamilyChatModal(); if(isChatListExpanded) toggleChatListExpanded();" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="message-square" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Chat da<br>Família
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center">
-              Voz e pedidos
-            </div>
-            <div class="mt-2 flex items-center">
-              <span class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Ao vivo
-              </span>
-            </div>
-          </button>
-
-          <!-- 5. CARTÕES & FATURAS -->
-          <button type="button" onclick="openManageCardsModal()" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="credit-card" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Cartões &amp;<br>Faturas
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center">
-              Limites e parcelas
-            </div>
-            <div class="mt-2 flex items-center">
-              <span class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Faturas
-              </span>
-            </div>
-          </button>
-
-          <!-- 6. COFRINHOS & METAS -->
-          <button type="button" onclick="openCreatePiggyModal()" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="target" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Cofrinhos &amp;<br>Metas
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center">
-              Poupança e reservas
-            </div>
-            <div class="mt-2 flex items-center">
-              <span class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                Metas
-              </span>
-            </div>
-          </button>
-
-          <!-- 7. VEÍCULOS & GARAGEM -->
-          <button type="button" onclick="openVeiculosHub();" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="car" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Veículos &amp;<br>Garagem
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center" id="quickHubVeiculosSub">
-              Gasolina, IPVA e peças
-            </div>
-            <div class="mt-2 flex items-center">
-              <span id="quickHubVeiculosBadge" class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                R$ 0,00
-              </span>
-            </div>
-          </button>
-
-          <!-- 8. EDUCAÇÃO & ESTUDOS -->
-          <button type="button" onclick="openEducacaoHub();" class="flex flex-col text-left p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer active:scale-98">
-            <div class="flex items-center gap-2 mb-1.5 w-full">
-              <div class="w-8 h-8 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 flex items-center justify-center font-bold text-sm flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-              </div>
-              <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">
-                Educação &amp;<br>Estudos
-              </div>
-            </div>
-            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-7 flex items-center" id="quickHubEducacaoSub">
-              Cursos, faculdade e pós
-            </div>
-            <div class="mt-2 flex items-center">
-              <span id="quickHubEducacaoBadge" class="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
-                R$ 0,00
-              </span>
-            </div>
-          </button>
-
+        <!-- 2. CHAT DA FAMÍLIA -->
+        <div onclick="openFamilyChatModal(); if(isChatListExpanded) toggleChatListExpanded();" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Diálogo e Chat Familiar -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="14" width="34" height="26" rx="8" fill="#0284C7"/>
+              <path d="M18 40L14 46V40H18Z" fill="#0284C7"/>
+              <rect x="24" y="24" width="30" height="24" rx="8" fill="#38BDF8"/>
+              <path d="M46 48L50 54V48H46Z" fill="#38BDF8"/>
+              <circle cx="21" cy="27" r="2.5" fill="#FFFFFF"/>
+              <circle cx="27" cy="27" r="2.5" fill="#FFFFFF"/>
+              <circle cx="35" cy="36" r="2" fill="#0F172A"/>
+              <circle cx="41" cy="36" r="2" fill="#0F172A"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Chat da Família
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center">
+            Voz e pedidos
+          </div>
+          <span class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300">
+            Ao vivo
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
         </div>
+
+        <!-- 3. PETS & VACINAS -->
+        <div onclick="openPetAreaModal()" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Pet Cachorrinho & Cuidados -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="36" rx="16" ry="14" fill="#F59E0B"/>
+              <circle cx="24" cy="32" r="2.5" fill="#1E293B"/>
+              <circle cx="40" cy="32" r="2.5" fill="#1E293B"/>
+              <ellipse cx="32" cy="38" rx="4" ry="3" fill="#1E293B"/>
+              <path d="M18 24C16 18 12 18 14 28" stroke="#D97706" stroke-width="4" stroke-linecap="round"/>
+              <path d="M46 24C48 18 52 18 50 28" stroke="#D97706" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="46" cy="46" r="8" fill="#10B981"/>
+              <path d="M46 42V50M42 46H50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Pets & Vacinas
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubPetSub">
+            Vacinas e carteirinha
+          </div>
+          <span id="quickHubPetBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+            Vacinas em dia
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 4. MINHA SAÚDE -->
+        <div onclick="openHealthMedsModal()" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Medicamentos, Cartela & Cuidados -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="20" width="36" height="28" rx="6" fill="#F43F5E"/>
+              <circle cx="23" cy="27" r="3.5" fill="#FFE4E6"/>
+              <circle cx="32" cy="27" r="3.5" fill="#FFE4E6"/>
+              <circle cx="41" cy="27" r="3.5" fill="#FFE4E6"/>
+              <circle cx="23" cy="41" r="3.5" fill="#FFE4E6"/>
+              <circle cx="32" cy="41" r="3.5" fill="#FFE4E6"/>
+              <circle cx="41" cy="41" r="3.5" fill="#FFE4E6"/>
+              <rect x="28" y="10" width="8" height="14" rx="4" fill="#3B82F6" transform="rotate(45 28 10)"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Minha Saúde
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubHealthSub">
+            Remédios e cartelas
+          </div>
+          <span id="quickHubHealthBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+            Próx: 20:00
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 5. CARTÕES & FATURAS -->
+        <div onclick="openManageCardsModal()" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Cartão de Crédito e Faturas -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="12" y="18" width="40" height="28" rx="6" fill="#8B5CF6"/>
+              <rect x="12" y="24" width="40" height="6" fill="#6D28D9"/>
+              <rect x="18" y="36" width="10" height="4" rx="2" fill="#FBBF24"/>
+              <circle cx="42" cy="38" r="4" fill="#EC4899" fill-opacity="0.8"/>
+              <circle cx="46" cy="38" r="4" fill="#F59E0B" fill-opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Cartões & Faturas
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center">
+            Limites e parcelas
+          </div>
+          <span class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+            Faturas
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 6. COFRINHOS & METAS -->
+        <div onclick="openCreatePiggyModal()" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Cofrinho Piggy & Moedas -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="36" rx="16" ry="13" fill="#EC4899"/>
+              <ellipse cx="44" cy="36" rx="5" ry="4" fill="#F472B6"/>
+              <circle cx="43" cy="36" r="1.5" fill="#831843"/>
+              <circle cx="46" cy="36" r="1.5" fill="#831843"/>
+              <circle cx="36" cy="29" r="2" fill="#1E293B"/>
+              <rect x="29" y="14" width="6" height="8" rx="2" fill="#F59E0B"/>
+              <circle cx="32" cy="18" r="5" fill="#FBBF24"/>
+              <text x="30" y="21" font-size="7" font-weight="bold" fill="#B45309">$</text>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Cofrinhos & Metas
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center">
+            Poupança e reservas
+          </div>
+          <span class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-300">
+            Metas
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 7. VEÍCULOS & GARAGEM -->
+        <div onclick="openVeiculosHub();" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Veículo Carro & Garagem -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 36L22 24C23 21 25 20 28 20H36C39 20 41 21 42 24L46 36H18Z" fill="#14B8A6"/>
+              <rect x="14" y="34" width="36" height="12" rx="4" fill="#0D9488"/>
+              <circle cx="22" cy="46" r="5" fill="#1E293B"/>
+              <circle cx="22" cy="46" r="2" fill="#E2E8F0"/>
+              <circle cx="42" cy="46" r="5" fill="#1E293B"/>
+              <circle cx="42" cy="46" r="2" fill="#E2E8F0"/>
+              <rect x="18" y="26" width="12" height="6" rx="2" fill="#CCFBF1"/>
+              <rect x="34" y="26" width="12" height="6" rx="2" fill="#CCFBF1"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Veículos & Garagem
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubVeiculosSub">
+            Gasolina e manutenção
+          </div>
+          <span id="quickHubVeiculosBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">
+            R$ 0,00
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 8. EDUCAÇÃO & ESTUDOS -->
+        <div onclick="openEducacaoHub();" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Capelo de Formatura e Livros -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 14L14 23L32 32L50 23L32 14Z" fill="#6366F1"/>
+              <path d="M22 28V40C22 43 26 46 32 46C38 46 42 43 42 40V28" fill="#4F46E5"/>
+              <path d="M48 24V38" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="48" cy="40" r="2" fill="#F59E0B"/>
+              <rect x="16" y="48" width="32" height="6" rx="3" fill="#A5B4FC"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Educação & Estudos
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubEducacaoSub">
+            Cursos e faculdade
+          </div>
+          <span id="quickHubEducacaoBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300">
+            R$ 0,00
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Indicadores de Rolagem Discretos (Dots estilo Decolar) -->
+      <div class="flex items-center justify-center gap-1.5 mt-2" id="quickHubCarouselDots">
+        <span class="w-5 h-1.5 rounded-full bg-blue-600 transition-all"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 transition-all"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 transition-all"></span>
       </div>
     </div>
 
@@ -10760,6 +10946,25 @@
     function closeAdminModal() {
       const modal = document.getElementById('modalAdminPanel');
       if (modal) modal.classList.add('hidden');
+    }
+
+    
+    function updateQuickHubDots() {
+      const track = document.getElementById('quickHubCarouselTrack');
+      const dots = document.querySelectorAll('#quickHubCarouselDots span');
+      if (!track || dots.length === 0) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      if (maxScroll <= 0) return;
+      const ratio = track.scrollLeft / maxScroll;
+      const activeIndex = Math.min(dots.length - 1, Math.floor(ratio * dots.length + 0.3));
+
+      dots.forEach((dot, idx) => {
+        if (idx === activeIndex) {
+          dot.className = 'w-5 h-1.5 rounded-full bg-blue-600 transition-all';
+        } else {
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 transition-all';
+        }
+      });
     }
 
     function renderGeminiKeyUI() {
