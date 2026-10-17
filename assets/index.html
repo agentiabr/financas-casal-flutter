@@ -15658,13 +15658,14 @@ Frase falada: "${spokenText}"`;
                       inList = items.some(it => it.nome && it.nome.toLowerCase().includes(m.nome.toLowerCase()));
                     } catch(e) {}
                     if (inList) {
-                      return `<button type="button" onclick="showToastUndo('Este medicamento já está na sua Lista de Compras!', false)" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all cursor-pointer" title="Medicamento já incluído na lista">
+                      return `<button type="button" onclick="showToastUndo('Este medicamento já está na sua Lista de Compras!', false)" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all cursor-pointer" title="Medicamento já incluído na lista de compras">
                         <i data-lucide="check" class="w-3 h-3"></i>
-                        <span>✓ Na Lista</span>
+                        <span>✓ Na Lista de Compras</span>
                       </button>`;
                     } else {
                       return `<button type="button" onclick="addMedToShoppingList('${m.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer" title="Adicionar este remédio à Lista de Compras">
-                        <span>🛒 Comprar</span>
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i>
+                        <span>Adicionar à Lista de Compras</span>
                       </button>`;
                     }
                   })()}
@@ -17805,7 +17806,7 @@ Frase falada: "${spokenText}"`;
   <!-- ============================================================== -->
   <!-- MODAL CADASTRAR NOVO REMÉDIO CONTÍNUO (MINHA SAÚDE)            -->
   <!-- ============================================================== -->
-  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
+  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[95] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-xs flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
         <div class="flex items-center gap-2.5">
@@ -18092,24 +18093,13 @@ Frase falada: "${spokenText}"`;
             💊
           </div>
           <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">Minha Saúde</h3>
-              <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-300 dark:border-sky-800">
-                Rotina Rodrigo
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-              Pressão Arterial (Aradois, Anlodipino, Hidroclorotiazida) & Glicemia (Glifage XR).
-            </p>
+            <h3 class="font-black text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight">Rotina Rodrigo</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Controle diário de horários e medicação contínua</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Botão Cadastrar Novo Remédio Contínuo -->
-          <button type="button" onclick="openAddNewContinuousMedModal()" class="px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer" title="Cadastrar novo medicamento contínuo">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>+ Novo Remédio</span>
-          </button>
+
           <!-- Botão Testar Alarme & Notificação em 5s -->
           <button type="button" onclick="triggerTestMedicationAlarm5s()" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer" title="Testar som alto, voz e banner flutuante em 5 segundos no celular">
             <i data-lucide="play" class="w-3.5 h-3.5"></i>
@@ -18124,6 +18114,37 @@ Frase falada: "${spokenText}"`;
           <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
+        </div>
+      </div>
+
+      <!-- LISTAGEM ORGANIZADA DE REMÉDIOS EM USO CONTÍNUO (RODRIGO) -->
+      <div class="my-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
+            <span>📋</span>
+            <span>Medicamentos em Uso Diário:</span>
+          </div>
+          <span class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-300 dark:border-sky-800">4 remédios</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 shadow-2xs">
+            <span class="text-base flex-shrink-0">❤️</span>
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white">Pressão Arterial</div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium leading-snug">
+                Aradois, Anlodipino, Hidroclorotiazida
+              </div>
+            </div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 shadow-2xs">
+            <span class="text-base flex-shrink-0">🩺</span>
+            <div class="min-w-0">
+              <div class="font-bold text-slate-900 dark:text-white">Glicemia</div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 font-medium leading-snug">
+                Glifage XR (Metformina)
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -18224,7 +18245,7 @@ Frase falada: "${spokenText}"`;
           <div class="flex items-center gap-1.5">
             <span class="text-sm">📦</span>
             <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Controle de Estoque & Adicionar à Lista de Compras
+              Controle de Estoque
             </h4>
           </div>
         </div>
