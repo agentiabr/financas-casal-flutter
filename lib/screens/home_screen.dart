@@ -614,8 +614,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       curve: Curves.easeInOut,
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: isOpen ? Colors.transparent : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(12),
+                        color: isOpen ? Colors.transparent : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(16),
+                        border: isOpen
+                            ? Border.all(color: Colors.transparent)
+                            : Border.all(color: const Color(0xFFE2E8F0)),
+                        boxShadow: isOpen
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.02),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
                       ),
                       child: Row(
                         children: [

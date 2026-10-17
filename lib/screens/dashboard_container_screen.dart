@@ -22,7 +22,8 @@ class DashboardContainerScreen extends StatefulWidget {
   State<DashboardContainerScreen> createState() => _DashboardContainerScreenState();
 }
 
-class _DashboardContainerScreenState extends State<DashboardContainerScreen> with WidgetsBindingObserver {
+class _DashboardContainerScreenState extends State<DashboardContainerScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late final WebViewController _controller;
   bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
@@ -33,9 +34,12 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   String _lastChatRecognizedText = '';
   Timer? _voiceDebounceTimer;
   String _lastRecognizedVoiceText = '';
+  late final AnimationController _pulseController;
+  late final Animation<double> _pulseAnimation;
 
   @override
   void dispose() {
+    _pulseController.dispose();
     _voiceDebounceTimer?.cancel();
     _chatVoiceDebounceTimer?.cancel();
     _flutterTts?.stop();
@@ -48,6 +52,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.94, end: 1.06).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
     _initWebViewController();
   }
 
@@ -752,7 +763,34 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Logo CtrlPig Limpo sem repetir o ícone quadrado do celular
+                            // Ícone Animado Pulsando
+                            ScaleTransition(
+                              scale: _pulseAnimation,
+                              child: Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(22),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF38BDF8).withValues(alpha: 0.35),
+                                      blurRadius: 26,
+                                      spreadRadius: 4,
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(22),
+                                  child: Image.asset(
+                                    'assets/ICONE CELULAR - AZUL POSITIVO.png',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset('assets/app_icon.png'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // Logo CtrlPig
                             const Text(
                               'CtrlPig',
                               style: TextStyle(

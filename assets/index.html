@@ -1700,9 +1700,9 @@
                 <span class="truncate">Família</span>
               </button>
 
-              <button onclick="openNewTxModal('Receita')" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-100 backdrop-blur-md border border-emerald-400/40 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95" title="Cadastrar nova Receita ou Salário">
-                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-300"></i>
-                <span class="truncate">+ Receitas</span>
+              <button onclick="openHealthMedsModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-rose-500/30 hover:bg-rose-500/40 text-rose-100 backdrop-blur-md border border-rose-400/40 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95 cursor-pointer" title="Abrir Rotina de Remédios e Alertas de Saúde">
+                <i data-lucide="heart-pulse" class="w-3.5 h-3.5 text-rose-200"></i>
+                <span class="truncate">Remédios</span>
               </button>
 
               <button onclick="openActionHubModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-white text-blue-700 hover:bg-blue-50 text-xs sm:text-sm font-extrabold shadow-md transition-all active:scale-95 cursor-pointer" title="Lançar novo Gasto ou Despesa">
@@ -2626,16 +2626,16 @@
             </span>
           </div>
 
-          <!-- Botão Primário: Finalizar Compras -->
-          <button type="button" onclick="checkoutShoppingListToCycle()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer">
-            <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>🏁 Finalizar Compras &amp; Lançar no Ciclo</span>
-          </button>
-
-          <!-- Botão Secundário: Enviar para Chat da Família -->
+          <!-- Botão Primário: Enviar Lista para o Chat da Família -->
           <button type="button" onclick="sendShoppingListToFamilyChat()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs active:scale-98 transition-all cursor-pointer" title="Compartilhar lista completa no Chat da Família">
             <i data-lucide="message-circle" class="w-4 h-4"></i>
             <span>💬 Enviar Lista para o Chat da Família</span>
+          </button>
+
+          <!-- Botão Secundário: Finalizar Compras -->
+          <button type="button" onclick="checkoutShoppingListToCycle()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>🏁 Finalizar Compras &amp; Lançar no Ciclo</span>
           </button>
 
           <!-- Botão Terciário (Rodapé do Card): Ler Foto de Cupom -->
@@ -19885,12 +19885,12 @@ Frase falada: "${spokenText}"`;
        - Fechado: caixa cinza quase branco (#F3F4F6), cantos 12px, título peso médio (500)
        - Aberto: some a caixa (transparente) e fica somente o ícone, título em negrito (700) e seta ^ */
     .clean-gray-accordion-header {
-      background-color: #F3F4F6 !important;
-      border-radius: 12px !important;
-      padding: 15px 16px !important;
-      border: none !important;
-      box-shadow: none !important;
-      transition: background-color 0.25s ease, padding 0.25s ease !important;
+      background-color: #F8FAFC !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 16px !important;
+      padding: 14px 16px !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+      transition: background-color 0.25s ease, padding 0.25s ease, border-color 0.25s ease !important;
     }
     .clean-gray-accordion-header .accordion-title-text {
       font-weight: 500 !important;
@@ -19899,7 +19899,7 @@ Frase falada: "${spokenText}"`;
     }
     .clean-gray-accordion-header.is-open {
       background-color: transparent !important;
-      border: none !important;
+      border: 1px solid transparent !important;
       box-shadow: none !important;
       padding: 10px 4px !important;
     }
@@ -19910,6 +19910,7 @@ Frase falada: "${spokenText}"`;
     .dark .clean-gray-accordion-header,
     body.theme-dark .clean-gray-accordion-header {
       background-color: #1E293B !important;
+      border: 1px solid #334155 !important;
     }
     .dark .clean-gray-accordion-header .accordion-title-text,
     body.theme-dark .clean-gray-accordion-header .accordion-title-text {
@@ -19918,6 +19919,7 @@ Frase falada: "${spokenText}"`;
     .dark .clean-gray-accordion-header.is-open,
     body.theme-dark .clean-gray-accordion-header.is-open {
       background-color: transparent !important;
+      border: 1px solid transparent !important;
     }
   </style>
 
