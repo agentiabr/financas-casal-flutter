@@ -219,7 +219,23 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       } else if (action == 'request_notification_permission') {
-        final status = await Permission.notification.request();
+        var status = await Permission.notification.status;
+        if (!status.isGranted) {
+          status = await Permission.notification.request();
+        }
+        final granted = status.isGranted;
+        if (!granted && status.isPermanentlyDenied) {
+          await openAppSettings();
+        }
+        _controller.runJavaScript("""
+          if (typeof window.onNativeNotificationPermissionResult === 'function') {
+            window.onNativeNotificationPermissionResult($granted);
+          }
+        """);
+      } else if (action == 'open_app_settings') {
+        await openAppSettings();
+      } else if (action == 'check_notification_permission') {
+        final status = await Permission.notification.status;
         final granted = status.isGranted;
         _controller.runJavaScript("""
           if (typeof window.onNativeNotificationPermissionResult === 'function') {

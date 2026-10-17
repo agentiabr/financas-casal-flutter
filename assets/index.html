@@ -1358,11 +1358,11 @@
 
     /* Alerta Vermelho Dinâmico no Novo Design */
     body.theme-negative-alert header.seamless-fintech-header {
-      background: #380312 !important;
+      background: #042D48 !important;
     }
     body.theme-negative-alert header.seamless-fintech-header .app-header-top-bar,
     body.theme-negative-alert header.seamless-fintech-header .app-header-sub-bar {
-      background: #25020B !important;
+      background: #042D48 !important;
     }
     body.theme-negative-alert .hero-card-banner {
       background: linear-gradient(180deg, #881337 0%, #BE123C 55%, #E11D48 100%) !important;
@@ -1416,24 +1416,36 @@
     }
 
     /* 4. Despoluir os 6 cards do Resumo das Contas do Mês (cor mais clean e sem linha à esquerda) */
-    #metricsGridContainer .draggable-metric-card {
-      background: #FFFFFF !important;
+    /* Cards Resumo das Contas no Estilo Limpo de Orçamento Previsto (Cinza e Branco) */
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) {
+      background: #F8FAFC !important;
       border: 1px solid #E2E8F0 !important;
       border-left: 1px solid #E2E8F0 !important;
-      border-radius: 1rem !important;
-      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04) !important;
+      border-radius: 0.75rem !important;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
       color: #1E293B !important;
     }
-    #metricsGridContainer .draggable-metric-card::before,
-    #metricsGridContainer .draggable-metric-card::after {
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"])::before,
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"])::after {
       display: none !important;
     }
-    .dark #metricsGridContainer .draggable-metric-card,
-    body.theme-dark #metricsGridContainer .draggable-metric-card {
+    .dark #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]),
+    body.theme-dark #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) {
       background: #0F172A !important;
       border: 1px solid #1E293B !important;
       border-left: 1px solid #1E293B !important;
       color: #F8FAFC !important;
+    }
+    /* Destaque Exclusivo do Card Saldo Livre */
+    #metricsGridContainer [data-card-id="saldo"] {
+      background: linear-gradient(135deg, #0284C7 0%, #0369A1 50%, #075985 100%) !important;
+      border: 1px solid #38BDF8 !important;
+      border-radius: 0.75rem !important;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
+      color: #FFFFFF !important;
+    }
+    #metricsGridContainer [data-card-id="saldo"] * {
+      color: #FFFFFF !important;
     }
 
     /* 5. Estilo estável de Accordion com rotação suave de seta e drag transparente */
@@ -2307,7 +2319,7 @@
             <i data-lucide="grip-vertical" class="w-5 h-5"></i>
           </div>
           <i data-lucide="piggy-bank" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Cofrinho do Casal</h2>
+          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Cofrinho</h2>
         </div>
         <i data-lucide="chevron-down" id="iconCollapse_sectionPiggyContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
       </div>
@@ -2327,13 +2339,7 @@
             <!-- Renderizado dinamicamente via JS -->
           </div>
 
-          <!-- Botão Novo Porquinho abaixo dos cofrinhos (só exibido quando a seção estiver expandida) -->
-          <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-center sm:justify-start">
-            <button onclick="openCreatePiggyModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-none text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>+ Novo Porquinho</span>
-            </button>
-          </div>
+          <!-- Botão Novo Porquinho agora unificado no card superior ao lado de Depositar Agora -->
         </div>
       </div>
     
@@ -2651,10 +2657,10 @@
             </span>
           </div>
 
-          <!-- Botão Primário: Enviar Lista para o Chat da Família -->
-          <button type="button" onclick="sendShoppingListToFamilyChat()" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs active:scale-98 transition-all cursor-pointer" title="Compartilhar lista completa no Chat da Família">
-            <i data-lucide="message-circle" class="w-4 h-4"></i>
-            <span>💬 Enviar Lista para o Chat da Família</span>
+          <!-- Botão Primário: Enviar Lista e Notificar Membro da Família -->
+          <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs active:scale-98 transition-all cursor-pointer" title="Compartilhar lista completa e enviar notificação sonora no celular">
+            <i data-lucide="bell-ring" class="w-4 h-4 text-amber-300"></i>
+            <span id="btnSendShoppingListLabel">💬 Enviar Lista e Notificar Márcia</span>
           </button>
 
           <!-- Botão Secundário: Finalizar Compras -->
@@ -4955,9 +4961,15 @@
                 <p class="text-[11px] text-pink-800 dark:text-pink-300 mt-0.5">Mantenha o foco financeiro depositando qualquer valor na sua meta <strong>"${targetPiggy.nome}"</strong> neste ciclo!</p>
               </div>
             </div>
-            <button type="button" onclick="openPiggyDepositSpecificModal('${targetPiggy.id}')" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white font-extrabold text-xs rounded-none shadow-sm transition-all flex items-center gap-1.5 active:scale-98">
-              <span>💰 Depositar Agora</span>
-            </button>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" onclick="openCreatePiggyModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-lg shadow-sm transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>+ Novo Porquinho</span>
+              </button>
+              <button type="button" onclick="openPiggyDepositSpecificModal('${targetPiggy.id}')" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 text-white font-extrabold text-xs rounded-lg shadow-sm transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer">
+                <span>💰 Depositar Agora</span>
+              </button>
+            </div>
           `;
         } else {
           reminderBanner.className = 'hidden';
@@ -7893,16 +7905,39 @@
       }
       saveCleanChatMessages(msgs);
 
-      // 3. Fechar lista e abrir chat
+      // 3. Notificar o membro da família com áudio e banner
+      const partnerName = senderName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      const notificationText = `Atenção ${partnerName}: ${senderName} acabou de enviar a lista de compras no Chat da Família com ${chatItems.length} itens!`;
+      if (typeof speakMedicationAlarm === 'function') {
+        speakMedicationAlarm(notificationText);
+      }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification('🛒 Lista de Compras da Família', {
+            body: `${partnerName}, ${senderName} enviou a lista com ${chatItems.length} itens no chat.`,
+            tag: 'ctrlpig-shopping-list'
+          });
+        } catch (e) {}
+      }
+
+      // 4. Fechar lista e abrir chat
       closeShoppingListModal();
       activeChatStoreFilter = 'Todos';
       openFamilyChatModal();
-      showToastUndo(`Lista com ${chatItems.length} itens enviada para o Chat Familiar! 🛒`, false);
+      showToastUndo(`Lista com ${chatItems.length} itens enviada e ${partnerName} notificado(a)! 🛒`, false);
       playChatDing();
     }
 
 
-    function openShoppingListModal() {
+        function updateSendListButtonLabel() {
+      const btnLabel = document.getElementById('btnSendShoppingListLabel');
+      if (!btnLabel) return;
+      const me = (currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      const partner = me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      btnLabel.textContent = `💬 Enviar Lista e Notificar ${partner}`;
+    }
+
+    function openShoppingListModal() { setTimeout(updateSendListButtonLabel, 100);
       const modal = document.getElementById('modalShoppingListHistory');
       if (modal) {
         modal.classList.remove('hidden');
@@ -12324,12 +12359,22 @@ Frase falada: "${spokenText}"`;
     }
 
     function deleteChatMessage(msgId) {
-      if (!confirm('Deseja excluir esta mensagem do chat?')) return;
-      let msgs = getCleanChatMessages();
-      msgs = msgs.filter(m => m.id !== msgId);
-      saveCleanChatMessages(msgs);
-      renderCleanChatStream();
-      showToastUndo('Mensagem excluída.', false);
+      if (typeof deleteChatMessageWithUndo === 'function') {
+        deleteChatMessageWithUndo(msgId);
+      } else {
+        let msgs = getCleanChatMessages();
+        const idx = msgs.findIndex(m => m.id === msgId);
+        if (idx !== -1) {
+          const removed = msgs.splice(idx, 1)[0];
+          saveCleanChatMessages(msgs);
+          let trash = [];
+          try { trash = JSON.parse(localStorage.getItem('financas_trash_chat') || '[]'); } catch(e) {}
+          trash.unshift(removed);
+          localStorage.setItem('financas_trash_chat', JSON.stringify(trash.slice(0, 30)));
+          renderCleanChatStream();
+          showToastUndo('Mensagem enviada para a lixeira.', false);
+        }
+      }
     }
 
     function promptDefineStoreLocation() {
@@ -15601,9 +15646,29 @@ Frase falada: "${spokenText}"`;
 
               <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between gap-2">
                 <span class="text-[10px] text-slate-400 font-mono">Ref: ${formatBRL(m.precoMedio || 0)}</span>
-                <button type="button" onclick="addMedToShoppingList('${m.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer" title="Adicionar este remédio à Lista de Compras do Mercado/Farmácia">
-                  <span>🛒 Comprar</span>
-                </button>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="openEditMedicationModal('${m.id}')" class="px-2 py-1 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer" title="Editar remédio, dosagem e horário">
+                    <i data-lucide="pencil" class="w-3 h-3"></i>
+                    <span>Editar</span>
+                  </button>
+                  ${(function(){
+                    let inList = false;
+                    try {
+                      const items = (typeof getActiveShoppingItems === 'function') ? getActiveShoppingItems() : [];
+                      inList = items.some(it => it.nome && it.nome.toLowerCase().includes(m.nome.toLowerCase()));
+                    } catch(e) {}
+                    if (inList) {
+                      return `<button type="button" onclick="showToastUndo('Este medicamento já está na sua Lista de Compras!', false)" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all cursor-pointer" title="Medicamento já incluído na lista">
+                        <i data-lucide="check" class="w-3 h-3"></i>
+                        <span>✓ Na Lista</span>
+                      </button>`;
+                    } else {
+                      return `<button type="button" onclick="addMedToShoppingList('${m.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer" title="Adicionar este remédio à Lista de Compras">
+                        <span>🛒 Comprar</span>
+                      </button>`;
+                    }
+                  })()}
+                </div>
               </div>
             </div>
           `;
@@ -15835,31 +15900,37 @@ Frase falada: "${spokenText}"`;
     }
 
     function addMedToShoppingList(medId) {
-      const meds = getHealthMeds();
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
       const med = meds.find(m => m.id === medId);
       if (!med) return;
 
-      const items = getActiveShoppingItems();
-      const exists = items.some(i => i.nome.toLowerCase() === med.nome.toLowerCase());
+      const items = (typeof getActiveShoppingItems === 'function') ? getActiveShoppingItems() : [];
+      const exists = items.some(i => i.nome && i.nome.toLowerCase().includes(med.nome.toLowerCase()));
       if (exists) {
-        showToastUndo(`"${med.nome}" já está na lista de compras!`);
+        showToastUndo(`"${med.nome}" já está na sua lista de compras!`, false);
+        if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
         return;
       }
 
+      const itemDesc = med.nome + (med.tipo ? ' ' + med.tipo : '');
       items.push({
         id: 'med_prod_' + Date.now(),
-        nome: `${med.nome} ${med.concentracao}`,
+        nome: itemDesc,
+        qtdDesejada: 1,
         qtd: 1,
         unidade: 'cx',
         marca: 'Farmácia',
         preco: med.precoMedio || 0,
+        precoUnitario: med.precoMedio || 0,
         status: 'pendente',
+        lojaNome: 'Farmácia Drogasil / Ultrafarma',
         dataAdicionado: new Date().toISOString()
       });
 
-      saveActiveShoppingItems(items);
-      updateCartSummaryUI();
-      showToastUndo(`✓ "${med.nome}" adicionado à Lista de Compras da Farmácia/Mercado! 🛒`);
+      if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(items);
+      if (typeof updateCartSummaryUI === 'function') updateCartSummaryUI();
+      if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+      showToastUndo(`✓ "${med.nome}" adicionado à Lista de Compras! Botão atualizado para ✓ Na Lista. 🛒`, false);
     }
 
     const PHARMA_STORES_CATALOG = [
@@ -16490,24 +16561,7 @@ Frase falada: "${spokenText}"`;
         </div>
 
         
-        <!-- SEÇÃO: GESTÃO DE DICAS DO PIGGY (MENTOR FINANCEIRO) -->
-        <div class="p-3.5 bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800/80">
-          <div class="flex items-center justify-between mb-1.5">
-            <h4 class="font-extrabold text-amber-950 dark:text-amber-200 flex items-center gap-1.5 text-xs">
-              <span>💡</span><span>Dicas do Piggy (Mentor Financeiro)</span>
-            </h4>
-            <button type="button" onclick="openAddPiggyTipPrompt()" class="text-[10px] font-black px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-900 flex items-center gap-1 transition-all cursor-pointer">
-              <span>+ Nova Dica</span>
-            </button>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
-            Dicas inteligentes exibidas no card principal que orientam as finanças do casal:
-          </p>
-          <div id="listaPiggyTipsAdmin" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar text-xs">
-            <!-- Preenchido via JS -->
-          </div>
-        </div>
-<!-- SEÇÃO: CAIXA DE SUGESTÕES DOS USUÁRIOS BETA -->
+        <!-- SEÇÃO: CAIXA DE SUGESTÕES DOS USUÁRIOS BETA -->
         <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
           <div class="flex items-center justify-between mb-1">
             <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
@@ -18056,6 +18110,11 @@ Frase falada: "${spokenText}"`;
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>+ Novo Remédio</span>
           </button>
+          <!-- Botão Testar Alarme & Notificação em 5s -->
+          <button type="button" onclick="triggerTestMedicationAlarm5s()" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer" title="Testar som alto, voz e banner flutuante em 5 segundos no celular">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>🧪 Testar Alarme (5s)</span>
+          </button>
           <!-- Toggle do Alarme de Voz (10 min antes) -->
           <button type="button" onclick="toggleHealthVoiceAlarm()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer" title="Ativar ou desativar notificação e narração de voz antecipada">
             <i data-lucide="bell-ring" id="healthVoiceAlarmIcon" class="w-3.5 h-3.5 text-sky-500"></i>
@@ -19374,6 +19433,8 @@ Frase falada: "${spokenText}"`;
 
     function directExitApp() {
       closeExitFeedbackModal();
+      localStorage.setItem('financas_session_locked', 'true');
+      sessionStorage.removeItem('pigctrl_session_authenticated');
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({ action: 'exit_app' }));
@@ -19753,6 +19814,15 @@ Frase falada: "${spokenText}"`;
     // Re-verifica alarmes sempre que o app volta do segundo plano no celular
     window.onAppResumedFromBackground = function() {
       setTimeout(checkHealthScheduleTimers, 600);
+      // Se a sessão estiver bloqueada após saída, força o login por biometria ou senha
+      if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
+        document.documentElement.classList.add('require-auth');
+        const authEl = document.getElementById('authOverlayContainer');
+        if (authEl) authEl.classList.remove('hidden');
+        if (typeof triggerNativeBiometrics === 'function') {
+          setTimeout(triggerNativeBiometrics, 400);
+        }
+      }
     };
 
     // ============================================================================
@@ -19773,34 +19843,48 @@ Frase falada: "${spokenText}"`;
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_notification_permission' }));
+          return;
         } catch (e) {}
       }
       if ('Notification' in window && typeof Notification.requestPermission === 'function') {
         Notification.requestPermission().then(permission => {
-          const ok = permission === 'granted';
+          const ok = (permission === 'granted');
           localStorage.setItem('ctrlpig_notifications_authorized', ok ? 'true' : 'false');
           updateNotificationAuthBadges();
           if (ok) {
             showToastUndo('🔔 Notificações autorizadas com sucesso!', false);
+          } else {
+            showToastUndo('Permissão de notificação negada no navegador.', false);
           }
         });
       } else {
-        localStorage.setItem('ctrlpig_notifications_authorized', 'true');
         updateNotificationAuthBadges();
-        showToastUndo('🔔 Alertas sonoros e notificações ativados!', false);
+        showToastUndo('Verifique as permissões de notificação do dispositivo.', false);
+      }
+    }
+
+    function openDeviceAppSettings() {
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_app_settings' }));
+        } catch (e) {}
       }
     }
 
     function updateNotificationAuthBadges() {
-      const isAuth = localStorage.getItem('ctrlpig_notifications_authorized') === 'true' ||
-        ('Notification' in window && Notification.permission === 'granted');
+      const isAuth = localStorage.getItem('ctrlpig_notifications_authorized') === 'true';
       const b1 = document.getElementById('badgeNotifStatusAdmin');
       const b2 = document.getElementById('badgeNotifStatusUser');
       [b1, b2].forEach(b => {
         if (!b) return;
         if (isAuth) {
           b.textContent = '✓ Autorizado';
-          b.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+          b.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+          b.onclick = null;
+        } else {
+          b.textContent = '⚠ Não Autorizado (Toque para ativar)';
+          b.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 cursor-pointer animate-pulse';
+          b.onclick = requestAppNotificationPermission;
         }
       });
     }
@@ -19875,12 +19959,19 @@ Frase falada: "${spokenText}"`;
     document.addEventListener('DOMContentLoaded', () => {
       // Força todas as 5 seções de accordion a iniciarem recolhidas (com a setinha para baixo)
       const collapsibleIds = [
-        'sectionMetricsContent',
         'sectionChartsContent',
         'sectionPiggyContent',
         'sectionFoodBudgetContent',
         'sectionCardsContent'
       ];
+      // sectionMetricsContent permanece ABERTO por padrão (Resumo das Contas visível)
+      const secMetrics = document.getElementById('sectionMetricsContent');
+      if (secMetrics) secMetrics.classList.remove('collapsed');
+      const iconMetrics = document.getElementById('iconCollapse_sectionMetricsContent');
+      if (iconMetrics) {
+        iconMetrics.setAttribute('data-lucide', 'chevron-down');
+        iconMetrics.classList.add('accordion-chevron-rotated', 'rotate-180');
+      }
       localStorage.setItem('financas_collapsed_sections', JSON.stringify(collapsibleIds));
       collapsibleIds.forEach(id => {
         const el = document.getElementById(id);
@@ -19930,8 +20021,8 @@ Frase falada: "${spokenText}"`;
     body.theme-negative-alert header.seamless-fintech-header .app-header-top-bar,
     body.theme-negative-alert header.seamless-fintech-header .app-header-main-bar,
     body.theme-negative-alert header.seamless-fintech-header .app-header-sub-bar {
-      background: #25020B !important;
-      background-color: #25020B !important;
+      background: #042D48 !important;
+      background-color: #042D48 !important;
       border: none !important;
       box-shadow: none !important;
     }
@@ -20655,7 +20746,7 @@ Frase falada: "${spokenText}"`;
     };
 
     // 6. Gestão de Dicas do Piggy no Admin
-    function renderPiggyTipsAdminList() {
+    function renderPiggyTipsAdminList() { if(typeof renderAdminPiggyTipsList==='function'){renderAdminPiggyTipsList();return;}
       const container = document.getElementById('listaPiggyTipsAdmin');
       if (!container) return;
       const tips = (typeof getActivePiggyTips === 'function') ? getActivePiggyTips() : [];
@@ -20991,5 +21082,228 @@ Retorne estritamente em JSON puro sem markdown no formato:
     });
   </script>
 
+
+  <!-- ============================================================== -->
+  <!-- MODAL: EDITAR MEDICAMENTO (NOME, DOSAGEM, HORÁRIO, ESTOQUE)   -->
+  <!-- ============================================================== -->
+  <div id="modalEditMedication" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[92] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeEditMedicationModal()">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-500 flex items-center justify-center text-lg font-bold">
+            💊
+          </div>
+          <div>
+            <h3 class="font-extrabold text-sm text-slate-900 dark:text-white">Editar Medicamento</h3>
+            <p class="text-[10px] text-slate-500">Altere horários, dosagem e estoque de farmácia</p>
+          </div>
+        </div>
+        <button onclick="closeEditMedicationModal()" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3 overflow-y-auto pr-1 custom-scrollbar text-xs">
+        <input type="hidden" id="editMedId">
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nome do Medicamento</label>
+          <input type="text" id="editMedNome" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Dosagem / Apresentação</label>
+            <input type="text" id="editMedTipo" placeholder="Ex: 50mg comprimido" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rotina / Horário</label>
+            <select id="editMedRotina" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white">
+              <option value="morning">☀️ Rotina da Manhã</option>
+              <option value="evening">🌙 Rotina da Noite</option>
+              <option value="both">☀️ Manhã e Noite 🌙</option>
+              <option value="custom">⏰ Horário Específico</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="divEditMedCustomHorario" class="hidden">
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Horário Específico (HH:MM)</label>
+          <input type="time" id="editMedCustomHorario" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Estoque Restante (un)</label>
+            <input type="number" id="editMedEstoque" min="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Preço Médio Estimado</label>
+            <input type="number" step="0.01" id="editMedPreco" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Quem toma este remédio?</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setEditMedOwner('Rodrigo')" id="btnEditOwnerRodrigo" class="py-2 rounded-xl border border-blue-500 bg-blue-50 dark:bg-blue-950 font-bold text-xs text-blue-800 dark:text-blue-300">👨 Rodrigo</button>
+            <button type="button" onclick="setEditMedOwner('Márcia')" id="btnEditOwnerMarcia" class="py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-300">👩 Márcia</button>
+            <button type="button" onclick="setEditMedOwner('Ambos')" id="btnEditOwnerAmbos" class="py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-300">👥 Ambos</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeEditMedicationModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs">
+          Cancelar
+        </button>
+        <button type="button" onclick="saveEditedMedication()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-md transition-all">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+    // ============================================================================
+    // V1.9.7: EDIÇÃO DE REMÉDIOS & TESTE INSTANTÂNEO DE ALARME & NOTIFICAÇÃO (5S)
+    // ============================================================================
+    let _activeEditMedOwner = 'Rodrigo';
+
+    window.openEditMedicationModal = function(medId) {
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const med = meds.find(m => m.id === medId);
+      if (!med) return;
+
+      document.getElementById('editMedId').value = med.id;
+      document.getElementById('editMedNome').value = med.nome || '';
+      document.getElementById('editMedTipo').value = med.tipo || '';
+      document.getElementById('editMedEstoque').value = med.estoqueAtual || 0;
+      document.getElementById('editMedPreco').value = med.precoMedio || 0;
+
+      const rotinaSelect = document.getElementById('editMedRotina');
+      const customDiv = document.getElementById('divEditMedCustomHorario');
+      const customTimeInput = document.getElementById('editMedCustomHorario');
+
+      if (med.rotinas && med.rotinas.includes('morning') && med.rotinas.includes('evening')) {
+        rotinaSelect.value = 'both';
+        customDiv.classList.add('hidden');
+      } else if (med.rotinas && med.rotinas.includes('morning')) {
+        rotinaSelect.value = 'morning';
+        customDiv.classList.add('hidden');
+      } else if (med.rotinas && med.rotinas.includes('evening')) {
+        rotinaSelect.value = 'evening';
+        customDiv.classList.add('hidden');
+      } else {
+        rotinaSelect.value = 'custom';
+        customDiv.classList.remove('hidden');
+        if (customTimeInput) customTimeInput.value = med.horario || '12:00';
+      }
+
+      rotinaSelect.onchange = function() {
+        if (this.value === 'custom') {
+          customDiv.classList.remove('hidden');
+        } else {
+          customDiv.classList.add('hidden');
+        }
+      };
+
+      setEditMedOwner(med.responsavel || 'Rodrigo');
+
+      const modal = document.getElementById('modalEditMedication');
+      if (modal) modal.classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.setEditMedOwner = function(owner) {
+      _activeEditMedOwner = owner;
+      ['Rodrigo', 'Márcia', 'Ambos'].forEach(o => {
+        const btn = document.getElementById('btnEditOwner' + o);
+        if (!btn) return;
+        if (o === owner) {
+          btn.className = 'py-2 rounded-xl border border-blue-500 bg-blue-50 dark:bg-blue-950 font-bold text-xs text-blue-800 dark:text-blue-300';
+        } else {
+          btn.className = 'py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-xs text-slate-700 dark:text-slate-300';
+        }
+      });
+    };
+
+    window.closeEditMedicationModal = function() {
+      const modal = document.getElementById('modalEditMedication');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.saveEditedMedication = function() {
+      const id = document.getElementById('editMedId').value;
+      const nome = document.getElementById('editMedNome').value.trim();
+      const tipo = document.getElementById('editMedTipo').value.trim();
+      const rotinaVal = document.getElementById('editMedRotina').value;
+      const estoque = parseInt(document.getElementById('editMedEstoque').value, 10) || 0;
+      const preco = parseFloat(document.getElementById('editMedPreco').value) || 0;
+
+      if (!nome) {
+        alert('Por favor, informe o nome do medicamento.');
+        return;
+      }
+
+      let rotinas = [];
+      let horario = '';
+      if (rotinaVal === 'both') {
+        rotinas = ['morning', 'evening'];
+      } else if (rotinaVal === 'morning') {
+        rotinas = ['morning'];
+      } else if (rotinaVal === 'evening') {
+        rotinas = ['evening'];
+      } else {
+        const customTime = document.getElementById('editMedCustomHorario').value || '12:00';
+        horario = customTime;
+      }
+
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const idx = meds.findIndex(m => m.id === id);
+      if (idx !== -1) {
+        meds[idx].nome = nome;
+        meds[idx].tipo = tipo;
+        meds[idx].rotinas = rotinas;
+        meds[idx].horario = horario;
+        meds[idx].estoqueAtual = estoque;
+        meds[idx].precoMedio = preco;
+        meds[idx].responsavel = _activeEditMedOwner;
+        saveHealthMeds(meds);
+        renderHealthMedsUI();
+        closeEditMedicationModal();
+        showToastUndo(`💊 Medicamento "${nome}" atualizado com sucesso!`, false);
+      }
+    };
+
+    window.triggerTestMedicationAlarm5s = function() {
+      showToastUndo('⏳ Alarme de teste disparará em 5 segundos! Prepare-se...', false);
+      let remaining = 5;
+      const countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          showToastUndo(`⏳ Disparando em ${remaining}s...`, false);
+        } else {
+          clearInterval(countdownInterval);
+          // Dispara o alarme sonoro com voz, beeps e o banner flutuante
+          const msg = 'Atenção Rodrigo e Márcia: Teste do alarme sonoro e notificação do ControlPig disparado com sucesso! Hora de tomar seus medicamentos.';
+          if (typeof speakMedicationAlarm === 'function') {
+            speakMedicationAlarm(msg);
+          }
+          if (typeof showFloatingHealthAlarmBanner === 'function') {
+            showFloatingHealthAlarmBanner('🧪 Teste de Alarme & Notificação', 'Simulação do alarme sonoro em volume alto. Toque em Desligar Alarme para parar.', 'morning');
+          }
+          if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+              new Notification('🧪 Alarme de Teste • CtrlPig', {
+                body: msg,
+                tag: 'ctrlpig-test-alarm'
+              });
+            } catch (e) {}
+          }
+        }
+      }, 1000);
+    };
+</script>
 </body>
 </html>
