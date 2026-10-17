@@ -28,6 +28,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
   FlutterTts? _flutterTts;
+  DateTime? _lastBackPressTime;
   Timer? _chatVoiceDebounceTimer;
   String _lastChatRecognizedText = '';
   Timer? _voiceDebounceTimer;
