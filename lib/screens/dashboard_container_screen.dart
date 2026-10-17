@@ -28,12 +28,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
   FlutterTts? _flutterTts;
-  DateTime? _lastBackPressTime;
   Timer? _chatVoiceDebounceTimer;
   String _lastChatRecognizedText = '';
+  Timer? _voiceDebounceTimer;
+  String _lastRecognizedVoiceText = '';
 
   @override
   void dispose() {
+    _voiceDebounceTimer?.cancel();
     _chatVoiceDebounceTimer?.cancel();
     _flutterTts?.stop();
     WidgetsBinding.instance.removeObserver(this);
@@ -159,6 +161,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
         if (url.isNotEmpty) _openExternalUrl(url);
       } else if (action == 'start_voice') {
         _startNativeVoiceRecording();
+      } else if (action == 'stop_voice') {
+        _stopNativeVoiceRecording();
       } else if (action == 'start_chat_voice') {
         _startNativeChatVoiceRecording();
       } else if (action == 'speak_text') {
@@ -337,16 +341,42 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen> wit
       return;
     }
 
+    _voiceDebounceTimer?.cancel();
+    _lastRecognizedVoiceText = '';
+
     await speech.startListening(
+      finalOnly: false,
       onResult: (text) {
-        if (text.isNotEmpty) {
-          final safeTextJson = jsonEncode(text);
+        final trimmed = text.trim();
+        if (trimmed.isNotEmpty) {
+          _lastRecognizedVoiceText = trimmed;
+          // Envia texto parcial em tempo real para exibir na tela enquanto a pessoa fala
+          final safePartial = jsonEncode(_lastRecognizedVoiceText);
           _controller.runJavaScript(
-            "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult($safeTextJson); }"
+            "if (typeof window.onNativeVoiceInterimResult === 'function') { window.onNativeVoiceInterimResult($safePartial); }"
           );
+
+          _voiceDebounceTimer?.cancel();
+          // Aguarda 3.2 segundos de silêncio após a fala antes de finalizar e processar
+          _voiceDebounceTimer = Timer(const Duration(milliseconds: 3200), () {
+            _stopNativeVoiceRecording();
+          });
         }
       },
     );
+  }
+
+  void _stopNativeVoiceRecording() {
+    _voiceDebounceTimer?.cancel();
+    final speech = Provider.of<SpeechService>(context, listen: false);
+    speech.stopListening();
+    if (_lastRecognizedVoiceText.isNotEmpty) {
+      final safeFinal = jsonEncode(_lastRecognizedVoiceText);
+      _controller.runJavaScript(
+        "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult($safeFinal); }"
+      );
+      _lastRecognizedVoiceText = '';
+    }
   }
 
   Future<void> _startNativeChatVoiceRecording() async {

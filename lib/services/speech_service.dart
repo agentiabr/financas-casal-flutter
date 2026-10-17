@@ -55,8 +55,8 @@ class SpeechService extends ChangeNotifier {
 
     await _speech.listen(
       localeId: 'pt_BR',
-      pauseFor: const Duration(seconds: 8),
-      listenFor: const Duration(seconds: 60),
+      pauseFor: const Duration(seconds: 12),
+      listenFor: const Duration(seconds: 90),
       listenOptions: stt.SpeechListenOptions(
         partialResults: !finalOnly,
         listenMode: stt.ListenMode.dictation,

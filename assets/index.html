@@ -1546,83 +1546,75 @@
         </div>
       </div>
 
-      <!-- FAIXA 3: SELETOR DE USUÁRIOS DESTACADOS, CONVIDAR E CICLO VIGENTE -->
+      <!-- FAIXA 3: SELETOR DE MEMBROS CENTRALIZADO COM BOTÃO "+" COMPACTO -->
       <!-- ============================================================== -->
-      <div class="app-header-sub-bar border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 px-4 sm:px-6 lg:px-8 py-2.5">
-        <div class="max-w-7xl mx-auto flex flex-col gap-2.5">
+      <div class="app-header-sub-bar border-none px-4 sm:px-6 lg:px-8 py-2">
+        <div class="max-w-7xl mx-auto flex flex-col items-center justify-center gap-1.5">
           
-          <!-- Linha Superior: Membros da Família & Menu de Ciclos Elegante -->
-          <div class="flex flex-wrap items-center justify-between gap-3">
+          <!-- Membros Ativos Centralizados + Botão "+" Compacto -->
+          <div class="flex items-center justify-center gap-2 flex-wrap w-full" id="userSelectorBar">
+            <span class="text-[11px] font-semibold text-white/70 uppercase tracking-wider mr-1 hidden sm:inline">Membros:</span>
             
-            <!-- Membros Ativos da Família (Mais discretos, sem valor do gasto, traço branco sem círculo) -->
-            <div class="flex items-center gap-1.5 flex-wrap" id="userSelectorBar">
-              <span class="text-[11px] font-semibold text-white/60 uppercase tracking-wider mr-0.5 hidden sm:inline">Membros:</span>
-              
-              <!-- Botão: Todos (Casal) -->
-              <button onclick="selectUserFilter('Todos')" id="btnUserFilter_Todos" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-white/95 font-semibold text-[11px] transition-all cursor-pointer">
-                <svg class="w-4 h-4 text-white/90 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                <span>Todos</span>
+            <!-- Botão: Todos (Casal) -->
+            <button onclick="selectUserFilter('Todos')" id="btnUserFilter_Todos" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white/95 font-semibold text-xs transition-all cursor-pointer shadow-xs active:scale-95">
+              <svg class="w-4 h-4 text-white/90 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span>Todos</span>
+            </button>
+
+            <!-- Botão: Rodrigo (Discreto, sem valor do gasto) -->
+            <div class="relative inline-flex items-center">
+              <button onclick="selectUserFilter('Rodrigo')" id="btnUserFilter_Rodrigo" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-white/15 bg-white/5 hover:bg-white/15 text-white/90 font-semibold text-xs transition-all group cursor-pointer shadow-xs active:scale-95">
+                <div class="relative w-4 h-4 text-white flex items-center justify-center cursor-pointer" onclick="event.stopPropagation(); openMemberAvatarPicker('rodrigo')" title="Clique para alterar avatar">
+                  <span id="avatarInitialsRodrigo" class="flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </span>
+                  <img id="avatarImgRodrigo" src="" alt="Rodrigo" class="hidden w-4 h-4 rounded object-cover">
+                </div>
+                <span class="font-semibold text-xs text-white/95">Rodrigo</span>
+                <span id="userGastoRodrigo" class="hidden">R$ 0,00</span>
               </button>
-
-              <!-- Botão: Rodrigo (Discreto, sem valor do gasto) -->
-              <div class="relative inline-flex items-center">
-                <button onclick="selectUserFilter('Rodrigo')" id="btnUserFilter_Rodrigo" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/15 bg-white/5 hover:bg-white/15 text-white/90 font-semibold text-[11px] transition-all group cursor-pointer">
-                  <div class="relative w-4 h-4 text-white flex items-center justify-center cursor-pointer" onclick="event.stopPropagation(); openMemberAvatarPicker('rodrigo')" title="Clique para alterar avatar">
-                    <span id="avatarInitialsRodrigo" class="flex items-center justify-center">
-                      <svg class="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </span>
-                    <img id="avatarImgRodrigo" src="" alt="Rodrigo" class="hidden w-4 h-4 rounded object-cover">
-                  </div>
-                  <span class="font-semibold text-[11px] text-white/95">Rodrigo</span>
-                  <span id="userGastoRodrigo" class="hidden">R$ 0,00</span>
-                </button>
-              </div>
-
-              <!-- Botão: Márcia (Discreto, sem valor do gasto) -->
-              <div class="relative inline-flex items-center">
-                <button onclick="selectUserFilter('Márcia')" id="btnUserFilter_Marcia" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/15 bg-white/5 hover:bg-white/15 text-white/90 font-semibold text-[11px] transition-all group cursor-pointer">
-                  <div class="relative w-4 h-4 text-white flex items-center justify-center cursor-pointer" onclick="event.stopPropagation(); openMemberAvatarPicker('marcia')" title="Clique para alterar avatar">
-                    <span id="avatarInitialsMarcia" class="flex items-center justify-center">
-                      <svg class="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </span>
-                    <img id="avatarImgMarcia" src="" alt="Márcia" class="hidden w-4 h-4 rounded object-cover">
-                  </div>
-                  <span class="font-semibold text-[11px] text-white/95">Márcia</span>
-                  <span id="userGastoMarcia" class="hidden">R$ 0,00</span>
-                </button>
-              </div>
-
-              <!-- Container para membros adicionais adicionados dinamicamente -->
-              <div id="dynamicMembersContainer" class="flex items-center gap-1.5 flex-wrap"></div>
             </div>
 
-            <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
-            <select id="cycleSelector" onchange="onCycleChange()" class="hidden">
-              <option value="05/Out a 04/Nov 2026">05/Out a 04/Nov 2026</option>
-              <option value="05/Set a 04/Out 2026">05/Set a 04/Out 2026</option>
-              <option value="05/Ago a 04/Set 2026">05/Ago a 04/Set 2026</option>
-            </select>
+            <!-- Botão: Márcia (Discreto, sem valor do gasto) -->
+            <div class="relative inline-flex items-center">
+              <button onclick="selectUserFilter('Márcia')" id="btnUserFilter_Marcia" class="flex items-center gap-1.5 px-3 py-1 rounded-xl border border-white/15 bg-white/5 hover:bg-white/15 text-white/90 font-semibold text-xs transition-all group cursor-pointer shadow-xs active:scale-95">
+                <div class="relative w-4 h-4 text-white flex items-center justify-center cursor-pointer" onclick="event.stopPropagation(); openMemberAvatarPicker('marcia')" title="Clique para alterar avatar">
+                  <span id="avatarInitialsMarcia" class="flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </span>
+                  <img id="avatarImgMarcia" src="" alt="Márcia" class="hidden w-4 h-4 rounded object-cover">
+                </div>
+                <span class="font-semibold text-xs text-white/95">Márcia</span>
+                <span id="userGastoMarcia" class="hidden">R$ 0,00</span>
+              </button>
+            </div>
 
-          </div>
+            <!-- Container para membros adicionais adicionados dinamicamente -->
+            <div id="dynamicMembersContainer" class="flex items-center gap-2 flex-wrap"></div>
 
-          <!-- Linha Inferior: Botão Novo Membro Só em Contorno (Sem preenchimento) -->
-          <div class="flex items-center justify-center pt-1 border-t border-white/10">
-            <button id="btnNewMemberHeaderOutline" onclick="openAddUserModal()" class="flex items-center justify-center gap-2 px-6 py-1.5 rounded-xl bg-transparent hover:bg-white/10 text-white border border-white/45 font-extrabold text-xs transition-all cursor-pointer" title="Cadastrar membro da família ou convidado">
-              <i data-lucide="user-plus" class="w-3.5 h-3.5 text-white"></i>
-              <span>+ Novo Membro</span>
+            <!-- Botão Novo Membro "+" Compacto (Substitui o botão largo) -->
+            <button type="button" onclick="openAddUserModal()" id="btnNewMemberCompactPlus" class="w-7 h-7 rounded-full border border-white/35 bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black text-sm shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0" title="Cadastrar novo membro da família ou convidado">
+              <span>+</span>
             </button>
           </div>
+
+          <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
+          <select id="cycleSelector" onchange="onCycleChange()" class="hidden">
+            <option value="05/Out a 04/Nov 2026">05/Out a 04/Nov 2026</option>
+            <option value="05/Set a 04/Out 2026">05/Set a 04/Out 2026</option>
+            <option value="05/Ago a 04/Set 2026">05/Ago a 04/Set 2026</option>
+          </select>
 
         </div>
       </div>
@@ -3975,9 +3967,14 @@
           </div>
         </div>
 
-        <div class="pt-2 flex items-center justify-end gap-2">
-          <button onclick="closeVoiceModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold rounded-xl border border-slate-200 dark:border-slate-700">Cancelar</button>
-          <button onclick="confirmVoiceTx()" id="btnConfirmVoice" disabled class="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-sm transition-all">Confirmar Lançamento</button>
+        <div class="pt-2 flex items-center justify-between gap-2">
+          <button type="button" onclick="finishVoiceRecordingNow()" id="btnFinishVoiceSpeaking" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer" title="Clique para encerrar a gravação imediatamente">
+            <span>✓ Concluir Fala</span>
+          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="closeVoiceModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold rounded-xl border border-slate-200 dark:border-slate-700">Cancelar</button>
+            <button onclick="confirmVoiceTx()" id="btnConfirmVoice" disabled class="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-sm transition-all">Confirmar Lançamento</button>
+          </div>
         </div>
       </div>
     </div>
@@ -16380,6 +16377,45 @@ Frase falada: "${spokenText}"`;
           </div>
         </div>
 
+        <!-- SEÇÃO: ALERTA VISUAL DE SALDO NEGATIVO (CONFIGURÁVEL) -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-slate-200 dark:border-slate-800">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🚨</span><span>Alerta Visual Vermelho em Saldo Negativo</span>
+            </h4>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chkNegativeRedAlertOption" onchange="toggleNegativeRedAlertPreference(this.checked)" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+            </label>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400">
+            Quando ativado (padrão), o cabeçalho e o card principal mudam para vermelho de alerta caso os gastos superem as receitas do ciclo. Desative se preferir manter o azul constante.
+          </p>
+        </div>
+
+        <!-- SEÇÃO: GESTÃO DE MEMBROS DA FAMÍLIA (EXCLUSIVO PARA ASSINANTES) -->
+        <div class="p-3.5 bg-indigo-50/80 dark:bg-indigo-950/40 rounded-2xl border border-indigo-200 dark:border-indigo-800/80">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-indigo-950 dark:text-indigo-200 flex items-center gap-1.5 text-xs">
+              <span>👥</span><span>Gestão de Membros da Família (Plano Assinante)</span>
+            </h4>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">VIP / Casal</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2 leading-relaxed">
+            Como assinante, você pode incluir múltiplos membros (parceiro(a), filhos, dependentes). Cada membro possui seus próprios lançamentos individuais identificados no gráfico de <strong>Distribuição por Responsável</strong>, enquanto os cofrinhos e o saldo total da família permanecem sincronizados em tempo real.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button type="button" onclick="closeAdminModal(); openAddUserModal();" class="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>+ Incluir Novo Membro</span>
+            </button>
+            <button type="button" onclick="shareFamilyInviteLink()" class="py-2 px-3 bg-white dark:bg-slate-800 hover:bg-slate-100 text-indigo-700 dark:text-indigo-300 font-extrabold rounded-xl text-xs border border-indigo-300 dark:border-indigo-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+              <span>Compartilhar Convite</span>
+            </button>
+          </div>
+        </div>
+
         <!-- SEÇÃO: AUTORIZAR NOTIFICAÇÕES E ALERTAS SONOROS -->
         <div class="p-3.5 bg-blue-50/80 dark:bg-blue-950/40 rounded-2xl border border-blue-200 dark:border-blue-800/80">
           <div class="flex items-center justify-between mb-1">
@@ -19811,18 +19847,38 @@ Frase falada: "${spokenText}"`;
     /* ========================================================================== */
     /* V1.9.3: CABEÇALHO UNIFICADO, ACCORDION CLEAN #F3F4F6 E TRANSPARENTE ABERTO */
     /* ========================================================================== */
-    header.seamless-fintech-header,
-    header.seamless-fintech-header .app-header-top-bar,
-    header.seamless-fintech-header .app-header-main-bar,
-    header.seamless-fintech-header .app-header-sub-bar {
+    /* Cabeçalho Normal Azul #042D48 (Apenas quando NÃO for alerta de saldo negativo) */
+    body:not(.theme-negative-alert) header.seamless-fintech-header,
+    body:not(.theme-negative-alert) header.seamless-fintech-header .app-header-top-bar,
+    body:not(.theme-negative-alert) header.seamless-fintech-header .app-header-main-bar,
+    body:not(.theme-negative-alert) header.seamless-fintech-header .app-header-sub-bar {
       background: #042D48 !important;
       background-color: #042D48 !important;
       border-top: none !important;
       border-bottom: none !important;
       box-shadow: none !important;
     }
-    header.seamless-fintech-header .app-header-sub-bar {
+    body:not(.theme-negative-alert) header.seamless-fintech-header .app-header-sub-bar {
       padding-bottom: 130px !important;
+    }
+
+    /* 1. Alerta de Saldo Negativo Vermelho: UNIFICA TODO O CABEÇALHO EM VERMELHO VINHO
+       (Elimina 100% qualquer faixa azul por trás do logo principal CtrlPig!) */
+    body.theme-negative-alert header.seamless-fintech-header,
+    body.theme-negative-alert header.seamless-fintech-header .app-header-top-bar,
+    body.theme-negative-alert header.seamless-fintech-header .app-header-main-bar,
+    body.theme-negative-alert header.seamless-fintech-header .app-header-sub-bar {
+      background: #25020B !important;
+      background-color: #25020B !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    body.theme-negative-alert header.seamless-fintech-header .app-header-sub-bar {
+      padding-bottom: 130px !important;
+    }
+    body.theme-negative-alert .hero-card-banner {
+      background: linear-gradient(180deg, #881337 0%, #BE123C 55%, #E11D48 100%) !important;
+      box-shadow: 0 12px 32px -4px rgba(225, 29, 72, 0.35) !important;
     }
 
     /* Novo estilo de Accordion igual ao código e imagem do usuário:
@@ -20034,6 +20090,134 @@ Frase falada: "${spokenText}"`;
       applyHeroBalancePrivacyState();
       setTimeout(enhanceResponsavelChartTouch, 500);
       if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+  <script>
+    // ============================================================================
+    // V1.9.4 SPRINT:
+    // 1. Sincronização estrita da Logo CtrlPig (garante que NUNCA fica vermelha no positivo)
+    // 2. Opção de ligar/desligar a caixa vermelha em saldo negativo (ativa por default)
+    // 3. Reconhecimento de voz contínuo com interim live preview e botão "Concluir Fala"
+    // ============================================================================
+    function isNegativeRedAlertEnabled() {
+      const saved = localStorage.getItem('ctrlpig_negative_red_alert_enabled');
+      return saved === null ? true : (saved === 'true');
+    }
+
+    function toggleNegativeRedAlertPreference(enabled) {
+      localStorage.setItem('ctrlpig_negative_red_alert_enabled', enabled ? 'true' : 'false');
+      if (typeof updateDashboardMetrics === 'function') updateDashboardMetrics();
+      showToastUndo(enabled ? 'Alerta vermelho ativado para saldo negativo.' : 'Alerta vermelho desativado (tema azul constante mantido).', false);
+    }
+
+    // Função oficial de sincronização da Logo CtrlPig
+    function syncAppLogoWithCurrentStatus(isNegative) {
+      const logoEl = document.getElementById('mainAppLogo');
+      if (!logoEl) return;
+      const redAlertActive = isNegative && isNegativeRedAlertEnabled();
+
+      if (redAlertActive) {
+        logoEl.src = CTRL_PIG_LOGOS.lightNegative;
+        logoEl.setAttribute('title', 'Atenção: Saldo Negativo no Ciclo Ativo');
+      } else {
+        // Retorna SEMPRE para a logo oficial branca em degradê!
+        logoEl.src = CTRL_PIG_LOGOS.lightPositive;
+        logoEl.setAttribute('title', 'CtrlPig • Controle Financeiro Inteligente');
+      }
+    }
+
+    // Sobrescreve updateDashboardMetrics para respeitar a preferência e sincronizar a logo
+    const _origUpdateDashboardMetricsV194 = typeof updateDashboardMetrics === 'function' ? updateDashboardMetrics : null;
+    if (_origUpdateDashboardMetricsV194) {
+      window.updateDashboardMetrics = function() {
+        _origUpdateDashboardMetricsV194();
+
+        const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+        const receitas = activeTxs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+        const fixas = activeTxs.filter(t => t.tipo === 'Despesa Fixa').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+        const variaveis = activeTxs.filter(t => t.tipo === 'Despesa Variável').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+        const cardExpenses = (typeof calculateCurrentCycleCardExpenses === 'function') ? calculateCurrentCycleCardExpenses() : 0;
+        const totalGastos = fixas + variaveis + cardExpenses;
+        const saldoLivre = receitas - totalGastos;
+        const isNegative = saldoLivre < 0;
+        const shouldShowRed = isNegative && isNegativeRedAlertEnabled();
+
+        if (shouldShowRed) {
+          document.body.classList.add('theme-negative-alert');
+          const heroBadge = document.getElementById('heroSaldoStatusBadge');
+          if (heroBadge) {
+            heroBadge.innerHTML = '<i data-lucide="alert-triangle" class="w-3 h-3"></i><span>Saldo Negativo</span>';
+            heroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-600/40 border border-red-300 text-red-100 backdrop-blur-sm animate-pulse';
+          }
+        } else {
+          document.body.classList.remove('theme-negative-alert');
+          const heroBadge = document.getElementById('heroSaldoStatusBadge');
+          if (heroBadge) {
+            heroBadge.innerHTML = isNegative ? '<i data-lucide="alert-circle" class="w-3 h-3"></i><span>Atenção aos Gastos</span>' : '<i data-lucide="check-circle" class="w-3 h-3"></i><span>Saldo Positivo</span>';
+            heroBadge.className = isNegative 
+              ? 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/30 border border-amber-300/40 text-amber-100 backdrop-blur-sm'
+              : 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm';
+          }
+        }
+
+        // Garante que a logo acompanhe perfeitamente o saldo
+        syncAppLogoWithCurrentStatus(isNegative);
+        if (window.lucide) lucide.createIcons();
+      };
+    }
+
+    // 2. Reconhecimento de Voz sem cortes: suporta live interim preview e conclusão manual
+    let voiceSilenceTimer = null;
+
+    window.onNativeVoiceInterimResult = function(partialText) {
+      if (!partialText) return;
+      const txt = document.getElementById('voiceTextInput');
+      if (txt) txt.value = partialText;
+      const st = document.getElementById('voiceStatusText');
+      if (st) st.textContent = 'Ouvindo... pode continuar falando!';
+      const ind = document.getElementById('listeningIndicator');
+      if (ind) ind.classList.remove('hidden');
+    };
+
+    window.finishVoiceRecordingNow = function() {
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'stop_voice' }));
+        } catch (e) {}
+      }
+      if (typeof speechRecognition !== 'undefined' && speechRecognition) {
+        try { speechRecognition.stop(); } catch (e) {}
+      }
+      const txt = document.getElementById('voiceTextInput');
+      if (txt && txt.value.trim()) {
+        window.onNativeVoiceResult(txt.value.trim());
+      }
+    };
+
+    // Compartilhamento de convite familiar para assinantes
+    window.shareFamilyInviteLink = function() {
+      const inviteMsg = 'Olá! Baixe o aplicativo CtrlPig Finanças do Casal para acompanharmos nossos gastos e metas juntos: https://github.com/agentiabr/financas-casal-flutter/releases/latest';
+      if (navigator.share) {
+        navigator.share({
+          title: 'Convite CtrlPig Família',
+          text: inviteMsg
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(inviteMsg).then(() => {
+          showToastUndo('Link de convite copiado para a área de transferência!', false);
+        });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const chkRedAlert = document.getElementById('chkNegativeRedAlertOption');
+      if (chkRedAlert) {
+        chkRedAlert.checked = isNegativeRedAlertEnabled();
+      }
+      if (typeof updateDashboardMetrics === 'function') {
+        updateDashboardMetrics();
+      }
     });
   </script>
 </body>
