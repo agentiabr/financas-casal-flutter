@@ -1301,16 +1301,17 @@
       box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* Botão Acessar estilo Mockup */
+    /* Botão Acessar estilo Mockup (Sem Contorno) */
     .rotina-action-btn {
       margin-top: 0.65rem;
       width: 100%;
-      padding: 0.42rem 0.5rem;
+      padding: 0.45rem 0.5rem;
       border-radius: 0.75rem;
       font-size: 0.75rem;
       font-weight: 800;
       text-align: center;
-      border: 1.5px solid #2563EB;
+      border: none !important;
+      outline: none !important;
       color: #2563EB;
       background: #EFF6FF;
       transition: all 0.2s ease;
@@ -1318,17 +1319,20 @@
     .rotina-carousel-card:hover .rotina-action-btn {
       background: #2563EB;
       color: #FFFFFF;
+      border: none !important;
     }
     .dark .rotina-action-btn,
     body.theme-dark .rotina-action-btn {
-      border-color: #38BDF8 !important;
+      border: none !important;
+      outline: none !important;
       color: #38BDF8 !important;
-      background: rgba(56, 189, 248, 0.12) !important;
+      background: rgba(56, 189, 248, 0.15) !important;
     }
     .dark .rotina-carousel-card:hover .rotina-action-btn,
     body.theme-dark .rotina-carousel-card:hover .rotina-action-btn {
       background: #38BDF8 !important;
       color: #0F172A !important;
+      border: none !important;
     }
 
     /* 4. Estilo Elegante das 3 Seções Mockup (Cofrinhos, Orçamento, Carteira de Cartões) */
@@ -1811,9 +1815,9 @@
             <div class="text-[10px] sm:text-xs text-blue-100 font-medium">% Comprometido</div>
             <div id="heroMiniComprometimento" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0%</div>
           </div>
-          <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5">
-            <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Fixas Quitadas</div>
-            <div id="heroMiniFixas" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0 de 0</div>
+          <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5 cursor-pointer hover:bg-black/25 transition-all" onclick="navigateToAccordionSection('cardHeroInstallments', 'cardHeroInstallmentsContent')" title="Toque para ver compras parceladas do mês">
+            <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Parcelados a Quitar</div>
+            <div id="heroMiniFixas" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0 pendentes</div>
           </div>
         </div>
 
@@ -6776,9 +6780,25 @@
       const stFixas = document.getElementById('statusFixasTexto');
       if (stFixas) stFixas.textContent = `Contas Fixas: ${fixasPagasAll}/${fixasDoCicloAll.length} quitadas`;
 
-      // Atualiza mini fixas no Card-Herói
+      // Atualiza mini Parcelados no Card-Herói (compras parceladas do mês que ainda não foram quitadas)
       const heroMiniFixasEl = document.getElementById('heroMiniFixas');
-      if (heroMiniFixasEl) heroMiniFixasEl.textContent = `${fixasPagasAll} de ${fixasDoCicloAll.length} pagas`;
+      if (heroMiniFixasEl) {
+        const parceladasDoCiclo = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions.filter(t => 
+          t.ciclo === currentCycle && 
+          (t.parcelado || (t.descricao && /\(\d+\/\d+\)/.test(t.descricao))) &&
+          t.tipo !== 'Receita'
+        ) : [];
+        const parceladasNaoQuitadas = parceladasDoCiclo.filter(t => t.status !== 'Pago');
+        const totalPendente = parceladasNaoQuitadas.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
+
+        if (parceladasNaoQuitadas.length > 0) {
+          heroMiniFixasEl.textContent = `${parceladasNaoQuitadas.length} (${formatBRL(totalPendente)})`;
+        } else if (parceladasDoCiclo.length > 0) {
+          heroMiniFixasEl.textContent = '✓ Todas quitadas';
+        } else {
+          heroMiniFixasEl.textContent = '0 pendentes';
+        }
+      }
 
       const stSync = document.getElementById('statusSyncTexto');
       if (stSync) stSync.textContent = `Local • ${transactions.length} lançamentos`;
@@ -7033,24 +7053,45 @@
       }
       let t = text.trim();
 
-      // 1. Extração Inteligente de Valor Monetário (ex: R$ 25, 25 reais, de 25, por 10,50, 25,00)
+      // 1. Extração Inteligente de Valor Monetário (robusta para número no final ou após conectivos)
       let val = 0;
-      let m = t.match(/r\$\s*(\d+(?:[.,]\d{1,2})?)/i);
-      if (!m) m = t.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)/i);
-      if (!m) m = t.match(/(?:de|por|valor(?:\s+de)?)\s+(\d+(?:[.,]\d{1,2})?)/i);
-      if (!m) m = t.match(/(\d+(?:[.,]\d{1,2})?)/i);
+      let numStr = null;
 
+      // a) R$ 250 ou R$ 250,50
+      let m = t.match(/r\$\s*(\d+(?:[.,]\d{1,2})?)/i);
       if (m) {
-        val = parseFloat(m[1].replace(',', '.'));
-        const numStr = m[1];
-        // Remove padrões do valor da frase para isolar o nome do estabelecimento / produto
-        t = t.replace(new RegExp('\\b(?:compra\\s+de\\s+)?r\\$\\s*' + numStr.replace('.', '\\.') + '(?:\\s*reais)?', 'gi'), ' ');
-        t = t.replace(new RegExp('\\b' + numStr.replace('.', '\\.') + '\\s*(?:reais|real)\\b', 'gi'), ' ');
-        t = t.replace(new RegExp('\\b(?:no\\s+valor\\s+de|valor\\s+de|por|de)\\s+' + numStr.replace('.', '\\.') + '\\b', 'gi'), ' ');
-        t = t.replace(new RegExp('\\br\\$\\s*', 'gi'), ' ');
+        numStr = m[1];
+      }
+      // b) 250 reais ou 250 real
+      if (!numStr) {
+        m = t.match(/\b(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real)\b/i);
+        if (m) numStr = m[1];
+      }
+      // c) compra de 250 / gasto de 250 / paguei 250 / no valor de 250 / valor 250 / por 250 / de 250
+      if (!numStr) {
+        m = t.match(/\b(?:no\s+valor\s+de|valor\s+de|valor|compra\s+de|paguei|gastei|custou|por|de)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\b/i);
+        if (m) numStr = m[1];
+      }
+      // d) Número isolado no final da frase (ex: "Supermercados o dia 250", "Padaria 45")
+      if (!numStr) {
+        m = t.match(/\b(\d+(?:[.,]\d{1,2})?)\s*$/i);
+        if (m) numStr = m[1];
+      }
+      // e) Qualquer número isolado na frase
+      if (!numStr) {
+        m = t.match(/\b(\d+(?:[.,]\d{1,2})?)\b/i);
+        if (m) numStr = m[1];
       }
 
-      // 2. Limpeza estrita de gatilhos verbais ("compra de", "compra no", "gastei", "lance", etc.)
+      if (numStr) {
+        val = parseFloat(numStr.replace(',', '.'));
+        // Remove padrões do valor da frase para isolar o nome do estabelecimento / produto
+        t = t.replace(new RegExp('\b(?:no\s+valor\s+de|valor\s+de|valor|compra\s+de|paguei|gastei|custou|por|de)?\s*(?:r\$\s*)?' + numStr.replace('.', '\.') + '\s*(?:reais|real)?\b', 'gi'), ' ');
+        t = t.replace(new RegExp('\b' + numStr.replace('.', '\.') + '\b', 'gi'), ' ');
+        t = t.replace(/\br\$\s*/gi, ' ');
+      }
+
+      // 2. Limpeza de gatilhos verbais ("compra de", "comprei", "gastei", etc.)
       const verbalTriggers = [
         /^\s*(?:compra\s+de|compra\s+na|compra\s+no|compra\s+num|compra\s+numa|compra)\s+/i,
         /^\s*(?:comprei\s+na|comprei\s+no|comprei\s+num|comprei\s+de|comprei)\s+/i,
@@ -7065,27 +7106,28 @@
         t = t.replace(trig, ' ');
       }
 
-      // Remove resíduos de "compra de" no meio da frase se houver
-      t = t.replace(/\b(?:compra\s+de|compra\s+no|compra\s+na)\b/gi, ' ');
+      // Remove resíduos de "compra de" soltos no meio ou fim
+      t = t.replace(/\b(?:compra\s+de|compra\s+no|compra\s+na|compra)\b/gi, ' ');
 
-      // Normaliza casos conhecidos como "supermercado o dia" -> "Supermercado Dia"
-      t = t.replace(/\bsupermercado\s+o\s+dia\b/gi, 'Supermercado Dia');
-      t = t.replace(/\bmercado\s+o\s+dia\b/gi, 'Mercado Dia');
+      // Normaliza nomes comerciais conhecidos
+      t = t.replace(/\bsupermercados?\s+o\s+dia\b/gi, 'Supermercado Dia');
+      t = t.replace(/\bmercados?\s+o\s+dia\b/gi, 'Mercado Dia');
+      t = t.replace(/\bsupermercados?\s+dia\b/gi, 'Supermercado Dia');
 
-      // Limpar conectivos soltos no início (no, na, em, de, do, da)
+      // Limpar conectivos soltos no início (no, na, em, de, do, da, o, a)
       t = t.replace(/^\s*(?:no|na|em|de|do|da|pro|para|o|a)\s+/i, '').trim();
       t = t.replace(/\s+/g, ' ').trim();
 
-      // Formatar capitalização limpa das palavras
-      let desc = t.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-      if (!desc || desc.length < 2) desc = 'Supermercado Dia';
+      // Formatar capitalização elegante das palavras
+      let desc = t.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ').trim();
+      if (!desc || desc.length < 2) desc = 'Gasto por Voz';
 
       // Inferência inteligente de categoria
       let cat = 'Outros';
       const low = (text + ' ' + desc).toLowerCase();
-      if (/padaria|mercado|supermercado|açougue|acougue|hortifruti|carrefour|dia|pão de açúcar|pao de acucar|almoço|jantar|lanche|restaurante|pizza|palazzo/i.test(low)) {
+      if (/padaria|mercado|supermercado|açougue|acougue|hortifruti|carrefour|dia|pão de açúcar|pao de acucar|almoço|jantar|lanche|restaurante|pizza|palazzo|compras/i.test(low)) {
         cat = 'Alimentação';
-      } else if (/farmácia|droga|drogaria|remédio|remedio|médico|medico|hospital|consulta|exame/i.test(low)) {
+      } else if (/farmácia|farmacia|droga|drogaria|remédio|remedio|médico|medico|hospital|consulta|exame/i.test(low)) {
         cat = 'Saúde';
       } else if (/uber|99|gasolina|posto|combustível|etanol|estacionamento|ônibus|onibus|metrô|metro|táxi|taxi/i.test(low)) {
         cat = 'Transporte';
