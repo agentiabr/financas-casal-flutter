@@ -1737,14 +1737,16 @@
               <span class="text-xl sm:text-2xl animate-bounce">👋</span>
             </h1>
 
-            <!-- Saldo Disponível em Destaque -->
-            <div class="mt-2.5 flex flex-wrap items-baseline gap-2 sm:gap-3">
-              <span class="text-xs sm:text-sm font-medium text-blue-100">Saldo Livre Disponível:</span>
-              <span id="heroSaldoDisponivelVal" class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">R$ 0,00</span>
-              <span id="heroSaldoStatusBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm">
-                <i data-lucide="check-circle" class="w-3 h-3"></i>
-                <span>Saldo Positivo</span>
-              </span>
+            <!-- Saldo Disponível em Destaque (Linha Fixa Sem Quebra no Badge Saldo Positivo) -->
+            <div class="mt-2">
+              <div class="text-xs sm:text-sm font-medium text-blue-100 leading-tight">Saldo Livre Disponível:</div>
+              <div class="mt-0.5 flex items-center gap-2.5 flex-nowrap whitespace-nowrap">
+                <span id="heroSaldoDisponivelVal" class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white tabular-nums whitespace-nowrap">R$ 0,00</span>
+                <span id="heroSaldoStatusBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm whitespace-nowrap flex-shrink-0">
+                  <i data-lucide="check-circle" class="w-3 h-3"></i>
+                  <span>Saldo Positivo</span>
+                </span>
+              </div>
             </div>
 
             <!-- 3 Botões de Ação do Novo Mockup (Família, + Receitas, - Gastos) -->
@@ -10407,7 +10409,7 @@
 
       const originalBtnText = btn ? btn.innerHTML : '';
       if (btn) {
-        btn.innerHTML = `<span>⏳ Consultando IA...</span>`;
+        btn.innerHTML = `<span class="text-xs animate-spin">⏳</span>`;
         btn.disabled = true;
       }
 
@@ -16724,16 +16726,16 @@ Frase falada: "${spokenText}"`;
           </div>
 
           <div id="geminiFormKeyBox" class="space-y-2">
-            <div class="flex items-center gap-2">
-              <input type="password" id="inputGeminiApiKey" placeholder="Cole sua chave AIzaSy... do Google AI Studio" class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-mono">
-              <button onclick="saveGeminiApiKey()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all">Salvar</button>
+            <div class="flex items-center gap-1.5 flex-nowrap">
+              <input type="password" id="inputGeminiApiKey" placeholder="Cole aqui sua Chave do Google AI Studio" class="min-w-0 flex-1 px-2.5 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-mono">
+              <button type="button" onclick="saveGeminiApiKey()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs whitespace-nowrap flex-shrink-0 transition-all cursor-pointer">Salvar</button>
+              <button type="button" onclick="testGeminiApiKeyLive()" id="btnTestGeminiKey" class="px-2.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs whitespace-nowrap flex-shrink-0 shadow-xs transition-all cursor-pointer">
+                🧪 Testar Conexão IA
+              </button>
             </div>
           </div>
-          <div class="mt-2 flex items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60">
-            <span id="geminiTestStatusText" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Modelo ativo: Gemini 2.5 / 2.0 Flash Vision</span>
-            <button type="button" onclick="testGeminiApiKeyLive()" id="btnTestGeminiKey" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] shadow-xs transition-all cursor-pointer">
-              🧪 Testar Conexão IA
-            </button>
+          <div class="mt-1.5 flex items-center justify-between gap-2 pt-1.5 border-t border-slate-200 dark:border-slate-700/60">
+            <span id="geminiTestStatusText" class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate">Motor ativo: Gemini 2.5 / 2.0 Flash Vision (Sincronizado na Nuvem)</span>
           </div>
         </div>
 
@@ -16758,9 +16760,8 @@ Frase falada: "${spokenText}"`;
               </label>
               <div class="flex items-center gap-2">
                 <input type="text" id="inputAITipTheme" placeholder="Digite um tema (opcional: mercado, cartão, dívidas, reserva...)" class="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                <button type="button" onclick="generatePiggyTipWithAI()" id="btnGenerateTipAI" class="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-lg text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-200"></i>
-                  <span>Gerar com IA</span>
+                <button type="button" onclick="generatePiggyTipWithAI()" id="btnGenerateTipAI" title="Gerar Dica com IA" class="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold rounded-lg shadow-xs transition-all flex items-center justify-center cursor-pointer flex-shrink-0 active:scale-95">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                 </button>
               </div>
             </div>
@@ -23084,6 +23085,154 @@ Frase falada: "${spokenText}"`;
       if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
       if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
     }, 400);
+  });
+})();
+</script>
+
+
+<!-- ============================================================================
+     SPRINT V2.0.2: CORREÇÃO DA NARRAÇÃO REPETIDA DE NOTIFICAÇÃO, SINCRONIA DO
+     OLHINHO DO CARD AZUL E BADGE SALDO POSITIVO EM LINHA ÚNICA
+     ============================================================================ -->
+<script>
+(function() {
+  // 1. Narração de "Notificações ativadas com sucesso" SOMENTE 1 VEZ quando o usuário clica no botão de autorizar
+  window._userExplicitlyClickedNotifAuth = false;
+
+  window.requestAppNotificationPermission = function() {
+    window._userExplicitlyClickedNotifAuth = true;
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_notification_permission' }));
+        return;
+      } catch (e) {}
+    }
+    if ('Notification' in window && typeof Notification.requestPermission === 'function') {
+      Notification.requestPermission().then(permission => {
+        const ok = (permission === 'granted');
+        window.onNativeNotificationPermissionResult(ok, true);
+      });
+    }
+  };
+
+  window.onNativeNotificationPermissionResult = function(granted, isUserInitiated) {
+    const wasAlreadyAuthorized = localStorage.getItem('ctrlpig_notifications_authorized') === 'true';
+    const alreadySpokenOnce = localStorage.getItem('ctrlpig_notif_spoken_once') === 'true';
+
+    localStorage.setItem('ctrlpig_notifications_authorized', granted ? 'true' : 'false');
+    if (typeof updateNotificationAuthBadges === 'function') {
+      updateNotificationAuthBadges();
+    }
+
+    // Só fala e mostra o aviso 1 única vez quando o usuário clicou para autorizar!
+    if (granted) {
+      if ((isUserInitiated || window._userExplicitlyClickedNotifAuth) && (!wasAlreadyAuthorized || !alreadySpokenOnce)) {
+        localStorage.setItem('ctrlpig_notif_spoken_once', 'true');
+        window._userExplicitlyClickedNotifAuth = false;
+        showToastUndo('🔔 Notificações e alertas autorizados com sucesso!', false);
+        if (typeof speakMedicationAlarm === 'function') {
+          speakMedicationAlarm('Notificações e alertas de saúde ativados com sucesso.');
+        }
+      }
+    } else if (isUserInitiated || window._userExplicitlyClickedNotifAuth) {
+      window._userExplicitlyClickedNotifAuth = false;
+      showToastUndo('Autorize as notificações nas configurações do Android para receber os alertas.', false);
+    }
+  };
+
+  // 2. Sincronização 100% Fiel do Olhinho do Card Azul (#btnHeroPrivacyToggle / #heroSaldoDisponivelVal)
+  //    - Se o olhinho estiver desligado (isHeroBalanceHidden === true -> eye-off), o valor fica "R$ •••••"
+  //    - Se o olhinho estiver ligado (isHeroBalanceHidden === false -> eye), o valor mostra "R$ X.XXX,XX"
+  window.syncHeroCardEyeAndBalance = function() {
+    const valEl = document.getElementById('heroSaldoDisponivelVal');
+    const btnEl = document.getElementById('btnHeroPrivacyToggle');
+    const badgeEl = document.getElementById('heroSaldoStatusBadge');
+
+    const hidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+    isHeroBalanceHidden = hidden;
+
+    if (valEl) {
+      const currentTxt = (valEl.textContent || '').trim();
+      if (currentTxt && currentTxt !== 'R$ •••••') {
+        valEl.dataset.realValue = currentTxt;
+      }
+      if (hidden) {
+        valEl.textContent = 'R$ •••••';
+      } else if (valEl.dataset.realValue) {
+        valEl.textContent = valEl.dataset.realValue;
+      }
+    }
+
+    if (btnEl) {
+      const iconName = hidden ? 'eye-off' : 'eye';
+      btnEl.title = hidden ? 'Mostrar Saldo Livre Disponível' : 'Ocultar Saldo Livre Disponível';
+      btnEl.innerHTML = `<i data-lucide="${iconName}" id="iconHeroPrivacy" class="w-4 h-4 text-white"></i>`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Garante que o badge Saldo Positivo / Negativo nunca quebre de linha
+    if (badgeEl) {
+      badgeEl.classList.add('whitespace-nowrap', 'flex-shrink-0');
+    }
+  };
+
+  window.applyHeroBalancePrivacyState = window.syncHeroCardEyeAndBalance;
+
+  window.toggleHeroCardPrivacy = function() {
+    const currentHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+    const nextHidden = !currentHidden;
+    isHeroBalanceHidden = nextHidden;
+    localStorage.setItem('ctrlpig_hero_balance_hidden', nextHidden ? 'true' : 'false');
+
+    if (!nextHidden && typeof updateDashboard === 'function') {
+      updateDashboard();
+    }
+    window.syncHeroCardEyeAndBalance();
+  };
+
+  // Impede que updatePrivacyGlobalUI sobrescreva o ícone do olhinho do Card Azul com o estado errado
+  const _origUpdatePrivacyGlobalUI = window.updatePrivacyGlobalUI;
+  window.updatePrivacyGlobalUI = function() {
+    if (typeof _origUpdatePrivacyGlobalUI === 'function') {
+      _origUpdatePrivacyGlobalUI();
+    }
+    window.syncHeroCardEyeAndBalance();
+  };
+
+  // Garante que após qualquer atualização do Dashboard o olhinho do Card Azul mantenha o valor oculto ou visível corretamente
+  const _origUpdateDashboard = window.updateDashboard;
+  if (typeof _origUpdateDashboard === 'function') {
+    window.updateDashboard = function() {
+      _origUpdateDashboard();
+      window.syncHeroCardEyeAndBalance();
+    };
+  }
+
+  // 3. Mensagem amigável no botão Testar Conexão IA
+  const _origTestGeminiApiKeyLive = window.testGeminiApiKeyLive;
+  window.testGeminiApiKeyLive = async function() {
+    const input = document.getElementById('inputGeminiApiKey');
+    const statusEl = document.getElementById('geminiTestStatusText');
+    let key = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+    if (input && input.value.trim()) {
+      key = input.value.trim();
+      localStorage.setItem('financas_gemini_api_key', key);
+      if (typeof renderGeminiKeyUI === 'function') renderGeminiKeyUI();
+    }
+    if (!key) {
+      if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Cole sua Chave do Google AI Studio no campo acima e clique em Salvar.</span>';
+      showToastUndo('Cole sua Chave do Google AI Studio no campo acima para ativar a leitura por IA.', false);
+      return;
+    }
+    if (typeof _origTestGeminiApiKeyLive === 'function') {
+      return _origTestGeminiApiKeyLive();
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.syncHeroCardEyeAndBalance();
+    }, 250);
   });
 })();
 </script>

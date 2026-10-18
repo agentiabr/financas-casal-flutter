@@ -75,7 +75,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         final granted = status.isGranted;
         _controller.runJavaScript("""
           if (typeof window.onNativeNotificationPermissionResult === 'function') {
-            window.onNativeNotificationPermissionResult($granted);
+            window.onNativeNotificationPermissionResult($granted, false);
           }
         """);
       });
@@ -237,7 +237,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         }
         _controller.runJavaScript("""
           if (typeof window.onNativeNotificationPermissionResult === 'function') {
-            window.onNativeNotificationPermissionResult($granted);
+            window.onNativeNotificationPermissionResult($granted, true);
           }
         """);
       } else if (action == 'show_notification') {
@@ -263,7 +263,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         final granted = status.isGranted;
         _controller.runJavaScript("""
           if (typeof window.onNativeNotificationPermissionResult === 'function') {
-            window.onNativeNotificationPermissionResult($granted);
+            window.onNativeNotificationPermissionResult($granted, false);
           }
         """);
       } else if (action == 'stop_speak') {
