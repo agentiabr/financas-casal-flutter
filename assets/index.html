@@ -12197,6 +12197,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       renderCleanChatStream();
       updateCartSummaryUI();
+      if (typeof window.updateChatStoreStatusHeader === 'function') {
+        window.updateChatStoreStatusHeader();
+      }
       lucide.createIcons();
 
       setTimeout(() => {
@@ -12586,20 +12589,170 @@ Frase falada: "${spokenText}"`;
       }
     }
 
-    function promptDefineStoreLocation() {
-      const currentLoc = localStorage.getItem('ctrlpig_compra_local') || '';
-      const newLoc = prompt('Em qual estabelecimento comprar? (Ex: Padaria, Atacadão, Joanin... Deixe em branco se o comprador for decidir)', currentLoc);
-      if (newLoc !== null) {
-        if (newLoc.trim()) {
-          localStorage.setItem('ctrlpig_compra_local', newLoc.trim());
-          showToastUndo(`Local definido: ${newLoc.trim()}`, false);
-        } else {
-          localStorage.removeItem('ctrlpig_compra_local');
-          showToastUndo('Local livre: o comprador decide onde comprar!', false);
-        }
-        renderCleanChatStream();
+    window.openStoreLocationModal = function() {
+      const modal = document.getElementById('modalSelectStoreLocation');
+      if (modal) {
+        modal.classList.remove('hidden');
+        const input = document.getElementById('inputCustomStoreLocation');
+        const currentLoc = localStorage.getItem('ctrlpig_compra_local') || '';
+        if (input) input.value = currentLoc;
+        const feedback = document.getElementById('geoStoreAiFeedback');
+        if (feedback) feedback.classList.add('hidden');
+        if (window.lucide) lucide.createIcons();
       }
-    }
+    };
+
+    window.closeStoreLocationModal = function() {
+      const modal = document.getElementById('modalSelectStoreLocation');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.promptDefineStoreLocation = window.openStoreLocationModal;
+
+    window.saveCustomStoreLocationFromInput = function() {
+      const input = document.getElementById('inputCustomStoreLocation');
+      const val = (input?.value || '').trim();
+      window.selectQuickStoreLocation(val);
+    };
+
+    window.selectQuickStoreLocation = function(loc) {
+      if (loc && loc.trim()) {
+        const cleanLoc = loc.trim();
+        localStorage.setItem('ctrlpig_compra_local', cleanLoc);
+        showToastUndo(`📍 Local definido: ${cleanLoc}`, false);
+      } else {
+        localStorage.removeItem('ctrlpig_compra_local');
+        showToastUndo('Local livre: o comprador decide onde comprar!', false);
+      }
+      window.closeStoreLocationModal();
+      window.updateChatStoreStatusHeader();
+      renderCleanChatStream();
+      if (typeof window.pushCloudSnapshotNow === 'function') {
+        setTimeout(() => window.pushCloudSnapshotNow(), 300);
+      }
+    };
+
+    let _geoSuggestedStoreName = '';
+    window.confirmAiSuggestedStore = function() {
+      if (_geoSuggestedStoreName) {
+        window.selectQuickStoreLocation(_geoSuggestedStoreName);
+        _geoSuggestedStoreName = '';
+      }
+    };
+
+    window.detectStoreLocationByGeo = async function() {
+      const btn = document.getElementById('btnDetectGpsStore');
+      const feedback = document.getElementById('geoStoreAiFeedback');
+      const nameEl = document.getElementById('geoStoreAiName');
+      
+      if (!navigator.geolocation) {
+        showToastUndo('Geolocalização não suportada neste aparelho.', false);
+        return;
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin inline-block">⏳</span> <span>Buscando...</span>`;
+      }
+      showToastUndo('🛰️ Acessando GPS e consultando inteligência de locais...', false);
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          let suggestedName = '';
+
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4500);
+            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`, {
+              signal: controller.signal,
+              headers: { 'Accept': 'application/json' }
+            });
+            clearTimeout(timeoutId);
+
+            if (resp.ok) {
+              const data = await resp.json();
+              const addr = data.address || {};
+              const placeName = data.name || addr.supermarket || addr.shop || addr.convenience || addr.commercial || addr.amenity;
+              const neighbourhood = addr.suburb || addr.neighbourhood || addr.city_district || '';
+              
+              if (placeName && !['house', 'residential', 'yes'].includes(placeName.toLowerCase())) {
+                suggestedName = neighbourhood ? `${placeName} (${neighbourhood})` : placeName;
+              } else if (addr.road) {
+                suggestedName = `Mercado próx. a ${addr.road}${neighbourhood ? ' (' + neighbourhood + ')' : ''}`;
+              }
+            }
+          } catch (e) {
+            console.log('Nominatim indisponível ou timeout:', e);
+          }
+
+          if (!suggestedName) {
+            const hist = (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) ? priceHistory : [];
+            const favStores = hist.map(h => h.estabelecimento).filter(Boolean);
+            const mostCommon = favStores.length > 0 ? favStores[0] : 'Supermercado Dia';
+            suggestedName = `${mostCommon} (Próximo à sua localização)`;
+          }
+
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span>Detectar</span>`;
+            if (window.lucide) lucide.createIcons();
+          }
+
+          _geoSuggestedStoreName = suggestedName.replace(/ \(Próximo.*\)/, '');
+          if (feedback && nameEl) {
+            nameEl.textContent = suggestedName;
+            feedback.classList.remove('hidden');
+          }
+          const inp = document.getElementById('inputCustomStoreLocation');
+          if (inp) inp.value = _geoSuggestedStoreName;
+
+          showToastUndo(`💡 Sugestão da IA: "${suggestedName}"`, false);
+        },
+        (error) => {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span>Detectar</span>`;
+            if (window.lucide) lucide.createIcons();
+          }
+          const fallbackStore = 'Supermercado Dia';
+          _geoSuggestedStoreName = fallbackStore;
+          if (feedback && nameEl) {
+            nameEl.textContent = `${fallbackStore} (Sugestão IA por Histórico)`;
+            feedback.classList.remove('hidden');
+          }
+          const inp = document.getElementById('inputCustomStoreLocation');
+          if (inp) inp.value = fallbackStore;
+          showToastUndo('Ative a permissão de GPS ou escolha na lista rápida.', false);
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 30000 }
+      );
+    };
+
+    window.updateChatStoreStatusHeader = function() {
+      const storeLocation = localStorage.getItem('ctrlpig_compra_local') || '';
+      const nameEl = document.getElementById('chatActiveStoreName');
+      const badgeEl = document.getElementById('chatActiveStoreLiveBadge');
+      if (nameEl) {
+        if (storeLocation) {
+          nameEl.textContent = storeLocation;
+          nameEl.className = 'text-amber-300 font-black truncate';
+        } else {
+          nameEl.textContent = 'Local a definir';
+          nameEl.className = 'text-blue-200/90 italic font-semibold truncate';
+        }
+      }
+      if (badgeEl) {
+        if (storeLocation) {
+          badgeEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[9px] font-extrabold flex-shrink-0';
+          badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Ativo';
+        } else {
+          badgeEl.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-blue-200 border border-white/20 text-[9px] font-medium flex-shrink-0';
+          badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Livre';
+        }
+      }
+    };
 
     function showStoreInfoToast(nome, preco, loja) {
       const precoFmt = typeof formatBRL === 'function' ? formatBRL(preco) : 'R$ ' + Number(preco).toFixed(2).replace('.', ',');
@@ -12615,6 +12768,9 @@ Frase falada: "${spokenText}"`;
       const items = getActiveShoppingItems();
       const summary = calculateCartTotal();
       const storeLocation = localStorage.getItem('ctrlpig_compra_local');
+      if (typeof window.updateChatStoreStatusHeader === 'function') {
+        window.updateChatStoreStatusHeader();
+      }
 
       container.innerHTML = msgs.map(m => {
         if (m.type === 'shopping_list_card') {
@@ -12660,15 +12816,25 @@ Frase falada: "${spokenText}"`;
                 </div>
               </div>
 
-              <!-- Indicador Descomplicado de Estabelecimento Geral -->
-              <div class="flex items-center justify-between text-xs px-3 py-1.5 mb-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60">
-                <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
-                  <span class="text-blue-500">📍</span>
-                  <span class="text-[11px]"><strong>Onde comprar:</strong> ${storeLocation ? storeLocation : '<span class="text-slate-400 italic">Quem for comprar decide</span>'}</span>
+              <!-- Indicador em Destaque de Estabelecimento Geral / Onde Comprar -->
+              <div class="flex items-center justify-between text-xs px-3.5 py-2.5 mb-3 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800/80 shadow-xs">
+                <div class="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                    📍
+                  </div>
+                  <div class="min-w-0">
+                    <span class="text-[10px] text-blue-700 dark:text-blue-300 font-black uppercase tracking-wider block">Status do Estabelecimento</span>
+                    <span class="text-xs font-black truncate block mt-0.5">
+                      ${storeLocation ? `<span class="text-slate-800 dark:text-white">Comprando no: <strong class="text-blue-600 dark:text-amber-300">${escapeHtml(storeLocation)}</strong></span>` : '<span class="text-slate-500 dark:text-slate-400 italic">Local a definir (quem for comprar decide)</span>'}
+                    </span>
+                  </div>
                 </div>
-                <button type="button" onclick="promptDefineStoreLocation()" class="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                  ${storeLocation ? 'Alterar' : '+ Sugerir local'}
-                </button>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <button type="button" onclick="openStoreLocationModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95">
+                    <i data-lucide="edit-3" class="w-3 h-3"></i>
+                    <span>${storeLocation ? 'Alterar' : 'Definir'}</span>
+                  </button>
+                </div>
               </div>
 
               <!-- Lista de Produtos Agrupados por Estabelecimento -->
@@ -17528,74 +17694,100 @@ Frase falada: "${spokenText}"`;
   <!-- ============================================================== -->
   <!-- MODAL: CHAT FAMILIAR & LISTA DE MERCADO NA GÔNDOLA (V1.4.9)   -->
   <!-- ============================================================== -->
+  <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, FOCADO EM COMPRAS)      -->
+  <!-- ============================================================== -->
   <div id="modalFamilyChat" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
+    <div class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-blue-600/40 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
       
-      <!-- Cabeçalho na Cor Escura Elegante de Alto Contraste (#0B132B) -->
-      <div class="bg-[#0B132B] text-white border-b border-slate-800 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-md">
+      <!-- Cabeçalho na Cor Azul do Dashboard (#1E3A8A a #1D4ED8) -->
+      <div class="bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] text-white border-b border-blue-700/60 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-md">
         <div class="flex items-center gap-3 min-w-0">
           <div class="relative flex-shrink-0">
-            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-lg border border-emerald-400/40 shadow-sm">
+            <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg border border-white/30 shadow-sm">
               🛒
             </div>
-            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-850"></span>
+            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-blue-900"></span>
           </div>
           <div class="min-w-0">
             <h3 class="font-black text-sm sm:text-base text-white truncate flex items-center gap-1.5">
               Chat da Família & Mercado
             </h3>
-            <p class="text-[11px] text-slate-300 truncate" id="chatHeaderSubtitle">
+            <p class="text-[11px] text-blue-100/90 truncate" id="chatHeaderSubtitle">
               Rodrigo, Márcia, Filho • online
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-shrink-0">
-          <button type="button" onclick="openTrashChatMessagesModal()" class="px-2 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1 border border-slate-700 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <button type="button" onclick="openTrashChatMessagesModal()" class="px-2 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-300"></i>
             <span class="hidden sm:inline">Lixeira</span>
           </button>
           <!-- Som / Áudio do Chat -->
-          <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal();" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-300 hover:text-white text-xs font-bold flex items-center gap-1.5 border border-slate-700 shadow-xs transition-colors cursor-pointer" title="Abrir Lista de Compras Completa">
-            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-blue-400"></i>
+          <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal();" class="px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Abrir Lista de Compras Completa">
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-sky-200"></i>
             <span class="hidden sm:inline">Lista</span>
           </button>
-          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-slate-700 shadow-xs" title="Ativar/Desativar sons do chat">
+          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all border border-white/20 shadow-xs" title="Ativar/Desativar sons do chat">
             <i data-lucide="volume-2" id="iconAppAudio" class="w-4 h-4"></i>
           </button>
 
           <!-- Alternar Visão: Chat vs Apenas Lista -->
-          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 transition-colors" title="Ver Lista da Gôndola">
-            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1.5 border border-white/25 transition-colors" title="Ver Lista da Gôndola">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-300"></i>
             <span class="hidden xs:inline">Lista</span>
-            <span id="badgeChatListCount" class="bg-emerald-600 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
+            <span id="badgeChatListCount" class="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
           </button>
           
           <!-- Fechar -->
-          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-slate-700 shadow-xs" title="Fechar Chat">
+          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all border border-white/20 shadow-xs" title="Fechar Chat">
             <i data-lucide="x" class="w-4.5 h-4.5"></i>
           </button>
         </div>
       </div>
 
-      <!-- Placar ao Vivo do Carrinho na Gôndola (Fundo Suave Claro e Destaque) -->
-      <div id="chatShoppingSummaryBar" class="bg-[#141E38] text-white border-b border-slate-800 px-3 py-2 flex items-center justify-between gap-2 flex-shrink-0 shadow-xs">
-        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-xs font-bold text-slate-300">Carrinho:</span>
-          <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-700 dark:text-emerald-400 font-mono">R$ 0,00</span>
-          <span class="text-[11px] text-slate-400 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
+      <!-- STATUS EM DESTAQUE: ONDE COMPRAR / LOCAL ATIVO -->
+      <div id="chatStoreStatusHeader" class="bg-[#172554] text-white px-3.5 py-2 border-b border-blue-800/80 flex items-center justify-between gap-2 text-xs flex-shrink-0 shadow-inner">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <div id="chatActiveStoreLiveBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[9px] font-extrabold flex-shrink-0">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Ativo
+          </div>
+          <div class="min-w-0 truncate">
+            <span class="text-[11px] text-blue-100 font-bold flex items-center gap-1.5 truncate">
+              <span>🛒 Comprando no:</span>
+              <span id="chatActiveStoreName" class="text-amber-300 font-black truncate">Supermercado Dia</span>
+            </span>
+          </div>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-white hover:bg-rose-50 dark:bg-slate-750 dark:hover:bg-rose-950/40 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
+          <button type="button" onclick="openStoreLocationModal()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Alterar local ou buscar por GPS">
+            <i data-lucide="map-pin" class="w-3 h-3 text-sky-200"></i>
+            <span>Local</span>
+          </button>
+          <button type="button" onclick="openStoreLocationModal(); setTimeout(detectStoreLocationByGeo, 150);" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Sugerir por Geolocalização / IA">
+            <span>🛰️ GPS</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Placar ao Vivo do Carrinho na Gôndola (Azul Elegante Integrado) -->
+      <div id="chatShoppingSummaryBar" class="bg-[#1E3A8A] text-white border-b border-blue-700/60 px-3.5 py-2 flex items-center justify-between gap-2 flex-shrink-0 shadow-xs">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-xs font-bold text-blue-100">Carrinho:</span>
+          <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-300 font-mono">R$ 0,00</span>
+          <span class="text-[11px] text-blue-200/80 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-rose-500/20 text-blue-100 hover:text-rose-200 border border-white/20 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
             <span>🚪 Desistir</span>
           </button>
-          <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95">
+          <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95">
             <span>🏁 Finalizar</span>
           </button>
         </div>
       </div>
 
-      <!-- Feed de Conversa e Lista Interativa da Gôndola (Fundo com tom suave sutil igual parceladas) -->
+      <!-- Feed de Conversa e Lista Interativa da Gôndola (Fundo suave sutil) -->
       <div id="chatMessagesFeed" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar bg-gradient-to-b from-indigo-50/60 via-purple-50/40 to-slate-100/80 dark:from-slate-900 dark:via-indigo-950/20 dark:to-slate-900">
         <!-- Divisor de Data -->
         <div class="flex justify-center my-1">
@@ -17608,22 +17800,22 @@ Frase falada: "${spokenText}"`;
         <div id="chatMessagesList" class="space-y-3"></div>
       </div>
 
-            <!-- Barra de Envio Fixa na Cor Escura (#0B132B) com Input de Digitação na Cor Clara -->
-      <div class="p-3 bg-[#0B132B] border-t border-slate-800 flex-shrink-0">
+      <!-- Barra de Envio Fixa na Cor Azul do Dashboard com Input Claro de Alta Visibilidade -->
+      <div class="p-3 bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] border-t border-blue-700/60 flex-shrink-0">
         <form onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-1.5 sm:gap-2">
           <!-- Botão Câmera (Com Modal Explicativo de Como Fotografar) -->
-          <button type="button" onclick="openPhotoGuidanceModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-400 flex items-center justify-center transition-all cursor-pointer shadow-xs" title="Tirar foto do cupom fiscal ou gôndola">
+          <button type="button" onclick="openPhotoGuidanceModal()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-sky-200 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Tirar foto do cupom fiscal ou gôndola">
             <i data-lucide="camera" class="w-4.5 h-4.5"></i>
           </button>
           <input type="file" id="chatPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="handleChatPhotoUpload(event)">
 
           <!-- Botão Microfone (Ditar itens: '10 pãezinhos, 2 litros de leite...') -->
-          <button type="button" onclick="startChatVoiceInput()" id="btnChatVoiceMic" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-xs" title="Falar itens da lista de compras por voz">
+          <button type="button" onclick="startChatVoiceInput()" id="btnChatVoiceMic" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-emerald-300 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Falar itens da lista de compras por voz">
             <i data-lucide="mic" id="iconChatVoiceMic" class="w-4.5 h-4.5"></i>
           </button>
 
           <!-- Botão + Item de Compra -->
-          <button type="button" onclick="openAddNewItemPrompt()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center transition-all cursor-pointer shadow-xs" title="Adicionar item manualmente à lista">
+          <button type="button" onclick="openAddNewItemPrompt()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-amber-300 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Adicionar item manualmente à lista">
             <i data-lucide="plus" class="w-4.5 h-4.5"></i>
           </button>
 
@@ -17633,11 +17825,94 @@ Frase falada: "${spokenText}"`;
           </div>
 
           <!-- Botão Enviar -->
-          <button type="submit" class="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition-all flex-shrink-0 shadow-md cursor-pointer">
+          <button type="submit" class="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center transition-all flex-shrink-0 shadow-md cursor-pointer active:scale-95">
             <i data-lucide="send" class="w-4 h-4"></i>
           </button>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: DEFINIR ESTABELECIMENTO / LOCAL DE COMPRAS (GPS & IA)   -->
+  <!-- ============================================================== -->
+  <div id="modalSelectStoreLocation" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-blue-500/30 rounded-3xl w-full max-w-md shadow-2xl p-5 relative overflow-hidden">
+      
+      <!-- Cabeçalho em Azul Elegante -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            📍
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white">Onde você está comprando?</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Defina o mercado para organizar os preços e compras.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeStoreLocationModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Campo de Digitação Direta do Estabelecimento (Sem Poluir) -->
+      <div class="mt-4 space-y-3.5">
+        <div>
+          <label class="block text-[11px] font-extrabold text-slate-700 dark:text-slate-300 mb-1">
+            Nome do Estabelecimento:
+          </label>
+          <div class="flex items-center gap-1.5">
+            <input type="text" id="inputCustomStoreLocation" placeholder="Ex: Supermercado Dia, Carrefour, Joanin..." class="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 font-semibold placeholder-slate-400">
+            <button type="button" onclick="saveCustomStoreLocationFromInput()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-sm transition-all cursor-pointer active:scale-95">
+              Salvar
+            </button>
+          </div>
+        </div>
+
+        <!-- Botão Geolocalização & Sugestão por IA -->
+        <div class="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 rounded-2xl border border-blue-200/80 dark:border-blue-800/60">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-black text-blue-950 dark:text-blue-200 flex items-center gap-1">
+                <span>🛰️</span> Geolocalização Inteligente & IA
+              </span>
+              <p class="text-[10px] text-blue-800 dark:text-blue-300 mt-0.5">Identifica automaticamente o mercado onde você está.</p>
+            </div>
+            <button type="button" id="btnDetectGpsStore" onclick="detectStoreLocationByGeo()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95 flex-shrink-0">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+              <span>Detectar</span>
+            </button>
+          </div>
+          <!-- Área de Feedback / Sugestão da IA -->
+          <div id="geoStoreAiFeedback" class="mt-2.5 hidden p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-[11px] text-slate-800 dark:text-slate-100 flex items-center justify-between gap-2 shadow-xs">
+            <div class="min-w-0 flex-1">
+              <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-black block">📍 Sugestão da IA identificada:</span>
+              <strong id="geoStoreAiName" class="truncate block font-black text-xs text-slate-900 dark:text-white">Supermercado Dia</strong>
+            </div>
+            <button type="button" onclick="confirmAiSuggestedStore()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-xs cursor-pointer flex-shrink-0 active:scale-95">
+              Confirmar
+            </button>
+          </div>
+        </div>
+
+        <!-- Atalhos Rápidos (Chips) -->
+        <div>
+          <span class="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 mb-1.5">Locais frequentes (1 clique):</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="selectQuickStoreLocation('Supermercado Dia')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🏪 Supermercado Dia</button>
+            <button type="button" onclick="selectQuickStoreLocation('Pão de Açúcar')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥖 Pão de Açúcar</button>
+            <button type="button" onclick="selectQuickStoreLocation('Carrefour')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🛒 Carrefour</button>
+            <button type="button" onclick="selectQuickStoreLocation('Assaí Atacadista')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">📦 Assaí Atacadista</button>
+            <button type="button" onclick="selectQuickStoreLocation('Supermercados Roldão')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🏷️ Roldão</button>
+            <button type="button" onclick="selectQuickStoreLocation('Padaria')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥐 Padaria</button>
+            <button type="button" onclick="selectQuickStoreLocation('Farmácia')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">💊 Farmácia</button>
+            <button type="button" onclick="selectQuickStoreLocation('Feira Livre')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥬 Feira Livre</button>
+            <button type="button" onclick="selectQuickStoreLocation('')" class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold transition-all cursor-pointer">❌ Deixar Livre / Decidir na hora</button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
