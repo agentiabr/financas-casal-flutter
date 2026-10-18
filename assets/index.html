@@ -622,32 +622,55 @@
       color: #D97706 !important;
     }
 
-    /* 4. Total de Gastos - CARD ESCURO ELEGANTE DE ALTO CONTRASTE */
-    #sectionMetrics [data-card-id="gastos"] {
-      background-color: #0F172A !important;
-      border: 1px solid #334155 !important;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15) !important;
-      color: #FFFFFF !important;
+    /* 4. Total de Gastos - Estilo Clean Neutro */
+    body.theme-light #sectionMetrics [data-card-id="gastos"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="gastos"] {
+      background-color: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+      border-left: 1px solid #E2E8F0 !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
     }
-    #sectionMetrics [data-card-id="gastos"] span,
-    #sectionMetrics [data-card-id="gastos"] p,
-    #sectionMetrics [data-card-id="gastos"] i {
-      color: #CBD5E1 !important;
+    body.theme-light #sectionMetrics [data-card-id="gastos"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="gastos"] span {
+      color: #64748B !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="gastos"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="gastos"] p {
+      color: #94A3B8 !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="gastos"] i,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="gastos"] i {
+      color: #94A3B8 !important;
     }
     #sectionMetrics [data-card-id="gastos"] #metricGastosVal {
-      color: #FB7185 !important;
+      color: #E11D48 !important;
       font-weight: 900 !important;
     }
 
-    /* 5. Saldo Disponível - AZUL NOTURNO REAL DE DESTAQUE */
-    #sectionMetrics [data-card-id="saldo"] {
-      background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%) !important;
-      border: 1px solid #3B82F6 !important;
-      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.20) !important;
-      color: #FFFFFF !important;
+    /* 5. Saldo Disponível - Estilo Clean Neutro */
+    body.theme-light #sectionMetrics [data-card-id="saldo"],
+    body:not(.theme-dark) #sectionMetrics [data-card-id="saldo"] {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      border: 1px solid #E2E8F0 !important;
+      border-left: 1px solid #E2E8F0 !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
     }
-    #sectionMetrics [data-card-id="saldo"] * {
-      color: #FFFFFF !important;
+    body.theme-light #sectionMetrics [data-card-id="saldo"] span,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="saldo"] span {
+      color: #64748B !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="saldo"] p,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="saldo"] p {
+      color: #94A3B8 !important;
+    }
+    body.theme-light #sectionMetrics [data-card-id="saldo"] i,
+    body:not(.theme-dark) #sectionMetrics [data-card-id="saldo"] i {
+      color: #94A3B8 !important;
+    }
+    #sectionMetrics [data-card-id="saldo"] #metricSaldoVal {
+      color: #2563EB !important;
+      font-weight: 900 !important;
     }
 
     /* 6. % Renda Gasta - Estilo Clean Neutro */
@@ -655,6 +678,7 @@
     body:not(.theme-dark) #sectionMetrics [data-card-id="comprometimento"] {
       background-color: #FFFFFF !important;
       border: 1px solid #E2E8F0 !important;
+      border-left: 1px solid #E2E8F0 !important;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
     }
     body.theme-light #sectionMetrics [data-card-id="comprometimento"] span,
@@ -669,25 +693,39 @@
       color: #8B5CF6 !important;
     }
 
-    /* TEMA ESCURO PROFUNDO WCAG AAA PARA AS MÉTRICAS CLEAN */
+    /* TEMA ESCURO PROFUNDO WCAG AAA PARA AS MÉTRICAS CLEAN (TODOS OS 6 CARDS) */
     body.theme-dark #sectionMetrics [data-card-id="receitas"],
     body.theme-dark #sectionMetrics [data-card-id="fixas"],
     body.theme-dark #sectionMetrics [data-card-id="variaveis"],
+    body.theme-dark #sectionMetrics [data-card-id="gastos"],
+    body.theme-dark #sectionMetrics [data-card-id="saldo"],
     body.theme-dark #sectionMetrics [data-card-id="comprometimento"] {
+      background: #1E293B !important;
       background-color: #1E293B !important;
       border: 1px solid #334155 !important;
+      border-left: 1px solid #334155 !important;
     }
     body.theme-dark #sectionMetrics [data-card-id="receitas"] span,
     body.theme-dark #sectionMetrics [data-card-id="fixas"] span,
     body.theme-dark #sectionMetrics [data-card-id="variaveis"] span,
+    body.theme-dark #sectionMetrics [data-card-id="gastos"] span,
+    body.theme-dark #sectionMetrics [data-card-id="saldo"] span,
     body.theme-dark #sectionMetrics [data-card-id="comprometimento"] span {
       color: #94A3B8 !important;
     }
     body.theme-dark #sectionMetrics [data-card-id="receitas"] p,
     body.theme-dark #sectionMetrics [data-card-id="fixas"] p,
     body.theme-dark #sectionMetrics [data-card-id="variaveis"] p,
+    body.theme-dark #sectionMetrics [data-card-id="gastos"] p,
+    body.theme-dark #sectionMetrics [data-card-id="saldo"] p,
     body.theme-dark #sectionMetrics [data-card-id="comprometimento"] p {
       color: #64748B !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="gastos"] #metricGastosVal {
+      color: #FB7185 !important;
+    }
+    body.theme-dark #sectionMetrics [data-card-id="saldo"] #metricSaldoVal {
+      color: #38BDF8 !important;
     }
 
     /* ESTILO DA LINHA DE STATUS DO SISTEMA */
@@ -1396,67 +1434,10 @@
       color: #FFFFFF !important;
     }
 
-    /* 4. Despoluir os 6 cards do Resumo das Contas do Mês (cor mais clean e sem linha à esquerda) */
-    /* Cards Resumo das Contas do Mês no mesmo estilo executivo de Total de Gastos (#0F172A) e Saldo Disponível */
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) {
-      background-color: #0F172A !important;
-      background-image: none !important;
-      border: 1px solid #334155 !important;
-      border-radius: 0.85rem !important;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25) !important;
-      color: #FFFFFF !important;
-    }
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) span,
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) p,
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) i {
-      color: #CBD5E1 !important;
-    }
-    #metricsGridContainer [data-card-id="receitas"] {
-      border-left: 5px solid #10B981 !important;
-    }
-    #metricsGridContainer [data-card-id="receitas"] #metricReceitasVal {
-      color: #34D399 !important;
-      font-weight: 900 !important;
-    }
-    #metricsGridContainer [data-card-id="fixas"] {
-      border-left: 5px solid #3B82F6 !important;
-    }
-    #metricsGridContainer [data-card-id="fixas"] #metricFixasVal {
-      color: #60A5FA !important;
-      font-weight: 900 !important;
-    }
-    #metricsGridContainer [data-card-id="variaveis"] {
-      border-left: 5px solid #F59E0B !important;
-    }
-    #metricsGridContainer [data-card-id="variaveis"] #metricVariaveisVal {
-      color: #FBBF24 !important;
-      font-weight: 900 !important;
-    }
-    #metricsGridContainer [data-card-id="gastos"] {
-      border-left: 5px solid #F43F5E !important;
-    }
-    #metricsGridContainer [data-card-id="gastos"] #metricGastosVal {
-      color: #FB7185 !important;
-      font-weight: 900 !important;
-    }
-    #metricsGridContainer [data-card-id="comprometimento"] {
-      border-left: 5px solid #A855F7 !important;
-    }
-    #metricsGridContainer [data-card-id="comprometimento"] #metricComprometimentoVal {
-      color: #C084FC !important;
-      font-weight: 900 !important;
-    }
-    /* Destaque Exclusivo do Card Saldo Disponível */
-    #metricsGridContainer [data-card-id="saldo"] {
-      background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%) !important;
-      border: 1px solid #3B82F6 !important;
-      border-left: 5px solid #60A5FA !important;
-      border-radius: 0.85rem !important;
-      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.35) !important;
-      color: #FFFFFF !important;
-    }
-    #metricsGridContainer [data-card-id="saldo"] * {
-      color: #FFFFFF !important;
+    /* 4. Cards do Resumo das Contas do Mês limpos, sem borda lateral e com cantos retos */
+    #sectionMetricsContent .app-card,
+    #metricsGridContainer .app-card {
+      border-radius: 0 !important;
     }
 
     /* 5. Estilo estável de Accordion com rotação suave de seta e drag transparente */
@@ -2208,7 +2189,7 @@
               <span class="text-xs font-bold text-slate-500 flex items-center gap-1">
                 Total Gastos
                 <div class="group/tip relative inline-flex items-center cursor-pointer">
-                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-400 hover:text-white"></i>
+                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400"></i>
                   <div class="pointer-events-none absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 hidden group-hover/tip:flex flex-col items-center z-50 w-max max-w-xs">
                     <div class="bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1 shadow-lg border border-slate-700 rounded-none whitespace-nowrap">
                       Soma exata de todas as suas despesas no ciclo.
@@ -2217,13 +2198,13 @@
                 </div>
               </span>
               <div class="flex items-center gap-1">
-                <button onclick="toggleCardPrivacy('gastos')" title="Ocultar/Mostrar Gastos" class="text-slate-400 hover:text-white p-0.5 cursor-pointer">
+                <button onclick="toggleCardPrivacy('gastos')" title="Ocultar/Mostrar Gastos" class="text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 p-0.5 cursor-pointer">
                   <i data-lucide="eye" id="eyeCard_gastos" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
             <div class="mt-2">
-              <div class="text-base sm:text-lg font-black text-rose-400 dark:text-rose-400" id="metricGastosVal">R$ 0,00</div>
+              <div class="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 tabular-nums tracking-tight" id="metricGastosVal">R$ 0,00</div>
               <p class="text-[10px] text-slate-400 mt-0.5">Fixas + Variáveis</p>
             </div>
           </div>
@@ -2234,7 +2215,7 @@
               <span class="text-xs font-bold text-slate-500 tracking-tight flex items-center gap-1">
                 Saldo Disponível
                 <div class="group/tip relative inline-flex items-center cursor-pointer">
-                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-white/70 hover:text-white"></i>
+                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400"></i>
                   <div class="pointer-events-none absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 hidden group-hover/tip:flex flex-col items-center z-50 w-max max-w-xs">
                     <div class="bg-slate-900 text-white text-[11px] font-medium px-2.5 py-1 shadow-lg border border-slate-700 rounded-none whitespace-nowrap">
                       Saldo livre do casal no ciclo (Receitas - Despesas - Cofrinho).
@@ -2243,13 +2224,13 @@
                 </div>
               </span>
               <div class="flex items-center gap-1">
-                <button onclick="toggleCardPrivacy('saldo')" title="Ocultar/Mostrar Saldo Livre" class="text-white/70 hover:text-white p-0.5 cursor-pointer">
+                <button onclick="toggleCardPrivacy('saldo')" title="Ocultar/Mostrar Saldo Livre" class="text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 p-0.5 cursor-pointer">
                   <i data-lucide="eye" id="eyeCard_saldo" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
             <div class="mt-2">
-              <div class="text-base sm:text-lg font-black text-white tabular-nums tracking-tight" id="metricSaldoVal" class="text-base sm:text-lg font-black text-blue-600 dark:text-sky-400 tabular-nums tracking-tight">R$ 0,00</div>
+              <div class="text-base sm:text-lg font-black text-blue-600 dark:text-sky-400 tabular-nums tracking-tight" id="metricSaldoVal">R$ 0,00</div>
               <p class="text-[10px] text-slate-400 mt-0.5" id="saldoSubtextLabel">Disponível no ciclo</p>
             </div>
           </div>
@@ -7812,9 +7793,11 @@
                 </button>
               </div>
             </div>
-            <!-- LINHA 2 COMPACTA EM UMA SÓ LINHA: Compra anterior + Último preço -->
-            <div class="pl-6 text-[10px] text-slate-600 dark:text-slate-400 leading-tight truncate mt-0.5">
-              Compra anterior: <strong class="font-semibold text-slate-700 dark:text-slate-300">${escapeHtml(suggestedStore)}</strong> - Último preço: <strong class="font-bold text-slate-800 dark:text-slate-200">${formatBRL(unitPrice)}</strong>
+            <!-- LINHA 2 COMPACTA: Última Compra + Estabelecimento + Preço sempre visível sem empurrar para fora -->
+            <div class="pl-6 flex items-center text-[10px] text-slate-600 dark:text-slate-400 leading-tight overflow-hidden mt-0.5" title="Última Compra: ${escapeHtml(suggestedStore)}${unitPrice > 0 ? ': ' + formatBRL(unitPrice) : ''}">
+              <span class="flex-shrink-0">Última Compra:&nbsp;</span>
+              <strong class="font-semibold text-slate-700 dark:text-slate-300 truncate">${escapeHtml(suggestedStore)}</strong>
+              ${unitPrice > 0 ? `<span class="flex-shrink-0 font-mono font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">&nbsp;:&nbsp;${formatBRL(unitPrice)}</span>` : ''}
             </div>
           </div>
         `;
