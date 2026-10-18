@@ -12589,6 +12589,110 @@ Frase falada: "${spokenText}"`;
       }
     }
 
+    // ==========================================
+    // SISTEMA DE LOCAIS VISITADOS & GEOLOCALIZAÇÃO
+    // ==========================================
+    function getVisitedStores() {
+      try {
+        const raw = localStorage.getItem('ctrlpig_visited_stores');
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) return list;
+        }
+      } catch (e) {
+        console.error('Erro ao ler locais visitados:', e);
+      }
+      // Padrões iniciais inteligentes se vazio
+      return [
+        { name: 'Mercadinho do Bairro', lat: null, lon: null, visits: 1, date: new Date().toISOString() },
+        { name: 'Padaria', lat: null, lon: null, visits: 1, date: new Date().toISOString() },
+        { name: 'Supermercado Dia', lat: null, lon: null, visits: 1, date: new Date().toISOString() },
+        { name: 'Pão de Açúcar', lat: null, lon: null, visits: 1, date: new Date().toISOString() },
+        { name: 'Farmácia', lat: null, lon: null, visits: 1, date: new Date().toISOString() }
+      ];
+    }
+
+    function saveVisitedStore(storeName, coords = null) {
+      if (!storeName || !storeName.trim()) return;
+      const cleanName = storeName.trim();
+      let list = getVisitedStores();
+      const existingIdx = list.findIndex(s => s.name.toLowerCase() === cleanName.toLowerCase());
+      if (existingIdx !== -1) {
+        list[existingIdx].visits = (list[existingIdx].visits || 1) + 1;
+        list[existingIdx].date = new Date().toISOString();
+        if (coords && coords.lat && coords.lon) {
+          list[existingIdx].lat = coords.lat;
+          list[existingIdx].lon = coords.lon;
+        }
+      } else {
+        list.unshift({
+          name: cleanName,
+          lat: coords?.lat || null,
+          lon: coords?.lon || null,
+          visits: 1,
+          date: new Date().toISOString()
+        });
+      }
+      // Mantém os 25 locais mais recentes/relevantes
+      list = list.slice(0, 25);
+      try {
+        localStorage.setItem('ctrlpig_visited_stores', JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    window.deleteVisitedStore = function(storeNameToDelete, e) {
+      if (e) e.stopPropagation();
+      let list = getVisitedStores();
+      list = list.filter(s => s.name.toLowerCase() !== storeNameToDelete.toLowerCase());
+      try {
+        localStorage.setItem('ctrlpig_visited_stores', JSON.stringify(list));
+      } catch (err) {}
+      renderVisitedStoresUI();
+      showToastUndo(`Local "${storeNameToDelete}" removido do histórico.`, false);
+    };
+
+    function renderVisitedStoresUI() {
+      const container = document.getElementById('containerVisitedStores');
+      if (!container) return;
+      const list = getVisitedStores();
+      if (!list || list.length === 0) {
+        container.innerHTML = `<span class="text-[11px] text-slate-400 dark:text-slate-500 italic p-1">Nenhum local salvo ainda. Seus locais visitados aparecerão aqui!</span>`;
+        return;
+      }
+
+      container.innerHTML = list.map(item => {
+        const safeName = escapeHtml(item.name);
+        return `
+          <div class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all shadow-2xs group">
+            <button type="button" onclick="selectQuickStoreLocation('${safeName.replace(/'/g, "\\'")}')" class="truncate max-w-[170px] text-left cursor-pointer hover:underline" title="Selecionar ${safeName}">
+              🏪 ${safeName}
+            </button>
+            <button type="button" onclick="deleteVisitedStore('${safeName.replace(/'/g, "\\'")}', event)" class="p-0.5 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/60 transition-colors cursor-pointer" title="Remover dos visitados">
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Calcula distância geográfica em metros usando fórmula de Haversine
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // Raio da Terra em metros
+      const phi1 = lat1 * Math.PI / 180;
+      const phi2 = lat2 * Math.PI / 180;
+      const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+      const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c;
+    }
+
     window.openStoreLocationModal = function() {
       const modal = document.getElementById('modalSelectStoreLocation');
       if (modal) {
@@ -12598,6 +12702,7 @@ Frase falada: "${spokenText}"`;
         if (input) input.value = currentLoc;
         const feedback = document.getElementById('geoStoreAiFeedback');
         if (feedback) feedback.classList.add('hidden');
+        renderVisitedStoresUI();
         if (window.lucide) lucide.createIcons();
       }
     };
@@ -12615,14 +12720,15 @@ Frase falada: "${spokenText}"`;
       window.selectQuickStoreLocation(val);
     };
 
-    window.selectQuickStoreLocation = function(loc) {
+    window.selectQuickStoreLocation = function(loc, coords = null) {
       if (loc && loc.trim()) {
         const cleanLoc = loc.trim();
         localStorage.setItem('ctrlpig_compra_local', cleanLoc);
-        showToastUndo(`📍 Local definido: ${cleanLoc}`, false);
+        saveVisitedStore(cleanLoc, coords);
+        showToastUndo(`📍 Onde estou comprando: ${cleanLoc}`, false);
       } else {
         localStorage.removeItem('ctrlpig_compra_local');
-        showToastUndo('Local livre: o comprador decide onde comprar!', false);
+        showToastUndo('Local livre: você decide onde comprar na hora!', false);
       }
       window.closeStoreLocationModal();
       window.updateChatStoreStatusHeader();
@@ -12633,11 +12739,27 @@ Frase falada: "${spokenText}"`;
     };
 
     let _geoSuggestedStoreName = '';
+    let _geoSuggestedCoords = null;
+
     window.confirmAiSuggestedStore = function() {
       if (_geoSuggestedStoreName) {
-        window.selectQuickStoreLocation(_geoSuggestedStoreName);
+        window.selectQuickStoreLocation(_geoSuggestedStoreName, _geoSuggestedCoords);
         _geoSuggestedStoreName = '';
+        _geoSuggestedCoords = null;
       }
+    };
+
+    window.discardAiSuggestedStore = function() {
+      const feedback = document.getElementById('geoStoreAiFeedback');
+      if (feedback) feedback.classList.add('hidden');
+      _geoSuggestedStoreName = '';
+      _geoSuggestedCoords = null;
+      const inp = document.getElementById('inputCustomStoreLocation');
+      if (inp) {
+        inp.focus();
+        inp.select();
+      }
+      showToastUndo('Sugestão descartada. Você pode digitar o nome exato acima.', false);
     };
 
     window.detectStoreLocationByGeo = async function() {
@@ -12652,46 +12774,88 @@ Frase falada: "${spokenText}"`;
 
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = `<span class="animate-spin inline-block">⏳</span> <span>Buscando...</span>`;
+        btn.innerHTML = `<span class="animate-spin inline-block">⏳</span> <span>Localizando...</span>`;
       }
-      showToastUndo('🛰️ Acessando GPS e consultando inteligência de locais...', false);
+      showToastUndo('🛰️ Consultando satélites GPS com alta precisão...', false);
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          let suggestedName = '';
+          const accuracy = position.coords.accuracy || 10;
+          _geoSuggestedCoords = { lat, lon };
 
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4500);
-            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`, {
-              signal: controller.signal,
-              headers: { 'Accept': 'application/json' }
-            });
-            clearTimeout(timeoutId);
+          let detectedStore = '';
 
-            if (resp.ok) {
-              const data = await resp.json();
-              const addr = data.address || {};
-              const placeName = data.name || addr.supermarket || addr.shop || addr.convenience || addr.commercial || addr.amenity;
-              const neighbourhood = addr.suburb || addr.neighbourhood || addr.city_district || '';
-              
-              if (placeName && !['house', 'residential', 'yes'].includes(placeName.toLowerCase())) {
-                suggestedName = neighbourhood ? `${placeName} (${neighbourhood})` : placeName;
-              } else if (addr.road) {
-                suggestedName = `Mercado próx. a ${addr.road}${neighbourhood ? ' (' + neighbourhood + ')' : ''}`;
+          // 1º Critério: Verifica se o usuário já esteve ou cadastrou um local muito próximo (< 70m)
+          // Excelente para mercadinhos de condomínio, padaria ao lado ou comércios locais
+          const visitedList = getVisitedStores();
+          let closestVisited = null;
+          let minDistance = 70; // limite de 70 metros para correspondência exata
+
+          for (const item of visitedList) {
+            if (item.lat && item.lon) {
+              const dist = calculateDistanceMeters(lat, lon, item.lat, item.lon);
+              if (dist < minDistance) {
+                minDistance = dist;
+                closestVisited = item;
               }
             }
-          } catch (e) {
-            console.log('Nominatim indisponível ou timeout:', e);
           }
 
-          if (!suggestedName) {
-            const hist = (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) ? priceHistory : [];
-            const favStores = hist.map(h => h.estabelecimento).filter(Boolean);
-            const mostCommon = favStores.length > 0 ? favStores[0] : 'Supermercado Dia';
-            suggestedName = `${mostCommon} (Próximo à sua localização)`;
+          if (closestVisited) {
+            detectedStore = closestVisited.name;
+          }
+
+          // 2º Critério: Se não encontrou no histórico com coordenadas próximas, consulta OpenStreetMap Nominatim
+          if (!detectedStore) {
+            try {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 5000);
+              // zoom 18 para detalhe máximo predial e comercial
+              const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`, {
+                signal: controller.signal,
+                headers: { 'Accept': 'application/json' }
+              });
+              clearTimeout(timeoutId);
+
+              if (resp.ok) {
+                const data = await resp.json();
+                const addr = data.address || {};
+                
+                // Prioriza tags de estabelecimentos comerciais específicos
+                const specificBuildingOrShop = 
+                  data.name || 
+                  addr.shop || 
+                  addr.convenience || 
+                  addr.supermarket || 
+                  addr.bakery || 
+                  addr.grocery || 
+                  addr.amenity || 
+                  addr.commercial || 
+                  addr.building;
+
+                const neighbourhood = addr.suburb || addr.neighbourhood || addr.city_district || '';
+                const roadWithNum = addr.road ? `${addr.road}${addr.house_number ? ', ' + addr.house_number : ''}` : '';
+
+                if (specificBuildingOrShop && !['yes', 'house', 'apartments', 'residential'].includes(specificBuildingOrShop.toLowerCase())) {
+                  detectedStore = specificBuildingOrShop;
+                  if (neighbourhood && !detectedStore.toLowerCase().includes(neighbourhood.toLowerCase())) {
+                    detectedStore += ` (${neighbourhood})`;
+                  }
+                } else if (roadWithNum) {
+                  // Endereço exato fiel ao condomínio ou imóvel onde a pessoa está
+                  detectedStore = `${roadWithNum}${neighbourhood ? ' - ' + neighbourhood : ''}`;
+                }
+              }
+            } catch (e) {
+              console.log('Nominatim indisponível ou timeout:', e);
+            }
+          }
+
+          // Se nenhuma API retornou, não inventa mercado aleatório: informa o bairro/ponto aproximado
+          if (!detectedStore) {
+            detectedStore = `Localização Atual (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
           }
 
           if (btn) {
@@ -12700,15 +12864,15 @@ Frase falada: "${spokenText}"`;
             if (window.lucide) lucide.createIcons();
           }
 
-          _geoSuggestedStoreName = suggestedName.replace(/ \(Próximo.*\)/, '');
+          _geoSuggestedStoreName = detectedStore;
           if (feedback && nameEl) {
-            nameEl.textContent = suggestedName;
+            nameEl.textContent = detectedStore;
             feedback.classList.remove('hidden');
           }
           const inp = document.getElementById('inputCustomStoreLocation');
-          if (inp) inp.value = _geoSuggestedStoreName;
+          if (inp) inp.value = detectedStore;
 
-          showToastUndo(`💡 Sugestão da IA: "${suggestedName}"`, false);
+          showToastUndo(`📍 Local detectado: "${detectedStore}"`, false);
         },
         (error) => {
           if (btn) {
@@ -12716,17 +12880,15 @@ Frase falada: "${spokenText}"`;
             btn.innerHTML = `<i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span>Detectar</span>`;
             if (window.lucide) lucide.createIcons();
           }
-          const fallbackStore = 'Supermercado Dia';
-          _geoSuggestedStoreName = fallbackStore;
-          if (feedback && nameEl) {
-            nameEl.textContent = `${fallbackStore} (Sugestão IA por Histórico)`;
-            feedback.classList.remove('hidden');
-          }
+          // Sem fallback enviesado para Supermercados Dia!
           const inp = document.getElementById('inputCustomStoreLocation');
-          if (inp) inp.value = fallbackStore;
-          showToastUndo('Ative a permissão de GPS ou escolha na lista rápida.', false);
+          if (inp && !inp.value) {
+            inp.placeholder = 'Digite o nome do estabelecimento...';
+            inp.focus();
+          }
+          showToastUndo('Ative a permissão de GPS para detectar ou digite o nome do local.', false);
         },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 30000 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     };
 
@@ -12823,9 +12985,9 @@ Frase falada: "${spokenText}"`;
                     📍
                   </div>
                   <div class="min-w-0">
-                    <span class="text-[10px] text-blue-700 dark:text-blue-300 font-black uppercase tracking-wider block">Status do Estabelecimento</span>
+                    <span class="text-[10px] text-blue-700 dark:text-blue-300 font-black uppercase tracking-wider block">Onde estou comprando</span>
                     <span class="text-xs font-black truncate block mt-0.5">
-                      ${storeLocation ? `<span class="text-slate-800 dark:text-white">Comprando no: <strong class="text-blue-600 dark:text-amber-300">${escapeHtml(storeLocation)}</strong></span>` : '<span class="text-slate-500 dark:text-slate-400 italic">Local a definir (quem for comprar decide)</span>'}
+                      ${storeLocation ? `<span class="text-slate-800 dark:text-white">Local atual: <strong class="text-blue-600 dark:text-amber-300">${escapeHtml(storeLocation)}</strong></span>` : '<span class="text-slate-500 dark:text-slate-400 italic">Local livre (decidir na hora)</span>'}
                     </span>
                   </div>
                 </div>
@@ -17700,42 +17862,42 @@ Frase falada: "${spokenText}"`;
     <div class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-blue-600/40 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
       
       <!-- Cabeçalho na Cor Azul do Dashboard (#1E3A8A a #1D4ED8) -->
-      <div class="bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] text-white border-b border-blue-700/60 px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-md">
-        <div class="flex items-center gap-3 min-w-0">
+      <div class="bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] text-white border-b border-blue-700/60 px-3.5 py-2.5 flex items-center justify-between flex-shrink-0 shadow-md gap-2">
+        <div class="flex items-center gap-2.5 min-w-0 flex-1">
           <div class="relative flex-shrink-0">
-            <div class="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg border border-white/30 shadow-sm">
-              🛒
+            <!-- Ícone em linha azul claro com fundo translúcido suave -->
+            <div class="w-9 h-9 rounded-xl bg-sky-400/20 text-sky-200 flex items-center justify-center border border-sky-300/40 shadow-xs">
+              <i data-lucide="message-square" class="w-4.5 h-4.5 text-sky-200 stroke-[1.85]"></i>
             </div>
-            <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-blue-900"></span>
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-blue-900"></span>
           </div>
-          <div class="min-w-0">
-            <h3 class="font-black text-sm sm:text-base text-white truncate flex items-center gap-1.5">
-              Chat da Família & Mercado
+          <div class="min-w-0 flex-1">
+            <h3 class="font-black text-sm sm:text-base text-white truncate">
+              Chat
             </h3>
-            <p class="text-[11px] text-blue-100/90 truncate" id="chatHeaderSubtitle">
-              Rodrigo, Márcia, Filho • online
+            <p class="text-[10px] text-blue-100/80 truncate" id="chatHeaderSubtitle">
+              Rodrigo & Márcia • online
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <button type="button" onclick="openTrashChatMessagesModal()" class="px-2 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
+        <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+          <button type="button" onclick="openTrashChatMessagesModal()" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center border border-white/20 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
             <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-300"></i>
-            <span class="hidden sm:inline">Lixeira</span>
           </button>
           <!-- Som / Áudio do Chat -->
-          <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal();" class="px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Abrir Lista de Compras Completa">
+          <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal();" class="px-2 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Abrir Lista de Compras Completa">
             <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-sky-200"></i>
-            <span class="hidden sm:inline">Lista</span>
+            <span class="hidden md:inline">Lista</span>
           </button>
           <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all border border-white/20 shadow-xs" title="Ativar/Desativar sons do chat">
             <i data-lucide="volume-2" id="iconAppAudio" class="w-4 h-4"></i>
           </button>
 
           <!-- Alternar Visão: Chat vs Apenas Lista -->
-          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1.5 border border-white/25 transition-colors" title="Ver Lista da Gôndola">
+          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1 border border-white/25 transition-colors" title="Ver Lista da Gôndola">
             <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-300"></i>
-            <span class="hidden xs:inline">Lista</span>
+            <span class="hidden md:inline">Gôndola</span>
             <span id="badgeChatListCount" class="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
           </button>
           
@@ -17746,7 +17908,7 @@ Frase falada: "${spokenText}"`;
         </div>
       </div>
 
-      <!-- STATUS EM DESTAQUE: ONDE COMPRAR / LOCAL ATIVO -->
+      <!-- STATUS EM DESTAQUE: ONDE ESTOU COMPRANDO -->
       <div id="chatStoreStatusHeader" class="bg-[#172554] text-white px-3.5 py-2 border-b border-blue-800/80 flex items-center justify-between gap-2 text-xs flex-shrink-0 shadow-inner">
         <div class="flex items-center gap-2 min-w-0 flex-1">
           <div id="chatActiveStoreLiveBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[9px] font-extrabold flex-shrink-0">
@@ -17754,17 +17916,17 @@ Frase falada: "${spokenText}"`;
           </div>
           <div class="min-w-0 truncate">
             <span class="text-[11px] text-blue-100 font-bold flex items-center gap-1.5 truncate">
-              <span>🛒 Comprando no:</span>
-              <span id="chatActiveStoreName" class="text-amber-300 font-black truncate">Supermercado Dia</span>
+              <span>🛒 Onde estou comprando:</span>
+              <span id="chatActiveStoreName" class="text-amber-300 font-black truncate">Local a definir</span>
             </span>
           </div>
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button type="button" onclick="openStoreLocationModal()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Alterar local ou buscar por GPS">
+          <button type="button" onclick="openStoreLocationModal()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Alterar ou definir onde estou comprando">
             <i data-lucide="map-pin" class="w-3 h-3 text-sky-200"></i>
             <span>Local</span>
           </button>
-          <button type="button" onclick="openStoreLocationModal(); setTimeout(detectStoreLocationByGeo, 150);" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Sugerir por Geolocalização / IA">
+          <button type="button" onclick="openStoreLocationModal(); setTimeout(detectStoreLocationByGeo, 150);" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Sugerir por GPS e inteligência de localização">
             <span>🛰️ GPS</span>
           </button>
         </div>
@@ -17834,7 +17996,7 @@ Frase falada: "${spokenText}"`;
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODAL: DEFINIR ESTABELECIMENTO / LOCAL DE COMPRAS (GPS & IA)   -->
+  <!-- MODAL: DEFINIR ESTABELECIMENTO / ONDE ESTOU COMPRANDO (GPS & IA) -->
   <!-- ============================================================== -->
   <div id="modalSelectStoreLocation" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-blue-500/30 rounded-3xl w-full max-w-md shadow-2xl p-5 relative overflow-hidden">
@@ -17846,8 +18008,8 @@ Frase falada: "${spokenText}"`;
             📍
           </div>
           <div>
-            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white">Onde você está comprando?</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Defina o mercado para organizar os preços e compras.</p>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white">Onde estou comprando?</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Defina o mercado, mercadinho ou local onde você está.</p>
           </div>
         </div>
         <button type="button" onclick="closeStoreLocationModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all cursor-pointer">
@@ -17855,59 +18017,66 @@ Frase falada: "${spokenText}"`;
         </button>
       </div>
 
-      <!-- Campo de Digitação Direta do Estabelecimento (Sem Poluir) -->
+      <!-- Campo de Digitação Direta do Estabelecimento -->
       <div class="mt-4 space-y-3.5">
         <div>
           <label class="block text-[11px] font-extrabold text-slate-700 dark:text-slate-300 mb-1">
-            Nome do Estabelecimento:
+            Nome do Estabelecimento / Local:
           </label>
           <div class="flex items-center gap-1.5">
-            <input type="text" id="inputCustomStoreLocation" placeholder="Ex: Supermercado Dia, Carrefour, Joanin..." class="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 font-semibold placeholder-slate-400">
+            <input type="text" id="inputCustomStoreLocation" placeholder="Ex: Mercadinho do Prédio, Padaria, Dia, Carrefour..." class="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400/20 font-semibold placeholder-slate-400">
             <button type="button" onclick="saveCustomStoreLocationFromInput()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-sm transition-all cursor-pointer active:scale-95">
               Salvar
             </button>
           </div>
         </div>
 
-        <!-- Botão Geolocalização & Sugestão por IA -->
+        <!-- Botão Geolocalização Criteriosa (GPS & IA) -->
         <div class="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 rounded-2xl border border-blue-200/80 dark:border-blue-800/60">
           <div class="flex items-center justify-between gap-2">
             <div>
               <span class="text-xs font-black text-blue-950 dark:text-blue-200 flex items-center gap-1">
-                <span>🛰️</span> Geolocalização Inteligente & IA
+                <span>🛰️</span> Geolocalização Criteriosa (GPS & IA)
               </span>
-              <p class="text-[10px] text-blue-800 dark:text-blue-300 mt-0.5">Identifica automaticamente o mercado onde você está.</p>
+              <p class="text-[10px] text-blue-800 dark:text-blue-300 mt-0.5">Identifica com precisão o local exato onde você está.</p>
             </div>
             <button type="button" id="btnDetectGpsStore" onclick="detectStoreLocationByGeo()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95 flex-shrink-0">
               <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
               <span>Detectar</span>
             </button>
           </div>
-          <!-- Área de Feedback / Sugestão da IA -->
-          <div id="geoStoreAiFeedback" class="mt-2.5 hidden p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-[11px] text-slate-800 dark:text-slate-100 flex items-center justify-between gap-2 shadow-xs">
-            <div class="min-w-0 flex-1">
-              <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-black block">📍 Sugestão da IA identificada:</span>
-              <strong id="geoStoreAiName" class="truncate block font-black text-xs text-slate-900 dark:text-white">Supermercado Dia</strong>
+
+          <!-- Área de Feedback / Sugestão da IA com Confirmar E Botão Não é esse -->
+          <div id="geoStoreAiFeedback" class="mt-2.5 hidden p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-[11px] text-slate-800 dark:text-slate-100 space-y-2 shadow-xs">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-black block">📍 Local detectado pelo GPS:</span>
+                <strong id="geoStoreAiName" class="truncate block font-black text-xs text-slate-900 dark:text-white">Estabelecimento</strong>
+              </div>
             </div>
-            <button type="button" onclick="confirmAiSuggestedStore()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-xs cursor-pointer flex-shrink-0 active:scale-95">
-              Confirmar
-            </button>
+            <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-700">
+              <button type="button" onclick="discardAiSuggestedStore()" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 font-extrabold text-xs transition-colors cursor-pointer active:scale-95">
+                ✕ Não é esse
+              </button>
+              <button type="button" onclick="confirmAiSuggestedStore()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-xs cursor-pointer active:scale-95">
+                ✓ Confirmar
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Atalhos Rápidos (Chips) -->
+        <!-- Seção: Locais Visitados (Histórico Real de Compras) -->
         <div>
-          <span class="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 mb-1.5">Locais frequentes (1 clique):</span>
-          <div class="flex flex-wrap gap-1.5">
-            <button type="button" onclick="selectQuickStoreLocation('Supermercado Dia')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🏪 Supermercado Dia</button>
-            <button type="button" onclick="selectQuickStoreLocation('Pão de Açúcar')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥖 Pão de Açúcar</button>
-            <button type="button" onclick="selectQuickStoreLocation('Carrefour')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🛒 Carrefour</button>
-            <button type="button" onclick="selectQuickStoreLocation('Assaí Atacadista')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">📦 Assaí Atacadista</button>
-            <button type="button" onclick="selectQuickStoreLocation('Supermercados Roldão')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🏷️ Roldão</button>
-            <button type="button" onclick="selectQuickStoreLocation('Padaria')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥐 Padaria</button>
-            <button type="button" onclick="selectQuickStoreLocation('Farmácia')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">💊 Farmácia</button>
-            <button type="button" onclick="selectQuickStoreLocation('Feira Livre')" class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 border border-slate-200 dark:border-slate-700 text-[11px] font-bold transition-all cursor-pointer">🥬 Feira Livre</button>
-            <button type="button" onclick="selectQuickStoreLocation('')" class="px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[11px] font-bold transition-all cursor-pointer">❌ Deixar Livre / Decidir na hora</button>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <span>🕒</span> Locais Visitados:
+            </span>
+            <button type="button" onclick="selectQuickStoreLocation('')" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
+              Limpar / Deixar Livre
+            </button>
+          </div>
+          <div id="containerVisitedStores" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto custom-scrollbar p-1">
+            <!-- Injetado dinamicamente via renderVisitedStoresUI() -->
           </div>
         </div>
 
