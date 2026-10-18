@@ -176,10 +176,18 @@ class FinanceProvider extends ChangeNotifier {
           .select()
           .order('data', ascending: false);
       if (data is List && data.isNotEmpty) {
-        _transactions = data
-            .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-        notifyListeners();
+        final realRows = data.where((item) {
+          if (item is Map<String, dynamic>) {
+            return item['id'] != 999999 && item['tipo'] != '__CLOUD_SNAPSHOT__';
+          }
+          return true;
+        }).toList();
+        if (realRows.isNotEmpty) {
+          _transactions = realRows
+              .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
+              .toList();
+          notifyListeners();
+        }
       }
     } catch (e) {
       debugPrint('Erro ao carregar transações do Supabase: $e');

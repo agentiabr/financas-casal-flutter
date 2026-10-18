@@ -1420,32 +1420,62 @@
     }
 
     /* 4. Despoluir os 6 cards do Resumo das Contas do Mês (cor mais clean e sem linha à esquerda) */
-    /* Cards Resumo das Contas no Estilo Limpo de Orçamento Previsto (Cinza e Branco) */
+    /* Cards Resumo das Contas do Mês no mesmo estilo executivo de Total de Gastos (#0F172A) e Saldo Disponível */
     #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) {
-      background: #F8FAFC !important;
-      border: 1px solid #E2E8F0 !important;
-      border-left: 1px solid #E2E8F0 !important;
-      border-radius: 0.75rem !important;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-      color: #1E293B !important;
+      background-color: #0F172A !important;
+      background-image: none !important;
+      border: 1px solid #334155 !important;
+      border-radius: 0.85rem !important;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25) !important;
+      color: #FFFFFF !important;
     }
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"])::before,
-    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"])::after {
-      display: none !important;
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) span,
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) p,
+    #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) i {
+      color: #CBD5E1 !important;
     }
-    .dark #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]),
-    body.theme-dark #metricsGridContainer .draggable-metric-card:not([data-card-id="saldo"]) {
-      background: #0F172A !important;
-      border: 1px solid #1E293B !important;
-      border-left: 1px solid #1E293B !important;
-      color: #F8FAFC !important;
+    #metricsGridContainer [data-card-id="receitas"] {
+      border-left: 5px solid #10B981 !important;
     }
-    /* Destaque Exclusivo do Card Saldo Livre */
+    #metricsGridContainer [data-card-id="receitas"] #metricReceitasVal {
+      color: #34D399 !important;
+      font-weight: 900 !important;
+    }
+    #metricsGridContainer [data-card-id="fixas"] {
+      border-left: 5px solid #3B82F6 !important;
+    }
+    #metricsGridContainer [data-card-id="fixas"] #metricFixasVal {
+      color: #60A5FA !important;
+      font-weight: 900 !important;
+    }
+    #metricsGridContainer [data-card-id="variaveis"] {
+      border-left: 5px solid #F59E0B !important;
+    }
+    #metricsGridContainer [data-card-id="variaveis"] #metricVariaveisVal {
+      color: #FBBF24 !important;
+      font-weight: 900 !important;
+    }
+    #metricsGridContainer [data-card-id="gastos"] {
+      border-left: 5px solid #F43F5E !important;
+    }
+    #metricsGridContainer [data-card-id="gastos"] #metricGastosVal {
+      color: #FB7185 !important;
+      font-weight: 900 !important;
+    }
+    #metricsGridContainer [data-card-id="comprometimento"] {
+      border-left: 5px solid #A855F7 !important;
+    }
+    #metricsGridContainer [data-card-id="comprometimento"] #metricComprometimentoVal {
+      color: #C084FC !important;
+      font-weight: 900 !important;
+    }
+    /* Destaque Exclusivo do Card Saldo Disponível */
     #metricsGridContainer [data-card-id="saldo"] {
-      background: linear-gradient(135deg, #0284C7 0%, #0369A1 50%, #075985 100%) !important;
-      border: 1px solid #38BDF8 !important;
-      border-radius: 0.75rem !important;
-      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
+      background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%) !important;
+      border: 1px solid #3B82F6 !important;
+      border-left: 5px solid #60A5FA !important;
+      border-radius: 0.85rem !important;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.35) !important;
       color: #FFFFFF !important;
     }
     #metricsGridContainer [data-card-id="saldo"] * {
@@ -1719,9 +1749,9 @@
 
             <!-- 3 Botões de Ação do Novo Mockup (Família, + Receitas, - Gastos) -->
             <div class="mt-4 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
-              <button onclick="openFamilyChatModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95" title="Abrir Chat e Rotina da Família">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-sky-200"></i>
-                <span class="truncate">Família</span>
+              <button onclick="openFamilyChatModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95" title="Abrir Chat da Família">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-sky-200"></i>
+                <span class="truncate">Chat</span>
               </button>
 
               <button onclick="openHealthMedsModal()" class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-rose-500/30 hover:bg-rose-500/40 text-rose-100 backdrop-blur-md border border-rose-400/40 text-xs sm:text-sm font-extrabold shadow-sm transition-all active:scale-95 cursor-pointer" title="Abrir Rotina de Remédios e Alertas de Saúde">
@@ -1816,7 +1846,7 @@
             <div id="heroMiniComprometimento" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0%</div>
           </div>
           <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5 cursor-pointer hover:bg-black/25 transition-all" onclick="navigateToAccordionSection('cardHeroInstallments', 'cardHeroInstallmentsContent')" title="Toque para ver compras parceladas do mês">
-            <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Parcelados a Quitar</div>
+            <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Parcelados</div>
             <div id="heroMiniFixas" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0 pendentes</div>
           </div>
         </div>
@@ -2610,6 +2640,10 @@
               <button type="button" onclick="addCustomItemToBuilder()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0 cursor-pointer">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 <span>Adicionar</span>
+              </button>
+              <button type="button" onclick="startShoppingVoiceRecording()" id="btnBuilderVoiceMic" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-xs transition-all flex-shrink-0 cursor-pointer" title="Falar lista de compras com quantidades e preços">
+                <i data-lucide="mic" class="w-4 h-4"></i>
+                <span>🎙️ Falar Lista</span>
               </button>
             </div>
           </div>
@@ -7083,11 +7117,16 @@
         if (m) numStr = m[1];
       }
 
-      if (numStr) {
-        val = parseFloat(numStr.replace(',', '.'));
-        // Remove padrões do valor da frase para isolar o nome do estabelecimento / produto
-        t = t.replace(new RegExp('\b(?:no\s+valor\s+de|valor\s+de|valor|compra\s+de|paguei|gastei|custou|por|de)?\s*(?:r\$\s*)?' + numStr.replace('.', '\.') + '\s*(?:reais|real)?\b', 'gi'), ' ');
-        t = t.replace(new RegExp('\b' + numStr.replace('.', '\.') + '\b', 'gi'), ' ');
+      // Suporte adicional para "X reais e Y centavos" ou "X e Y" (ex: "15 e 50")
+      const mReaisCentavos = t.match(/(\d+)\s*(?:reais|real)?\s+e\s+(\d{1,2})\s*(?:centavos)?\b/i);
+      if (mReaisCentavos) {
+        val = parseFloat(mReaisCentavos[1] + '.' + mReaisCentavos[2].padStart(2, '0'));
+        t = t.replace(mReaisCentavos[0], ' ');
+      } else if (numStr) {
+        val = parseFloat(numStr.replace(/\./g, '').replace(',', '.'));
+        const escNum = numStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        t = t.replace(new RegExp('(?:no\\s+valor\\s+de|valor\\s+de|valor|compra\\s+de|paguei|gastei|custou|por|de|a)?\\s*(?:r\\$\\s*)?' + escNum + '\\s*(?:reais|real)?', 'gi'), ' ');
+        t = t.replace(new RegExp(escNum, 'gi'), ' ');
         t = t.replace(/\br\$\s*/gi, ' ');
       }
 
@@ -9424,7 +9463,7 @@
             }
           });
 
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -10355,7 +10394,7 @@
         try {
           const themeContext = userTheme ? `O usuário solicitou uma dica especificamente sobre o tema: "${userTheme}". Adapte a dica com foco total nesse assunto.` : 'Escolha um tema financeiro relevante para o casal.';
           const prompt = `Você é o Mentor Financeiro do casal Rodrigo e Márcia no aplicativo CtrlPig. ${themeContext} Crie uma dica financeira curta, motivadora, prática e inteligente para o casal economizar, investir ou organizar as contas. Responda ESTRITAMENTE em formato JSON puro sem blocos markdown ou código com os campos: {"titulo": "...", "categoria": "Mentor Financeiro", "emoji": "...", "texto": "...", "botao": "..."}. O campo texto deve ter no máximo 130 caracteres.`;
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -10498,7 +10537,7 @@
             email: 'rodrigocardosocn@gmail.com',
             cpf: '123.456.789-00',
             whatsapp: '(11) 98765-4321',
-            senha: 'PHNcnrj2013@',
+            senha: '__REMOVED_FOR_SECURITY__',
             plano: 'Super Administrador Vitalício',
             data_cadastro: new Date().toISOString()
           });
@@ -10513,7 +10552,7 @@
           idField.value = 'rodrigocardosocn@gmail.com';
         }
         if (passField && (!passField.value || passField.value.trim() === '')) {
-          passField.value = 'PHNcnrj2013@';
+          passField.value = '__REMOVED_FOR_SECURITY__';
         }
       }
 
@@ -10842,7 +10881,7 @@
         // Tenta sincronização na nuvem em segundo plano sem travar
         if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
           try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass || 'PHNcnrj2013@' }));
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass || '__REMOVED_FOR_SECURITY__' }));
           } catch(err) {}
         }
         return;
@@ -12185,7 +12224,7 @@ Retorne estritamente em JSON puro sem formatação markdown:
 ]
 Frase falada: "${spokenText}"`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -13530,7 +13569,7 @@ Frase falada: "${spokenText}"`;
 
           const promptText = "Você é um assistente especialista em compras no supermercado brasileiro. Analise com máxima atenção a foto da embalagem ou da gôndola/etiqueta de preço. Extraia estritamente em formato JSON puro sem blocos markdown: {\"produto\": \"Nome completo do produto com marca e peso/volume ex: Farinha Láctea Nestlé 400g\", \"preco\": 14.90}. Se o preço estiver legível na etiqueta ou no produto, informe como número decimal float. Se não houver preço visível, retorne preco: 0. Retorne apenas o JSON puro.";
 
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -16650,9 +16689,15 @@ Frase falada: "${spokenText}"`;
 
           <div id="geminiFormKeyBox" class="space-y-2">
             <div class="flex items-center gap-2">
-              <input type="password" id="inputGeminiApiKey" placeholder="Cole sua chave AIzaSy..." class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-mono">
+              <input type="password" id="inputGeminiApiKey" placeholder="Cole sua chave AIzaSy... do Google AI Studio" class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-mono">
               <button onclick="saveGeminiApiKey()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-all">Salvar</button>
             </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-700/60">
+            <span id="geminiTestStatusText" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Modelo ativo: Gemini 2.5 / 2.0 Flash Vision</span>
+            <button type="button" onclick="testGeminiApiKeyLive()" id="btnTestGeminiKey" class="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] shadow-xs transition-all cursor-pointer">
+              🧪 Testar Conexão IA
+            </button>
           </div>
         </div>
 
@@ -21067,7 +21112,7 @@ Retorne estritamente em JSON puro sem markdown no formato:
             }
           });
 
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -21368,5 +21413,1011 @@ Retorne estritamente em JSON puro sem markdown no formato:
       }, 1000);
     };
 </script>
+
+<script>
+// ============================================================================
+// SPRINT V2.0.0: CORREÇÃO DEFINITIVA DE IA (GEMINI 2.5/2.0 FLASH VISION),
+// MULTI-FOTOS DE NOTA FISCAL, VOZ COM PREÇOS, LOGIN/BIOMETRIA, NOTIFICAÇÕES
+// NATIVAS DO ANDROID E PERSISTÊNCIA NA NUVEM (SUPABASE SNAPSHOT) PÓS-REINSTALAÇÃO
+// ============================================================================
+
+(function() {
+  // --------------------------------------------------------------------------
+  // A. MOTOR UNIFICADO GOOGLE GEMINI AI STUDIO (COM FALLBACK AUTOMÁTICO DE MODELOS)
+  // --------------------------------------------------------------------------
+  const GEMINI_MODELS_PRIORITY = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-exp',
+    'gemini-flash-latest',
+    'gemini-1.5-flash-latest'
+  ];
+
+  window.getActiveGeminiModel = function() {
+    return localStorage.getItem('financas_gemini_working_model') || 'gemini-2.5-flash';
+  };
+
+  window.callGeminiAPI = async function(partsPayload, generationConfig = { temperature: 0.1, response_mime_type: "application/json" }, customKey = null) {
+    const apiKey = (customKey || localStorage.getItem('financas_gemini_api_key') || '').trim();
+    if (!apiKey) {
+      throw new Error('Chave do Google AI Studio (AIzaSy...) não configurada no painel Admin.');
+    }
+
+    const savedModel = localStorage.getItem('financas_gemini_working_model');
+    const candidateModels = savedModel
+      ? [savedModel, ...GEMINI_MODELS_PRIORITY.filter(m => m !== savedModel)]
+      : [...GEMINI_MODELS_PRIORITY];
+
+    let lastError = null;
+
+    for (const modelName of candidateModels) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: partsPayload }],
+            generationConfig: generationConfig
+          })
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            localStorage.setItem('financas_gemini_working_model', modelName);
+            return { ok: true, model: modelName, text: text, raw: data };
+          }
+        } else {
+          const errJson = await resp.json().catch(() => ({}));
+          lastError = errJson?.error?.message || `HTTP ${resp.status} em ${modelName}`;
+          if (resp.status === 400 && String(lastError).toLowerCase().includes('api key')) {
+            throw new Error('Chave da API inválida. Verifique a chave AIzaSy... no Google AI Studio.');
+          }
+        }
+      } catch (err) {
+        lastError = err.message || String(err);
+        if (String(lastError).includes('Chave da API inválida')) throw err;
+      }
+    }
+
+    // Descoberta dinâmica de modelos na conta caso todos os nomes padrão mudem
+    try {
+      const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      if (listResp.ok) {
+        const listData = await listResp.json();
+        const available = (listData.models || [])
+          .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+          .map(m => m.name.replace('models/', ''));
+        const flashModel = available.find(n => n.includes('flash')) || available[0];
+        if (flashModel) {
+          const retryResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${flashModel}:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: partsPayload }],
+              generationConfig: generationConfig
+            })
+          });
+          if (retryResp.ok) {
+            const retryData = await retryResp.json();
+            const text = retryData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) {
+              localStorage.setItem('financas_gemini_working_model', flashModel);
+              return { ok: true, model: flashModel, text: text, raw: retryData };
+            }
+          }
+        }
+      }
+    } catch (discErr) {
+      console.warn('Erro na descoberta automática de modelo Gemini:', discErr);
+    }
+
+    throw new Error(lastError || 'Não foi possível conectar ao Google Gemini AI.');
+  };
+
+  window.testGeminiApiKeyLive = async function() {
+    const input = document.getElementById('inputGeminiApiKey');
+    const statusEl = document.getElementById('geminiTestStatusText');
+    const btn = document.getElementById('btnTestGeminiKey');
+    let key = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+    if (input && input.value.trim()) {
+      key = input.value.trim();
+      localStorage.setItem('financas_gemini_api_key', key);
+      if (typeof renderGeminiKeyUI === 'function') renderGeminiKeyUI();
+    }
+
+    if (!key) {
+      if (statusEl) statusEl.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Cole sua chave AIzaSy... acima antes de testar.</span>';
+      showToastUndo('Cole sua chave AIzaSy... do Google AI Studio no campo acima.', false);
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Testando...';
+    }
+    if (statusEl) {
+      statusEl.innerHTML = '<span class="text-purple-600 font-bold animate-pulse">Conectando ao Google AI Studio...</span>';
+    }
+
+    try {
+      const res = await window.callGeminiAPI(
+        [{ text: 'Responda apenas em JSON: {"status": "ok", "mensagem": "Google Gemini Flash Vision Conectado"}' }],
+        { temperature: 0.1, response_mime_type: "application/json" },
+        key
+      );
+      if (statusEl) {
+        statusEl.innerHTML = `<span class="text-emerald-600 font-bold">✅ Conectado com sucesso! Modelo ativo: ${res.model}</span>`;
+      }
+      showToastUndo(`✅ Google Gemini (${res.model}) funcionando perfeitamente!`, false);
+      if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+    } catch (err) {
+      if (statusEl) {
+        statusEl.innerHTML = `<span class="text-rose-600 font-bold">❌ Falha: ${err.message}</span>`;
+      }
+      showToastUndo(`❌ Erro na chave Gemini: ${err.message}`, false);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '🧪 Testar Conexão IA';
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // B. MULTI-FOTOS DA NOTA FISCAL (SEM SOBRESCREVER) + COMPILAÇÃO GEMINI VISION
+  // --------------------------------------------------------------------------
+  window.deduplicateReceiptItemsList = function(items) {
+    if (!Array.isArray(items)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const raw of items) {
+      const nome = String(raw.produto || raw.nome || '').trim();
+      if (!nome) continue;
+      const qtd = parseFloat(raw.quantidade ?? raw.qtd ?? 1) || 1;
+      const unit = String(raw.unidade || 'un').trim();
+      const precoUnit = parseFloat(raw.preco_unitario ?? raw.preco ?? 0) || 0;
+      const descItem = parseFloat(raw.desconto_item ?? 0) || 0;
+      const subtotal = parseFloat(raw.subtotal_liquido ?? raw.total ?? (qtd * precoUnit - descItem)) || (qtd * precoUnit);
+      const itemNum = raw.item_num ? String(raw.item_num).padStart(3, '0') : '';
+
+      const normName = nome.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 18);
+      const dedupKey = itemNum
+        ? `num_${itemNum}_${normName}`
+        : `name_${normName}_${qtd.toFixed(3)}_${subtotal.toFixed(2)}`;
+
+      if (seen.has(dedupKey)) continue;
+      seen.add(dedupKey);
+
+      result.push({
+        item_num: raw.item_num || (result.length + 1),
+        codigo: raw.codigo || '',
+        produto: nome,
+        qtd: qtd,
+        quantidade: qtd,
+        unidade: unit,
+        preco: precoUnit > 0 ? precoUnit : subtotal,
+        preco_unitario: precoUnit > 0 ? precoUnit : subtotal,
+        desconto_item: descItem,
+        subtotal_liquido: subtotal,
+        total: subtotal
+      });
+    }
+    return result;
+  };
+
+  window.onNativeInvoiceOcrResult = function(ocrJsonStr, dataUrl) {
+    let ocrData = null;
+    try {
+      ocrData = typeof ocrJsonStr === 'object' ? ocrJsonStr : JSON.parse(ocrJsonStr);
+    } catch (e) {
+      console.error('Erro ao converter resultado de OCR:', e);
+    }
+
+    if (dataUrl) {
+      const partNum = capturedInvoicePhotos.length + 1;
+      capturedInvoicePhotos.push({
+        id: Date.now() + Math.random(),
+        name: `Parte ${partNum}`,
+        dataUrl: dataUrl,
+        ocrData: ocrData
+      });
+      renderInvoicePhotosGallery();
+    }
+
+    const combinedOcr = mergeAllCapturedPhotosOcr(ocrData);
+    applyOcrResultToInvoiceModal(combinedOcr);
+    window.processInvoicePhotosWithAI();
+  };
+
+  window.onNativeInvoiceMultiOcrResult = function(ocrJsonStr, dataUrls) {
+    let ocrData = null;
+    try {
+      ocrData = typeof ocrJsonStr === 'object' ? ocrJsonStr : JSON.parse(ocrJsonStr);
+    } catch (e) {
+      console.error('Erro ao converter resultado de OCR múltiplo:', e);
+    }
+
+    if (Array.isArray(dataUrls) && dataUrls.length > 0) {
+      dataUrls.forEach((du) => {
+        const partNum = capturedInvoicePhotos.length + 1;
+        capturedInvoicePhotos.push({
+          id: Date.now() + Math.random(),
+          name: `Parte ${partNum}`,
+          dataUrl: du,
+          ocrData: ocrData
+        });
+      });
+      renderInvoicePhotosGallery();
+    }
+
+    const combinedOcr = mergeAllCapturedPhotosOcr(ocrData);
+    applyOcrResultToInvoiceModal(combinedOcr);
+    window.processInvoicePhotosWithAI();
+  };
+
+  function mergeAllCapturedPhotosOcr(latestOcr) {
+    if (!Array.isArray(capturedInvoicePhotos) || capturedInvoicePhotos.length === 0) {
+      return latestOcr;
+    }
+    let store = null;
+    let date = null;
+    let total = 0;
+    const allItems = [];
+    const allLines = [];
+    const allRawTexts = [];
+
+    capturedInvoicePhotos.forEach((p, idx) => {
+      const d = p.ocrData;
+      if (!d) return;
+      if (d.estabelecimento && d.estabelecimento !== 'Supermercado' && !store) {
+        store = d.estabelecimento;
+      }
+      if (d.data && !date) date = d.data;
+      if (Number(d.valor_total) > 0) total = Number(d.valor_total);
+      if (Array.isArray(d.itens)) allItems.push(...d.itens);
+      if (Array.isArray(d.linhas)) allLines.push(...d.linhas);
+      if (d.raw_text) allRawTexts.push(`--- FOTO ${idx + 1} ---\n` + d.raw_text);
+    });
+
+    if (!store && latestOcr?.estabelecimento) store = latestOcr.estabelecimento;
+    if (!date && latestOcr?.data) date = latestOcr.data;
+    if (!total && Number(latestOcr?.valor_total) > 0) total = Number(latestOcr.valor_total);
+
+    const dedupedItems = window.deduplicateReceiptItemsList(allItems);
+    if (!total && dedupedItems.length > 0) {
+      total = dedupedItems.reduce((acc, it) => acc + (Number(it.subtotal_liquido || it.total) || 0), 0);
+    }
+
+    return {
+      estabelecimento: store || 'Supermercado',
+      data: date || getLocalDateString(),
+      data_reconhecida: !!date,
+      valor_total: total,
+      itens: dedupedItems,
+      linhas: allLines,
+      raw_text: allRawTexts.join('\n\n')
+    };
+  }
+
+  window.clearAllInvoicePhotos = function() {
+    capturedInvoicePhotos = [];
+    extractedReceiptItems = [];
+    renderInvoicePhotosGallery();
+    if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
+    const ocrStatus = document.getElementById('invoiceOcrStatus');
+    if (ocrStatus) ocrStatus.innerHTML = 'Tire a 1ª foto do topo da nota e, se ela for longa, clique em "+ Tirar Outra Foto".';
+  };
+
+  window.renderInvoicePhotosGallery = function() {
+    const gal = document.getElementById('invoicePhotosGallery');
+    if (!gal) return;
+
+    if (capturedInvoicePhotos.length === 0) {
+      gal.innerHTML = '';
+      document.getElementById('invoiceDeduplicationBadge')?.classList.add('hidden');
+      return;
+    }
+
+    gal.innerHTML = `
+      <div class="p-3 bg-emerald-50/70 dark:bg-slate-800 rounded-2xl border-2 border-emerald-400/80 dark:border-emerald-700 shadow-xs space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-slate-800 dark:text-slate-100">
+          <span class="flex items-center gap-1.5">
+            <span>📸</span>
+            <span>Fotos da Nota Fiscal (${capturedInvoicePhotos.length} ${capturedInvoicePhotos.length === 1 ? 'parte' : 'partes'}):</span>
+          </span>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="triggerInvoiceCameraCapture()" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] shadow-xs flex items-center gap-1 cursor-pointer">
+              <span>📸 + Tirar Outra Foto</span>
+            </button>
+            <button type="button" onclick="triggerInvoiceGalleryCapture()" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs flex items-center gap-1 cursor-pointer">
+              <span>🖼️ + Galeria</span>
+            </button>
+            <button type="button" onclick="clearAllInvoicePhotos()" class="px-2 py-1 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px] cursor-pointer" title="Limpar todas as fotos">
+              <span>🗑️ Limpar</span>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          ${capturedInvoicePhotos.map((p, idx) => `
+            <div class="relative flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs">
+              <img src="${p.dataUrl}" alt="Parte ${idx+1}" class="w-11 h-11 object-cover rounded-lg border border-slate-300 dark:border-slate-600 flex-shrink-0">
+              <div class="min-w-0 flex-1">
+                <span class="block font-extrabold text-[11px] text-slate-800 dark:text-slate-100 truncate">Foto ${idx + 1}</span>
+                <span class="block text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">✓ Capturada</span>
+              </div>
+              <button type="button" onclick="removeInvoicePhoto(${p.id})" title="Remover esta foto" class="p-1 text-rose-500 hover:text-rose-700 rounded-md cursor-pointer">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `).join('')}
+        </div>
+        <p class="text-[10px] text-slate-600 dark:text-slate-300 font-medium">
+          💡 <strong>Nota longa?</strong> Toque em <strong>"📸 + Tirar Outra Foto"</strong> para fotografar o restante dos itens e o rodapé com o total. O sistema junta tudo sem repetir itens!
+        </p>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.processInvoicePhotosWithAI = async function() {
+    if (capturedInvoicePhotos.length === 0) return;
+
+    const ocrStatus = document.getElementById('invoiceOcrStatus');
+    const storeInput = document.getElementById('invoiceExtractedStore');
+    const totalInput = document.getElementById('invoiceExtractedTotal');
+    const dateInput = document.getElementById('invoiceExtractedDate');
+    const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+
+    if (dateInput && !dateInput.value) dateInput.value = getLocalDateString();
+
+    const combinedRawText = capturedInvoicePhotos
+      .map((p, i) => p.ocrData?.raw_text ? `[Texto OCR Foto ${i + 1}]:\n${p.ocrData.raw_text}` : '')
+      .filter(Boolean)
+      .join('\n\n');
+
+    if (apiKey) {
+      if (ocrStatus) {
+        ocrStatus.innerHTML = `<span class="text-purple-600 font-bold animate-pulse">🤖 Compilando ${capturedInvoicePhotos.length} ${capturedInvoicePhotos.length === 1 ? 'foto' : 'fotos'} da nota com Google Gemini Flash Vision...</span>`;
+      }
+      try {
+        const systemInstruction = `Você é o Agente Especialista em Visão Computacional Fiscal do aplicativo ControlPig.
+Analise a(s) imagem(ns) do cupom fiscal brasileiro (NFC-e / SAT / DANFE) e o texto auxiliar do OCR para compilar SOMENTE o necessário com 100% de precisão:
+1. ESTABELECIMENTO: Nome fantasia limpo (Ex: "Dia" em vez de "Dia Brasil Sociedade Limitada", "Assaí Atacadista", "Carrefour").
+2. PRODUTO E UNIDADE DE MEDIDA:
+   - Expanda abreviações para nomes legíveis (Ex: "AGUA M.C/GAS DIA1.5L" -> "Água Mineral com Gás Dia 1,5L", "LAVA LOUC.CRI.DIA 1L" -> "Lava Louças Cristal Dia 1L", "SACOLA VERDE" -> "Sacola Verde", "MEXERICA MORCOTE KG" -> "Mexerica Morcote", "LIMAO TAITI KG" -> "Limão Taiti", "BANANA NANICA KG" -> "Banana Nanica").
+   - Identifique a unidade ("UN", "KG", "L") e a quantidade comprada (ex: 2 UN, 1.050 KG, 0.190 KG, 0.570 KG).
+3. PREÇO UNITÁRIO, DESCONTO NO ITEM E SUBTOTAL LÍQUIDO:
+   - Se houver desconto em algum item (ex: Lava Louças de R$ 5,29 com desconto de R$ 1,30), registre preco_unitario: 5.29, desconto_item: 1.30 e subtotal_liquido: 3.99.
+   - Em itens por KG (ex: 1,050 kg x 6,99/kg), preco_unitario é 6.99 e subtotal_liquido é 7.34.
+4. VALOR LÍQUIDO FINAL DA NOTA:
+   - 'valor_liquido_pago' DEVE SER SEMPRE o "VALOR A PAGAR" líquido final (já descontados todos os descontos, ex: 20.09).
+5. MÚLTIPLAS FOTOS:
+   - Se a nota foi dividida em 2 ou mais fotos com sobreposição, elimine qualquer repetição de item pelo número sequencial do item (001, 002...) ou código/descrição.
+
+${combinedRawText ? 'TEXTO BRUTO AUXILIAR DO OCR:\n' + combinedRawText : ''}
+
+Retorne ESTRITAMENTE um JSON válido puro (sem markdown):
+{
+  "estabelecimento": "Nome Limpo da Loja",
+  "data": "YYYY-MM-DD",
+  "valor_bruto": 0.00,
+  "desconto_total": 0.00,
+  "valor_liquido_pago": 0.00,
+  "itens": [
+    {
+      "item_num": 1,
+      "codigo": "",
+      "produto": "Nome do Produto",
+      "quantidade": 1.0,
+      "unidade": "UN | KG | L",
+      "preco_unitario": 0.00,
+      "desconto_item": 0.00,
+      "subtotal_liquido": 0.00
+    }
+  ]
+}`;
+
+        const partsPayload = [{ text: systemInstruction }];
+        capturedInvoicePhotos.forEach(p => {
+          const base64Data = (p.dataUrl || '').split(',')[1];
+          if (base64Data) {
+            partsPayload.push({
+              inline_data: { mime_type: "image/jpeg", data: base64Data }
+            });
+          }
+        });
+
+        const geminiRes = await window.callGeminiAPI(
+          partsPayload,
+          { temperature: 0.1, response_mime_type: "application/json" },
+          apiKey
+        );
+
+        if (geminiRes && geminiRes.text) {
+          const cleanJson = geminiRes.text.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(cleanJson);
+
+          if (parsed.estabelecimento && storeInput) storeInput.value = parsed.estabelecimento;
+          if (parsed.data && dateInput) dateInput.value = parsed.data;
+          const finalVal = Number(parsed.valor_liquido_pago || parsed.valor_total || 0);
+          if (finalVal > 0 && totalInput) {
+            totalInput.value = formatBRL(finalVal).replace('R$', '').trim();
+          }
+
+          const rawItens = Array.isArray(parsed.itens) ? parsed.itens : [];
+          extractedReceiptItems = window.deduplicateReceiptItemsList(rawItens);
+          if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
+
+          if (ocrStatus) {
+            ocrStatus.innerHTML = `<span class="text-emerald-600 font-bold">✨ Gemini Flash (${geminiRes.model}): ${extractedReceiptItems.length} itens compilados • Total líquido: ${formatBRL(finalVal)}!</span>`;
+          }
+          showToastUndo(`✨ Nota compilada pela IA: ${parsed.estabelecimento || 'Mercado'} (${extractedReceiptItems.length} itens - ${formatBRL(finalVal)})`, false);
+          return;
+        }
+      } catch (geminiErr) {
+        console.warn('Aviso ao usar Gemini Vision na nota fiscal:', geminiErr);
+        if (ocrStatus) {
+          ocrStatus.innerHTML = `<span class="text-amber-700 font-bold">⚠️ OCR Local aplicado (${extractedReceiptItems.length} itens). Aviso IA: ${geminiErr.message}</span>`;
+        }
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // C. COMPILAÇÃO DE VOZ PARA LISTA DE COMPRAS (COM EXTRAÇÃO DE PREÇOS OFFLINE E IA)
+  // --------------------------------------------------------------------------
+  window.startShoppingVoiceRecording = function() {
+    const btn = document.getElementById('btnBuilderVoiceMic');
+    if (btn) btn.classList.add('ring-2', 'ring-emerald-300', 'animate-pulse');
+    showToastUndo('🎙️ Fale os itens e preços (ex: "2 litros de leite a 5,90, arroz 25 reais")...', false);
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'start_chat_voice' }));
+    } else if (typeof startCleanChatVoice === 'function') {
+      startCleanChatVoice();
+    }
+  };
+
+  window.parseVoiceShoppingWithGeminiAI = async function(spokenText, apiKey) {
+    try {
+      const prompt = `Você é um assistente especialista em listas de compras de supermercado no Brasil.
+Extraia todos os itens mencionados na frase falada pelo usuário, com quantidade, unidade e preço unitário (se mencionado).
+Ignore palavras como "Amor", "traz", "compra", "pega", "adiciona", "por favor".
+Se o usuário falar um valor (ex: "leite a 5,90", "arroz 25 reais", "pão 12 e 50"), preencha o campo "preco" com o float correspondente (ex: 5.90, 25.00, 12.50).
+Retorne ESTRITAMENTE um array JSON puro:
+[
+  {
+    "nome": "Nome limpo do produto",
+    "qtd": 1,
+    "unidade": "un | litros | kg | pct | cx",
+    "preco": 0.00,
+    "estabelecimento": "🛒 Supermercado"
+  }
+]
+Frase falada: "${spokenText}"`;
+
+      const res = await window.callGeminiAPI(
+        [{ text: prompt }],
+        { temperature: 0.1, response_mime_type: "application/json" },
+        apiKey
+      );
+      if (res && res.text) {
+        const clean = res.text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(clean);
+      }
+    } catch (e) {
+      console.warn('Fallback local para lista de compras por voz:', e);
+    }
+    return null;
+  };
+
+  window.extractLocalShoppingItemsWithPrices = function(spokenText) {
+    let text = (spokenText || '').trim();
+    text = text.replace(/^(?:ol[áa]|oi\s+)?(?:meu\s+|minha\s+)?(?:amor|vida|bem|querido|querida|rodrigo|m[áa]rcia)\s*[,:]?\s*/i, '');
+    text = text.replace(/^(?:por\s+favor|pfv)\s*[,:]?\s*/i, '');
+    text = text.replace(/^(?:traz|traga|pega|pegue|compra|compre|leva|leve|preciso\s+de|adiciona|inclui|coloca)\s*(?:pra\s+mim|na\s+lista|no\s+mercado)?\s*[,:]?\s*/i, '');
+
+    const normalized = text.replace(/(\d+)\s+e\s+(\d{1,2})\b/gi, '$1,$2');
+    const rawParts = normalized
+      .split(/\s*,\s*|\s+e\s+|\s*;\s*|\n+/i)
+      .map(p => p.trim())
+      .filter(p => p.length > 1);
+
+    const results = [];
+    rawParts.forEach(part => {
+      let cleanPart = part
+        .replace(/^(?:traz|traga|pega|pegue|compra|compre|adiciona|mais)\s+/i, '')
+        .trim();
+      if (!cleanPart) return;
+
+      let preco = 0;
+      const priceMatch = cleanPart.match(/(?:\b(?:por|a|de|valor|custando)\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(?:reais|real|conto)?\s*$/i);
+      if (priceMatch) {
+        const candidateVal = parseFloat(priceMatch[1].replace(',', '.'));
+        const withoutPrice = cleanPart.slice(0, priceMatch.index).trim();
+        if (withoutPrice.length >= 2 && candidateVal > 0) {
+          preco = candidateVal;
+          cleanPart = withoutPrice.replace(/\b(?:por|a|de|no\s+valor\s+de|r\$)\s*$/i, '').trim();
+        }
+      }
+
+      let qtd = 1;
+      let unidade = 'un';
+      let nome = cleanPart;
+
+      const matchQtd = cleanPart.match(/^(\d+(?:[.,]\d+)?)\s*(litros?|quilos?|gramas?|latas?|pacotes?|unidades?|potes?|caixas?|garrafas?|sacos?|d[uú]zias?|kg|pct|cx|un|l|g)?\s*(?:de\s+)?(.+)/i);
+      if (matchQtd) {
+        qtd = parseFloat(matchQtd[1].replace(',', '.')) || 1;
+        const rawU = (matchQtd[2] || '').toLowerCase();
+        nome = (matchQtd[3] || '').trim();
+        if (rawU === 'l' || rawU.startsWith('litro')) unidade = 'litros';
+        else if (rawU === 'kg' || rawU.startsWith('quilo')) unidade = 'kg';
+        else if (rawU === 'g' || rawU.startsWith('grama')) unidade = 'g';
+        else if (rawU === 'pct' || rawU.startsWith('pacote')) unidade = 'pct';
+        else if (rawU === 'cx' || rawU.startsWith('caixa')) unidade = 'cx';
+        else if (rawU.startsWith('dúzia') || rawU.startsWith('duzia')) unidade = 'dúzia';
+        else if (rawU) unidade = rawU;
+      }
+
+      if (!nome) return;
+      nome = nome.charAt(0).toUpperCase() + nome.slice(1);
+      results.push({
+        nome: nome,
+        qtd: qtd,
+        unidade: unidade,
+        preco: preco,
+        estabelecimento: '🛒 Supermercado'
+      });
+    });
+
+    return results;
+  };
+
+  window.processVoiceShoppingInput = async function(spokenText) {
+    const btn = document.getElementById('btnBuilderVoiceMic');
+    if (btn) btn.classList.remove('ring-2', 'ring-emerald-300', 'animate-pulse');
+    if (!spokenText || !spokenText.trim()) return;
+
+    const cleanSpoken = spokenText.trim().toLowerCase();
+    const nowTs = Date.now();
+    if (cleanSpoken === window._lastVoiceShopText && (nowTs - (window._lastVoiceShopTs || 0)) < 2500) {
+      return;
+    }
+    window._lastVoiceShopText = cleanSpoken;
+    window._lastVoiceShopTs = nowTs;
+
+    const sender = (typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : 'Rodrigo';
+    const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
+    const addedNames = [];
+
+    const geminiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+    let extractedItems = null;
+    if (geminiKey) {
+      extractedItems = await window.parseVoiceShoppingWithGeminiAI(spokenText, geminiKey);
+    }
+    if (!Array.isArray(extractedItems) || extractedItems.length === 0) {
+      extractedItems = window.extractLocalShoppingItemsWithPrices(spokenText);
+    }
+
+    extractedItems.forEach(item => {
+      const nome = (item.nome || '').trim();
+      if (!nome) return;
+      const qtd = parseFloat(item.qtd) || 1;
+      const unidade = item.unidade || 'un';
+      const preco = parseFloat(item.preco) || 0;
+      const loja = item.estabelecimento || '🛒 Supermercado';
+
+      const existing = activeItems.find(it => it.nome.toLowerCase() === nome.toLowerCase());
+      if (existing) {
+        existing.qtdDesejada = (existing.qtdDesejada || 1) + qtd;
+        existing.qtdComprada = existing.qtdDesejada;
+        if (preco > 0) existing.precoUnitario = preco;
+      } else {
+        const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(nome) : null;
+        const finalPrice = preco > 0 ? preco : (prevPurch ? (prevPurch.preco || 0) : 0);
+        activeItems.push({
+          id: 'item_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+          nome: nome,
+          qtdDesejada: qtd,
+          unidade: unidade,
+          marca: '',
+          status: 'pendente',
+          qtdComprada: qtd,
+          precoUnitario: finalPrice,
+          ultimoPreco: finalPrice,
+          pedidoPor: sender,
+          estabelecimento: loja
+        });
+      }
+
+      if (typeof getShoppingBuilderItems === 'function' && typeof saveShoppingBuilderItems === 'function') {
+        const builderItems = getShoppingBuilderItems();
+        const bExist = builderItems.find(b => (b.nome || '').toLowerCase() === nome.toLowerCase());
+        if (bExist) {
+          bExist.qtd = (parseFloat(bExist.qtd) || 1) + qtd;
+          if (preco > 0) bExist.preco = preco;
+          bExist.selecionado = true;
+        } else {
+          builderItems.unshift({
+            id: 'b_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+            nome: nome,
+            qtd: qtd,
+            unidade: unidade,
+            preco: preco,
+            loja: 'Mercado',
+            selecionado: true,
+            noCarrinho: false
+          });
+        }
+        saveShoppingBuilderItems(builderItems);
+      }
+
+      if (preco > 0 && typeof priceHistory !== 'undefined') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        priceHistory.unshift({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          produto: nome,
+          estabelecimento: loja,
+          data: todayStr,
+          preco: preco,
+          precoAnterior: null,
+          unidade: unidade
+        });
+        if (typeof savePriceHistory === 'function') savePriceHistory();
+      }
+
+      addedNames.push(`${qtd} ${unidade} ${nome}${preco > 0 ? ` (R$ ${preco.toFixed(2).replace('.', ',')})` : ''}`);
+    });
+
+    if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
+    if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
+    if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+
+    if (addedNames.length > 0) {
+      showToastUndo(`🎙️ Adicionado: ${addedNames.join(', ')}`, false);
+      if (typeof playChatDing === 'function') playChatDing();
+      if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // D. CORREÇÃO DE LOGIN LOOP, BIOMETRIA E RETOMADA DE SEGUNDO PLANO
+  // --------------------------------------------------------------------------
+  window.triggerNativeBiometrics = function() {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'authenticate_biometric' }));
+    } else {
+      showToastUndo('Biometria disponível no aplicativo instalado no celular.', false);
+    }
+  };
+
+  const _origOnNativeAuthLoginResult = window.onNativeAuthLoginResult;
+  window.onNativeAuthLoginResult = function(success, errorMsg, userObj) {
+    localStorage.removeItem('financas_session_locked');
+    localStorage.removeItem('financas_auth_logged_out');
+    if (typeof _origOnNativeAuthLoginResult === 'function') {
+      _origOnNativeAuthLoginResult(success, errorMsg, userObj);
+    }
+    const overlay = document.getElementById('loginOverlayScreen');
+    if (overlay && localStorage.getItem('financas_logged_in') === 'true') {
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+  };
+
+  const _origOnBiometricAuthResult = window.onBiometricAuthResult;
+  window.onBiometricAuthResult = function(authenticated) {
+    if (authenticated) {
+      localStorage.removeItem('financas_session_locked');
+      localStorage.removeItem('financas_auth_logged_out');
+      localStorage.setItem('financas_logged_in', 'true');
+      const overlay = document.getElementById('loginOverlayScreen');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.style.display = 'none';
+      }
+    }
+    if (typeof _origOnBiometricAuthResult === 'function') {
+      _origOnBiometricAuthResult(authenticated);
+    }
+  };
+
+  const _origUnlockApp = window.unlockAppAndEnterDashboard;
+  window.unlockAppAndEnterDashboard = function(userSession) {
+    localStorage.removeItem('financas_session_locked');
+    localStorage.removeItem('financas_auth_logged_out');
+    localStorage.setItem('financas_logged_in', 'true');
+    if (typeof _origUnlockApp === 'function') {
+      _origUnlockApp(userSession);
+    }
+    const overlay = document.getElementById('loginOverlayScreen');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      overlay.style.display = 'none';
+    }
+  };
+
+  window.onAppResumedFromBackground = function() {
+    if (localStorage.getItem('financas_session_locked') === 'true') {
+      const overlay = document.getElementById('loginOverlayScreen');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex';
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // E. CORREÇÃO DO TOAST AO APAGAR MENSAGEM NO CHAT (SEM HTML CRU NO TOAST)
+  // --------------------------------------------------------------------------
+  window.deleteChatMessageWithUndo = function(msgId) {
+    if (typeof getCleanChatMessages !== 'function') return;
+    const msgs = getCleanChatMessages();
+    const idx = msgs.findIndex(m => m.id === msgId);
+    if (idx === -1) return;
+    const removed = msgs.splice(idx, 1)[0];
+    saveCleanChatMessages(msgs);
+
+    let trash = [];
+    try { trash = JSON.parse(localStorage.getItem('financas_trash_chat') || '[]'); } catch(e) {}
+    trash.unshift(removed);
+    localStorage.setItem('financas_trash_chat', JSON.stringify(trash.slice(0, 30)));
+
+    window._lastUndoType = 'chat';
+    if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    if (typeof updateChatTrashBadge === 'function') updateChatTrashBadge();
+
+    const toast = document.getElementById('toastUndo');
+    const msgEl = document.getElementById('toastUndoMsg');
+    const btnUndo = document.getElementById('btnToastUndo');
+    if (toast && msgEl) {
+      msgEl.textContent = '🗑️ Mensagem enviada para a lixeira.';
+      if (btnUndo) {
+        btnUndo.style.display = 'flex';
+        btnUndo.onclick = function() {
+          window.undoLastDeleteChatMessage();
+          if (typeof hideToastUndo === 'function') hideToastUndo();
+        };
+      }
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      clearTimeout(window.toastUndoTimeout);
+      window.toastUndoTimeout = setTimeout(() => {
+        if (typeof hideToastUndo === 'function') hideToastUndo();
+      }, 3500);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // F. NOTIFICAÇÕES NATIVAS REAIS DO ANDROID (BARRA DE STATUS + SOM)
+  // --------------------------------------------------------------------------
+  window.triggerNativeSystemNotification = function(title, body) {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'show_notification',
+          title: String(title || 'ControlPig'),
+          body: String(body || ''),
+          id: Math.floor(Date.now() % 100000)
+        }));
+      } catch (e) {
+        console.warn('Erro ao enviar notificação nativa:', e);
+      }
+    }
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(String(title || 'ControlPig'), { body: String(body || '') });
+      } catch (e) {}
+    }
+  };
+
+  const _origShowFloatingHealthAlarmBanner = window.showFloatingHealthAlarmBanner;
+  window.showFloatingHealthAlarmBanner = function(title, desc, shift) {
+    window.triggerNativeSystemNotification(title || '⏰ Horário de Medicamento • CtrlPig', desc || 'Hora de tomar seu medicamento!');
+    if (typeof _origShowFloatingHealthAlarmBanner === 'function') {
+      _origShowFloatingHealthAlarmBanner(title, desc, shift);
+    }
+  };
+
+  const _origSendShoppingListToFamilyChat = window.sendShoppingListToFamilyChat;
+  if (typeof _origSendShoppingListToFamilyChat === 'function') {
+    window.sendShoppingListToFamilyChat = function() {
+      const me = (typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : 'Rodrigo';
+      const partner = me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      window.triggerNativeSystemNotification(
+        `🛒 Lista de Compras para ${partner}`,
+        `${me} acabou de atualizar e enviar a Lista de Compras no Chat da Família!`
+      );
+      _origSendShoppingListToFamilyChat();
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // G. PERSISTÊNCIA NA NUVEM (SUPABASE SNAPSHOT) PÓS-DESINSTALAÇÃO / REINSTALAÇÃO
+  // --------------------------------------------------------------------------
+  const SUPABASE_URL = 'https://ipwgvwmuhcfrdjkzzzdv.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwd2d2d211aGNmcmRqa3p6emR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MTYyMTcsImV4cCI6MjEwNzA5MjIxN30._X2iTDoaiwMBz8MU9MrFfOxYAn-JWkSrsegwj8Lts2k';
+  const SNAPSHOT_ROW_ID = 999999;
+
+  window.onNativeSupabaseDataLoaded = function(supabaseTxs) {
+    if (!Array.isArray(supabaseTxs)) return;
+    if (localStorage.getItem('financas_cloud_snapshot_restored') === 'true') {
+      return;
+    }
+    const cleanRows = supabaseTxs.filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.tipo !== '__CLOUD_SNAPSHOT__');
+    if (cleanRows.length > 0 && (!Array.isArray(transactions) || transactions.length === 0)) {
+      transactions = cleanRows;
+      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      if (typeof updateDashboard === 'function') updateDashboard();
+    }
+  };
+
+  window.pushCloudSnapshotNow = async function() {
+    try {
+      const cleanTxs = (Array.isArray(transactions) ? transactions : [])
+        .filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.tipo !== '__CLOUD_SNAPSHOT__');
+
+      const snapshotPayload = {
+        v: '2.0.0',
+        ts: Date.now(),
+        transactions: cleanTxs,
+        activeCycle: typeof currentCycle !== 'undefined' ? currentCycle : localStorage.getItem('financas_active_cycle'),
+        creditCards: typeof creditCards !== 'undefined' ? creditCards : JSON.parse(localStorage.getItem('financas_credit_cards') || '[]'),
+        piggies: typeof piggies !== 'undefined' ? piggies : JSON.parse(localStorage.getItem('financas_piggies_v1') || '[]'),
+        healthMeds: JSON.parse(localStorage.getItem('ctrlpig_health_meds_v1') || '[]'),
+        shoppingBuilder: JSON.parse(localStorage.getItem('ctrlpig_shopping_builder_v1') || '[]'),
+        activeShopping: JSON.parse(localStorage.getItem('ctrlpig_active_shopping_v1') || '[]'),
+        priceHistory: JSON.parse(localStorage.getItem('financas_price_history') || '[]'),
+        testerCodes: JSON.parse(localStorage.getItem('financas_tester_codes') || '[]'),
+        foodBudgetCap: localStorage.getItem('financas_food_budget_cap') || '900',
+        geminiKey: localStorage.getItem('financas_gemini_api_key') || ''
+      };
+
+      const rowBody = {
+        id: SNAPSHOT_ROW_ID,
+        data: new Date().toISOString().split('T')[0],
+        ciclo: '__SYSTEM_BACKUP__',
+        tipo: '__CLOUD_SNAPSHOT__',
+        categoria: 'Sistema',
+        descricao: JSON.stringify(snapshotPayload),
+        valor: 0,
+        responsavel: 'Ambos',
+        forma_pagamento: 'PIX'
+      };
+
+      const resp = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify(rowBody)
+      });
+
+      if (resp.ok) {
+        localStorage.setItem('financas_last_cloud_sync_ts', String(snapshotPayload.ts));
+        console.log('☁️ Snapshot completo salvo na nuvem Supabase com sucesso!');
+      }
+    } catch (e) {
+      console.warn('Aviso ao salvar snapshot na nuvem:', e);
+    }
+  };
+
+  let _cloudSyncDebounce = null;
+  window.scheduleCloudStatePush = function() {
+    clearTimeout(_cloudSyncDebounce);
+    _cloudSyncDebounce = setTimeout(() => {
+      window.pushCloudSnapshotNow();
+    }, 1200);
+  };
+
+  window.restoreCloudSnapshotIfAvailable = async function() {
+    try {
+      const resp = await fetch(`${SUPABASE_URL}/rest/v1/transactions?id=eq.${SNAPSHOT_ROW_ID}&select=descricao`, {
+        method: 'GET',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+      if (!resp.ok) return;
+      const rows = await resp.json();
+      if (!Array.isArray(rows) || rows.length === 0 || !rows[0].descricao) {
+        window.scheduleCloudStatePush();
+        return;
+      }
+
+      const cloudSnap = JSON.parse(rows[0].descricao);
+      if (!cloudSnap || !Array.isArray(cloudSnap.transactions)) return;
+
+      const localSyncTs = parseInt(localStorage.getItem('financas_last_cloud_sync_ts') || '0', 10);
+      const isFreshInstall = !localStorage.getItem('financas_cloud_snapshot_restored');
+
+      if (isFreshInstall || (cloudSnap.ts && cloudSnap.ts > localSyncTs)) {
+        transactions = cloudSnap.transactions.filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.tipo !== '__CLOUD_SNAPSHOT__');
+        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+
+        if (cloudSnap.activeCycle) {
+          currentCycle = cloudSnap.activeCycle;
+          localStorage.setItem('financas_active_cycle', cloudSnap.activeCycle);
+        }
+        if (Array.isArray(cloudSnap.creditCards) && cloudSnap.creditCards.length > 0) {
+          creditCards = cloudSnap.creditCards;
+          localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
+        }
+        if (Array.isArray(cloudSnap.piggies) && cloudSnap.piggies.length > 0) {
+          piggies = cloudSnap.piggies;
+          localStorage.setItem('financas_piggies_v1', JSON.stringify(piggies));
+        }
+        if (Array.isArray(cloudSnap.healthMeds) && cloudSnap.healthMeds.length > 0) {
+          localStorage.setItem('ctrlpig_health_meds_v1', JSON.stringify(cloudSnap.healthMeds));
+        }
+        if (Array.isArray(cloudSnap.shoppingBuilder) && cloudSnap.shoppingBuilder.length > 0) {
+          localStorage.setItem('ctrlpig_shopping_builder_v1', JSON.stringify(cloudSnap.shoppingBuilder));
+        }
+        if (Array.isArray(cloudSnap.activeShopping) && cloudSnap.activeShopping.length > 0) {
+          localStorage.setItem('ctrlpig_active_shopping_v1', JSON.stringify(cloudSnap.activeShopping));
+        }
+        if (Array.isArray(cloudSnap.priceHistory) && cloudSnap.priceHistory.length > 0) {
+          priceHistory = cloudSnap.priceHistory;
+          localStorage.setItem('financas_price_history', JSON.stringify(priceHistory));
+        }
+        if (Array.isArray(cloudSnap.testerCodes) && cloudSnap.testerCodes.length > 0) {
+          localStorage.setItem('financas_tester_codes', JSON.stringify(cloudSnap.testerCodes));
+        }
+        if (cloudSnap.foodBudgetCap) {
+          localStorage.setItem('financas_food_budget_cap', String(cloudSnap.foodBudgetCap));
+        }
+        if (cloudSnap.geminiKey && !localStorage.getItem('financas_gemini_api_key')) {
+          localStorage.setItem('financas_gemini_api_key', cloudSnap.geminiKey);
+          if (typeof renderGeminiKeyUI === 'function') renderGeminiKeyUI();
+        }
+
+        localStorage.setItem('financas_cloud_snapshot_restored', 'true');
+        localStorage.setItem('financas_last_cloud_sync_ts', String(cloudSnap.ts || Date.now()));
+
+        if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof renderCreditCardsUI === 'function') renderCreditCardsUI();
+        if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+        console.log('☁️ Dados restaurados da nuvem Supabase com sucesso!');
+      }
+    } catch (e) {
+      console.warn('Aviso ao verificar snapshot na nuvem:', e);
+    }
+  };
+
+  const _origSaveData = window.saveData;
+  window.saveData = function() {
+    if (Array.isArray(transactions)) {
+      transactions = transactions.filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.tipo !== '__CLOUD_SNAPSHOT__');
+    }
+    if (typeof _origSaveData === 'function') {
+      _origSaveData();
+    } else {
+      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+    }
+    localStorage.setItem('financas_cloud_snapshot_restored', 'true');
+    window.scheduleCloudStatePush();
+  };
+
+  const _origSaveGeminiApiKey = window.saveGeminiApiKey;
+  if (typeof _origSaveGeminiApiKey === 'function') {
+    window.saveGeminiApiKey = function() {
+      _origSaveGeminiApiKey();
+      window.scheduleCloudStatePush();
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.restoreCloudSnapshotIfAvailable();
+    }, 500);
+  });
+})();
+</script>
+
 </body>
 </html>

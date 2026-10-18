@@ -65,12 +65,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // Revalida autenticação biométrica/sessão ao retornar do segundo plano
+      // Revalida autenticação biométrica/sessão e status real de permissão ao retornar do segundo plano
       _controller.runJavaScript("""
         if (typeof window.onAppResumedFromBackground === 'function') {
           window.onAppResumedFromBackground();
         }
       """);
+      Permission.notification.status.then((status) {
+        final granted = status.isGranted;
+        _controller.runJavaScript("""
+          if (typeof window.onNativeNotificationPermissionResult === 'function') {
+            window.onNativeNotificationPermissionResult($granted);
+          }
+        """);
+      });
     }
   }
 
@@ -224,7 +232,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           status = await Permission.notification.request();
         }
         final granted = status.isGranted;
-        if (!granted && status.isPermanentlyDenied) {
+        if (!granted) {
           await openAppSettings();
         }
         _controller.runJavaScript("""
@@ -232,6 +240,22 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeNotificationPermissionResult($granted);
           }
         """);
+      } else if (action == 'show_notification') {
+        final title = data['title'] as String? ?? 'ControlPig';
+        final body = data['body'] as String? ?? '';
+        final id = data['id'] is int
+            ? data['id'] as int
+            : (DateTime.now().millisecondsSinceEpoch % 100000);
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('showNotification', {
+            'title': title,
+            'body': body,
+            'id': id,
+          });
+        } catch (e) {
+          debugPrint('Aviso ao disparar notificação nativa: $e');
+        }
       } else if (action == 'open_app_settings') {
         await openAppSettings();
       } else if (action == 'check_notification_permission') {
@@ -518,6 +542,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
       final List<String> dataUrls = [];
       final List<ReceiptItem> allItems = [];
+      final List<String> allLines = [];
+      final List<String> allRawTexts = [];
       String? detectedStore;
       DateTime? detectedDate;
       double? detectedTotal;
@@ -533,6 +559,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           if (ocr.date != null && detectedDate == null) detectedDate = ocr.date;
           if (ocr.totalAmount != null && ocr.totalAmount! > 0) detectedTotal = ocr.totalAmount;
           allItems.addAll(ocr.items);
+          allLines.addAll(ocr.lines);
+          if (ocr.rawText.trim().isNotEmpty) {
+            allRawTexts.add(ocr.rawText.trim());
+          }
         } catch (itemErr) {
           debugPrint('Erro ao processar parte da nota: $itemErr');
         }
@@ -547,8 +577,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         totalAmount: detectedTotal,
         date: detectedDate ?? DateTime.now(),
         items: allItems,
-        lines: [],
-        rawText: '',
+        lines: allLines,
+        rawText: allRawTexts.join('\n--- PAGINA ---\n'),
       );
 
       final jsonResult = jsonEncode(combinedResult.toJson());
