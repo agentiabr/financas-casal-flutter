@@ -178,7 +178,7 @@ class FinanceProvider extends ChangeNotifier {
       if (data is List && data.isNotEmpty) {
         final realRows = data.where((item) {
           if (item is Map<String, dynamic>) {
-            return item['id'] != 999999 && item['tipo'] != '__CLOUD_SNAPSHOT__';
+            return item['id'] != 999999 && item['ciclo'] != '__SYSTEM_BACKUP__' && item['tipo'] != '__CLOUD_SNAPSHOT__';
           }
           return true;
         }).toList();
