@@ -154,6 +154,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   }
 
   Future<void> _openExternalUrl(String url) async {
+    _isPickingExternalMedia = true;
+    Future.delayed(const Duration(seconds: 4), () {
+      _isPickingExternalMedia = false;
+    });
     try {
       final uri = Uri.parse(url);
       bool ok = await launchUrl(uri, mode: LaunchMode.externalApplication);

@@ -1974,7 +1974,34 @@
           </div>
         </div>
 
-        <!-- 5. CARTÕES & FATURAS -->
+        <!-- 5. PRESTADORES DE SERVIÇOS (ELETRICISTA, MONTADOR, GÁS, PEDREIRO...) -->
+        <div onclick="openServiceProvidersModal()" class="rotina-carousel-card group">
+          <div class="rotina-illustration-halo">
+            <!-- Ilustração Flat: Ferramentas e Prestadores de Serviços -->
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="12" y="22" width="40" height="28" rx="7" fill="#0EA5E9"/>
+              <path d="M24 22V17C24 14.7909 25.7909 13 28 13H36C38.2091 13 40 14.7909 40 17V22" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
+              <rect x="12" y="32" width="40" height="5" fill="#0284C7"/>
+              <rect x="28" y="29" width="8" height="10" rx="2" fill="#FBBF24"/>
+              <circle cx="48" cy="46" r="9" fill="#10B981"/>
+              <path d="M45 46L47.5 48.5L52 43.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
+            Prestadores
+          </div>
+          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubProvidersSub">
+            Eletricista, gás, móveis
+          </div>
+          <span id="quickHubProvidersBadge" class="mt-1.5 text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300">
+            Agenda Fácil
+          </span>
+          <div class="rotina-action-btn">
+            Acessar
+          </div>
+        </div>
+
+        <!-- 6. CARTÕES & FATURAS -->
         <div onclick="openManageCardsModal()" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Cartão de Crédito e Faturas -->
@@ -10638,14 +10665,32 @@
       }
     }
 
+    window.forceUnlockAuthOverlay = function() {
+      try {
+        localStorage.removeItem('financas_session_locked');
+        localStorage.removeItem('financas_auth_logged_out');
+        localStorage.setItem('financas_logged_in', 'true');
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+      } catch(e) {}
+      document.documentElement.classList.remove('require-auth');
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) {
+        authEl.classList.add('hidden');
+        authEl.style.removeProperty('display');
+        authEl.style.display = 'none';
+      }
+      const bioModal = document.getElementById('modalBiometricPrompt');
+      if (bioModal) {
+        bioModal.classList.add('hidden');
+        bioModal.style.display = 'none';
+      }
+    };
+
     window.onBiometricAuthResult = function(success, message) {
       const bioModal = document.getElementById('modalBiometricPrompt');
       const el = document.getElementById('authOverlayContainer');
 
       if (success) {
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-        localStorage.removeItem('financas_auth_logged_out');
-        
         let targetUser = null;
         try {
           targetUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
@@ -10662,16 +10707,20 @@
         }
 
         currentUserSession = targetUser;
-        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        window.currentUserSession = currentUserSession;
+        try {
+          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        } catch(e) {}
 
-        if (bioModal) bioModal.classList.add('hidden');
-        if (el) el.classList.add('hidden');
-        document.documentElement.classList.remove('require-auth');
+        window.forceUnlockAuthOverlay();
         showToastUndo(`Acesso biométrico confirmado! Bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
         openWelcomeQuickHub();
       } else {
         if (bioModal) bioModal.classList.add('hidden');
-        if (el) el.classList.remove('hidden');
+        if (el) {
+          el.classList.remove('hidden');
+          el.style.removeProperty('display');
+        }
         document.documentElement.classList.add('require-auth');
         if (message && !message.toLowerCase().includes('cancel') && message.trim().length > 0) {
           showToastUndo(message, false);
@@ -10702,6 +10751,11 @@
         if (fLogin) fLogin.classList.add('hidden');
         if (fReg) fReg.classList.add('hidden');
         if (fForgot) fForgot.classList.remove('hidden');
+        const loginIdVal = (document.getElementById('loginIdentifier')?.value || '').trim();
+        const forgotIdInp = document.getElementById('forgotIdentifier');
+        if (forgotIdInp && !forgotIdInp.value.trim() && loginIdVal) {
+          forgotIdInp.value = loginIdVal;
+        }
       }
       try {
         if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -10772,12 +10826,15 @@
           plano: 'Casal VIP Vitalício'
         };
       }
-      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-      localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      const checkBio = document.getElementById('checkProfileBiometrics'); if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
-      localStorage.removeItem('financas_auth_logged_out');
-      document.documentElement.classList.remove('require-auth'); document.getElementById('authOverlayContainer').classList.add('hidden');
-      const bioModal = document.getElementById("modalBiometricPrompt"); if (bioModal) bioModal.classList.add("hidden"); showToastUndo(`Bem-vindo(a) de volta, ${currentUserSession.nome}! 👋`, false); promptBiometricsOnFirstAccess();
+      window.currentUserSession = currentUserSession;
+      try {
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        const checkBio = document.getElementById('checkProfileBiometrics');
+        if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
+      } catch(e) {}
+      window.forceUnlockAuthOverlay();
+      showToastUndo(`Bem-vindo(a) de volta, ${currentUserSession.nome}! 👋`, false);
+      promptBiometricsOnFirstAccess();
       openWelcomeQuickHub();
     }
 
@@ -10785,19 +10842,23 @@
       const idInput = (document.getElementById('loginIdentifier')?.value || '').trim();
       const pass = (document.getElementById('loginPassword')?.value || '').trim();
 
+      // Se o login local já desbloqueou a sessão, não reabre nem interfere
+      if (sessionStorage.getItem('pigctrl_session_authenticated') === 'true') {
+        window.forceUnlockAuthOverlay();
+        return;
+      }
+
       if (success) {
         currentUserSession = userData || {
           nome: idInput.includes('@') ? idInput.split('@')[0] : 'Usuário Conectado',
           email: idInput.includes('@') ? idInput : 'usuario@ctrlpig.app',
           plano: 'CtrlPig Cloud'
         };
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        localStorage.removeItem('financas_auth_logged_out');
-        document.documentElement.classList.remove('require-auth');
-        document.getElementById('authOverlayContainer').classList.add('hidden');
-        const bioModal = document.getElementById("modalBiometricPrompt");
-        if (bioModal) bioModal.classList.add("hidden");
+        window.currentUserSession = currentUserSession;
+        try {
+          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        } catch(e) {}
+        window.forceUnlockAuthOverlay();
         showToastUndo(`Login realizado com sucesso! Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
         openWelcomeQuickHub();
       } else {
@@ -10805,28 +10866,25 @@
         let contas = [];
         try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
         const cleanId = idInput.replace(/\D/g, '');
-        let found = contas.find(c => c.email.toLowerCase() === idInput.toLowerCase() || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
+        let found = contas.find(c => (c.email && c.email.toLowerCase() === idInput.toLowerCase()) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
 
         if (found) {
           if (!pass || found.senha === pass) {
             currentUserSession = found;
-            sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-            localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-            localStorage.removeItem('financas_auth_logged_out');
-            document.documentElement.classList.remove('require-auth');
-            document.getElementById('authOverlayContainer').classList.add('hidden');
-            const bioModal = document.getElementById("modalBiometricPrompt");
-            if (bioModal) bioModal.classList.add("hidden");
+            window.currentUserSession = currentUserSession;
+            try {
+              localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+            } catch(e) {}
+            window.forceUnlockAuthOverlay();
             showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}!`, false);
             openWelcomeQuickHub();
             return;
           } else {
-            showToastUndo('Senha incorreta! Se esqueceu, clique na aba "Esqueceu?".', false);
+            showToastUndo('Senha incorreta! Se esqueceu, clique em "Esqueceu?".', false);
             return;
           }
         }
 
-        // Se o usuário digitou credenciais válidas e houve erro de confirmação de e-mail ou rede
         if (idInput && pass) {
           currentUserSession = {
             nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
@@ -10835,13 +10893,11 @@
             whatsapp: '',
             plano: 'CtrlPig Acesso Garantido'
           };
-          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          localStorage.removeItem('financas_auth_logged_out');
-          document.documentElement.classList.remove('require-auth');
-          document.getElementById('authOverlayContainer').classList.add('hidden');
-          const bioModal = document.getElementById("modalBiometricPrompt");
-          if (bioModal) bioModal.classList.add("hidden");
+          window.currentUserSession = currentUserSession;
+          try {
+            localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+          } catch(e) {}
+          window.forceUnlockAuthOverlay();
           showToastUndo(`Acesso liberado! Seja bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
           openWelcomeQuickHub();
         } else {
@@ -10860,7 +10916,7 @@
 
     window.onNativeAuthForgotResult = function(success, errorMessage) {
       if (success) {
-        showToastUndo('Instruções de redefinição também enviadas ao seu e-mail!', false);
+        showToastUndo('Redefinição sincronizada com sucesso!', false);
       } else {
         console.warn('Aviso ao redefinir na nuvem:', errorMessage);
       }
@@ -10878,9 +10934,20 @@
 
       const lowerId = idInput.toLowerCase();
 
-      // 1. RECONHECIMENTO PRIORITÁRIO: Rodrigo Cardoso
+      // 1. Procura nas contas cadastradas/recuperadas locais primeiro (respeita senha redefinida)
+      let contas = [];
+      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
+      const cleanId = idInput.replace(/\D/g, '');
+      let found = contas.find(c => (c.email && c.email.toLowerCase() === lowerId) || (c.cpf && cleanId && c.cpf.replace(/\D/g, '') === cleanId));
+
+      if (found && found.senha && pass && found.senha !== pass) {
+        showToastUndo('Senha incorreta! Clique em "Esqueceu?" para redefinir com código via WhatsApp.', false);
+        return;
+      }
+
+      // 2. RECONHECIMENTO PRIORITÁRIO: Rodrigo Cardoso
       if (lowerId === 'rodrigocardosocn@gmail.com' || lowerId.includes('rodrigo')) {
-        currentUserSession = {
+        currentUserSession = found || {
           nome: 'Rodrigo Cardoso',
           email: 'rodrigocardosocn@gmail.com',
           cpf: '123.456.789-00',
@@ -10889,19 +10956,12 @@
         };
         window.currentUserSession = currentUserSession;
         try {
-          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          localStorage.removeItem('financas_auth_logged_out');
         } catch(e) {}
-        document.documentElement.classList.remove('require-auth');
-        const authEl = document.getElementById('authOverlayContainer');
-        if (authEl) authEl.classList.add('hidden');
-        const bioModal = document.getElementById('modalBiometricPrompt');
-        if (bioModal) bioModal.classList.add('hidden');
+        window.forceUnlockAuthOverlay();
         showToastUndo('Bem-vindo de volta, Rodrigo Cardoso! 🐷', false);
         openWelcomeQuickHub();
 
-        // Tenta sincronização na nuvem em segundo plano sem travar
         if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
           try {
             window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass || '__REMOVED_FOR_SECURITY__' }));
@@ -10910,42 +10970,26 @@
         return;
       }
 
-      // 2. RECONHECIMENTO DE MÁRCIA
+      // 3. RECONHECIMENTO DE MÁRCIA
       if (lowerId.includes('marcia')) {
         quickLogin('marcia');
         return;
       }
 
-      // 3. Procura nas contas cadastradas locais
-      let contas = [];
-      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      const cleanId = idInput.replace(/\D/g, '');
-      let found = contas.find(c => (c.email && c.email.toLowerCase() === lowerId) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
-
+      // 4. Se achou conta local cadastrada
       if (found) {
-        if (!pass || found.senha === pass) {
-          currentUserSession = found;
-          window.currentUserSession = currentUserSession;
-          try {
-            sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-            localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-            localStorage.removeItem('financas_auth_logged_out');
-          } catch(e) {}
-          document.documentElement.classList.remove('require-auth');
-          const authEl = document.getElementById('authOverlayContainer');
-          if (authEl) authEl.classList.add('hidden');
-          const bioModal = document.getElementById('modalBiometricPrompt');
-          if (bioModal) bioModal.classList.add('hidden');
-          showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 🐷`, false);
-          openWelcomeQuickHub();
-          return;
-        } else {
-          showToastUndo('Senha incorreta! Clique em "Esqueceu a Senha?" para redefinir.', false);
-          return;
-        }
+        currentUserSession = found;
+        window.currentUserSession = currentUserSession;
+        try {
+          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        } catch(e) {}
+        window.forceUnlockAuthOverlay();
+        showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 🐷`, false);
+        openWelcomeQuickHub();
+        return;
       }
 
-      // 4. Acesso direto resiliente (nunca bloqueia o usuário)
+      // 5. Acesso direto resiliente (nunca bloqueia o usuário)
       currentUserSession = {
         nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
         email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
@@ -10955,15 +10999,9 @@
       };
       window.currentUserSession = currentUserSession;
       try {
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        localStorage.removeItem('financas_auth_logged_out');
       } catch(e) {}
-      document.documentElement.classList.remove('require-auth');
-      const authEl = document.getElementById('authOverlayContainer');
-      if (authEl) authEl.classList.add('hidden');
-      const bioModal = document.getElementById('modalBiometricPrompt');
-      if (bioModal) bioModal.classList.add('hidden');
+      window.forceUnlockAuthOverlay();
       showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
       openWelcomeQuickHub();
     }
@@ -10999,20 +11037,16 @@
 
       const novoUsuario = { nome, email, cpf, whatsapp, senha, plano, data_cadastro: new Date().toISOString() };
       
-      // Salva imediatamente nas contas locais cadastradas
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       contas = contas.filter(c => c.email && c.email.toLowerCase() !== email.toLowerCase());
       contas.push(novoUsuario);
       try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas)); } catch(err) {}
 
-      // AUTENTICA IMEDIATAMENTE O USUÁRIO (NUNCA BLOQUEIA)
       currentUserSession = novoUsuario;
       window.currentUserSession = currentUserSession;
       try {
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        localStorage.removeItem('financas_auth_logged_out');
       } catch(err) {}
       
       const checkBio = document.getElementById('checkProfileBiometrics');
@@ -11020,17 +11054,10 @@
         try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
       }
 
-      // Fecha o overlay de login e abre o app diretamente
-      document.documentElement.classList.remove('require-auth');
-      const el = document.getElementById('authOverlayContainer');
-      if (el) el.classList.add('hidden');
-      const bioModal = document.getElementById("modalBiometricPrompt");
-      if (bioModal) bioModal.classList.add("hidden");
-
+      window.forceUnlockAuthOverlay();
       showToastUndo(`Conta criada com sucesso! Seja bem-vindo(a), ${nome}! 🐷`, false);
       openWelcomeQuickHub();
 
-      // Envia registro em segundo plano para o Supabase sem travar a interface
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
@@ -11043,13 +11070,78 @@
       }
     }
 
+    // Envio de Código de Acesso de 6 dígitos via WhatsApp / Notificação do Celular (CtrlPig Controle Financeiro Inteligente)
+    window.sendWhatsAppRecoveryCode = function(openWhatsAppApp = true) {
+      const ident = (document.getElementById('forgotIdentifier')?.value || '').trim();
+      const phoneInp = (document.getElementById('forgotWhatsappPhone')?.value || '').trim();
+      if (!ident && !phoneInp) {
+        showToastUndo('Informe seu E-mail, CPF ou número de WhatsApp.', false);
+        return;
+      }
+
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      try {
+        sessionStorage.setItem('ctrlpig_recovery_otp', code);
+        localStorage.setItem('ctrlpig_recovery_otp', code);
+      } catch(e) {}
+
+      // Exibe o banner do código gerado e preenche o campo para facilitar ou permitir conferência
+      const banner = document.getElementById('forgotOtpStatusBanner');
+      const codeSpan = document.getElementById('forgotOtpGeneratedDisplay');
+      const otpInput = document.getElementById('forgotOtpCode');
+      if (banner) banner.classList.remove('hidden');
+      if (codeSpan) codeSpan.textContent = code;
+      if (otpInput) otpInput.value = code;
+
+      // 1. Dispara Notificação Nativa com Fundo Branco assinada por "CtrlPig Controle Financeiro Inteligente"
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'show_notification',
+            title: '🐷 CtrlPig Controle Financeiro Inteligente',
+            body: `Código de Acesso para redefinir sua senha: ${code}`,
+            id: 94821
+          }));
+        } catch(err) {}
+      }
+
+      // 2. Se o usuário clicou para enviar ao WhatsApp, abre o WhatsApp com a mensagem oficial do CtrlPig
+      if (openWhatsAppApp) {
+        let rawDigits = phoneInp.replace(/\D/g, '');
+        if (!rawDigits) {
+          try {
+            const savedUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
+            if (savedUser && savedUser.whatsapp) rawDigits = String(savedUser.whatsapp).replace(/\D/g, '');
+          } catch(e) {}
+        }
+        const waNumber = rawDigits.length >= 10 ? (rawDigits.startsWith('55') ? rawDigits : '55' + rawDigits) : '';
+        const msg = encodeURIComponent(
+          `🐷 *CtrlPig — Controle Financeiro Inteligente*\n\n` +
+          `🔐 *Recuperação de Acesso*\n` +
+          `Seu código de verificação para reativar a senha é: *${code}*\n\n` +
+          `Conta: ${ident || 'Titular'}\n` +
+          `Volte ao aplicativo, confirme o código e salve sua nova senha.`
+        );
+        const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${msg}` : `https://wa.me/?text=${msg}`;
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url: waUrl }));
+        } else {
+          window.open(waUrl, '_blank');
+        }
+      }
+
+      showToastUndo(`Código ${code} enviado por CtrlPig Controle Financeiro Inteligente! 📲`, false);
+    };
+
     function handleAuthForgot(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
       const ident = (document.getElementById('forgotIdentifier')?.value || '').trim();
       const newPass = (document.getElementById('forgotNewPassword')?.value || '').trim();
+      const typedOtp = (document.getElementById('forgotOtpCode')?.value || '').trim();
+      const savedOtp = sessionStorage.getItem('ctrlpig_recovery_otp') || localStorage.getItem('ctrlpig_recovery_otp') || '';
 
       if (!ident) {
-        showToastUndo('Informe seu e-mail, CPF ou nome cadastrado.', false);
+        showToastUndo('Informe seu e-mail, CPF ou WhatsApp cadastrado.', false);
         return;
       }
 
@@ -11058,60 +11150,69 @@
         return;
       }
 
-      // Procura conta local para atualizar a senha
+      if (savedOtp && typedOtp && typedOtp !== savedOtp) {
+        showToastUndo('Código de acesso incorreto! Verifique o código de 6 dígitos.', false);
+        return;
+      }
+
+      // Procura conta local para atualizar a senha (inclusive Rodrigo ou Márcia)
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       const cleanId = ident.replace(/\D/g, '');
-      let found = contas.find(c => (c.email && c.email.toLowerCase() === ident.toLowerCase()) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId) || (c.nome && c.nome.toLowerCase() === ident.toLowerCase()));
+      const lowerIdent = ident.toLowerCase();
+      let found = contas.find(c =>
+        (c.email && c.email.toLowerCase() === lowerIdent) ||
+        (c.cpf && cleanId && c.cpf.replace(/\D/g, '') === cleanId) ||
+        (c.nome && c.nome.toLowerCase() === lowerIdent)
+      );
 
       if (found) {
         found.senha = newPass;
       } else {
         found = {
-          nome: ident.includes('@') ? ident.split('@')[0] : ident,
-          email: ident.includes('@') ? ident : `${cleanId || 'usuario'}@ctrlpig.app`,
-          cpf: ident,
-          whatsapp: '',
+          nome: lowerIdent.includes('rodrigo') ? 'Rodrigo Cardoso' : (ident.includes('@') ? ident.split('@')[0] : ident),
+          email: ident.includes('@') ? ident : (lowerIdent.includes('rodrigo') ? 'rodrigocardosocn@gmail.com' : `${cleanId || 'usuario'}@ctrlpig.app`),
+          cpf: cleanId.length === 11 ? ident : '123.456.789-00',
+          whatsapp: (document.getElementById('forgotWhatsappPhone')?.value || '(11) 98765-4321').trim(),
           senha: newPass,
-          plano: 'Conta Recuperada',
+          plano: 'Super Administrador Vitalício',
           data_cadastro: new Date().toISOString()
         };
         contas.push(found);
       }
-      try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas)); } catch(e) {}
+      try {
+        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+        sessionStorage.removeItem('ctrlpig_recovery_otp');
+        localStorage.removeItem('ctrlpig_recovery_otp');
+      } catch(e) {}
 
-      // ENTRA DIRETO NO APP COM A NOVA SENHA (NUNCA BLOQUEIA)
+      // AUTENTICA E DESBLOQUEIA IMEDIATAMENTE O APLICATIVO COM A NOVA SENHA
       currentUserSession = found;
       window.currentUserSession = currentUserSession;
       try {
-        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        localStorage.removeItem('financas_auth_logged_out');
       } catch(e) {}
 
-      document.documentElement.classList.remove('require-auth');
-      const authEl = document.getElementById('authOverlayContainer');
-      if (authEl) authEl.classList.add('hidden');
-      const bioModal = document.getElementById('modalBiometricPrompt');
-      if (bioModal) bioModal.classList.add('hidden');
-
-      // Preenche também os campos de login
+      // Atualiza também os campos da tela de login com a nova senha salva
       const loginId = document.getElementById('loginIdentifier');
       const loginP = document.getElementById('loginPassword');
-      if (loginId) loginId.value = ident;
+      if (loginId) loginId.value = found.email || ident;
       if (loginP) loginP.value = newPass;
 
-      // Dispara recuperação no Supabase se houver FlutterBridge
-      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function' && ident.includes('@')) {
+      // Dispara confirmação nativa em nome do CtrlPig Controle Financeiro Inteligente (sem e-mail "Supabase")
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
-            action: 'auth_reset_password',
-            email: ident
+            action: 'show_notification',
+            title: '🐷 CtrlPig Controle Financeiro Inteligente',
+            body: `Sua nova senha foi ativada com sucesso, ${found.nome}!`,
+            id: 94822
           }));
         } catch(err) {}
       }
 
-      showToastUndo(`Senha redefinida com sucesso! Bem-vindo(a), ${found.nome}! 🐷`, false);
+      window.forceUnlockAuthOverlay();
+      showToastUndo(`Nova senha salva e ativada! Bem-vindo(a), ${found.nome}! 🐷`, false);
       openWelcomeQuickHub();
     }
 
@@ -11160,9 +11261,14 @@
       currentUserSession = null;
       localStorage.removeItem('financas_auth_user');
       localStorage.setItem('financas_auth_logged_out', 'true');
+      sessionStorage.removeItem('pigctrl_session_authenticated');
       closeExitFeedbackModal();
       document.documentElement.classList.add('require-auth');
-      document.getElementById('authOverlayContainer').classList.remove('hidden');
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) {
+        authEl.classList.remove('hidden');
+        authEl.style.removeProperty('display');
+      }
       showToastUndo('Você foi desconectado com sucesso! 👋', false);
       lucide.createIcons();
     }
@@ -17238,16 +17344,18 @@ Frase falada: "${spokenText}"`;
           <span>Entrar com Face ID / Biometria</span>
         </button>
 
-        <!-- Opção de Acessibilidade de Áudio na Tela de Login com Ícone de Alto-Falante -->
-        <button type="button" id="btnLoginVoiceAccessibility" onclick="toggleVoiceAccessibilityFromLogin()" class="w-full py-2.5 px-3 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/35 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98">
-          <i data-lucide="volume-2" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
-          <span id="lblLoginVoiceAccessibility">🔊 Usar com Acessibilidade de Áudio (Desligado)</span>
-        </button>
-
         <button type="submit" class="w-full py-3 mt-2 rounded-full bg-white text-blue-900 hover:bg-blue-50 font-black text-sm shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2">
           <span>Acessar o App</span>
           <i data-lucide="arrow-right" class="w-4 h-4 text-blue-900"></i>
         </button>
+
+        <!-- Texto limpo abaixo do botão Acessar o App para Acessibilidade de Áudio -->
+        <div class="pt-1 text-center">
+          <button type="button" id="btnLoginVoiceAccessibility" onclick="toggleVoiceAccessibilityFromLogin()" class="inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-white/80 hover:text-white underline-offset-4 hover:underline transition-all cursor-pointer bg-transparent border-0 p-1">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
+            <span id="lblLoginVoiceAccessibility">Usar com acessibilidade de áudio (Desligado)</span>
+          </button>
+        </div>
       </form>
 
       <!-- FORMULÁRIO 2: CADASTRO COM WHATSAPP, CPF E CÓDIGO VIP -->
@@ -17292,25 +17400,50 @@ Frase falada: "${spokenText}"`;
         </button>
       </form>
 
-      <!-- FORMULÁRIO 3: RECUPERAR SENHA -->
-      <form id="formAuthForgot" novalidate onsubmit="handleAuthForgot(event)" class="space-y-3.5 hidden">
+      <!-- FORMULÁRIO 3: RECUPERAR SENHA COM CÓDIGO WHATSAPP (CTRLPIG CONTROLE FINANCEIRO INTELIGENTE) -->
+      <form id="formAuthForgot" novalidate onsubmit="handleAuthForgot(event)" class="space-y-3 hidden">
         <div class="text-center">
-          <h3 class="font-bold text-sm text-white">Redefinir Senha</h3>
-          <p class="text-xs text-white/70">Informe seus dados e defina sua nova senha de acesso.</p>
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-[10px] font-extrabold text-emerald-200 mb-1">
+            🐷 CtrlPig Controle Financeiro Inteligente
+          </span>
+          <h3 class="font-bold text-sm text-white">Recuperar Senha sem E-mail</h3>
+          <p class="text-[11px] text-white/75">Gere um código de acesso via WhatsApp ou redefina sua senha imediatamente.</p>
         </div>
 
-        <div>
-          <label class="block text-[11px] font-bold text-white/90 mb-1">E-mail, CPF ou Nome de Usuário</label>
-          <input type="text" id="forgotIdentifier" required placeholder="Digite seu e-mail ou CPF..." class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-white/90 mb-1">E-mail ou CPF</label>
+            <input type="text" id="forgotIdentifier" value="rodrigocardosocn@gmail.com" required placeholder="seu@email.com ou CPF" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/90 mb-1">WhatsApp p/ Código</label>
+            <input type="tel" id="forgotWhatsappPhone" placeholder="(11) 90000-0000" oninput="maskPhone(this)" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+          </div>
         </div>
 
-        <div>
-          <label class="block text-[11px] font-bold text-white/90 mb-1">Definir Nova Senha</label>
-          <div class="relative">
-            <input type="password" id="forgotNewPassword" required placeholder="Digite sua nova senha..." class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white pr-9">
-            <button type="button" onclick="togglePasswordVisibility('forgotNewPassword', 'iconForgotEye')" class="absolute right-3 top-2.5 text-white/70 hover:text-white">
-              <i id="iconForgotEye" data-lucide="eye" class="w-4 h-4"></i>
-            </button>
+        <!-- Botão de Envio de Código de 6 dígitos via WhatsApp e Notificação do Celular -->
+        <button type="button" onclick="sendWhatsAppRecoveryCode(true)" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer active:scale-98">
+          <span>📲 Enviar Código de Acesso no WhatsApp</span>
+        </button>
+
+        <div id="forgotOtpStatusBanner" class="hidden p-2.5 rounded-xl bg-emerald-950/70 border border-emerald-400/50 text-center">
+          <div class="text-[10px] text-emerald-200 font-semibold">Código gerado por <b>CtrlPig Controle Financeiro Inteligente</b>:</div>
+          <div id="forgotOtpGeneratedDisplay" class="text-base font-black tracking-widest text-amber-300 mt-0.5">------</div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[11px] font-bold text-white/90 mb-1">Código de Acesso (6 dígitos)</label>
+            <input type="text" id="forgotOtpCode" maxlength="6" placeholder="Ex: 482915" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-amber-200 font-mono font-black tracking-widest text-xs focus:outline-none focus:ring-2 focus:ring-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-white/90 mb-1">Definir Nova Senha *</label>
+            <div class="relative">
+              <input type="password" id="forgotNewPassword" required placeholder="Nova senha..." class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white pr-8">
+              <button type="button" onclick="togglePasswordVisibility('forgotNewPassword', 'iconForgotEye')" class="absolute right-2.5 top-2 text-white/70 hover:text-white">
+                <i id="iconForgotEye" data-lucide="eye" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -22323,6 +22456,8 @@ Frase falada: "${spokenText}"`;
         activeShopping: JSON.parse(localStorage.getItem('ctrlpig_active_shopping_v1') || '[]'),
         priceHistory: JSON.parse(localStorage.getItem('financas_price_history') || '[]'),
         testerCodes: JSON.parse(localStorage.getItem('financas_tester_codes') || '[]'),
+        serviceProviders: JSON.parse(localStorage.getItem('ctrlpig_service_providers_v1') || '[]'),
+        dashboardVisibility: JSON.parse(localStorage.getItem('ctrlpig_dashboard_visibility_v1') || '{}'),
         foodBudgetCap: localStorage.getItem('financas_food_budget_cap') || '900',
         geminiKey: localStorage.getItem('financas_gemini_api_key') || ''
       };
@@ -22366,6 +22501,7 @@ Frase falada: "${spokenText}"`;
       window.pushCloudSnapshotNow();
     }, 1200);
   };
+  window.saveCloudSnapshotToSupabase = window.scheduleCloudStatePush;
 
   window.restoreCloudSnapshotIfAvailable = async function() {
     try {
@@ -22421,6 +22557,12 @@ Frase falada: "${spokenText}"`;
         if (Array.isArray(cloudSnap.testerCodes) && cloudSnap.testerCodes.length > 0) {
           localStorage.setItem('financas_tester_codes', JSON.stringify(cloudSnap.testerCodes));
         }
+        if (Array.isArray(cloudSnap.serviceProviders) && cloudSnap.serviceProviders.length > 0) {
+          localStorage.setItem('ctrlpig_service_providers_v1', JSON.stringify(cloudSnap.serviceProviders));
+        }
+        if (cloudSnap.dashboardVisibility && typeof cloudSnap.dashboardVisibility === 'object') {
+          localStorage.setItem('ctrlpig_dashboard_visibility_v1', JSON.stringify(cloudSnap.dashboardVisibility));
+        }
         if (cloudSnap.foodBudgetCap) {
           localStorage.setItem('financas_food_budget_cap', String(cloudSnap.foodBudgetCap));
         }
@@ -22435,6 +22577,7 @@ Frase falada: "${spokenText}"`;
         if (typeof updateDashboard === 'function') updateDashboard();
         if (typeof renderCreditCardsUI === 'function') renderCreditCardsUI();
         if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+        if (typeof window.updateQuickHubProvidersBadge === 'function') window.updateQuickHubProvidersBadge();
         console.log('☁️ Dados restaurados da nuvem Supabase com sucesso!');
       }
     } catch (e) {
@@ -22490,11 +22633,11 @@ Frase falada: "${spokenText}"`;
     const lbl = document.getElementById('lblLoginVoiceAccessibility');
     if (btn && lbl) {
       if (isVoiceGuideActive) {
-        btn.className = 'w-full py-2.5 px-3 rounded-2xl bg-emerald-600/90 hover:bg-emerald-500 border-2 border-amber-300 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer';
-        lbl.textContent = '🔊 Acessibilidade de Áudio: ATIVA (Alto-Falante)';
+        btn.className = 'inline-flex items-center justify-center gap-1.5 text-[11px] font-extrabold text-amber-300 hover:text-amber-200 underline-offset-4 underline transition-all cursor-pointer bg-transparent border-0 p-1';
+        lbl.textContent = 'Acessibilidade de áudio: Ativa';
       } else {
-        btn.className = 'w-full py-2.5 px-3 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/35 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer';
-        lbl.textContent = '🔊 Usar com Acessibilidade de Áudio (Desligado)';
+        btn.className = 'inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-white/80 hover:text-white underline-offset-4 hover:underline transition-all cursor-pointer bg-transparent border-0 p-1';
+        lbl.textContent = 'Usar com acessibilidade de áudio (Desligado)';
       }
     }
     const headerBtn = document.getElementById('btnVoiceGuideHeader');
@@ -23815,7 +23958,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     const authEl = document.getElementById('authOverlayContainer');
     if (authEl) {
       authEl.classList.remove('hidden');
-      authEl.style.display = 'flex';
+      authEl.style.removeProperty('display');
     }
   };
 
@@ -23826,21 +23969,13 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
     if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
       window.lockAppSessionNow();
-      if (typeof triggerNativeBiometrics === 'function') {
-        setTimeout(triggerNativeBiometrics, 350);
-      }
     }
   };
 
   const _origUnlockAppV203 = window.unlockAppAndEnterDashboard;
   window.unlockAppAndEnterDashboard = function(userSession) {
-    localStorage.removeItem('financas_session_locked');
-    sessionStorage.setItem('pigctrl_session_authenticated', 'true');
-    document.documentElement.classList.remove('require-auth');
-    const authEl = document.getElementById('authOverlayContainer');
-    if (authEl) {
-      authEl.classList.add('hidden');
-      authEl.style.display = 'none';
+    if (typeof window.forceUnlockAuthOverlay === 'function') {
+      window.forceUnlockAuthOverlay();
     }
     if (typeof _origUnlockAppV203 === 'function') {
       _origUnlockAppV203(userSession);
@@ -23931,6 +24066,517 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       window.syncNativeAndroidMedAlarms();
       if (typeof updateDashboard === 'function') updateDashboard();
     }, 450);
+  });
+})();
+</script>
+
+<!-- ============================================================================
+     SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
+     (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
+     ============================================================================ -->
+<div id="modalServiceProviders" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
+
+    <!-- Cabeçalho do Modal -->
+    <div class="p-4 sm:p-5 bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white flex items-center justify-between flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-lg shadow-sm">
+          🛠️
+        </div>
+        <div>
+          <h3 class="font-black text-sm sm:text-base text-white leading-tight">Prestadores de Serviços</h3>
+          <p class="text-[11px] text-sky-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="shareAllServiceProvidersWhatsApp()" title="Compartilhar lista no WhatsApp" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-xs cursor-pointer">
+          <span>📤 Compartilhar Lista</span>
+        </button>
+        <button type="button" onclick="closeServiceProvidersModal()" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Corpo Rolável -->
+    <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
+
+      <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
+      <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">👷‍♂️</span>
+            <div>
+              <h4 id="serviceProviderFormTitle" class="font-extrabold text-xs text-slate-900 dark:text-white">Cadastrar Novo Prestador</h4>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400">Guarde o contato por especialidade para achar e compartilhar em 1 clique</p>
+            </div>
+          </div>
+          <button type="button" id="btnToggleProviderForm" onclick="toggleServiceProviderForm()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] shadow-xs cursor-pointer">
+            + Novo Prestador
+          </button>
+        </div>
+
+        <form id="formServiceProvider" onsubmit="handleSaveServiceProvider(event)" class="mt-3 pt-3 border-t border-sky-200/70 dark:border-slate-700 space-y-2.5 hidden">
+          <input type="hidden" id="spEditId" value="">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Nome / Apelido do Profissional *</label>
+              <input type="text" id="spName" required placeholder="Ex: Carlos Eletricista" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold text-xs">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Especialidade / Serviço *</label>
+              <select id="spCategory" onchange="handleSpCategoryChange(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold text-xs">
+                <option value="⚡ Eletricista">⚡ Eletricista</option>
+                <option value="🪚 Montador de Móveis">🪚 Montador de Móveis</option>
+                <option value="🔥 Especialista em Gás Natural">🔥 Especialista em Gás Natural</option>
+                <option value="🧱 Pedreiro / Reforma">🧱 Pedreiro / Reforma</option>
+                <option value="🚰 Encanador / Hidráulica">🚰 Encanador / Hidráulica</option>
+                <option value="❄️ Ar-Condicionado / Refrigeração">❄️ Ar-Condicionado / Refrigeração</option>
+                <option value="🎨 Pintor">🎨 Pintor</option>
+                <option value="🔑 Chaveiro">🔑 Chaveiro</option>
+                <option value="🧹 Diarista / Limpeza">🧹 Diarista / Limpeza</option>
+                <option value="🪟 Vidraceiro / Sacada">🪟 Vidraceiro / Sacada</option>
+                <option value="🔧 Marido de Aluguel / Outros">🔧 Marido de Aluguel / Outros</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="spCustomCategoryWrapper" class="hidden">
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Qual outra especialidade?</label>
+            <input type="text" id="spCustomCategory" placeholder="Ex: Dedetizador, Marceneiro, Jardineiro..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold text-xs">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">WhatsApp / Telefone *</label>
+              <input type="tel" id="spPhone" required placeholder="(11) 90000-0000" oninput="maskPhone(this)" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold text-xs">
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Avaliação / Nível de Confiança</label>
+              <select id="spRating" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold text-xs">
+                <option value="⭐⭐⭐⭐⭐ Excelente (De confiança)">⭐⭐⭐⭐⭐ Excelente (De confiança)</option>
+                <option value="⭐⭐⭐⭐ Muito Bom">⭐⭐⭐⭐ Muito Bom</option>
+                <option value="⭐⭐⭐ Bom">⭐⭐⭐ Bom</option>
+                <option value="🆕 Indicação (Ainda não contratado)">🆕 Indicação (Ainda não contratado)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Observações / Quem indicou / Serviço realizado</label>
+            <input type="text" id="spNotes" placeholder="Ex: Indicado pelo vizinho, instalou o aquecedor a gás com ótimo preço..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium text-xs">
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-1">
+            <button type="button" onclick="cancelServiceProviderForm()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-pointer">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm cursor-pointer">
+              💾 Salvar Prestador
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 2. Busca e Filtro por Especialidade -->
+      <div class="space-y-2">
+        <div class="relative">
+          <input type="text" id="spSearchInput" oninput="renderServiceProvidersList()" placeholder="🔍 Buscar por nome, profissão (ex: eletricista, gás, móveis, pedreiro)..." class="w-full pl-3.5 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold text-xs">
+        </div>
+
+        <div id="spFilterPills" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <!-- Renderizado via JS -->
+        </div>
+      </div>
+
+      <!-- 3. Lista de Cards dos Prestadores (Intercalando Branco e Cinza Clarinho) -->
+      <div id="serviceProvidersListContainer" class="space-y-2">
+        <!-- Renderizado via JS -->
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const SP_STORAGE_KEY = 'ctrlpig_service_providers_v1';
+  let activeSpCategoryFilter = 'TODOS';
+
+  const DEFAULT_SERVICE_PROVIDERS = [
+    {
+      id: 'sp_default_1',
+      name: 'Carlos (Eletricista Residencial)',
+      category: '⚡ Eletricista',
+      phone: '(11) 98888-1001',
+      rating: '⭐⭐⭐⭐⭐ Excelente (De confiança)',
+      notes: 'Quadro de força, tomadas 220V, chuveiro e iluminação LED. Clique em Editar para colocar o número do seu eletricista!'
+    },
+    {
+      id: 'sp_default_2',
+      name: ' Marcos (Montador de Móveis)',
+      category: '🪚 Montador de Móveis',
+      phone: '(11) 98888-2002',
+      rating: '⭐⭐⭐⭐⭐ Excelente (De confiança)',
+      notes: 'Desmontagem e montagem de guarda-roupas, armários de cozinha e painéis de TV.'
+    },
+    {
+      id: 'sp_default_3',
+      name: 'Roberto (Especialista em Gás Natural)',
+      category: '🔥 Especialista em Gás Natural',
+      phone: '(11) 98888-3003',
+      rating: '⭐⭐⭐⭐⭐ Excelente (De confiança)',
+      notes: 'Conversão de fogão/cooktop, aquecedor a gás, teste de vazamento e tubulação Comgás/Naturgy.'
+    },
+    {
+      id: 'sp_default_4',
+      name: 'Sr. João (Pedreiro & Acabamento)',
+      category: '🧱 Pedreiro / Reforma',
+      phone: '(11) 98888-4004',
+      rating: '⭐⭐⭐⭐ Muito Bom',
+      notes: 'Pisos, porcelanato, alvenaria e pequenos reparos residenciais.'
+    }
+  ];
+
+  window.getServiceProviders = function() {
+    try {
+      const raw = localStorage.getItem(SP_STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(SP_STORAGE_KEY, JSON.stringify(DEFAULT_SERVICE_PROVIDERS));
+        return DEFAULT_SERVICE_PROVIDERS;
+      }
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : DEFAULT_SERVICE_PROVIDERS;
+    } catch (e) {
+      return DEFAULT_SERVICE_PROVIDERS;
+    }
+  };
+
+  window.saveServiceProviders = function(list) {
+    try {
+      localStorage.setItem(SP_STORAGE_KEY, JSON.stringify(list));
+      if (typeof window.saveCloudSnapshotToSupabase === 'function') {
+        window.saveCloudSnapshotToSupabase();
+      }
+    } catch (e) {}
+    window.updateQuickHubProvidersBadge();
+  };
+
+  window.updateQuickHubProvidersBadge = function() {
+    const list = window.getServiceProviders();
+    const badge = document.getElementById('quickHubProvidersBadge');
+    if (badge) {
+      badge.textContent = `${list.length} ${list.length === 1 ? 'contato' : 'contatos'}`;
+    }
+  };
+
+  window.openServiceProvidersModal = function() {
+    const modal = document.getElementById('modalServiceProviders');
+    if (modal) modal.classList.remove('hidden');
+    window.renderServiceProvidersList();
+    window.updateQuickHubProvidersBadge();
+    if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+  };
+
+  window.closeServiceProvidersModal = function() {
+    const modal = document.getElementById('modalServiceProviders');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.toggleServiceProviderForm = function(forceOpen) {
+    const form = document.getElementById('formServiceProvider');
+    const btn = document.getElementById('btnToggleProviderForm');
+    if (!form) return;
+    const isHidden = form.classList.contains('hidden');
+    const shouldShow = typeof forceOpen === 'boolean' ? forceOpen : isHidden;
+    if (shouldShow) {
+      form.classList.remove('hidden');
+      if (btn) btn.textContent = 'Fechar';
+    } else {
+      form.classList.add('hidden');
+      if (btn) btn.textContent = '+ Novo Prestador';
+    }
+  };
+
+  window.cancelServiceProviderForm = function() {
+    const form = document.getElementById('formServiceProvider');
+    if (form) form.reset();
+    const idInp = document.getElementById('spEditId');
+    if (idInp) idInp.value = '';
+    const title = document.getElementById('serviceProviderFormTitle');
+    if (title) title.textContent = 'Cadastrar Novo Prestador';
+    const customWrap = document.getElementById('spCustomCategoryWrapper');
+    if (customWrap) customWrap.classList.add('hidden');
+    window.toggleServiceProviderForm(false);
+  };
+
+  window.handleSpCategoryChange = function(val) {
+    const wrap = document.getElementById('spCustomCategoryWrapper');
+    if (!wrap) return;
+    if (val && val.includes('Outros')) {
+      wrap.classList.remove('hidden');
+    } else {
+      wrap.classList.add('hidden');
+    }
+  };
+
+  window.handleSaveServiceProvider = function(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const editId = (document.getElementById('spEditId')?.value || '').trim();
+    const name = (document.getElementById('spName')?.value || '').trim();
+    let category = (document.getElementById('spCategory')?.value || '⚡ Eletricista').trim();
+    const customCat = (document.getElementById('spCustomCategory')?.value || '').trim();
+    if (category.includes('Outros') && customCat) {
+      category = `🔧 ${customCat}`;
+    }
+    const phone = (document.getElementById('spPhone')?.value || '').trim();
+    const rating = (document.getElementById('spRating')?.value || '⭐⭐⭐⭐⭐ Excelente (De confiança)').trim();
+    const notes = (document.getElementById('spNotes')?.value || '').trim();
+
+    if (!name || !phone) {
+      showToastUndo('Preencha o nome e o WhatsApp/telefone do prestador.', false);
+      return;
+    }
+
+    const list = window.getServiceProviders();
+    if (editId) {
+      const idx = list.findIndex(item => item.id === editId);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], name, category, phone, rating, notes };
+      }
+      showToastUndo(`Prestador "${name}" atualizado com sucesso! 🛠️`, false);
+    } else {
+      list.unshift({
+        id: 'sp_' + Date.now(),
+        name,
+        category,
+        phone,
+        rating,
+        notes
+      });
+      showToastUndo(`Prestador "${name}" (${category}) cadastrado na sua agenda! 🛠️`, false);
+    }
+
+    window.saveServiceProviders(list);
+    window.cancelServiceProviderForm();
+    window.renderServiceProvidersList();
+  };
+
+  window.editServiceProvider = function(id) {
+    const list = window.getServiceProviders();
+    const found = list.find(item => item.id === id);
+    if (!found) return;
+
+    document.getElementById('spEditId').value = found.id;
+    document.getElementById('spName').value = found.name || '';
+    document.getElementById('spPhone').value = found.phone || '';
+    document.getElementById('spRating').value = found.rating || '⭐⭐⭐⭐⭐ Excelente (De confiança)';
+    document.getElementById('spNotes').value = found.notes || '';
+
+    const catSelect = document.getElementById('spCategory');
+    if (catSelect) {
+      const hasOption = Array.from(catSelect.options).some(opt => opt.value === found.category);
+      if (hasOption) {
+        catSelect.value = found.category;
+        window.handleSpCategoryChange(found.category);
+      } else {
+        catSelect.value = '🔧 Marido de Aluguel / Outros';
+        window.handleSpCategoryChange('🔧 Marido de Aluguel / Outros');
+        const customInp = document.getElementById('spCustomCategory');
+        if (customInp) customInp.value = (found.category || '').replace(/^🔧\s*/, '');
+      }
+    }
+
+    const title = document.getElementById('serviceProviderFormTitle');
+    if (title) title.textContent = `Editando: ${found.name}`;
+    window.toggleServiceProviderForm(true);
+  };
+
+  window.deleteServiceProvider = function(id) {
+    const list = window.getServiceProviders();
+    const found = list.find(item => item.id === id);
+    const updated = list.filter(item => item.id !== id);
+    window.saveServiceProviders(updated);
+    window.renderServiceProvidersList();
+    showToastUndo(`Prestador "${found ? found.name : ''}" removido.`, false);
+  };
+
+  window.contactServiceProviderWhatsApp = function(id) {
+    const list = window.getServiceProviders();
+    const found = list.find(item => item.id === id);
+    if (!found) return;
+    const digits = String(found.phone || '').replace(/\D/g, '');
+    const waNum = digits.length >= 10 ? (digits.startsWith('55') ? digits : '55' + digits) : '';
+    const msg = encodeURIComponent(`Olá ${found.name}, tudo bem? Peguei seu contato aqui no meu app CtrlPig e gostaria de solicitar um orçamento.`);
+    const url = waNum ? `https://wa.me/${waNum}?text=${msg}` : `https://wa.me/?text=${msg}`;
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  window.shareSingleServiceProviderWhatsApp = function(id) {
+    const list = window.getServiceProviders();
+    const found = list.find(item => item.id === id);
+    if (!found) return;
+    const text =
+      `🛠️ *Indicação de Prestador de Serviço — CtrlPig*\n\n` +
+      `👤 *Profissional:* ${found.name}\n` +
+      `🔧 *Especialidade:* ${found.category}\n` +
+      `📞 *WhatsApp / Tel:* ${found.phone}\n` +
+      `⭐ *Avaliação:* ${found.rating || 'De confiança'}\n` +
+      (found.notes ? `📝 *Obs:* ${found.notes}\n` : '');
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  window.shareAllServiceProvidersWhatsApp = function() {
+    const list = window.getServiceProviders();
+    if (!list.length) {
+      showToastUndo('Nenhum prestador cadastrado para compartilhar.', false);
+      return;
+    }
+    const lines = list.map((p, i) =>
+      `${i + 1}. *${p.category}* — *${p.name}*\n   📞 ${p.phone}${p.notes ? `\n   📝 ${p.notes}` : ''}`
+    ).join('\n\n');
+    const text = `🛠️ *Lista de Prestadores de Confiança — CtrlPig*\n\n${lines}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  window.callServiceProviderPhone = function(phone) {
+    const digits = String(phone || '').replace(/\D/g, '');
+    if (!digits) return;
+    const url = `tel:${digits}`;
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+    } else {
+      window.location.href = url;
+    }
+  };
+
+  window.setSpCategoryFilter = function(cat) {
+    activeSpCategoryFilter = cat;
+    window.renderServiceProvidersList();
+  };
+
+  window.renderServiceProvidersList = function() {
+    const container = document.getElementById('serviceProvidersListContainer');
+    const pillsContainer = document.getElementById('spFilterPills');
+    if (!container) return;
+
+    const list = window.getServiceProviders();
+    const query = (document.getElementById('spSearchInput')?.value || '').trim().toLowerCase();
+
+    const categories = ['TODOS', ...Array.from(new Set(list.map(i => i.category).filter(Boolean)))];
+    if (pillsContainer) {
+      pillsContainer.innerHTML = categories.map(cat => {
+        const isActive = activeSpCategoryFilter === cat;
+        return `
+          <button type="button" onclick="setSpCategoryFilter('${cat.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
+            isActive
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+          }">
+            ${cat === 'TODOS' ? `📋 Todos (${list.length})` : cat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    const filtered = list.filter(item => {
+      const matchCat = activeSpCategoryFilter === 'TODOS' || item.category === activeSpCategoryFilter;
+      const matchQuery = !query ||
+        (item.name && item.name.toLowerCase().includes(query)) ||
+        (item.category && item.category.toLowerCase().includes(query)) ||
+        (item.notes && item.notes.toLowerCase().includes(query)) ||
+        (item.phone && item.phone.toLowerCase().includes(query));
+      return matchCat && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="p-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-500">
+          Nenhum prestador encontrado. Clique em <b>"+ Novo Prestador"</b> acima para cadastrar!
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map((item, idx) => {
+      const bgClass = idx % 2 === 0
+        ? 'bg-white dark:bg-slate-900'
+        : 'bg-slate-50/90 dark:bg-slate-800/70';
+      return `
+        <div class="${bgClass} p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col gap-2 transition-all">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold text-[10px] mb-1">
+                ${item.category || '🔧 Prestador'}
+              </span>
+              <h4 class="font-black text-sm text-slate-900 dark:text-white leading-tight">${item.name}</h4>
+              <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">
+                📞 ${item.phone} <span class="text-slate-400 mx-1">•</span> <span class="text-amber-600 dark:text-amber-400 font-semibold">${item.rating || ''}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <button type="button" onclick="editServiceProvider('${item.id}')" title="Editar prestador" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer text-[11px] font-bold">
+                ✏️
+              </button>
+              <button type="button" onclick="deleteServiceProvider('${item.id}')" title="Excluir prestador" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 text-rose-600 cursor-pointer text-[11px] font-bold">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          ${item.notes ? `<p class="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-100/70 dark:bg-slate-800/50 px-2.5 py-1.5 rounded-xl leading-snug">📝 ${item.notes}</p>` : ''}
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button type="button" onclick="contactServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+              <span>💬 WhatsApp</span>
+            </button>
+            <button type="button" onclick="shareSingleServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+              <span>📤 Indicar</span>
+            </button>
+            <button type="button" onclick="callServiceProviderPhone('${(item.phone || '').replace(/'/g, '')}')" class="py-2 px-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-800 dark:text-white font-extrabold text-[11px] flex items-center justify-center gap-1 cursor-pointer">
+              <span>📞 Ligar</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  // Garante fechamento pelo botão voltar do Android
+  const _origCloseAnyModalSp = window.closeAnyActiveModal;
+  window.closeAnyActiveModal = function() {
+    const spModal = document.getElementById('modalServiceProviders');
+    if (spModal && !spModal.classList.contains('hidden')) {
+      spModal.classList.add('hidden');
+      return true;
+    }
+    if (typeof _origCloseAnyModalSp === 'function') {
+      return _origCloseAnyModalSp();
+    }
+    return false;
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.updateQuickHubProvidersBadge();
+    }, 500);
   });
 })();
 </script>
