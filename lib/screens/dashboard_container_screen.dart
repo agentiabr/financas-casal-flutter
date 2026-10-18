@@ -153,7 +153,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.2+79';
+  static const String _kCurrentAppVersion = '2.1.3+80';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -312,8 +312,22 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         }
       } else if (action == 'speak_alarm') {
         final text = data['text'] as String? ?? '';
-        if (text.isNotEmpty) {
+        bool audioEnabled = true;
+        try {
+          audioEnabled = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                  .invokeMethod<bool>('getMedAudioEnabled') ??
+              true;
+        } catch (_) {}
+        if (text.isNotEmpty && audioEnabled) {
           _speakNativeTTS(text);
+        }
+      } else if (action == 'set_med_audio_enabled') {
+        final enabled = data['enabled'] as bool? ?? true;
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('setMedAudioEnabled', {'enabled': enabled});
+        } catch (e) {
+          debugPrint('Aviso ao sincronizar audio de remedios no nativo: $e');
         }
       } else if (action == 'check_headphones') {
         bool hasHeadphones = false;

@@ -436,7 +436,11 @@ class MedAlarmReceiver : BroadcastReceiver() {
         when (action) {
             NotificationHelper.ACTION_FIRE_ALARM -> {
                 NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
-                AlarmAudioPlayer.playAlarmAndSpeak(context, speech)
+                val audioPrefs = context.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                val isAudioEnabled = audioPrefs.getBoolean("med_audio_enabled", true)
+                if (isAudioEnabled) {
+                    AlarmAudioPlayer.playAlarmAndSpeak(context, speech)
+                }
                 // Reagenda automaticamente para o dia seguinte (+24h) se for alarme diário recorrente
                 if (notifId in 8000..8099) {
                     val nextDayMillis = System.currentTimeMillis() + (24 * 60 * 60 * 1000L)
@@ -608,6 +612,17 @@ class MainActivity: FlutterFragmentActivity() {
                     } else {
                         result.success(null)
                     }
+                }
+                "setMedAudioEnabled" -> {
+                    val enabled = call.argument<Boolean>("enabled") ?: true
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    audioPrefs.edit().putBoolean("med_audio_enabled", enabled).apply()
+                    result.success(true)
+                }
+                "getMedAudioEnabled" -> {
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    val enabled = audioPrefs.getBoolean("med_audio_enabled", true)
+                    result.success(enabled)
                 }
                 else -> {
                     result.notImplemented()

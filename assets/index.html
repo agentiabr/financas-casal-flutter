@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.2";
+    window.APP_BUILD_VERSION = "2.1.3";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -16018,6 +16018,89 @@ Frase falada: "${spokenText}"`;
       if (modal) modal.classList.add('hidden');
     }
 
+    function isHealthAudioNotificationEnabled() {
+      const stored = localStorage.getItem('ctrlpig_health_audio_enabled');
+      return stored === null ? true : stored === 'true';
+    }
+
+    function setHealthAudioNotificationEnabled(enabled, showToast = true) {
+      localStorage.setItem('ctrlpig_health_audio_enabled', enabled ? 'true' : 'false');
+      // Sincroniza com o Kotlin nativo via FlutterBridge
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'set_med_audio_enabled',
+            enabled: !!enabled
+          }));
+        } catch (e) {}
+      }
+      renderHealthAudioToggleUI();
+      if (showToast) {
+        if (enabled) {
+          showToastUndo('🔊 Notificação via Áudio ATIVADA! O celular tocará alarme e falará os medicamentos.', false);
+        } else {
+          showToastUndo('🔇 Notificação via Áudio DESLIGADA! As notificações serão silenciosas (sem som e sem fala).', false);
+        }
+      }
+    }
+
+    function toggleHealthAudioNotification() {
+      const current = isHealthAudioNotificationEnabled();
+      setHealthAudioNotificationEnabled(!current, true);
+    }
+
+    function renderHealthAudioToggleUI() {
+      const isAudio = isHealthAudioNotificationEnabled();
+
+      // Botão Topo do Modal
+      const btnHeader = document.getElementById('btnToggleHealthAudioNotif');
+      const iconHeader = document.getElementById('healthAudioNotifIcon');
+      const labelHeader = document.getElementById('healthAudioNotifLabel');
+      if (btnHeader && iconHeader && labelHeader) {
+        if (isAudio) {
+          btnHeader.className = "px-2.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700/70";
+          iconHeader.setAttribute('data-lucide', 'volume-2');
+          labelHeader.textContent = 'Áudio: Ligado';
+        } else {
+          btnHeader.className = "px-2.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border bg-amber-50 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 dark:text-amber-300 border-amber-300 dark:border-amber-700/70";
+          iconHeader.setAttribute('data-lucide', 'volume-x');
+          labelHeader.textContent = 'Áudio: Desligado';
+        }
+      }
+
+      // Card Informativo com Switch
+      const badge = document.getElementById('healthAudioNotifBadge');
+      const desc = document.getElementById('healthAudioNotifDesc');
+      const iconBox = document.getElementById('healthAudioNotifCardIconBox');
+      const cardIcon = document.getElementById('healthAudioNotifCardIcon');
+      const switchBtn = document.getElementById('btnToggleHealthAudioSwitch');
+      const switchThumb = document.getElementById('healthAudioSwitchThumb');
+
+      if (badge && desc && switchBtn && switchThumb) {
+        if (isAudio) {
+          badge.textContent = "Ligado";
+          badge.className = "text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700";
+          desc.textContent = "O celular toca alarme sonoro e fala o nome dos medicamentos em voz alta.";
+          if (iconBox) iconBox.className = "w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center flex-shrink-0";
+          if (cardIcon) cardIcon.setAttribute('data-lucide', 'volume-2');
+          switchBtn.className = "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-emerald-600";
+          switchThumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-5";
+          switchBtn.setAttribute('aria-checked', 'true');
+        } else {
+          badge.textContent = "Desligado";
+          badge.className = "text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700";
+          desc.textContent = "Silencioso: As notificações continuam aparecendo na tela, sem som e sem fala.";
+          if (iconBox) iconBox.className = "w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center flex-shrink-0";
+          if (cardIcon) cardIcon.setAttribute('data-lucide', 'volume-x');
+          switchBtn.className = "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-slate-300 dark:bg-slate-700";
+          switchThumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-0";
+          switchBtn.setAttribute('aria-checked', 'false');
+        }
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
     function toggleHealthVoiceAlarm() {
       const settings = getHealthScheduleSettings();
       settings.voiceAlarmEnabled = !settings.voiceAlarmEnabled;
@@ -16028,6 +16111,7 @@ Frase falada: "${spokenText}"`;
     }
 
     function renderHealthMedsUI() {
+      renderHealthAudioToggleUI();
       const meds = getHealthMeds();
       const settings = getHealthScheduleSettings();
       const todayStr = new Date().toISOString().split('T')[0];
@@ -18879,10 +18963,10 @@ Frase falada: "${spokenText}"`;
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Toggle do Alarme de Voz (10 min antes) -->
-          <button type="button" onclick="toggleHealthVoiceAlarm()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer" title="Ativar ou desativar notificação e narração de voz antecipada">
-            <i data-lucide="bell-ring" id="healthVoiceAlarmIcon" class="w-3.5 h-3.5 text-sky-500"></i>
-            <span id="healthVoiceAlarmLabel" class="hidden sm:inline">Alarme 10 min: Ativo</span>
+          <!-- Toggle do Áudio dos Alarmes e Notificações de Remédios -->
+          <button type="button" id="btnToggleHealthAudioNotif" onclick="toggleHealthAudioNotification()" class="px-2.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-xs border bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700/70" title="Ligar ou desligar áudio e voz dos alarmes de remédios">
+            <i data-lucide="volume-2" id="healthAudioNotifIcon" class="w-4 h-4 text-emerald-500"></i>
+            <span id="healthAudioNotifLabel">Áudio: Ligado</span>
           </button>
           
           <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
@@ -18891,8 +18975,8 @@ Frase falada: "${spokenText}"`;
         </div>
       </div>
 
-            <!-- BOTÃO PROEMINENTE: ADICIONAR NOVO MEDICAMENTO -->
-      <div class="my-2.5 p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <!-- BOTÃO PROEMINENTE: ADICIONAR NOVO MEDICAMENTO -->
+      <div class="my-2 p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-700 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
@@ -18905,6 +18989,25 @@ Frase falada: "${spokenText}"`;
         <button type="button" onclick="openAddNewContinuousMedModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer flex-shrink-0">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Adicionar Remédio</span>
+        </button>
+      </div>
+
+      <!-- CARD DESTAQUE: LIGAR / DESLIGAR NOTIFICAÇÃO VIA ÁUDIO -->
+      <div class="my-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div id="healthAudioNotifCardIconBox" class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="volume-2" id="healthAudioNotifCardIcon" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Notificação via Áudio</h4>
+              <span id="healthAudioNotifBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">Ligada</span>
+            </div>
+            <p id="healthAudioNotifDesc" class="text-[11px] text-slate-500 dark:text-slate-400">O celular fala o nome dos remédios em voz alta e toca alarme sonoro.</p>
+          </div>
+        </div>
+        <button type="button" onclick="toggleHealthAudioNotification()" id="btnToggleHealthAudioSwitch" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-emerald-600" role="switch" aria-checked="true" title="Ligar ou desligar áudio das notificações de remédios">
+          <span id="healthAudioSwitchThumb" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-5"></span>
         </button>
       </div>
 
@@ -20412,6 +20515,9 @@ Frase falada: "${spokenText}"`;
 
     function speakMedicationAlarm(text) {
       if (!text) return;
+      if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
+        return; // Notificação por áudio desativada pelo usuário
+      }
       playMedAlarmBeepSequence();
 
       // 1. Dispara no alto-falante do celular via FlutterBridge (speak_alarm ignora bloqueio de fone!)
@@ -26388,6 +26494,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   };
 
   function fireSingleMedSpeechAndBeep(text, playBeep = true) {
+    if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
+      return; // Notificação via áudio silenciada
+    }
     if (playBeep && typeof playMedAlarmBeepSequence === 'function') {
       playMedAlarmBeepSequence();
     }
@@ -26415,6 +26524,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   // Alarme de medicação: SÓ repete a cada 10s durante 1 minuto se isRepeatingAlarm for true (alarme de dose de remédio)
   window.speakMedicationAlarm = function(text, isRepeatingAlarm = false) {
     if (!text) return;
+    if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
+      return; // Notificação via áudio silenciada
+    }
     if (_medAlarmRepeatInterval) {
       clearInterval(_medAlarmRepeatInterval);
       _medAlarmRepeatInterval = null;
@@ -26431,6 +26543,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     if (isRepeatingAlarm === true) {
       let elapsedSeconds = 0;
       _medAlarmRepeatInterval = setInterval(() => {
+        if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
+          clearInterval(_medAlarmRepeatInterval);
+          _medAlarmRepeatInterval = null;
+          return;
+        }
         elapsedSeconds += 10;
         if (elapsedSeconds <= 60) {
           fireSingleMedSpeechAndBeep(text, true);
@@ -26923,6 +27040,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       window.syncAdminGeminiModelSelector();
       window.onMedDuracaoTipoChange('new');
       if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+      if (typeof isHealthAudioNotificationEnabled === 'function' && typeof setHealthAudioNotificationEnabled === 'function') {
+        setHealthAudioNotificationEnabled(isHealthAudioNotificationEnabled(), false);
+      }
       setInterval(() => {
         window.checkIncomingCloudShoppingNotification();
       }, 20000);
