@@ -69,12 +69,29 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           .invokeMethod('consumePendingMedTaken');
       if (res != null && res is Map) {
         final title = res['title']?.toString() ?? '';
-        final safeTitle = jsonEncode(title);
-        _controller.runJavaScript("""
-          if (typeof window.onNativeNotificationMedTaken === 'function') {
-            window.onNativeNotificationMedTaken($safeTitle);
-          }
-        """);
+        final slot = res['slot']?.toString() ?? '';
+        final dismissedTitle = res['dismissedTitle']?.toString() ?? '';
+        final dismissedSlot = res['dismissedSlot']?.toString() ?? '';
+
+        if (dismissedTitle.isNotEmpty || dismissedSlot.isNotEmpty) {
+          final safeDismissedTitle = jsonEncode(dismissedTitle);
+          final safeDismissedSlot = jsonEncode(dismissedSlot);
+          await _controller.runJavaScript("""
+            if (typeof window.onNativeNotificationMedDismissed === 'function') {
+              window.onNativeNotificationMedDismissed($safeDismissedTitle, $safeDismissedSlot);
+            }
+          """);
+        }
+
+        if (title.isNotEmpty) {
+          final safeTitle = jsonEncode(title);
+          final safeSlot = jsonEncode(slot);
+          await _controller.runJavaScript("""
+            if (typeof window.onNativeNotificationMedTaken === 'function') {
+              window.onNativeNotificationMedTaken($safeTitle, $safeSlot);
+            }
+          """);
+        }
       }
     } catch (e) {
       debugPrint('Aviso ao checar consumePendingMedTaken: $e');
@@ -94,13 +111,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         """);
       }
     } else if (state == AppLifecycleState.resumed) {
-      // Revalida autenticação biométrica/sessão e status real de permissão ao retornar do segundo plano
-      _controller.runJavaScript("""
-        if (typeof window.onAppResumedFromBackground === 'function') {
-          window.onAppResumedFromBackground();
-        }
-      """);
-      _checkPendingNativeMedTaken();
+      // Consome primeiro qualquer ação da notificação (Desligar, Adiar ou Já Tomei) ANTES de verificar os timers de alarme
+      _checkPendingNativeMedTaken().then((_) {
+        _controller.runJavaScript("""
+          if (typeof window.onAppResumedFromBackground === 'function') {
+            window.onAppResumedFromBackground();
+          }
+        """);
+      });
       Permission.notification.status.then((status) {
         final granted = status.isGranted;
         _controller.runJavaScript("""
@@ -120,6 +138,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         NavigationDelegate(
           onPageFinished: (String url) {
             _injectNativeBridge();
+            _checkPendingNativeMedTaken();
             // Abertura imediata e suave do painel financeiro
             Future.delayed(const Duration(milliseconds: 600), () {
               if (mounted) {
@@ -277,6 +296,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'show_notification') {
         final title = data['title'] as String? ?? 'ControlPig';
         final body = data['body'] as String? ?? '';
+        final speech = data['speech'] as String? ?? '';
+        final slot = data['slot'] as String? ?? '';
         final id = data['id'] is int
             ? data['id'] as int
             : (DateTime.now().millisecondsSinceEpoch % 100000);
@@ -285,6 +306,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
               .invokeMethod('showNotification', {
             'title': title,
             'body': body,
+            'speech': speech,
+            'slot': slot,
             'id': id,
           });
         } catch (e) {
@@ -320,6 +343,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         """);
       } else if (action == 'stop_speak') {
         _flutterTts?.stop();
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('stopNativeAlarm');
+        } catch (_) {}
       } else if (action == 'update_launcher_icon') {
         final isPositive = data['isPositive'] as bool? ?? true;
         try {

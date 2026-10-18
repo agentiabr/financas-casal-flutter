@@ -18120,24 +18120,24 @@ Frase falada: "${spokenText}"`;
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Horário / Rotina Diária</label>
           <div class="grid grid-cols-3 gap-2">
             <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-sky-50 dark:hover:bg-sky-950/40 has-[:checked]:bg-sky-100 dark:has-[:checked]:bg-sky-900/60 has-[:checked]:border-sky-500 font-bold text-center">
-              <input type="checkbox" name="newMedRotina" value="morning" checked class="rounded text-sky-600">
+              <input type="checkbox" name="newMedRotina" value="morning" checked onchange="window.onNewMedRotinaCheckboxChange(this)" class="rounded text-sky-600">
               <span>☀️ Manhã</span>
             </label>
             <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/40 has-[:checked]:bg-indigo-100 dark:has-[:checked]:bg-indigo-900/60 has-[:checked]:border-indigo-500 font-bold text-center">
-              <input type="checkbox" name="newMedRotina" value="evening" class="rounded text-indigo-600">
+              <input type="checkbox" name="newMedRotina" value="evening" onchange="window.onNewMedRotinaCheckboxChange(this)" class="rounded text-indigo-600">
               <span>🌙 Noite</span>
             </label>
             <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-950/40 has-[:checked]:bg-purple-100 dark:has-[:checked]:bg-purple-900/60 has-[:checked]:border-purple-500 font-bold text-center">
-              <input type="checkbox" name="newMedRotina" value="custom" class="rounded text-purple-600">
-              <span>⏰ Individual</span>
+              <input type="checkbox" name="newMedRotina" value="custom" onchange="window.onNewMedRotinaCheckboxChange(this)" class="rounded text-purple-600">
+              <span>⏰ Novo Horário</span>
             </label>
           </div>
           <div class="mt-2 grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800">
             <div>
               <label for="newMedHorarioIndividual" class="block font-bold text-[11px] text-slate-700 dark:text-slate-200 mb-1">
-                ⏰ Horário do Remédio:
+                ⏰ Digite o Horário (Ex: 02:20):
               </label>
-              <input type="time" id="newMedHorarioIndividual" value="08:00" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-xs text-slate-900 dark:text-white">
+              <input type="text" inputmode="numeric" maxlength="5" id="newMedHorarioIndividual" value="08:00" placeholder="Ex: 02:20" onfocus="this.select()" oninput="window.maskTimeInputHHMM(this, 'new')" onblur="window.formatTimeInputOnBlur(this, 'new')" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-sky-500">
             </div>
             <div>
               <label for="newMedVezesDia" class="block font-bold text-[11px] text-slate-700 dark:text-slate-200 mb-1">
@@ -18150,6 +18150,14 @@ Frase falada: "${spokenText}"`;
                 <option value="4">4x ao dia (6/6h)</option>
               </select>
             </div>
+          </div>
+          <div class="mt-2">
+            <label for="newMedResponsavel" class="block font-bold text-[11px] text-slate-700 dark:text-slate-300 mb-1">👤 Quem toma este remédio? (Falará o nome no alarme)</label>
+            <select id="newMedResponsavel" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white">
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+              <option value="Ambos">👥 Rodrigo e Márcia</option>
+            </select>
           </div>
         </div>
 
@@ -21410,8 +21418,8 @@ Retorne estritamente em JSON puro sem markdown no formato:
         <div id="divEditMedCustomHorario" class="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 space-y-2">
           <div class="grid grid-cols-2 gap-2.5">
             <div>
-              <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">⏰ Horário Individual (HH:MM)</label>
-              <input type="time" id="editMedCustomHorario" value="08:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white">
+              <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">⏰ Digite o Horário (Ex: 02:20)</label>
+              <input type="text" inputmode="numeric" maxlength="5" id="editMedCustomHorario" value="08:00" placeholder="Ex: 02:20" onfocus="this.select()" oninput="window.maskTimeInputHHMM(this, 'edit')" onblur="window.formatTimeInputOnBlur(this, 'edit')" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
               <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">🔁 Quantas vezes por dia?</label>
@@ -24577,6 +24585,853 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     setTimeout(() => {
       window.updateQuickHubProvidersBadge();
     }, 500);
+  });
+})();
+</script>
+
+<!-- ============================================================================
+     SPRINT V2.0.5:
+     1. DIGITAÇÃO LIVRE DE HORÁRIO NAS CAIXAS (Ex: 2h20, 0220, 02:20)
+     2. CRIAÇÃO AUTOMÁTICA DE NOVO BLOCO DE HORÁRIO (Ex: "⏰ Dose das 02:20")
+     3. FALA PERSONALIZADA COM O NOME DA PESSOA E REMÉDIOS ("Rodrigo, tomar seu remédio Aradois, Glifage e Besilato de Anlodipino")
+     4. SINCRONIA TOTAL ENTRE NOTIFICAÇÃO E APP (NÃO REPETE O ALARME AO ABRIR O APP SE JÁ DESLIGOU NA NOTIFICAÇÃO)
+     ============================================================================ -->
+<script>
+(function() {
+  // --------------------------------------------------------------------------
+  // 1. DIGITAÇÃO LIVRE DE HORÁRIO (Aceita "2h20", "2:20", "0220", "02:20")
+  // --------------------------------------------------------------------------
+  window.normalizeTimeHHMM = function(rawVal, fallback) {
+    const fb = fallback || '08:00';
+    if (!rawVal) return fb;
+    let s = String(rawVal).trim().toLowerCase();
+    if (!s) return fb;
+
+    // Substitui 'h' ou '.' ou '-' por ':'
+    s = s.replace(/[h.-]/g, ':').replace(/[^0-9:]/g, '');
+
+    let h = 8;
+    let m = 0;
+
+    if (s.includes(':')) {
+      const parts = s.split(':');
+      h = parseInt(parts[0] || '0', 10);
+      m = parseInt(parts[1] || '0', 10);
+    } else if (s.length === 4) {
+      h = parseInt(s.slice(0, 2), 10);
+      m = parseInt(s.slice(2, 4), 10);
+    } else if (s.length === 3) {
+      h = parseInt(s.slice(0, 1), 10);
+      m = parseInt(s.slice(1, 3), 10);
+    } else if (s.length <= 2) {
+      h = parseInt(s, 10);
+      m = 0;
+    }
+
+    if (isNaN(h) || h < 0 || h > 23) h = 8;
+    if (isNaN(m) || m < 0 || m > 59) m = 0;
+
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  };
+
+  window.maskTimeInputHHMM = function(inputEl, mode) {
+    if (!inputEl) return;
+    let val = String(inputEl.value || '');
+    // Permite digitar números, ':' ou 'h'
+    val = val.replace(/[hH]/g, ':').replace(/[^0-9:]/g, '');
+    // Se digitou 3 ou 4 números seguidos sem ':', insere ':' automaticamente após os 2 primeiros dígitos (ou se começar com >2)
+    const digitsOnly = val.replace(/:/g, '');
+    if (!val.includes(':') && digitsOnly.length >= 3) {
+      if (digitsOnly.length === 3 && parseInt(digitsOnly[0], 10) > 2) {
+        val = '0' + digitsOnly[0] + ':' + digitsOnly.slice(1, 3);
+      } else if (digitsOnly.length >= 4) {
+        val = digitsOnly.slice(0, 2) + ':' + digitsOnly.slice(2, 4);
+      }
+    }
+    inputEl.value = val.slice(0, 5);
+
+    // Se estiver no modal de Novo Medicamento ou Edição e digitou um horário diferente de 08:00 / 20:00,
+    // muda automaticamente a rotina para "custom" (Novo Bloco de Horário) para nunca cair no bloco das 08:00!
+    if (inputEl.value.length >= 4) {
+      const norm = window.normalizeTimeHHMM(inputEl.value, '08:00');
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+      const mTime = settings.morningTime || '08:00';
+      const eTime = settings.eveningTime || '20:00';
+
+      if (mode === 'new') {
+        const cbs = document.querySelectorAll('input[name="newMedRotina"]');
+        cbs.forEach(cb => {
+          if (norm === mTime) {
+            cb.checked = (cb.value === 'morning');
+          } else if (norm === eTime) {
+            cb.checked = (cb.value === 'evening');
+          } else {
+            cb.checked = (cb.value === 'custom');
+          }
+        });
+      } else if (mode === 'edit') {
+        const sel = document.getElementById('editMedRotina');
+        if (sel && sel.value !== 'both') {
+          if (norm === mTime) sel.value = 'morning';
+          else if (norm === eTime) sel.value = 'evening';
+          else sel.value = 'custom';
+        }
+      }
+    }
+  };
+
+  window.formatTimeInputOnBlur = function(inputEl, mode) {
+    if (!inputEl) return;
+    const norm = window.normalizeTimeHHMM(inputEl.value, '08:00');
+    inputEl.value = norm;
+    window.maskTimeInputHHMM(inputEl, mode);
+  };
+
+  window.onNewMedRotinaCheckboxChange = function(changedCb) {
+    if (!changedCb || !changedCb.checked) return;
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const timeInp = document.getElementById('newMedHorarioIndividual');
+    const allCbs = document.querySelectorAll('input[name="newMedRotina"]');
+
+    if (changedCb.value === 'custom') {
+      allCbs.forEach(cb => {
+        if (cb.value !== 'custom') cb.checked = false;
+      });
+      if (timeInp && (timeInp.value === '08:00' || timeInp.value === '20:00')) {
+        timeInp.focus();
+        timeInp.select();
+      }
+    } else {
+      allCbs.forEach(cb => {
+        if (cb.value === 'custom') cb.checked = false;
+      });
+      if (changedCb.value === 'morning' && timeInp) {
+        timeInp.value = settings.morningTime || '08:00';
+      } else if (changedCb.value === 'evening' && timeInp) {
+        timeInp.value = settings.eveningTime || '20:00';
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // 2. VOZ PERSONALIZADA: "<Nome da Pessoa>, tomar seu remédio Aradois, Glifage e Besilato de Anlodipino."
+  // --------------------------------------------------------------------------
+  window.cleanMedicationSpokenName = function(rawName) {
+    if (!rawName) return '';
+    let s = String(rawName).trim();
+    // Remove parênteses longos para a fala ficar natural (ex: "Aradois (Losartana Potássica)" -> "Aradois", "Glifage XR (...)" -> "Glifage")
+    s = s.replace(/\s*\([^)]*\)/g, '').replace(/\bXR\b/gi, '').replace(/\s+/g, ' ').trim();
+    return s || String(rawName).trim();
+  };
+
+  window.joinMedNamesNaturally = function(namesArray) {
+    const clean = (namesArray || []).map(n => window.cleanMedicationSpokenName(n)).filter(Boolean);
+    const unique = Array.from(new Set(clean));
+    if (unique.length === 0) return 'seus medicamentos do horário';
+    if (unique.length === 1) return unique[0];
+    if (unique.length === 2) return `${unique[0]} e ${unique[1]}`;
+    return unique.slice(0, -1).join(', ') + ' e ' + unique[unique.length - 1];
+  };
+
+  window.getMedResponsiblePersonName = function(medsList) {
+    const list = Array.isArray(medsList) ? medsList : (medsList ? [medsList] : []);
+    const owners = Array.from(new Set(list.map(m => m && m.responsavel ? String(m.responsavel).trim() : '').filter(Boolean)));
+    if (owners.includes('Ambos') || (owners.includes('Rodrigo') && owners.includes('Márcia'))) {
+      return 'Rodrigo e Márcia';
+    }
+    if (owners.length === 1) {
+      return owners[0];
+    }
+    if (window.currentUserSession && window.currentUserSession.nome) {
+      return window.currentUserSession.nome;
+    }
+    return 'Rodrigo';
+  };
+
+  window.buildPersonalizedMedSpeech = function(medsList) {
+    const list = Array.isArray(medsList) ? medsList : (medsList ? [medsList] : []);
+    const person = window.getMedResponsiblePersonName(list);
+    const medsText = window.joinMedNamesNaturally(list.map(m => m.nome));
+    return `${person}, tomar seu remédio ${medsText}.`;
+  };
+
+  // --------------------------------------------------------------------------
+  // 3. MIGRAÇÃO AUTOMÁTICA E NOVOS BLOCOS DE HORÁRIO (Ex: Bloco 02:20 separado do Bloco 08:00)
+  // --------------------------------------------------------------------------
+  window.migrateCustomHorarioMedsToOwnBlocks = function() {
+    try {
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+      const mTime = settings.morningTime || '08:00';
+      const eTime = settings.eveningTime || '20:00';
+      let changed = false;
+
+      meds.forEach(m => {
+        if (!m.responsavel) {
+          m.responsavel = 'Rodrigo';
+          changed = true;
+        }
+        if (m.horario) {
+          const norm = window.normalizeTimeHHMM(m.horario, mTime);
+          if (norm !== m.horario) {
+            m.horario = norm;
+            changed = true;
+          }
+          const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+          const isBothDefault = (r.includes('morning') && r.includes('evening') && (norm === mTime || norm === eTime));
+          if (!isBothDefault && norm !== mTime && norm !== eTime) {
+            // Se o horário é diferente de 08:00 e 20:00 (ex: 02:20), garante que fique no seu próprio bloco custom!
+            if (r.includes('morning') || r.includes('evening') || !r.includes('custom')) {
+              m.rotinas = ['custom'];
+              changed = true;
+            }
+          }
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem('ctrlpig_health_meds', JSON.stringify(meds));
+      }
+    } catch (e) {}
+  };
+
+  // Marcar / Desmarcar todos os remédios de um Bloco de Horário Específico (ex: Dose das 02:20)
+  window.takeCustomTimeSlotRoutine = function(slotTime) {
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const mTime = settings.morningTime || '08:00';
+    const eTime = settings.eveningTime || '20:00';
+
+    const slotMeds = meds.filter(m => {
+      const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+      const mHor = window.normalizeTimeHHMM(m.horario || '12:00', '12:00');
+      const isCustom = (!r.includes('morning') && !r.includes('evening')) || r.includes('custom') || (mHor !== mTime && mHor !== eTime);
+      return isCustom && mHor === slotTime;
+    });
+
+    if (slotMeds.length === 0) return;
+
+    const allTaken = slotMeds.every(m => m.lastTakenCustomDate === todayStr || m.ultimaDoseData === todayStr);
+    slotMeds.forEach(m => {
+      if (allTaken) {
+        m.lastTakenCustomDate = '';
+        m.lastTakenCustomTime = '';
+        m.ultimaDoseData = '';
+        m.estoqueAtual = (m.estoqueAtual || 0) + (m.dosePorVez || 1);
+      } else if (m.lastTakenCustomDate !== todayStr && m.ultimaDoseData !== todayStr) {
+        m.lastTakenCustomDate = todayStr;
+        m.lastTakenCustomTime = nowTime;
+        m.ultimaDoseData = todayStr;
+        m.estoqueAtual = Math.max(0, (m.estoqueAtual || 0) - (m.dosePorVez || 1));
+      }
+    });
+
+    localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slotTime}`, 'true');
+    saveHealthMeds(meds);
+    renderHealthMedsUI();
+    if (allTaken) {
+      showToastUndo(`↩️ Dose das ${slotTime} desmarcada.`, false);
+    } else {
+      showToastUndo(`✅ Dose das ${slotTime} registrada com sucesso às ${nowTime}!`, false);
+    }
+  };
+
+  window.toggleCustomMedTakenToday = function(medId) {
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const med = meds.find(m => m.id === medId);
+    if (!med) return;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const isTaken = med.lastTakenCustomDate === todayStr || med.ultimaDoseData === todayStr;
+
+    if (isTaken) {
+      med.lastTakenCustomDate = '';
+      med.lastTakenCustomTime = '';
+      med.ultimaDoseData = '';
+      med.estoqueAtual = (med.estoqueAtual || 0) + (med.dosePorVez || 1);
+      showToastUndo(`↩️ Remédio "${med.nome}" desmarcado.`, false);
+    } else {
+      med.lastTakenCustomDate = todayStr;
+      med.lastTakenCustomTime = nowTime;
+      med.ultimaDoseData = todayStr;
+      med.estoqueAtual = Math.max(0, (med.estoqueAtual || 0) - (med.dosePorVez || 1));
+      if (med.horario) {
+        localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${window.normalizeTimeHHMM(med.horario)}`, 'true');
+      }
+      showToastUndo(`✅ "${med.nome}" marcado como tomado às ${nowTime}!`, false);
+    }
+    saveHealthMeds(meds);
+    renderHealthMedsUI();
+  };
+
+  // Sobrescreve handleSaveNewContinuousMed para criar novo bloco quando horário != 08:00 e != 20:00
+  window.handleSaveNewContinuousMed = function(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    const nome = (document.getElementById('newMedNome')?.value || '').trim();
+    const concentracao = (document.getElementById('newMedConcentracao')?.value || '').trim();
+    const tipo = (document.getElementById('newMedTipo')?.value || '').trim();
+    const checkedRotinas = Array.from(document.querySelectorAll('input[name="newMedRotina"]:checked')).map(cb => cb.value);
+    const rawHorario = (document.getElementById('newMedHorarioIndividual')?.value || '08:00').trim();
+    const horarioIndiv = window.normalizeTimeHHMM(rawHorario, '08:00');
+    const vezesDia = parseInt(document.getElementById('newMedVezesDia')?.value || '1', 10) || 1;
+    const responsavel = (document.getElementById('newMedResponsavel')?.value || 'Rodrigo').trim();
+
+    const cartelaAberta = parseInt(document.getElementById('newMedCartelaAberta')?.value, 10) || 0;
+    const compPorCartela = parseInt(document.getElementById('newMedCompPorCartela')?.value, 10) || 10;
+    const cartelasFechadas = parseInt(document.getElementById('newMedCartelasFechadas')?.value, 10) || 0;
+    const estoque = parseInt(document.getElementById('newMedEstoque')?.value, 10) || (cartelaAberta + (cartelasFechadas * compPorCartela));
+    const preco = parseFloat((document.getElementById('newMedPreco')?.value || '25').replace(',', '.')) || 25.00;
+
+    if (!nome) return;
+
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const mTime = settings.morningTime || '08:00';
+    const eTime = settings.eveningTime || '20:00';
+
+    let finalRotinas = [];
+    if (horarioIndiv !== mTime && horarioIndiv !== eTime) {
+      // Horário diferente (ex: 02:20): cria obrigatoriamente um novo bloco próprio!
+      finalRotinas = ['custom'];
+    } else if (checkedRotinas.includes('morning') && checkedRotinas.includes('evening')) {
+      finalRotinas = ['morning', 'evening'];
+    } else if (horarioIndiv === eTime || checkedRotinas.includes('evening')) {
+      finalRotinas = ['evening'];
+    } else {
+      finalRotinas = ['morning'];
+    }
+
+    const meds = getHealthMeds();
+    meds.push({
+      id: 'med_' + Date.now(),
+      nome: nome,
+      concentracao: concentracao,
+      tipo: tipo,
+      indicacao: tipo,
+      responsavel: responsavel,
+      vezesAoDia: vezesDia,
+      frequencia: `${vezesDia}x ao dia (${horarioIndiv})`,
+      horariosPadrao: [horarioIndiv],
+      horario: horarioIndiv,
+      dosePorVez: 1,
+      unidadeDose: 'comprimido',
+      cartelaAberta: cartelaAberta,
+      compPorCartela: compPorCartela,
+      cartelasFechadas: cartelasFechadas,
+      estoqueAtual: estoque,
+      estoqueAlerta: 5,
+      precoMedio: preco,
+      rotinas: finalRotinas
+    });
+
+    saveHealthMeds(meds);
+    renderHealthMedsUI();
+    window.syncNativeAndroidMedAlarms();
+    closeAddNewContinuousMedModal();
+    showToastUndo(`✓ "${nome}" cadastrado no bloco das ${horarioIndiv} (${responsavel})! 💊`, false);
+  };
+
+  // Sobrescreve saveEditedMedication para respeitar digitação livre (ex: 2h20 -> 02:20) e criar novo bloco
+  window.saveEditedMedication = function() {
+    const id = document.getElementById('editMedId').value;
+    const nome = (document.getElementById('editMedNome')?.value || '').trim();
+    const tipo = (document.getElementById('editMedTipo')?.value || '').trim();
+    const rotinaVal = document.getElementById('editMedRotina')?.value || 'custom';
+    const rawCustomTime = (document.getElementById('editMedCustomHorario')?.value || '08:00').trim();
+    const customTime = window.normalizeTimeHHMM(rawCustomTime, '08:00');
+    const vezesDia = parseInt(document.getElementById('editMedVezesDia')?.value || '1', 10) || 1;
+    const estoque = parseInt(document.getElementById('editMedEstoque')?.value, 10) || 0;
+    const preco = parseFloat(document.getElementById('editMedPreco')?.value) || 0;
+
+    if (!nome) {
+      showToastUndo('Por favor, informe o nome do medicamento.', false);
+      return;
+    }
+
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const mTime = settings.morningTime || '08:00';
+    const eTime = settings.eveningTime || '20:00';
+
+    let rotinas = [];
+    let horario = customTime;
+
+    if (customTime !== mTime && customTime !== eTime) {
+      rotinas = ['custom'];
+    } else if (rotinaVal === 'both') {
+      rotinas = ['morning', 'evening'];
+    } else if (customTime === mTime && rotinaVal !== 'custom') {
+      rotinas = ['morning'];
+    } else if (customTime === eTime && rotinaVal !== 'custom') {
+      rotinas = ['evening'];
+    } else {
+      rotinas = ['custom'];
+    }
+
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const idx = meds.findIndex(m => m.id === id);
+    if (idx !== -1) {
+      meds[idx].nome = nome;
+      meds[idx].tipo = tipo;
+      meds[idx].rotinas = rotinas;
+      meds[idx].horario = horario;
+      meds[idx].vezesAoDia = vezesDia;
+      meds[idx].horariosPadrao = [horario];
+      meds[idx].frequencia = `${vezesDia}x ao dia (${horario})`;
+      meds[idx].estoqueAtual = estoque;
+      meds[idx].precoMedio = preco;
+      if (typeof _activeEditMedOwner !== 'undefined' && _activeEditMedOwner) {
+        meds[idx].responsavel = _activeEditMedOwner;
+      }
+      saveHealthMeds(meds);
+      renderHealthMedsUI();
+      window.syncNativeAndroidMedAlarms();
+      closeEditMedicationModal();
+      if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+      showToastUndo(`💊 "${nome}" atualizado no bloco das ${horario}!`, false);
+    }
+  };
+
+  // Renderiza cada horário diferente (ex: 02:20, 12:00, 15:30) como um BLOCO DE DOSE INDEPENDENTE
+  const _origRenderHealthMedsV203 = window.renderHealthMedsUI;
+  window.renderHealthMedsUI = function() {
+    window.migrateCustomHorarioMedsToOwnBlocks();
+    if (typeof _origRenderHealthMedsV203 === 'function') {
+      _origRenderHealthMedsV203();
+    }
+
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const todayStr = new Date().toISOString().split('T')[0];
+    const mTime = settings.morningTime || '08:00';
+    const eTime = settings.eveningTime || '20:00';
+
+    // Filtra remédios que têm horário diferente de 08:00 e 20:00 (ex: 02:20)
+    const customMeds = meds.filter(m => {
+      const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+      const mHor = window.normalizeTimeHHMM(m.horario || mTime, mTime);
+      return (!r.includes('morning') && !r.includes('evening')) || r.includes('custom') || (mHor !== mTime && mHor !== eTime);
+    });
+
+    const customContainer = document.getElementById('routineCustomMedsContainer');
+    if (customContainer) {
+      if (customMeds.length > 0) {
+        customContainer.classList.remove('hidden');
+        // Agrupa por horário exato (ex: '02:20', '14:00') e ordena cronologicamente
+        const groupsMap = {};
+        customMeds.forEach(m => {
+          const slot = window.normalizeTimeHHMM(m.horario || '12:00', '12:00');
+          if (!groupsMap[slot]) groupsMap[slot] = [];
+          groupsMap[slot].push(m);
+        });
+
+        const sortedSlots = Object.keys(groupsMap).sort();
+
+        customContainer.className = 'space-y-3.5';
+        customContainer.innerHTML = sortedSlots.map(slotTime => {
+          const slotMeds = groupsMap[slotTime];
+          const allSlotTaken = slotMeds.every(m => m.lastTakenCustomDate === todayStr || m.ultimaDoseData === todayStr);
+          const takenTimeLabel = slotMeds[0]?.lastTakenCustomTime || slotTime;
+          const personName = window.getMedResponsiblePersonName(slotMeds);
+          const totalComps = slotMeds.reduce((acc, item) => acc + (parseInt(item.dosePorVez, 10) || 1), 0);
+
+          const medsRowsHtml = slotMeds.map(m => {
+            const isTaken = m.lastTakenCustomDate === todayStr || m.ultimaDoseData === todayStr;
+            const ownerLabel = m.responsavel || 'Rodrigo';
+            const timesPerDay = window.getMedTimesPerDay ? window.getMedTimesPerDay(m) : 1;
+            return `
+              <div class="flex items-center justify-between p-2.5 rounded-xl ${isTaken ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800'}">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <button type="button" onclick="toggleCustomMedTakenToday('${m.id}')" class="w-6 h-6 rounded-lg ${isTaken ? 'bg-emerald-600 text-white' : 'border-2 border-purple-300 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs cursor-pointer flex-shrink-0" title="Marcar ou desmarcar este remédio">✓</button>
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTaken ? 'line-through text-slate-500' : ''}">
+                      ${escapeHtml(m.nome)}
+                      <span class="ml-1 text-[10px] font-bold px-1.5 py-0.2 rounded bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300">👤 ${escapeHtml(ownerLabel)}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400">${escapeHtml(m.concentracao || '')} • ${m.dosePorVez || 1} cp (${timesPerDay}x/dia) • <span class="text-purple-700 dark:text-purple-300 font-bold">${escapeHtml(m.tipo || 'Uso Contínuo')}</span></div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                  <span class="text-[10px] font-mono text-slate-500">Est: <strong>${m.estoqueAtual}</strong></span>
+                  <button type="button" onclick="openEditMedicationModal('${m.id}')" class="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer" title="Editar remédio e horário"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                  <button type="button" onclick="toggleCustomMedTakenToday('${m.id}')" class="px-2.5 py-1 rounded-lg ${isTaken ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-purple-600 hover:bg-purple-500 text-white font-bold'} text-[10px] cursor-pointer">
+                    ${isTaken ? `✓ Tomado (${m.lastTakenCustomTime || slotTime})` : 'Tomar'}
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="p-3.5 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/80">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">⏰</span>
+                  <div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Dose das ${escapeHtml(slotTime)}</h4>
+                      <span class="font-mono font-black text-purple-700 dark:text-purple-300 text-xs">(${escapeHtml(slotTime)})</span>
+                      <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full ${allSlotTaken ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-300'}">
+                        ${allSlotTaken ? `🟢 Tomado hoje às ${escapeHtml(takenTimeLabel)}` : `⚪ Pendente para às ${escapeHtml(slotTime)}`}
+                      </span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Total: ${totalComps} comprimido(s) • Responsável: <strong>${escapeHtml(personName)}</strong></p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="window.takeCustomTimeSlotRoutine('${slotTime}')" class="px-3 py-1.5 rounded-xl ${allSlotTaken ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold' : 'bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-md'} text-xs transition-all active:scale-95 cursor-pointer">
+                    ${allSlotTaken ? `✓ Já Tomei às ${escapeHtml(takenTimeLabel)}` : `✅ Marcar: Já Tomei a Dose`}
+                  </button>
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                ${medsRowsHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        customContainer.classList.add('hidden');
+      }
+    }
+
+    if (window.lucide) lucide.createIcons();
+  };
+
+  // --------------------------------------------------------------------------
+  // 4. SINCRONIZAÇÃO DE ALARMES NATIVOS POR BLOCO DE HORÁRIO COM FALA DO NOME
+  //    E BLOQUEIO DE REPETIÇÃO APÓS DESLIGAR NA NOTIFICAÇÃO
+  // --------------------------------------------------------------------------
+  window.triggerNativeSystemNotification = function(title, body, speechText, slotTime) {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'show_notification',
+          title: title || '⏰ Hora do Remédio • ControlPig',
+          body: body || '',
+          speech: speechText || body || '',
+          slot: slotTime || ''
+        }));
+      } catch (e) {}
+    }
+  };
+
+  window.syncNativeAndroidMedAlarms = function() {
+    if (!window.FlutterBridge || typeof window.FlutterBridge.postMessage !== 'function') return;
+    try {
+      window.migrateCustomHorarioMedsToOwnBlocks();
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+      const mTime = window.normalizeTimeHHMM(settings.morningTime || '08:00', '08:00');
+      const eTime = window.normalizeTimeHHMM(settings.eveningTime || '20:00', '20:00');
+
+      // Agrupa medicamentos por bloco de horário (Ex: '08:00', '20:00', '02:20')
+      const blocksMap = {};
+      const addMedToSlot = (slot, med) => {
+        if (!blocksMap[slot]) blocksMap[slot] = [];
+        if (!blocksMap[slot].some(x => x.id === med.id)) {
+          blocksMap[slot].push(med);
+        }
+      };
+
+      meds.forEach(m => {
+        const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+        const indiv = window.normalizeTimeHHMM(m.horario || mTime, mTime);
+        if (r.includes('morning')) addMedToSlot(mTime, m);
+        if (r.includes('evening')) addMedToSlot(eTime, m);
+        if (r.includes('custom') || (!r.includes('morning') && !r.includes('evening')) || (indiv !== mTime && indiv !== eTime)) {
+          addMedToSlot(indiv, m);
+        }
+      });
+
+      const alarms = [];
+      Object.keys(blocksMap).sort().forEach((slotTime, index) => {
+        const slotMeds = blocksMap[slotTime];
+        const parts = slotTime.split(':');
+        if (parts.length === 2) {
+          const h = parseInt(parts[0], 10);
+          const min = parseInt(parts[1], 10);
+          if (!isNaN(h) && !isNaN(min)) {
+            const personName = window.getMedResponsiblePersonName(slotMeds);
+            const medNamesJoined = window.joinMedNamesNaturally(slotMeds.map(m => m.nome));
+            const speechMsg = `${personName}, tomar seu remédio ${medNamesJoined}.`;
+            alarms.push({
+              id: 8000 + index,
+              hour: h,
+              minute: min,
+              slot: slotTime,
+              title: `⏰ Dose das ${slotTime} • ${personName}`,
+              body: `${personName}, tomar seu remédio ${medNamesJoined}.`,
+              speech: speechMsg
+            });
+          }
+        }
+      });
+
+      window.FlutterBridge.postMessage(JSON.stringify({
+        action: 'schedule_med_alarms',
+        alarms: alarms
+      }));
+    } catch (e) {
+      console.warn('Aviso ao sincronizar alarmes nativos Android:', e);
+    }
+  };
+
+  // Quando o usuário clica em "🔕 Desligar" ou "💤 Adiar 5m" na notificação do celular:
+  // Marca o horário de hoje como já avisado/desligado para NÃO tocar de novo quando abrir o app!
+  window.onNativeNotificationMedDismissed = function(notifTitle, notifSlot) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const mTime = window.normalizeTimeHHMM(settings.morningTime || '08:00', '08:00');
+    const eTime = window.normalizeTimeHHMM(settings.eveningTime || '20:00', '20:00');
+
+    if (notifSlot) {
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${notifSlot}`, 'true');
+      if (notifSlot === mTime) {
+        settings.lastAlarmNotification = `morning_due_${todayStr}`;
+      } else if (notifSlot === eTime) {
+        settings.lastAlarmNotification = `evening_due_${todayStr}`;
+      }
+    }
+
+    // Marca também qualquer bloco cujo horário já passou nos últimos 60 minutos para garantir silêncio total ao entrar no app
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+
+    [mTime, eTime, ...meds.map(m => window.normalizeTimeHHMM(m.horario || mTime, mTime))].forEach(slot => {
+      const [sh, sm] = String(slot).split(':').map(Number);
+      if (!isNaN(sh) && !isNaN(sm)) {
+        const diff = (sh * 60 + sm) - currentMinutes;
+        if (diff <= 10 && diff >= -60) {
+          localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slot}`, 'true');
+          if (slot === mTime) settings.lastAlarmNotification = `morning_due_${todayStr}`;
+          if (slot === eTime) settings.lastAlarmNotification = `evening_due_${todayStr}`;
+        }
+      }
+    });
+
+    meds.forEach(m => {
+      if (notifTitle && notifTitle.toLowerCase().includes(window.cleanMedicationSpokenName(m.nome).toLowerCase())) {
+        localStorage.setItem(`custom_med_${m.id}_${todayStr}`, 'true');
+        if (m.horario) {
+          localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${window.normalizeTimeHHMM(m.horario)}`, 'true');
+        }
+      }
+    });
+
+    saveHealthScheduleSettings(settings);
+    const banner = document.getElementById('floatingHealthAlarmBanner');
+    if (banner) banner.remove();
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+  };
+
+  // Quando o usuário clica em "✓ Já Tomei" direto na notificação branca do Android
+  window.onNativeNotificationMedTaken = function(notifTitle, notifSlot) {
+    window.onNativeNotificationMedDismissed(notifTitle, notifSlot);
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    const mTime = window.normalizeTimeHHMM(settings.morningTime || '08:00', '08:00');
+    const eTime = window.normalizeTimeHHMM(settings.eveningTime || '20:00', '20:00');
+    const todayStr = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    let matched = false;
+
+    if (notifSlot === mTime) {
+      settings.lastMorningTakenDate = todayStr;
+      settings.lastMorningTakenTime = nowTime;
+      saveHealthScheduleSettings(settings);
+    } else if (notifSlot === eTime) {
+      settings.lastEveningTakenDate = todayStr;
+      settings.lastEveningTakenTime = nowTime;
+      saveHealthScheduleSettings(settings);
+    }
+
+    meds.forEach(m => {
+      const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+      const mHor = window.normalizeTimeHHMM(m.horario || mTime, mTime);
+      const shortName = window.cleanMedicationSpokenName(m.nome).toLowerCase();
+      const matchBySlot = notifSlot && (
+        (notifSlot === mTime && r.includes('morning')) ||
+        (notifSlot === eTime && r.includes('evening')) ||
+        (mHor === notifSlot)
+      );
+      const matchByTitle = notifTitle && (notifTitle.toLowerCase().includes(m.nome.toLowerCase()) || notifTitle.toLowerCase().includes(shortName));
+
+      if (matchBySlot || matchByTitle) {
+        if (notifSlot === mTime && r.includes('morning')) {
+          m.lastTakenMorningDate = todayStr;
+          m.lastTakenMorningTime = nowTime;
+        } else if (notifSlot === eTime && r.includes('evening')) {
+          m.lastTakenEveningDate = todayStr;
+          m.lastTakenEveningTime = nowTime;
+        } else {
+          m.lastTakenCustomDate = todayStr;
+          m.lastTakenCustomTime = nowTime;
+        }
+        m.ultimaDoseData = todayStr;
+        m.estoqueAtual = Math.max(0, (m.estoqueAtual || 0) - (m.dosePorVez || 1));
+        matched = true;
+      }
+    });
+
+    if (matched) {
+      saveHealthMeds(meds);
+      if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+      showToastUndo('✅ Dose confirmada pela notificação do celular e descontada do estoque!', false);
+    }
+  };
+
+  // Ao clicar em "🔕 Desligar" dentro do próprio aplicativo, também grava o acknowledge do horário atual
+  const _origStopMedicationAlarmAudio = window.stopMedicationAlarmAudio;
+  window.stopMedicationAlarmAudio = function() {
+    window.onNativeNotificationMedDismissed('', '');
+    if (typeof _origStopMedicationAlarmAudio === 'function') {
+      _origStopMedicationAlarmAudio();
+    }
+  };
+
+  // Sobrescreve checkHealthScheduleTimers para usar a frase personalizada ("Rodrigo, tomar seu remédio...")
+  // e respeitar o bloqueio de alarmes já desligados na notificação
+  window.checkHealthScheduleTimers = function() {
+    if (typeof window.checkSnoozedMedicationAlarm === 'function') window.checkSnoozedMedicationAlarm();
+    if (typeof window.checkFiveDaysMedStockWarning === 'function') window.checkFiveDaysMedStockWarning();
+
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00', voiceAlarmEnabled: true };
+    if (settings.voiceAlarmEnabled === false) return;
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const mTime = window.normalizeTimeHHMM(settings.morningTime || '08:00', '08:00');
+    const eTime = window.normalizeTimeHHMM(settings.eveningTime || '20:00', '20:00');
+
+    // Agrupa todos os blocos de horário ativos (Manhã, Noite e Horários Específicos como 02:20)
+    const blocksMap = {};
+    const addMed = (slot, med, routineType) => {
+      if (!blocksMap[slot]) blocksMap[slot] = { routine: routineType, meds: [] };
+      if (!blocksMap[slot].meds.some(x => x.id === med.id)) {
+        blocksMap[slot].meds.push(med);
+      }
+    };
+
+    meds.forEach(m => {
+      const r = Array.isArray(m.rotinas) ? m.rotinas : [];
+      const indiv = window.normalizeTimeHHMM(m.horario || mTime, mTime);
+      if (r.includes('morning') && m.lastTakenMorningDate !== todayStr && settings.lastMorningTakenDate !== todayStr) {
+        addMed(mTime, m, 'morning');
+      }
+      if (r.includes('evening') && m.lastTakenEveningDate !== todayStr && settings.lastEveningTakenDate !== todayStr) {
+        addMed(eTime, m, 'evening');
+      }
+      if ((r.includes('custom') || (!r.includes('morning') && !r.includes('evening')) || (indiv !== mTime && indiv !== eTime)) && m.lastTakenCustomDate !== todayStr && m.ultimaDoseData !== todayStr) {
+        addMed(indiv, m, 'custom');
+      }
+    });
+
+    Object.keys(blocksMap).forEach(slotTime => {
+      // Se já foi desligado na notificação ou no app hoje, NÃO dispara novamente!
+      if (localStorage.getItem(`ctrlpig_alarm_ack_${todayStr}_${slotTime}`) === 'true') {
+        return;
+      }
+
+      const [sh, sm] = slotTime.split(':').map(Number);
+      if (isNaN(sh) || isNaN(sm)) return;
+      const targetMinutes = sh * 60 + sm;
+      const diff = targetMinutes - currentMinutes;
+      const group = blocksMap[slotTime];
+      const pendingMeds = group.meds;
+      if (pendingMeds.length === 0) return;
+
+      const personName = window.getMedResponsiblePersonName(pendingMeds);
+      const medNamesJoined = window.joinMedNamesNaturally(pendingMeds.map(m => m.nome));
+      const speechDue = `${personName}, tomar seu remédio ${medNamesJoined}.`;
+
+      const preKey = `ctrlpig_alarm_pre_${todayStr}_${slotTime}`;
+      const dueKey = `ctrlpig_alarm_ack_${todayStr}_${slotTime}`;
+
+      if (diff >= 1 && diff <= 10 && localStorage.getItem(preKey) !== 'true') {
+        localStorage.setItem(preKey, 'true');
+        const speechPre = `Atenção ${personName}: faltam ${diff} minutos para o horário das ${slotTime}. Tomar seu remédio ${medNamesJoined}.`;
+        if (typeof speakMedicationAlarm === 'function') speakMedicationAlarm(speechPre);
+        window.showFloatingHealthAlarmBanner(`⏰ Faltam ${diff} min (${slotTime}) • ${personName}`, speechPre, group.routine, slotTime);
+      } else if (diff <= 0 && diff >= -25 && localStorage.getItem(dueKey) !== 'true') {
+        localStorage.setItem(dueKey, 'true');
+        if (typeof speakMedicationAlarm === 'function') speakMedicationAlarm(speechDue);
+        window.showFloatingHealthAlarmBanner(`⏰ Dose das ${slotTime} • ${personName}`, speechDue, group.routine, slotTime);
+      }
+    });
+  };
+
+  window.showFloatingHealthAlarmBanner = function(title, message, routine, slotTime) {
+    window.triggerNativeSystemNotification(
+      title || '⏰ Hora do Remédio • ControlPig',
+      message || 'Rodrigo, tomar seu remédio.',
+      message || 'Rodrigo, tomar seu remédio.',
+      slotTime || ''
+    );
+
+    let banner = document.getElementById('floatingHealthAlarmBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'floatingHealthAlarmBanner';
+      banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[98] max-w-md w-[94vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-rose-500 flex flex-col gap-3';
+      document.body.appendChild(banner);
+    }
+
+    const safeTitle = String(title || '⏰ Hora do Remédio').replace(/'/g, "\\'");
+    const safeMsg = String(message || 'Tomar medicamento programado').replace(/'/g, "\\'");
+    const safeRoutine = String(routine || 'custom').replace(/'/g, "\\'");
+    const safeSlot = String(slotTime || '').replace(/'/g, "\\'");
+
+    banner.innerHTML = `
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl animate-bounce">⏰</span>
+          <div>
+            <h4 class="font-black text-sm text-amber-300">${title || '⏰ Hora do Remédio'}</h4>
+            <p class="text-xs text-slate-200 mt-0.5 leading-snug">${message || ''}</p>
+          </div>
+        </div>
+        <button type="button" onclick="stopMedicationAlarmAudio()" class="px-2.5 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs cursor-pointer flex-shrink-0">
+          ✕
+        </button>
+      </div>
+      <div class="grid grid-cols-3 gap-2 pt-1">
+        <button type="button" onclick="snoozeMedicationAlarm5Min('${safeTitle}', '${safeMsg}', '${safeRoutine}')" class="py-2.5 px-2 bg-amber-500 hover:bg-amber-400 font-black text-[11px] text-slate-950 rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
+          <span>💤 Adiar 5 min</span>
+        </button>
+        <button type="button" onclick="stopMedicationAlarmAudio()" class="py-2.5 px-2 bg-rose-600 hover:bg-rose-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
+          <span>🔕 Desligar</span>
+        </button>
+        <button type="button" onclick="stopMedicationAlarmAudio(); if('${safeRoutine}'==='morning' || '${safeRoutine}'==='evening') { promptTakeRoutine('${safeRoutine}'); } else if('${safeSlot}') { window.takeCustomTimeSlotRoutine('${safeSlot}'); } else { openHealthMedsModal(); }" class="py-2.5 px-2 bg-emerald-600 hover:bg-emerald-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
+          <span>✓ Já Tomei</span>
+        </button>
+      </div>
+    `;
+  };
+
+  window.triggerAdminRealMedNotificationTest = function() {
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const speechMsg = window.buildPersonalizedMedSpeech(meds.length > 0 ? meds : [{ nome: 'Aradois', responsavel: 'Rodrigo' }, { nome: 'Glifage', responsavel: 'Rodrigo' }, { nome: 'Besilato de Anlodipino', responsavel: 'Rodrigo' }]);
+    const notifTitle = `⏰ Hora do Remédio • Rodrigo`;
+
+    if (typeof speakMedicationAlarm === 'function') {
+      speakMedicationAlarm(speechMsg);
+    }
+    window.showFloatingHealthAlarmBanner(notifTitle, speechMsg, 'morning', '08:00');
+    showToastUndo(`🔊 Falando: "${speechMsg}"`, false);
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.migrateCustomHorarioMedsToOwnBlocks();
+      if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+      window.syncNativeAndroidMedAlarms();
+    }, 550);
   });
 })();
 </script>
