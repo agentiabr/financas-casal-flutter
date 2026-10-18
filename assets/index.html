@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.3";
+    window.APP_BUILD_VERSION = "2.1.4";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -15271,6 +15271,7 @@ Frase falada: "${spokenText}"`;
       renderPetCarouselTabs();
       renderPetProfileUI();
       renderPetVaccinesList();
+      renderPetCareList();
       renderPetExpensesSummary();
     }
 
@@ -15315,6 +15316,7 @@ Frase falada: "${spokenText}"`;
         renderPetProfileUI();
         renderPetExpensesSummary();
         renderPetVaccinesList();
+        renderPetCareList();
         runPet10PriceComparison();
         if (window.lucide) lucide.createIcons();
       }
@@ -15773,6 +15775,527 @@ Frase falada: "${spokenText}"`;
           descInput.focus();
         }
       }, 100);
+    }
+
+    // ==============================================================================
+    // AGENDA DE CUIDADOS & LEMBRETES PET (REMÉDIOS, BANHO, TOSA, ANTIPULGAS, ETC.)
+    // ==============================================================================
+    const DEFAULT_PET_CARE_EVENTS = [
+      {
+        id: 'care_pantone_banho',
+        petId: 'pet_pantone',
+        categoria: 'Banho',
+        titulo: 'Banho & Higiene',
+        data: '2026-10-24',
+        hora: '10:00',
+        frequencia: 'A cada 15 dias',
+        local: 'Petz / Em Casa',
+        observacoes: 'Usar shampoo neutro hipoalergênico e secar bem',
+        alarmeAtivo: true,
+        status: 'Pendente',
+        concluidoEm: null
+      },
+      {
+        id: 'care_pantone_bravecto',
+        petId: 'pet_pantone',
+        categoria: 'Antipulgas',
+        titulo: 'Bravecto (Antipulgas & Carrapatos)',
+        data: '2026-11-15',
+        hora: '09:00',
+        frequencia: 'A cada 3 meses',
+        local: 'Em Casa',
+        observacoes: 'Dar 1 comprimido mastigável junto com o petisco',
+        alarmeAtivo: true,
+        status: 'Pendente',
+        concluidoEm: null
+      }
+    ];
+
+    function getAllPetCareEvents() {
+      try {
+        const stored = localStorage.getItem('ctrlpig_pet_care_events');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return DEFAULT_PET_CARE_EVENTS;
+    }
+
+    function getPetCareEvents(targetPetId) {
+      const petId = targetPetId || getActivePetId();
+      const all = getAllPetCareEvents();
+      return all.filter(c => c.petId === petId || (!c.petId && petId === 'pet_pantone'));
+    }
+
+    function savePetCareEvents(eventsList) {
+      const currentPetId = getActivePetId();
+      const all = getAllPetCareEvents();
+      const others = all.filter(c => (c.petId && c.petId !== currentPetId) || (!c.petId && currentPetId !== 'pet_pantone'));
+      const combined = [...others, ...eventsList.map(c => ({ ...c, petId: c.petId || currentPetId }))];
+      localStorage.setItem('ctrlpig_pet_care_events', JSON.stringify(combined));
+      renderPetCareList();
+      syncNativePetCareAlarms();
+    }
+
+    const PET_CARE_ICONS = {
+      'Remédio': '💊',
+      'Banho': '🛁',
+      'Tosa': '✂️',
+      'Antipulgas': '🛡️',
+      'Vermífugo': '🪱',
+      'Consulta': '🩺',
+      'Outro': '✨'
+    };
+
+    function renderPetCareList() {
+      const container = document.getElementById('petCareListContainer');
+      if (!container) return;
+
+      const pet = getActivePet();
+      const cares = getPetCareEvents(pet.id);
+
+      if (cares.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 space-y-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Nenhum cuidado ou remédio agendado para <strong>${escapeHtml(pet.nome)}</strong>.</p>
+            <div class="flex items-center justify-center gap-2 flex-wrap pt-1">
+              <button type="button" onclick="loadDefaultPetCarePresets('${pet.id}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer">
+                <span>🐾 Carregar Sugestões (Banho, Tosa e Bravecto)</span>
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Ordenar por data crescente
+      cares.sort((a, b) => {
+        if (a.status !== b.status) return a.status === 'Pendente' ? -1 : 1;
+        return (a.data + ' ' + (a.hora || '00:00')).localeCompare(b.data + ' ' + (b.hora || '00:00'));
+      });
+
+      container.innerHTML = cares.map(c => {
+        const icon = PET_CARE_ICONS[c.categoria] || '🐾';
+        const careDate = new Date(c.data + 'T00:00:00');
+        const diffTime = careDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        let badgeClass = '';
+        let badgeText = '';
+
+        if (c.status === 'Concluido') {
+          badgeClass = 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border-slate-300 dark:border-slate-700';
+          badgeText = '✓ Concluído';
+        } else if (diffDays < 0) {
+          badgeClass = 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-red-300 dark:border-red-800';
+          badgeText = `🔴 Atrasado (${Math.abs(diffDays)}d)`;
+        } else if (diffDays === 0) {
+          badgeClass = 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-800 animate-pulse';
+          badgeText = `🟡 HOJE às ${c.hora || '09:00'}`;
+        } else if (diffDays === 1) {
+          badgeClass = 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300 dark:border-sky-800';
+          badgeText = `Amanhã às ${c.hora || '09:00'}`;
+        } else {
+          badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800';
+          badgeText = `Em ${diffDays} dias`;
+        }
+
+        const isDone = c.status === 'Concluido';
+
+        return `
+          <div class="p-3 rounded-2xl border ${isDone ? 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/40 opacity-75' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs'} flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all">
+            <div class="flex items-start gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center justify-center font-bold text-base flex-shrink-0 mt-0.5">
+                ${icon}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white ${isDone ? 'line-through text-slate-400' : ''}">${escapeHtml(c.titulo)}</h4>
+                  <span class="text-[9px] font-black px-2 py-0.5 rounded-full border ${badgeClass}">${badgeText}</span>
+                  ${c.alarmeAtivo ? '<span class="text-[10px] text-amber-500" title="Alarme e notificação ativos no celular">🔔</span>' : ''}
+                </div>
+                
+                <div class="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex-wrap">
+                  <span>📅 <strong>${formatDateBR(c.data)} às ${c.hora || '09:00'}</strong></span>
+                  <span>•</span>
+                  <span>🔄 ${c.frequencia || 'Única vez'}</span>
+                  ${c.local ? `<span>• 📍 ${escapeHtml(c.local)}</span>` : ''}
+                </div>
+
+                ${c.observacoes ? `<p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1 italic">${escapeHtml(c.observacoes)}</p>` : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+              ${isDone ? `
+                <button type="button" onclick="reopenPetCare('${c.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1 cursor-pointer">
+                  <span>↺ Reabrir</span>
+                </button>
+              ` : `
+                <button type="button" onclick="markPetCareCompleted('${c.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer">
+                  <span>✓ Concluído</span>
+                </button>
+              `}
+              <button type="button" onclick="openAddPetCareModalById('${c.id}')" class="p-1.5 text-slate-400 hover:text-amber-500 transition-colors cursor-pointer" title="Editar cuidado">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+              <button type="button" onclick="deletePetCare('${c.id}')" class="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer" title="Remover cuidado">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function loadDefaultPetCarePresets(petId) {
+      const today = new Date();
+      const in7Days = new Date(today);
+      in7Days.setDate(in7Days.getDate() + 7);
+      const in30Days = new Date(today);
+      in30Days.setDate(in30Days.getDate() + 30);
+
+      const presets = [
+        {
+          id: 'care_' + Date.now() + '_1',
+          petId: petId,
+          categoria: 'Banho',
+          titulo: 'Banho & Higiene',
+          data: in7Days.toISOString().split('T')[0],
+          hora: '10:00',
+          frequencia: 'A cada 15 dias',
+          local: 'Petz / Em Casa',
+          observacoes: 'Usar shampoo neutro e secar bem',
+          alarmeAtivo: true,
+          status: 'Pendente',
+          concluidoEm: null
+        },
+        {
+          id: 'care_' + Date.now() + '_2',
+          petId: petId,
+          categoria: 'Antipulgas',
+          titulo: 'Bravecto (Antipulgas & Carrapatos)',
+          data: in30Days.toISOString().split('T')[0],
+          hora: '09:00',
+          frequencia: 'A cada 3 meses',
+          local: 'Em Casa',
+          observacoes: '1 comprimido mastigável junto com refeição',
+          alarmeAtivo: true,
+          status: 'Pendente',
+          concluidoEm: null
+        }
+      ];
+
+      const current = getPetCareEvents(petId);
+      savePetCareEvents([...current, ...presets]);
+      showToastUndo('Sugestões de cuidados adicionadas com sucesso! 🐾');
+    }
+
+    function openAddPetCareModal(careToEdit) {
+      const modal = document.getElementById('modalAddEditPetCare');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Preenche lista de pets no select
+      const petSelect = document.getElementById('inputPetCarePetId');
+      if (petSelect) {
+        const pets = getRegisteredPets();
+        const activeId = getActivePetId();
+        petSelect.innerHTML = pets.map(p => `
+          <option value="${p.id}" ${p.id === activeId ? 'selected' : ''}>${p.emoji || '🐾'} ${escapeHtml(p.nome)} (${p.especie || 'Pet'})</option>
+        `).join('');
+      }
+
+      const idInput = document.getElementById('inputPetCareId');
+      const catSelect = document.getElementById('inputPetCareCategoria');
+      const titleInput = document.getElementById('inputPetCareTitulo');
+      const dateInput = document.getElementById('inputPetCareData');
+      const timeInput = document.getElementById('inputPetCareHora');
+      const freqSelect = document.getElementById('inputPetCareFrequencia');
+      const localInput = document.getElementById('inputPetCareLocal');
+      const obsInput = document.getElementById('inputPetCareObs');
+      const alarmCheck = document.getElementById('inputPetCareAlarme');
+      const modalTitle = document.getElementById('modalPetCareTitle');
+
+      if (careToEdit) {
+        if (modalTitle) modalTitle.innerHTML = '<span>🐾</span> Editar Cuidado Pet';
+        if (idInput) idInput.value = careToEdit.id;
+        if (petSelect) petSelect.value = careToEdit.petId || getActivePetId();
+        if (catSelect) catSelect.value = careToEdit.categoria || 'Remédio';
+        if (titleInput) titleInput.value = careToEdit.titulo || '';
+        if (dateInput) dateInput.value = careToEdit.data || '';
+        if (timeInput) timeInput.value = careToEdit.hora || '09:00';
+        if (freqSelect) freqSelect.value = careToEdit.frequencia || 'Única vez';
+        if (localInput) localInput.value = careToEdit.local || '';
+        if (obsInput) obsInput.value = careToEdit.observacoes || '';
+        if (alarmCheck) alarmCheck.checked = careToEdit.alarmeAtivo !== false;
+      } else {
+        if (modalTitle) modalTitle.innerHTML = '<span>🐾</span> Agendar Cuidado Pet';
+        if (idInput) idInput.value = '';
+        if (catSelect) catSelect.value = 'Remédio';
+        if (titleInput) titleInput.value = '';
+        if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+        if (timeInput) timeInput.value = '09:00';
+        if (freqSelect) freqSelect.value = 'Única vez';
+        if (localInput) localInput.value = '';
+        if (obsInput) obsInput.value = '';
+        if (alarmCheck) alarmCheck.checked = true;
+      }
+    }
+
+    function openAddPetCareModalById(careId) {
+      const all = getAllPetCareEvents();
+      const care = all.find(c => c.id === careId);
+      if (care) openAddPetCareModal(care);
+    }
+
+    function closeAddPetCareModal() {
+      const modal = document.getElementById('modalAddEditPetCare');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handlePetCareCategoryChange(cat) {
+      const shortcuts = document.getElementById('petCareShortcuts');
+      if (!shortcuts) return;
+
+      if (cat === 'Remédio') {
+        shortcuts.innerHTML = `
+          <button type="button" onclick="quickFillPetCare('Remédio', 'Apoquel 5.4mg', 'Diário')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💊 Apoquel</button>
+          <button type="button" onclick="quickFillPetCare('Remédio', 'Antibiótico', 'A cada 12 horas')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💊 Antibiótico (12h)</button>
+          <button type="button" onclick="quickFillPetCare('Remédio', 'Colírio Oftálmico', 'Diário')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💧 Colírio</button>
+        `;
+      } else if (cat === 'Banho' || cat === 'Tosa') {
+        shortcuts.innerHTML = `
+          <button type="button" onclick="quickFillPetCare('Banho', 'Banho Completo', 'Semanal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛁 Banho Semanal</button>
+          <button type="button" onclick="quickFillPetCare('Tosa', 'Tosa Higiênica', 'A cada 15 dias')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">✂️ Tosa Higiênica</button>
+          <button type="button" onclick="quickFillPetCare('Tosa', 'Tosa Geral na Máquina', 'Mensal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">✂️ Tosa Geral</button>
+        `;
+      } else if (cat === 'Antipulgas') {
+        shortcuts.innerHTML = `
+          <button type="button" onclick="quickFillPetCare('Antipulgas', 'Bravecto 1 Comprimido', 'A cada 3 meses')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛡️ Bravecto (3m)</button>
+          <button type="button" onclick="quickFillPetCare('Antipulgas', 'Simparic 1 Comprimido', 'Mensal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛡️ Simparic (30d)</button>
+          <button type="button" onclick="quickFillPetCare('Antipulgas', 'NexGard Spectra', 'Mensal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛡️ NexGard</button>
+        `;
+      } else {
+        shortcuts.innerHTML = `
+          <button type="button" onclick="quickFillPetCare('Vermífugo', 'Drontal Plus Vermífugo', 'A cada 3 meses')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🪱 Vermífugo (3m)</button>
+          <button type="button" onclick="quickFillPetCare('Consulta', 'Consulta Veterinária Geral', 'Única vez')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🩺 Consulta</button>
+        `;
+      }
+    }
+
+    function quickFillPetCare(categoria, titulo, frequencia) {
+      const catSelect = document.getElementById('inputPetCareCategoria');
+      const titleInput = document.getElementById('inputPetCareTitulo');
+      const freqSelect = document.getElementById('inputPetCareFrequencia');
+
+      if (catSelect) catSelect.value = categoria;
+      if (titleInput) titleInput.value = titulo;
+      if (freqSelect) freqSelect.value = frequencia;
+    }
+
+    function handleSavePetCareForm(event) {
+      event.preventDefault();
+      const id = document.getElementById('inputPetCareId')?.value;
+      const petId = document.getElementById('inputPetCarePetId')?.value || getActivePetId();
+      const categoria = document.getElementById('inputPetCareCategoria')?.value || 'Remédio';
+      const titulo = document.getElementById('inputPetCareTitulo')?.value.trim();
+      const data = document.getElementById('inputPetCareData')?.value;
+      const hora = document.getElementById('inputPetCareHora')?.value || '09:00';
+      const frequencia = document.getElementById('inputPetCareFrequencia')?.value || 'Única vez';
+      const local = document.getElementById('inputPetCareLocal')?.value.trim();
+      const observacoes = document.getElementById('inputPetCareObs')?.value.trim();
+      const alarmeAtivo = document.getElementById('inputPetCareAlarme')?.checked !== false;
+
+      if (!titulo || !data) return;
+
+      let cares = getPetCareEvents(petId);
+      if (id) {
+        cares = cares.map(c => {
+          if (c.id === id) {
+            return {
+              ...c,
+              petId,
+              categoria,
+              titulo,
+              data,
+              hora,
+              frequencia,
+              local,
+              observacoes,
+              alarmeAtivo
+            };
+          }
+          return c;
+        });
+        showToastUndo(`Cuidado "${titulo}" atualizado! 🐾`);
+      } else {
+        const newCare = {
+          id: 'care_' + Date.now(),
+          petId,
+          categoria,
+          titulo,
+          data,
+          hora,
+          frequencia,
+          local,
+          observacoes,
+          alarmeAtivo,
+          status: 'Pendente',
+          concluidoEm: null
+        };
+        cares.push(newCare);
+        showToastUndo(`Agendamento de "${titulo}" salvo com sucesso! 🐾🔔`);
+      }
+
+      savePetCareEvents(cares);
+      closeAddPetCareModal();
+    }
+
+    function markPetCareCompleted(careId) {
+      let cares = getAllPetCareEvents();
+      const care = cares.find(c => c.id === careId);
+      if (!care) return;
+
+      const nowStr = new Date().toISOString();
+      care.status = 'Concluido';
+      care.concluidoEm = nowStr;
+
+      // Se for recorrente, cria automaticamente o próximo cuidado agendado
+      if (care.frequencia && care.frequencia !== 'Única vez') {
+        const curDate = new Date(care.data + 'T' + (care.hora || '09:00') + ':00');
+        let nextDate = new Date(curDate);
+
+        switch (care.frequencia) {
+          case 'Diário':
+            nextDate.setDate(nextDate.getDate() + 1);
+            break;
+          case 'A cada 12 horas':
+            nextDate.setHours(nextDate.getHours() + 12);
+            break;
+          case 'Semanal':
+            nextDate.setDate(nextDate.getDate() + 7);
+            break;
+          case 'A cada 15 dias':
+            nextDate.setDate(nextDate.getDate() + 15);
+            break;
+          case 'Mensal':
+            nextDate.setMonth(nextDate.getMonth() + 1);
+            break;
+          case 'A cada 3 meses':
+            nextDate.setMonth(nextDate.getMonth() + 3);
+            break;
+          case 'A cada 6 meses':
+            nextDate.setMonth(nextDate.getMonth() + 6);
+            break;
+          case 'Anual':
+            nextDate.setFullYear(nextDate.getFullYear() + 1);
+            break;
+        }
+
+        const nextCare = {
+          ...care,
+          id: 'care_' + Date.now(),
+          data: nextDate.toISOString().split('T')[0],
+          status: 'Pendente',
+          concluidoEm: null
+        };
+        cares.push(nextCare);
+        showToastUndo(`Cuidado concluído! Próximo agendado para ${formatDateBR(nextCare.data)}. 🐾`);
+      } else {
+        showToastUndo(`Cuidado "${care.titulo}" concluído! 🐾`);
+      }
+
+      savePetCareEvents(cares);
+    }
+
+    function reopenPetCare(careId) {
+      let cares = getAllPetCareEvents();
+      const care = cares.find(c => c.id === careId);
+      if (care) {
+        care.status = 'Pendente';
+        care.concluidoEm = null;
+        savePetCareEvents(cares);
+        showToastUndo(`Cuidado reaberto como pendente.`);
+      }
+    }
+
+    function deletePetCare(careId) {
+      let cares = getAllPetCareEvents().filter(c => c.id !== careId);
+      savePetCareEvents(cares);
+      showToastUndo('Cuidado removido da agenda.');
+    }
+
+    function syncNativePetCareAlarms() {
+      if (!window.isNativeApp || !window.FlutterBridge) return;
+      try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const all = getAllPetCareEvents();
+        const pending = all.filter(c => c.status === 'Pendente' && c.alarmeAtivo && c.data >= todayStr);
+        const pets = getRegisteredPets();
+
+        const alarmsPayload = pending.slice(0, 15).map((c, idx) => {
+          const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
+          const dtParts = c.data.split('-');
+          const tmParts = (c.hora || '09:00').split(':');
+          const targetDate = new Date(parseInt(dtParts[0]), parseInt(dtParts[1]) - 1, parseInt(dtParts[2]), parseInt(tmParts[0]), parseInt(tmParts[1]), 0);
+          
+          return {
+            id: 9000 + idx,
+            triggerMillis: targetDate.getTime(),
+            title: `🐾 Hora do ${c.categoria}: ${pet.nome}`,
+            body: `${c.titulo} às ${c.hora || '09:00'}. ${c.local ? 'Local: ' + c.local : ''}`,
+            speech: `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`,
+            slot: c.hora || '09:00'
+          };
+        }).filter(a => a.triggerMillis > Date.now());
+
+        window.FlutterBridge.postMessage(JSON.stringify({
+          action: 'schedule_pet_alarms',
+          alarms: alarmsPayload
+        }));
+      } catch (e) {
+        console.warn('Erro ao sincronizar alarmes nativos de pet:', e);
+      }
+    }
+
+    // Monitora a cada minuto se há alarmes de cuidados pet para disparar na tela
+    function checkPetCareScheduleTimers() {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const curHour = String(now.getHours()).padStart(2, '0');
+      const curMin = String(now.getMinutes()).padStart(2, '0');
+      const curTime = `${curHour}:${curMin}`;
+
+      const all = getAllPetCareEvents();
+      const pets = getRegisteredPets();
+
+      all.forEach(c => {
+        if (c.status !== 'Pendente' || !c.alarmeAtivo || c.data !== todayStr) return;
+        if (c.hora === curTime) {
+          const firedKey = `pet_fired_${c.id}_${todayStr}_${curTime}`;
+          if (sessionStorage.getItem(firedKey) === 'true') return;
+          sessionStorage.setItem(firedKey, 'true');
+
+          const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
+          const title = `🐾 Hora do ${c.categoria}: ${pet.nome}`;
+          const body = `${c.titulo} programado para as ${c.hora}. ${c.observacoes || ''}`;
+          const speech = `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`;
+
+          if (typeof speakMedicationAlarm === 'function') {
+            speakMedicationAlarm(speech, true);
+          }
+          if (typeof window.showFloatingHealthAlarmBanner === 'function') {
+            window.showFloatingHealthAlarmBanner(title, body, 'pet_care', c.hora, c.id);
+          }
+        }
+      });
     }
 
     const PET_STORES_CATALOG = [
@@ -16652,6 +17175,9 @@ Frase falada: "${spokenText}"`;
     }
 
     function checkHealthScheduleTimers() {
+      if (typeof checkPetCareScheduleTimers === 'function') {
+        checkPetCareScheduleTimers();
+      }
       const settings = getHealthScheduleSettings();
       if (!settings.voiceAlarmEnabled) return;
 
@@ -18900,7 +19426,33 @@ Frase falada: "${spokenText}"`;
         </div>
       </div>
 
-      <!-- SEÇÃO 3: COMPARADOR DE PREÇOS PET EM 10 LOJAS VIRTUAIS -->
+      <!-- SEÇÃO 3: AGENDA DE CUIDADOS & LEMBRETES PET (REMÉDIOS, BANHO, TOSA, ANTIPULGAS, ETC.) -->
+      <div class="py-3.5 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm">🐾</span>
+              <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                Agenda de Cuidados Pet (Remédios, Banho, Tosa, etc.)
+              </h4>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+              Agendamentos com alarme sonoro e tela cheia no celular para medicamentos, banhos, tosas e consultas.
+            </p>
+          </div>
+          <button type="button" onclick="openAddPetCareModal()" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>+ Agendar Cuidado</span>
+          </button>
+        </div>
+
+        <!-- Lista de Cuidados Agendados do Pet -->
+        <div id="petCareListContainer" class="space-y-2 mt-2">
+          <!-- Renderizado dinamicamente via renderPetCareList() -->
+        </div>
+      </div>
+
+      <!-- SEÇÃO 4: COMPARADOR DE PREÇOS PET EM 10 LOJAS VIRTUAIS -->
       <div class="pt-3.5">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
@@ -19311,6 +19863,164 @@ Frase falada: "${spokenText}"`;
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: AGENDAR CUIDADO PET (REMÉDIOS, BANHO, TOSA, ETC.)      -->
+  <!-- ============================================================== -->
+  <div id="modalAddEditPetCare" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddPetCareModal()">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 text-slate-900 dark:text-white shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
+        <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5" id="modalPetCareTitle">
+          <span>🐾</span> Agendar Cuidado Pet
+        </h4>
+        <button type="button" onclick="closeAddPetCareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="formAddEditPetCare" onsubmit="handleSavePetCareForm(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="inputPetCareId" value="">
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Pet *</label>
+          <select id="inputPetCarePetId" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+            <!-- Injetado dinamicamente -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoria do Cuidado *</label>
+          <select id="inputPetCareCategoria" required onchange="handlePetCareCategoryChange(this.value)" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+            <option value="Remédio">💊 Remédio / Medicação Contínua</option>
+            <option value="Banho">🛁 Banho</option>
+            <option value="Tosa">✂️ Tosa (Higiênica / Geral)</option>
+            <option value="Antipulgas">🛡️ Antipulgas & Carrapatos (Bravecto/NexGard)</option>
+            <option value="Vermífugo">🪱 Vermífugo (Drontal / etc.)</option>
+            <option value="Consulta">🩺 Consulta Veterinária / Retorno</option>
+            <option value="Outro">✨ Outro Cuidado</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título do Cuidado / Medicamento *</label>
+          <input type="text" id="inputPetCareTitulo" required placeholder="Ex: Apoquel 5.4mg, Banho no Petz, Bravecto 1 comp..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+          
+          <!-- Atalhos Rápidos -->
+          <div class="flex items-center gap-1.5 flex-wrap mt-1.5" id="petCareShortcuts">
+            <button type="button" onclick="quickFillPetCare('Banho', 'Banho Completo', 'Semanal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛁 Banho</button>
+            <button type="button" onclick="quickFillPetCare('Tosa', 'Tosa Higiênica', 'A cada 15 dias')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">✂️ Tosa</button>
+            <button type="button" onclick="quickFillPetCare('Antipulgas', 'Bravecto 1 Comprimido', 'A cada 3 meses')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛡️ Bravecto (3 meses)</button>
+            <button type="button" onclick="quickFillPetCare('Remédio', 'Apoquel 5.4mg', 'Diário')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💊 Remédio</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Data *</label>
+            <input type="date" id="inputPetCareData" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Horário *</label>
+            <input type="time" id="inputPetCareHora" required value="09:00" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Frequência / Repetição *</label>
+            <select id="inputPetCareFrequencia" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+              <option value="Única vez">Apenas nesta data (Única vez)</option>
+              <option value="Diário">Diário (Todo dia)</option>
+              <option value="A cada 12 horas">A cada 12 horas (2x/dia)</option>
+              <option value="Semanal">Semanal (Toda semana)</option>
+              <option value="A cada 15 dias">A cada 15 dias (Quinzenal)</option>
+              <option value="Mensal">Mensal (Todo mês)</option>
+              <option value="A cada 3 meses">A cada 3 meses (Trimestral - Bravecto)</option>
+              <option value="A cada 6 meses">A cada 6 meses (Semestral)</option>
+              <option value="Anual">Anual (Todo ano)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Local / Pet Shop</label>
+            <input type="text" id="inputPetCareLocal" placeholder="Ex: Petz, Wevets, Em casa" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Instruções / Dosagem</label>
+          <input type="text" id="inputPetCareObs" placeholder="Ex: 1 comprimido com ração, tosa na lâmina 4, jejum..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-800 dark:text-slate-200 block text-xs">🔔 Alarme no Celular</span>
+            <span class="text-[10px] text-slate-400">Toca som e acende a tela com botões grandes no horário</span>
+          </div>
+          <input type="checkbox" id="inputPetCareAlarme" checked class="w-4 h-4 accent-amber-500 cursor-pointer">
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <button type="button" onclick="closeAddPetCareModal()" class="flex-1 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black shadow-md cursor-pointer">
+            Salvar Agendamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL DE ALARME EM TELA CHEIA (REMÉDIOS & CUIDADOS PET)        -->
+  <!-- ============================================================== -->
+  <div id="modalFullScreenAlarmOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white border-2 border-amber-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center flex flex-col items-center">
+      
+      <!-- Badge Superior -->
+      <span id="fullAlarmBadge" class="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 mb-3">
+        ⏰ ALARME PROGRAMADO
+      </span>
+
+      <!-- Ícone Grande Animado -->
+      <div id="fullAlarmIcon" class="w-20 h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-4xl mb-3 shadow-lg shadow-amber-500/20 animate-pulse">
+        ⏰
+      </div>
+
+      <!-- Horário em Destaque -->
+      <div id="fullAlarmTime" class="text-3xl font-black font-mono tracking-tight text-white mb-1">
+        08:00
+      </div>
+
+      <!-- Título do Alarme -->
+      <h3 id="fullAlarmTitle" class="text-lg font-black text-amber-300 leading-tight mb-2">
+        Hora do Remédio
+      </h3>
+
+      <!-- Descrição / Detalhes -->
+      <p id="fullAlarmBody" class="text-xs text-slate-300 leading-relaxed mb-6 max-w-xs">
+        Rodrigo, tomar seus medicamentos diários programados.
+      </p>
+
+      <!-- Botões de Ação Grandes e Confortáveis -->
+      <div class="w-full space-y-2.5">
+        <button type="button" id="btnFullAlarmTaken" onclick="handleFullAlarmTaken()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer">
+          <span class="text-base">✓</span>
+          <span id="txtFullAlarmTaken">JÁ TOMEI / CONCLUÍDO</span>
+        </button>
+
+        <button type="button" id="btnFullAlarmSnooze" onclick="handleFullAlarmSnooze()" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer">
+          <span>💤</span>
+          <span>ADIAR 5 MINUTOS</span>
+        </button>
+
+        <button type="button" id="btnFullAlarmDismiss" onclick="handleFullAlarmDismiss()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-2xl border border-slate-700 transition-all cursor-pointer">
+          <span>🔕 Desligar Alarme</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -25962,7 +26672,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     });
   };
 
-  window.showFloatingHealthAlarmBanner = function(title, message, routine, slotTime) {
+  window.currentAlarmContext = null;
+
+  window.showFloatingHealthAlarmBanner = function(title, message, routine, slotTime, petCareId) {
     window.triggerNativeSystemNotification(
       title || '⏰ Hora do Remédio • ControlPig',
       message || 'Rodrigo, tomar seu remédio.',
@@ -25970,44 +26682,101 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       slotTime || ''
     );
 
-    let banner = document.getElementById('floatingHealthAlarmBanner');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'floatingHealthAlarmBanner';
-      banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[98] max-w-md w-[94vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-rose-500 flex flex-col gap-3';
-      document.body.appendChild(banner);
+    window.currentAlarmContext = {
+      title: title || '⏰ Alarme Programado',
+      message: message || '',
+      routine: routine || 'custom',
+      slotTime: slotTime || '',
+      petCareId: petCareId || null
+    };
+
+    // Abre o Modal de Alarme em Tela Cheia no App
+    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+    if (modalFull) {
+      const badgeEl = document.getElementById('fullAlarmBadge');
+      const iconEl = document.getElementById('fullAlarmIcon');
+      const timeEl = document.getElementById('fullAlarmTime');
+      const titleEl = document.getElementById('fullAlarmTitle');
+      const bodyEl = document.getElementById('fullAlarmBody');
+      const btnTakenTxt = document.getElementById('txtFullAlarmTaken');
+
+      const isPet = (routine === 'pet_care') || String(title).includes('🐾') || String(title).includes('Pet');
+
+      if (badgeEl) {
+        badgeEl.textContent = isPet ? '🐾 CUIDADO PET AGENDADO' : '⏰ ALARME DE SAÚDE & REMÉDIOS';
+      }
+      if (iconEl) {
+        iconEl.textContent = isPet ? '🐾' : '💊';
+      }
+      if (timeEl) {
+        const now = new Date();
+        const curH = String(now.getHours()).padStart(2, '0');
+        const curM = String(now.getMinutes()).padStart(2, '0');
+        timeEl.textContent = slotTime || `${curH}:${curM}`;
+      }
+      if (titleEl) {
+        titleEl.textContent = title || '⏰ Hora do Remédio';
+      }
+      if (bodyEl) {
+        bodyEl.textContent = message || '';
+      }
+      if (btnTakenTxt) {
+        btnTakenTxt.textContent = isPet ? 'CUIDADO CONCLUÍDO' : 'JÁ TOMEI';
+      }
+
+      modalFull.classList.remove('hidden');
+    }
+  };
+
+  window.handleFullAlarmTaken = function() {
+    const ctx = window.currentAlarmContext || {};
+    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
+
+    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+    if (modalFull) modalFull.classList.add('hidden');
+
+    if (ctx.petCareId) {
+      if (typeof markPetCareCompleted === 'function') {
+        markPetCareCompleted(ctx.petCareId);
+      }
+    } else if (ctx.routine === 'morning' || ctx.routine === 'evening') {
+      if (typeof promptTakeRoutine === 'function') promptTakeRoutine(ctx.routine);
+    } else if (ctx.slotTime) {
+      if (typeof window.takeCustomTimeSlotRoutine === 'function') {
+        window.takeCustomTimeSlotRoutine(ctx.slotTime);
+      } else if (typeof openHealthMedsModal === 'function') {
+        openHealthMedsModal();
+      }
+    } else {
+      if (typeof openHealthMedsModal === 'function') openHealthMedsModal();
     }
 
-    const safeTitle = String(title || '⏰ Hora do Remédio').replace(/'/g, "\\'");
-    const safeMsg = String(message || 'Tomar medicamento programado').replace(/'/g, "\\'");
-    const safeRoutine = String(routine || 'custom').replace(/'/g, "\\'");
-    const safeSlot = String(slotTime || '').replace(/'/g, "\\'");
+    showToastUndo('✓ Registrado como concluído com sucesso! 🎉', false);
+    window.currentAlarmContext = null;
+  };
 
-    banner.innerHTML = `
-      <div class="flex items-start justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl animate-bounce">⏰</span>
-          <div>
-            <h4 class="font-black text-sm text-amber-300">${title || '⏰ Hora do Remédio'}</h4>
-            <p class="text-xs text-slate-200 mt-0.5 leading-snug">${message || ''}</p>
-          </div>
-        </div>
-        <button type="button" onclick="stopMedicationAlarmAudio()" class="px-2.5 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs cursor-pointer flex-shrink-0">
-          ✕
-        </button>
-      </div>
-      <div class="grid grid-cols-3 gap-2 pt-1">
-        <button type="button" onclick="snoozeMedicationAlarm5Min('${safeTitle}', '${safeMsg}', '${safeRoutine}')" class="py-2.5 px-2 bg-amber-500 hover:bg-amber-400 font-black text-[11px] text-slate-950 rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>💤 Adiar 5 min</span>
-        </button>
-        <button type="button" onclick="stopMedicationAlarmAudio()" class="py-2.5 px-2 bg-rose-600 hover:bg-rose-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>🔕 Desligar</span>
-        </button>
-        <button type="button" onclick="stopMedicationAlarmAudio(); if('${safeRoutine}'==='morning' || '${safeRoutine}'==='evening') { promptTakeRoutine('${safeRoutine}'); } else if('${safeSlot}') { window.takeCustomTimeSlotRoutine('${safeSlot}'); } else { openHealthMedsModal(); }" class="py-2.5 px-2 bg-emerald-600 hover:bg-emerald-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>✓ Já Tomei</span>
-        </button>
-      </div>
-    `;
+  window.handleFullAlarmSnooze = function() {
+    const ctx = window.currentAlarmContext || {};
+    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
+
+    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+    if (modalFull) modalFull.classList.add('hidden');
+
+    if (typeof snoozeMedicationAlarm5Min === 'function') {
+      snoozeMedicationAlarm5Min(ctx.title, ctx.message, ctx.routine);
+    }
+    showToastUndo('💤 Alarme adiado por 5 minutos.', false);
+    window.currentAlarmContext = null;
+  };
+
+  window.handleFullAlarmDismiss = function() {
+    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
+
+    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+    if (modalFull) modalFull.classList.add('hidden');
+
+    showToastUndo('🔕 Alarme desligado.', false);
+    window.currentAlarmContext = null;
   };
 
   window.triggerAdminRealMedNotificationTest = function() {

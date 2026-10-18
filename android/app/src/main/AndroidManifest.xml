@@ -15,6 +15,9 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Reconhecimento de Voz & Síntese de Voz Android 11+ -->
     <queries>
@@ -56,6 +59,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Activity de Alarme em Tela Cheia (Exibe na tela de bloqueio e por cima de outros apps) -->
+        <activity
+            android:name=".AlarmAlertActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
 
         <receiver
             android:name=".MedAlarmReceiver"

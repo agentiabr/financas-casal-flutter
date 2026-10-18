@@ -330,6 +330,17 @@ object NotificationHelper {
                 setOnClickPendingIntent(R.id.btn_notif_taken, takenPending)
             }
 
+            // Intent de Tela Cheia / Alarme na Tela (estilo Despertador)
+            val fullScreenIntent = Intent(context, AlarmAlertActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                putExtra("title", title)
+                putExtra("body", body)
+                putExtra("speech", speechText)
+                putExtra("slot", slotTime)
+                putExtra("id", notifId)
+            }
+            val fullScreenPending = PendingIntent.getActivity(context, notifId + 50000, fullScreenIntent, pendingFlags)
+
             val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Notification.Builder(context, NOTIF_CHANNEL_ID)
             } else {
@@ -344,6 +355,11 @@ object NotificationHelper {
                 .setContentIntent(openPending)
                 .setDeleteIntent(dismissPending)
                 .setColor(0xFFFFFFFF.toInt())
+                .setFullScreenIntent(fullScreenPending, true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setCategory(Notification.CATEGORY_ALARM)
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 builder.setCustomContentView(remoteViews)
@@ -436,12 +452,26 @@ class MedAlarmReceiver : BroadcastReceiver() {
         when (action) {
             NotificationHelper.ACTION_FIRE_ALARM -> {
                 NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
+                
+                // Tenta abrir a tela de alarme diretamente para acender o display
+                try {
+                    val alertIntent = Intent(context, AlarmAlertActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("title", title)
+                        putExtra("body", body)
+                        putExtra("speech", speech)
+                        putExtra("slot", slot)
+                        putExtra("id", notifId)
+                    }
+                    context.startActivity(alertIntent)
+                } catch (_: Exception) {}
+
                 val audioPrefs = context.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                 val isAudioEnabled = audioPrefs.getBoolean("med_audio_enabled", true)
                 if (isAudioEnabled) {
                     AlarmAudioPlayer.playAlarmAndSpeak(context, speech)
                 }
-                // Reagenda automaticamente para o dia seguinte (+24h) se for alarme diário recorrente
+                // Reagenda automaticamente para o dia seguinte (+24h) se for alarme diário recorrente de remédios
                 if (notifId in 8000..8099) {
                     val nextDayMillis = System.currentTimeMillis() + (24 * 60 * 60 * 1000L)
                     NotificationHelper.scheduleExactOneShot(context, nextDayMillis, title, body, notifId, speech, slot)
@@ -561,6 +591,11 @@ class MainActivity: FlutterFragmentActivity() {
                     scheduleDailyAlarmsList(alarms)
                     result.success(true)
                 }
+                "schedulePetAlarms" -> {
+                    val alarms = call.argument<List<Map<String, Any>>>("alarms") ?: emptyList()
+                    schedulePetAlarmsList(alarms)
+                    result.success(true)
+                }
                 "consumePendingMedTaken" -> {
                     val prefs = getSharedPreferences("ctrlpig_native_med_actions", Context.MODE_PRIVATE)
                     val takenTitle = prefs.getString("last_taken_med_title", null)
@@ -653,6 +688,21 @@ class MainActivity: FlutterFragmentActivity() {
                 }
             }
             NotificationHelper.scheduleExactOneShot(this, target.timeInMillis, title, body, id, speech, slot)
+        }
+    }
+
+    private fun schedulePetAlarmsList(alarms: List<Map<String, Any>>) {
+        val now = System.currentTimeMillis()
+        for ((index, item) in alarms.withIndex()) {
+            val triggerMillis = (item["triggerMillis"] as? Number)?.toLong() ?: continue
+            if (triggerMillis <= now) continue
+            val title = (item["title"] as? String) ?: "🐾 Hora do Cuidado Pet"
+            val body = (item["body"] as? String) ?: "Confira os cuidados agendados do pet."
+            val speech = (item["speech"] as? String) ?: "$title. $body"
+            val slot = (item["slot"] as? String) ?: ""
+            val id = (item["id"] as? Number)?.toInt() ?: (9000 + index)
+
+            NotificationHelper.scheduleExactOneShot(this, triggerMillis, title, body, id, speech, slot)
         }
     }
 

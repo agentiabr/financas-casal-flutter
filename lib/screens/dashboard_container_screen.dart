@@ -153,7 +153,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.3+80';
+  static const String _kCurrentAppVersion = '2.1.4+81';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -407,6 +407,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                 .invokeMethod('scheduleMedAlarms', {'alarms': alarms});
           } catch (e) {
             debugPrint('Aviso ao agendar alarmes nativos: $e');
+          }
+        }
+      } else if (action == 'schedule_pet_alarms') {
+        final rawAlarms = data['alarms'];
+        if (rawAlarms is List) {
+          final List<Map<String, dynamic>> alarms = rawAlarms
+              .whereType<Map>()
+              .map((m) => Map<String, dynamic>.from(m))
+              .toList();
+          try {
+            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                .invokeMethod('schedulePetAlarms', {'alarms': alarms});
+          } catch (e) {
+            debugPrint('Aviso ao agendar alarmes de pet nativos: $e');
           }
         }
       } else if (action == 'open_app_settings') {
