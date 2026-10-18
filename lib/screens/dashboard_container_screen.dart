@@ -96,6 +96,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     } catch (e) {
       debugPrint('Aviso ao checar consumePendingMedTaken: $e');
     }
+  }
+
   Future<void> _checkPendingShoppingAcceptance() async {
     try {
       final res = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
