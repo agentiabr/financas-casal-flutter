@@ -23,19 +23,46 @@ class SpeechService extends ChangeNotifier {
   final stt.SpeechToText _speech = stt.SpeechToText();
   bool _isAvailable = false;
   bool _isListening = false;
-  String _lastWords = '';
+  bool _manualSessionActive = false;
+  String _accumulatedWords = '';
+  String _currentSegmentWords = '';
+  Function(String text)? _activeOnResult;
 
-  bool get isListening => _isListening;
-  String get lastWords => _lastWords;
+  bool get isListening => _isListening || _manualSessionActive;
+  String get lastWords {
+    if (_accumulatedWords.isEmpty) return _currentSegmentWords;
+    if (_currentSegmentWords.isEmpty) return _accumulatedWords;
+    return '$_accumulatedWords $_currentSegmentWords'.trim();
+  }
 
   Future<bool> initialize() async {
     _isAvailable = await _speech.initialize(
       onError: (val) {
         _isListening = false;
+        if (_manualSessionActive) {
+          Future.delayed(const Duration(milliseconds: 350), () {
+            if (_manualSessionActive) {
+              _listenInternal();
+            }
+          });
+        }
         notifyListeners();
       },
       onStatus: (val) {
         _isListening = val == 'listening';
+        if ((val == 'done' || val == 'notListening') && _manualSessionActive) {
+          if (_currentSegmentWords.trim().isNotEmpty) {
+            _accumulatedWords = _accumulatedWords.isEmpty
+                ? _currentSegmentWords.trim()
+                : '$_accumulatedWords ${_currentSegmentWords.trim()}';
+            _currentSegmentWords = '';
+          }
+          Future.delayed(const Duration(milliseconds: 250), () {
+            if (_manualSessionActive) {
+              _listenInternal();
+            }
+          });
+        }
         notifyListeners();
       },
     );
@@ -49,35 +76,65 @@ class SpeechService extends ChangeNotifier {
     if (!_isAvailable) {
       await initialize();
     }
-    _lastWords = '';
+    _accumulatedWords = '';
+    _currentSegmentWords = '';
+    _manualSessionActive = true;
+    _activeOnResult = onResult;
     _isListening = true;
     notifyListeners();
 
-    await _speech.listen(
-      localeId: 'pt_BR',
-      pauseFor: const Duration(seconds: 12),
-      listenFor: const Duration(seconds: 90),
-      listenOptions: stt.SpeechListenOptions(
-        partialResults: !finalOnly,
-        listenMode: stt.ListenMode.dictation,
-      ),
-      onResult: (result) {
-        _lastWords = result.recognizedWords;
-        if (finalOnly) {
-          if (result.finalResult && _lastWords.trim().isNotEmpty) {
-            onResult(_lastWords);
+    await _listenInternal();
+  }
+
+  Future<void> _listenInternal() async {
+    if (!_manualSessionActive) return;
+    try {
+      await _speech.listen(
+        localeId: 'pt_BR',
+        pauseFor: const Duration(seconds: 30),
+        listenFor: const Duration(seconds: 120),
+        listenOptions: stt.SpeechListenOptions(
+          partialResults: true,
+          listenMode: stt.ListenMode.dictation,
+        ),
+        onResult: (result) {
+          if (!_manualSessionActive) return;
+          _currentSegmentWords = result.recognizedWords.trim();
+          final combined = lastWords;
+          if (result.finalResult && _currentSegmentWords.isNotEmpty) {
+            _accumulatedWords = _accumulatedWords.isEmpty
+                ? _currentSegmentWords
+                : '$_accumulatedWords $_currentSegmentWords';
+            _currentSegmentWords = '';
           }
-        } else {
-          onResult(_lastWords);
-        }
-        notifyListeners();
-      },
-    );
+          if (_activeOnResult != null && combined.isNotEmpty) {
+            _activeOnResult!(combined);
+          }
+          notifyListeners();
+        },
+      );
+    } catch (_) {}
   }
 
   Future<void> stopListening() async {
+    _manualSessionActive = false;
     _isListening = false;
-    await _speech.stop();
+    _activeOnResult = null;
+    try {
+      await _speech.stop();
+    } catch (_) {}
+    notifyListeners();
+  }
+
+  Future<void> cancelListening() async {
+    _manualSessionActive = false;
+    _isListening = false;
+    _accumulatedWords = '';
+    _currentSegmentWords = '';
+    _activeOnResult = null;
+    try {
+      await _speech.cancel();
+    } catch (_) {}
     notifyListeners();
   }
 

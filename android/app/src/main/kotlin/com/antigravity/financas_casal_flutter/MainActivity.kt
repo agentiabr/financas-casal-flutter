@@ -39,18 +39,18 @@ object AlarmAudioPlayer {
         stop()
         isStopped = false
 
-        // 1. Mantém a CPU acordada por até 45s para tocar o alarme e falar o nome + remédios com o app fechado
+        // 1. Mantém a CPU acordada por até 68s para repetir o alarme de 10 em 10s durante 1 minuto
         try {
             val pm = appCtx.getSystemService(Context.POWER_SERVICE) as PowerManager
             wakeLock = pm.newWakeLock(
                 PowerManager.PARTIAL_WAKE_LOCK,
                 "ctrlpig:MedAlarmWakeLock"
             ).apply {
-                acquire(45000L)
+                acquire(68000L)
             }
         } catch (_: Exception) {}
 
-        // 2. Toca o som de alarme do celular no canal USAGE_ALARM (audível mesmo com o app fechado)
+        // 2. Prepara o som de alarme do celular no canal USAGE_ALARM (audível mesmo com o app fechado)
         try {
             var alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             if (alarmUri == null) {
@@ -69,14 +69,13 @@ object AlarmAudioPlayer {
                 }
                 ringtone = r
                 r.play()
-                // Para o toque musical após 3.5 segundos para a voz falar com total nitidez
                 handler.postDelayed({
                     try { ringtone?.stop() } catch (_: Exception) {}
-                }, 3500L)
+                }, 2200L)
             }
         } catch (_: Exception) {}
 
-        // 3. Fala em voz alta (TTS nativo Android no canal de Alarme): "Rodrigo, tomar seu remédio..."
+        // 3. Fala em voz alta (TTS nativo Android no canal de Alarme) repetindo de 10 em 10 segundos durante 1 minuto (0s, 10s, 20s, 30s, 40s, 50s, 60s)
         try {
             tts = TextToSpeech(appCtx) { status ->
                 if (status == TextToSpeech.SUCCESS && !isStopped) {
@@ -103,29 +102,28 @@ object AlarmAudioPlayer {
                             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
                         }
 
-                        handler.postDelayed({
-                            if (!isStopped) {
-                                try { ringtone?.stop() } catch (_: Exception) {}
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, params, "med_alarm_1")
-                                } else {
-                                    @Suppress("DEPRECATION")
-                                    engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, null)
+                        // Ciclos de 10 em 10 segundos durante 1 minuto (60s)
+                        val offsetsMs = longArrayOf(2200L, 10000L, 20000L, 30000L, 40000L, 50000L, 60000L)
+                        for ((idx, delayMs) in offsetsMs.withIndex()) {
+                            handler.postDelayed({
+                                if (!isStopped) {
+                                    try { ringtone?.stop() } catch (_: Exception) {}
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, params, "med_alarm_cycle_$idx")
+                                    } else {
+                                        @Suppress("DEPRECATION")
+                                        engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, null)
+                                    }
                                 }
-                            }
-                        }, 2600L)
+                            }, delayMs)
+                        }
 
-                        // Repete a fala mais uma vez após 11 segundos caso o usuário ainda não tenha desligado
+                        // Encerra automaticamente após completar 1 minuto
                         handler.postDelayed({
                             if (!isStopped) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    engine.speak(speechText, TextToSpeech.QUEUE_ADD, params, "med_alarm_2")
-                                } else {
-                                    @Suppress("DEPRECATION")
-                                    engine.speak(speechText, TextToSpeech.QUEUE_ADD, null)
-                                }
+                                stop()
                             }
-                        }, 11500L)
+                        }, 66000L)
                     } catch (_: Exception) {}
                 }
             }

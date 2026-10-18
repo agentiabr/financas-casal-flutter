@@ -234,10 +234,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         if (url.isNotEmpty) _openExternalUrl(url);
       } else if (action == 'start_voice') {
         _startNativeVoiceRecording();
-      } else if (action == 'stop_voice') {
+      } else if (action == 'stop_voice' || action == 'send_voice') {
         _stopNativeVoiceRecording();
+      } else if (action == 'cancel_voice') {
+        _cancelNativeVoiceRecording();
       } else if (action == 'start_chat_voice') {
         _startNativeChatVoiceRecording();
+      } else if (action == 'stop_chat_voice' || action == 'send_chat_voice') {
+        _stopNativeChatVoiceRecording();
+      } else if (action == 'cancel_chat_voice') {
+        _cancelNativeChatVoiceRecording();
       } else if (action == 'speak_text') {
         final text = data['text'] as String? ?? '';
         final forceWithoutHeadphones = data['forceSpeaker'] as bool? ?? false;
@@ -517,18 +523,12 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         final trimmed = text.trim();
         if (trimmed.isNotEmpty) {
           _lastRecognizedVoiceText = trimmed;
-          // Envia texto parcial em tempo real para exibir na tela enquanto a pessoa fala
+          // Envia texto parcial em tempo real para exibir na barra estilo WhatsApp enquanto a pessoa fala
           final safePartial = jsonEncode(_lastRecognizedVoiceText);
           _controller.runJavaScript("""
             if (typeof window.onNativeVoiceInterimResult === 'function') { window.onNativeVoiceInterimResult($safePartial); }
             if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, $safePartial); }
           """);
-
-          _voiceDebounceTimer?.cancel();
-          // Aguarda 3.2 segundos de silêncio após a fala antes de finalizar e processar
-          _voiceDebounceTimer = Timer(const Duration(milliseconds: 3200), () {
-            _stopNativeVoiceRecording();
-          });
         }
       },
     );
@@ -537,17 +537,30 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   void _stopNativeVoiceRecording() {
     _voiceDebounceTimer?.cancel();
     final speech = Provider.of<SpeechService>(context, listen: false);
+    final finalWords = _lastRecognizedVoiceText.trim().isNotEmpty
+        ? _lastRecognizedVoiceText.trim()
+        : speech.lastWords.trim();
     speech.stopListening();
     _controller.runJavaScript(
       "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
     );
-    if (_lastRecognizedVoiceText.isNotEmpty) {
-      final safeFinal = jsonEncode(_lastRecognizedVoiceText);
+    if (finalWords.isNotEmpty) {
+      final safeFinal = jsonEncode(finalWords);
       _controller.runJavaScript(
         "if (typeof window.onNativeVoiceResult === 'function') { window.onNativeVoiceResult($safeFinal); }"
       );
-      _lastRecognizedVoiceText = '';
     }
+    _lastRecognizedVoiceText = '';
+  }
+
+  void _cancelNativeVoiceRecording() {
+    _voiceDebounceTimer?.cancel();
+    _lastRecognizedVoiceText = '';
+    final speech = Provider.of<SpeechService>(context, listen: false);
+    speech.cancelListening();
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
+    );
   }
 
   Future<void> _startNativeChatVoiceRecording() async {
@@ -575,23 +588,37 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           _controller.runJavaScript(
             "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, $safePartial); }"
           );
-          _chatVoiceDebounceTimer?.cancel();
-          // Aguarda 1.6s após a pessoa parar de falar para enviar o resultado final unificado
-          _chatVoiceDebounceTimer = Timer(const Duration(milliseconds: 1600), () {
-            speech.stopListening();
-            _controller.runJavaScript(
-              "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
-            );
-            if (_lastChatRecognizedText.isNotEmpty) {
-              final safeTextJson = jsonEncode(_lastChatRecognizedText);
-              _controller.runJavaScript(
-                "if (typeof window.onNativeChatVoiceResult === 'function') { window.onNativeChatVoiceResult($safeTextJson); }"
-              );
-              _lastChatRecognizedText = '';
-            }
-          });
         }
       },
+    );
+  }
+
+  void _stopNativeChatVoiceRecording() {
+    _chatVoiceDebounceTimer?.cancel();
+    final speech = Provider.of<SpeechService>(context, listen: false);
+    final finalWords = _lastChatRecognizedText.trim().isNotEmpty
+        ? _lastChatRecognizedText.trim()
+        : speech.lastWords.trim();
+    speech.stopListening();
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
+    );
+    if (finalWords.isNotEmpty) {
+      final safeTextJson = jsonEncode(finalWords);
+      _controller.runJavaScript(
+        "if (typeof window.onNativeChatVoiceResult === 'function') { window.onNativeChatVoiceResult($safeTextJson); }"
+      );
+    }
+    _lastChatRecognizedText = '';
+  }
+
+  void _cancelNativeChatVoiceRecording() {
+    _chatVoiceDebounceTimer?.cancel();
+    _lastChatRecognizedText = '';
+    final speech = Provider.of<SpeechService>(context, listen: false);
+    speech.cancelListening();
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
     );
   }
 
