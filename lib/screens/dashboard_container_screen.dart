@@ -30,6 +30,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   final OcrService _ocrService = OcrService();
   FlutterTts? _flutterTts;
   DateTime? _lastBackPressTime;
+  bool _isPickingExternalMedia = false;
   Timer? _chatVoiceDebounceTimer;
   String _lastChatRecognizedText = '';
   Timer? _voiceDebounceTimer;
@@ -62,15 +63,44 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     _initWebViewController();
   }
 
+  Future<void> _checkPendingNativeMedTaken() async {
+    try {
+      final res = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+          .invokeMethod('consumePendingMedTaken');
+      if (res != null && res is Map) {
+        final title = res['title']?.toString() ?? '';
+        final safeTitle = jsonEncode(title);
+        _controller.runJavaScript("""
+          if (typeof window.onNativeNotificationMedTaken === 'function') {
+            window.onNativeNotificationMedTaken($safeTitle);
+          }
+        """);
+      }
+    } catch (e) {
+      debugPrint('Aviso ao checar consumePendingMedTaken: $e');
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.paused) {
+      if (!_isPickingExternalMedia) {
+        _controller.runJavaScript("""
+          localStorage.setItem('financas_session_locked', 'true');
+          sessionStorage.removeItem('pigctrl_session_authenticated');
+          if (typeof window.lockAppSessionNow === 'function') {
+            window.lockAppSessionNow();
+          }
+        """);
+      }
+    } else if (state == AppLifecycleState.resumed) {
       // Revalida autenticação biométrica/sessão e status real de permissão ao retornar do segundo plano
       _controller.runJavaScript("""
         if (typeof window.onAppResumedFromBackground === 'function') {
           window.onAppResumedFromBackground();
         }
       """);
+      _checkPendingNativeMedTaken();
       Permission.notification.status.then((status) {
         final granted = status.isGranted;
         _controller.runJavaScript("""
@@ -256,8 +286,26 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         } catch (e) {
           debugPrint('Aviso ao disparar notificação nativa: $e');
         }
+      } else if (action == 'schedule_med_alarms') {
+        final rawAlarms = data['alarms'];
+        if (rawAlarms is List) {
+          final List<Map<String, dynamic>> alarms = rawAlarms
+              .whereType<Map>()
+              .map((m) => Map<String, dynamic>.from(m))
+              .toList();
+          try {
+            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                .invokeMethod('scheduleMedAlarms', {'alarms': alarms});
+          } catch (e) {
+            debugPrint('Aviso ao agendar alarmes nativos: $e');
+          }
+        }
       } else if (action == 'open_app_settings') {
+        _isPickingExternalMedia = true;
         await openAppSettings();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'check_notification_permission') {
         final status = await Permission.notification.status;
         final granted = status.isGranted;
@@ -277,24 +325,56 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           debugPrint('Aviso ao atualizar ícone dinâmico do launcher: $e');
         }
       } else if (action == 'pick_invoice_camera') {
-        _pickInvoicePhoto(source: ImageSource.camera);
+        _isPickingExternalMedia = true;
+        await _pickInvoicePhoto(source: ImageSource.camera);
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_invoice_gallery') {
-        _pickInvoicePhotosFromGallery();
+        _isPickingExternalMedia = true;
+        await _pickInvoicePhotosFromGallery();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'start_camera_ocr') {
-        _pickInvoicePhoto(source: ImageSource.camera);
+        _isPickingExternalMedia = true;
+        await _pickInvoicePhoto(source: ImageSource.camera);
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_chat_photo') {
-        _pickChatPhoto();
+        _isPickingExternalMedia = true;
+        await _pickChatPhoto();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_logo_image') {
-        _pickLogoImage();
+        _isPickingExternalMedia = true;
+        await _pickLogoImage();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_avatar_photo') {
+        _isPickingExternalMedia = true;
         final member = data['member'] as String? ?? 'rodrigo';
         final source = data['source'] as String? ?? 'gallery';
-        _pickAvatarPhoto(member, source: source);
+        await _pickAvatarPhoto(member, source: source);
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_pet_photo') {
+        _isPickingExternalMedia = true;
         final source = data['source'] as String? ?? 'gallery';
-        _pickPetPhoto(source: source);
+        await _pickPetPhoto(source: source);
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'authenticate_biometric' || action == 'authenticate_biometrics') {
-        _authenticateBiometric();
+        _isPickingExternalMedia = true;
+        await _authenticateBiometric();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'sync_transaction') {
         // Conexão Web -> Flutter -> Supabase
         final txMap = data['transaction'];
@@ -396,6 +476,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     _voiceDebounceTimer?.cancel();
     _lastRecognizedVoiceText = '';
 
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, ''); }"
+    );
+
     await speech.startListening(
       finalOnly: false,
       onResult: (text) {
@@ -404,9 +488,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           _lastRecognizedVoiceText = trimmed;
           // Envia texto parcial em tempo real para exibir na tela enquanto a pessoa fala
           final safePartial = jsonEncode(_lastRecognizedVoiceText);
-          _controller.runJavaScript(
-            "if (typeof window.onNativeVoiceInterimResult === 'function') { window.onNativeVoiceInterimResult($safePartial); }"
-          );
+          _controller.runJavaScript("""
+            if (typeof window.onNativeVoiceInterimResult === 'function') { window.onNativeVoiceInterimResult($safePartial); }
+            if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, $safePartial); }
+          """);
 
           _voiceDebounceTimer?.cancel();
           // Aguarda 3.2 segundos de silêncio após a fala antes de finalizar e processar
@@ -422,6 +507,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     _voiceDebounceTimer?.cancel();
     final speech = Provider.of<SpeechService>(context, listen: false);
     speech.stopListening();
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
+    );
     if (_lastRecognizedVoiceText.isNotEmpty) {
       final safeFinal = jsonEncode(_lastRecognizedVoiceText);
       _controller.runJavaScript(
@@ -442,16 +530,27 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     _chatVoiceDebounceTimer?.cancel();
     _lastChatRecognizedText = '';
 
+    _controller.runJavaScript(
+      "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, ''); }"
+    );
+
     await speech.startListening(
       finalOnly: false,
       onResult: (text) {
         final trimmed = text.trim();
         if (trimmed.isNotEmpty) {
           _lastChatRecognizedText = trimmed;
+          final safePartial = jsonEncode(_lastChatRecognizedText);
+          _controller.runJavaScript(
+            "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(true, $safePartial); }"
+          );
           _chatVoiceDebounceTimer?.cancel();
           // Aguarda 1.6s após a pessoa parar de falar para enviar o resultado final unificado
           _chatVoiceDebounceTimer = Timer(const Duration(milliseconds: 1600), () {
             speech.stopListening();
+            _controller.runJavaScript(
+              "if (typeof window.onNativeMicrophoneRecordingState === 'function') { window.onNativeMicrophoneRecordingState(false, ''); }"
+            );
             if (_lastChatRecognizedText.isNotEmpty) {
               final safeTextJson = jsonEncode(_lastChatRecognizedText);
               _controller.runJavaScript(

@@ -1737,16 +1737,13 @@
               <span class="text-xl sm:text-2xl animate-bounce">👋</span>
             </h1>
 
-            <!-- Saldo Disponível em Destaque (Linha Fixa Sem Quebra no Badge Saldo Positivo) -->
-            <div class="mt-2">
-              <div class="text-xs sm:text-sm font-medium text-blue-100 leading-tight">Saldo Livre Disponível:</div>
-              <div class="mt-0.5 flex items-center gap-2.5 flex-nowrap whitespace-nowrap">
-                <span id="heroSaldoDisponivelVal" class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white tabular-nums whitespace-nowrap">R$ 0,00</span>
-                <span id="heroSaldoStatusBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm whitespace-nowrap flex-shrink-0">
-                  <i data-lucide="check-circle" class="w-3 h-3"></i>
-                  <span>Saldo Positivo</span>
-                </span>
-              </div>
+            <!-- Saldo Disponível em Destaque: Texto "Saldo Positivo:" ao lado do valor na mesma linha -->
+            <div class="mt-2.5 flex items-baseline gap-2.5 flex-nowrap whitespace-nowrap">
+              <span id="heroSaldoStatusBadge" class="inline-flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-emerald-200 whitespace-nowrap flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-300"></i>
+                <span id="heroSaldoLabelText">Saldo Positivo:</span>
+              </span>
+              <span id="heroSaldoDisponivelVal" class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white tabular-nums whitespace-nowrap">R$ 0,00</span>
             </div>
 
             <!-- 3 Botões de Ação do Novo Mockup (Família, + Receitas, - Gastos) -->
@@ -16659,8 +16656,24 @@ Frase falada: "${spokenText}"`;
             </button>
             <button type="button" onclick="triggerAdminRealMedNotificationTest()" class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
               <i data-lucide="smartphone" class="w-4 h-4"></i>
-              <span>📲 Disparar Notificação Real no Celular (Teste Alarme de Remédio)</span>
+              <span>📲 Disparar Notificação Branca Real no Celular (Teste Remédio)</span>
             </button>
+          </div>
+        </div>
+
+        <!-- SEÇÃO: PERSONALIZAR O QUE MOSTRAR NO DASHBOARD (ATIVAR / DESABILITAR MÓDULOS) -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+              <span>🎛️</span><span>Personalizar Meu Dashboard</span>
+            </h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Mostrar / Ocultar</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
+            Toque nos módulos abaixo para desabilitar o que não quiser mostrar na tela principal. Você pode reativar quando quiser:
+          </p>
+          <div id="adminDashboardModulesToggleList" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+            <!-- Gerado dinamicamente por renderAdminDashboardCustomizer() -->
           </div>
         </div>
 
@@ -17986,11 +17999,24 @@ Frase falada: "${spokenText}"`;
               <span>⏰ Individual</span>
             </label>
           </div>
-          <div class="mt-2 flex items-center justify-between gap-2 p-2 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800">
-            <label for="newMedHorarioIndividual" class="font-bold text-[11px] text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-              <span>⏰ Horário Individualizado deste Remédio:</span>
-            </label>
-            <input type="time" id="newMedHorarioIndividual" value="12:00" class="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-xs text-slate-900 dark:text-white">
+          <div class="mt-2 grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800">
+            <div>
+              <label for="newMedHorarioIndividual" class="block font-bold text-[11px] text-slate-700 dark:text-slate-200 mb-1">
+                ⏰ Horário do Remédio:
+              </label>
+              <input type="time" id="newMedHorarioIndividual" value="08:00" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-xs text-slate-900 dark:text-white">
+            </div>
+            <div>
+              <label for="newMedVezesDia" class="block font-bold text-[11px] text-slate-700 dark:text-slate-200 mb-1">
+                🔁 Quantas vezes ao dia?
+              </label>
+              <select id="newMedVezesDia" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white">
+                <option value="1">1x ao dia</option>
+                <option value="2">2x ao dia (12/12h)</option>
+                <option value="3">3x ao dia (8/8h)</option>
+                <option value="4">4x ao dia (6/6h)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -18235,12 +18261,6 @@ Frase falada: "${spokenText}"`;
         </div>
 
         <div class="flex items-center gap-2">
-
-          <!-- Botão Testar Alarme & Notificação em 5s -->
-          <button type="button" onclick="triggerTestMedicationAlarm5s()" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer" title="Testar som alto, voz e banner flutuante em 5 segundos no celular">
-            <i data-lucide="play" class="w-3.5 h-3.5"></i>
-            <span>🧪 Testar Alarme (5s)</span>
-          </button>
           <!-- Toggle do Alarme de Voz (10 min antes) -->
           <button type="button" onclick="toggleHealthVoiceAlarm()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer" title="Ativar ou desativar notificação e narração de voz antecipada">
             <i data-lucide="bell-ring" id="healthVoiceAlarmIcon" class="w-3.5 h-3.5 text-sky-500"></i>
@@ -18251,35 +18271,6 @@ Frase falada: "${spokenText}"`;
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
-      </div>
-
-      <!-- LISTAGEM DINÂMICA DE MEDICAMENTOS EM USO DIÁRIO (CADA REMÉDIO EM SUA LINHA COM HORÁRIO INDIVIDUAL E EDIÇÃO) -->
-      <div class="my-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/80 border border-slate-200 dark:border-slate-800 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs font-black text-slate-800 dark:text-slate-200">
-            <span>📋</span>
-            <span>Medicamentos em Uso Diário:</span>
-          </div>
-          <span id="dailyContinuousMedsCountBadge" class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-300 dark:border-sky-800">4 remédios</span>
-        </div>
-        <div id="dailyContinuousMedsListContainer" class="space-y-1.5 text-xs">
-          <!-- Preenchido dinamicamente por renderHealthMedsUI() com cada medicamento, horário individualizado, estimativa de término e botão Editar -->
-        </div>
-      </div>
-
-      <!-- BANNER DE TESTE DO ALARME DE VOZ ANTECIPADO (10 MIN) -->
-      <div class="my-3 p-3 rounded-2xl bg-gradient-to-r from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/40 border border-sky-200 dark:border-sky-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <span class="text-xl">🎙️</span>
-          <div>
-            <div class="font-extrabold text-xs text-sky-950 dark:text-sky-100">Alarme e Narração por Voz 10 Minutos Antes</div>
-            <div class="text-[11px] text-sky-700 dark:text-sky-300">O app avisa antes da hora falando os remédios e quantidades exatas.</div>
-          </div>
-        </div>
-        <button type="button" onclick="testHealthVoiceAlarmNow()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
-          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-          <span>Ouvir Alarme Agora (Teste)</span>
-        </button>
       </div>
 
             <!-- BOTÃO PROEMINENTE: ADICIONAR NOVO MEDICAMENTO -->
@@ -19027,6 +19018,7 @@ Frase falada: "${spokenText}"`;
         { value: 'Veículo', label: 'Veículo / Combustível', icon: '🚗', sub: 'Gasolina, seguro, IPVA, oficina' },
         { value: 'Transporte', label: 'Transporte', icon: '🚌', sub: 'Uber, metrô, ônibus' },
         { value: 'Saúde', label: 'Saúde & Farmácia', icon: '💊', sub: 'Remédios, exames, consultas' },
+        { value: 'Vestuário', label: 'Vestuário & Calçados', icon: '👕', sub: 'Roupas, calçados e acessórios' },
         { value: 'Educação', label: 'Educação & Cursos', icon: '📚', sub: 'Cursos, livros, mensalidade' },
         { value: 'Lazer', label: 'Lazer & Passeios', icon: '🎉', sub: 'Restaurante, streaming, viagens' },
         { value: 'Salário', label: 'Salário / Renda', icon: '💰', sub: 'Entradas principais e extras' },
@@ -21282,10 +21274,23 @@ Retorne estritamente em JSON puro sem markdown no formato:
           </div>
         </div>
 
-        <div id="divEditMedCustomHorario" class="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
-          <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">⏰ Horário Individualizado deste Remédio (HH:MM)</label>
-          <input type="time" id="editMedCustomHorario" value="08:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white">
-          <p class="text-[10px] text-slate-500 mt-1">Defina o horário exato em que você toma este medicamento para receber o alarme individualizado.</p>
+        <div id="divEditMedCustomHorario" class="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 space-y-2">
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">⏰ Horário Individual (HH:MM)</label>
+              <input type="time" id="editMedCustomHorario" value="08:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold text-slate-900 dark:text-white">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-800 dark:text-slate-200 mb-1">🔁 Quantas vezes por dia?</label>
+              <select id="editMedVezesDia" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white">
+                <option value="1">1x ao dia</option>
+                <option value="2">2x ao dia (12/12h)</option>
+                <option value="3">3x ao dia (8/8h)</option>
+                <option value="4">4x ao dia (6/6h)</option>
+              </select>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500">Defina o horário individualizado e quantas vezes ao dia toma este medicamento para o cálculo exato do estoque e alarme.</p>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
@@ -23233,6 +23238,699 @@ Frase falada: "${spokenText}"`;
     setTimeout(() => {
       window.syncHeroCardEyeAndBalance();
     }, 250);
+  });
+})();
+</script>
+
+
+<!-- ============================================================================
+     SPRINT V2.0.3:
+     1. FREQUÊNCIA DIÁRIA DE REMÉDIOS (1x, 2x, 3x, 4x AO DIA) & ALARMES COM APP FECHADO
+     2. FILTRO INTELIGENTE DE PRODUTOS NA LISTA POR VOZ (IGNORA FRASES DE CONVERSA)
+     3. INDICADOR VISUAL PULSANTE "🔴 MICROFONE LIGADO — OUVINDO VOCÊ AGORA..."
+     4. CARD AZUL: "🟢 Saldo Positivo: R$ 1.200,00" NA MESMA LINHA + SOMA IMEDIATA DE PARCELADOS
+     5. BLOQUEIO AUTOMÁTICO DE LOGIN/BIOMETRIA AO SAIR E VOLTAR PARA O APP
+     6. PERSONALIZADOR DE MÓDULOS DO DASHBOARD NO ADMIN (MOSTRAR / OCULTAR)
+     ============================================================================ -->
+<script>
+(function() {
+  // --------------------------------------------------------------------------
+  // 1. INDICADOR VISUAL CLARO DE GRAVAÇÃO DE ÁUDIO ("🔴 MICROFONE LIGADO")
+  // --------------------------------------------------------------------------
+  window.onNativeMicrophoneRecordingState = function(isRecording, partialText) {
+    let hud = document.getElementById('voiceRecordingActiveHud');
+    if (!isRecording) {
+      if (hud) hud.classList.add('hidden');
+      return;
+    }
+    if (!hud) {
+      hud = document.createElement('div');
+      hud.id = 'voiceRecordingActiveHud';
+      hud.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[120] max-w-md w-[92vw] p-3.5 rounded-2xl bg-slate-950/95 text-white border-2 border-rose-500 shadow-2xl backdrop-blur-md transition-all';
+      document.body.appendChild(hud);
+    }
+    hud.classList.remove('hidden');
+    const preview = partialText && String(partialText).trim()
+      ? `"${escapeHtml(String(partialText).trim())}"`
+      : 'Pode falar agora... estamos ouvindo você!';
+
+    hud.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-600 text-white flex-shrink-0 animate-pulse shadow-lg">
+            <span class="text-lg">🎙️</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+              <span class="font-black text-xs uppercase tracking-wider text-rose-400">Áudio Ligado • Gravando</span>
+            </div>
+            <div class="text-xs font-semibold text-slate-100 truncate mt-0.5">${preview}</div>
+          </div>
+        </div>
+        <button type="button" onclick="if(window.FlutterBridge) window.FlutterBridge.postMessage(JSON.stringify({action:'stop_listen'})); document.getElementById('voiceRecordingActiveHud')?.classList.add('hidden');" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-[11px] flex-shrink-0 cursor-pointer">
+          ⏹️ Parar
+        </button>
+      </div>
+    `;
+  };
+
+  // Mostra o HUD imediatamente ao clicar nos botões de comando de voz
+  const _origStartShoppingVoice = window.startShoppingListVoiceInput;
+  if (typeof _origStartShoppingVoice === 'function') {
+    window.startShoppingListVoiceInput = function() {
+      window.onNativeMicrophoneRecordingState(true, 'Fale os produtos da lista de compras...');
+      _origStartShoppingVoice();
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 2. FILTRO INTELIGENTE DE PRODUTOS NA LISTA DE COMPRAS POR VOZ
+  //    (Ignora frases conversacionais e verbos; adiciona somente produtos reais)
+  // --------------------------------------------------------------------------
+  const NON_PRODUCT_CONVERSATIONAL_PATTERNS = [
+    /\b(testando|teste|gravando|ouvindo|funcionando|funciona|microfone|audio|áudio|alô|alo|oi|olá|ola|bom dia|boa tarde|boa noite)\b/i,
+    /\b(não sei|nao sei|vamos ver|acho que|será que|sera que|como faz|onde fica|me fala|pode ser|tá ligado|ta ligado)\b/i,
+    /\b(marcia|márcia|rodrigo|amor|filho|filha|gente|pessoal)\b/i
+  ];
+
+  const COMMAND_PREFIX_STRIP = /^(?:eu\s+)?(?:quero|preciso|vamos|pode|favor|coloca|coloque|adiciona|adicione|inclui|inclua|anota|anote|comprar|compra|pegar|pega|botar|bota|na\s+lista|de\s+compras|item|itens|produto|produtos|\s)+/i;
+
+  window.isLikelyRealShoppingProduct = function(rawName) {
+    if (!rawName) return false;
+    const clean = String(rawName).trim();
+    if (clean.length < 2 || clean.length > 42) return false;
+
+    for (const pat of NON_PRODUCT_CONVERSATIONAL_PATTERNS) {
+      if (pat.test(clean)) return false;
+    }
+
+    // Uma frase longa (> 5 palavras) não é nome de produto
+    const words = clean.split(/\s+/).filter(Boolean);
+    if (words.length > 5) return false;
+
+    // Rejeita se tiver verbos conversacionais explícitos no meio
+    if (/\b(estou|está|esta|estava|falei|falou|disse|queria|sabia|vendo|fazendo|tentando|ligado|desligado)\b/i.test(clean)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  window.cleanSpokenProductChunk = function(chunk) {
+    let s = String(chunk || '').trim();
+    s = s.replace(COMMAND_PREFIX_STRIP, '').trim();
+    s = s.replace(/\s+(?:na\s+lista|por\s+favor|também|tambem|aqui|agora)$/i, '').trim();
+    return s;
+  };
+
+  window.parseShoppingListSpeechWithGemini = async function(transcript) {
+    window.onNativeMicrophoneRecordingState(false, '');
+    const cleanText = String(transcript || '').trim();
+    if (!cleanText) return;
+
+    showToastUndo(`🎙️ Analisando produtos: "${cleanText}"...`, false);
+
+    let extractedItems = [];
+    const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+
+    if (apiKey) {
+      try {
+        const prompt = `Você é um classificador rigoroso de Lista de Compras de Supermercado/Farmácia do app ControlPig.
+O usuário falou: "${cleanText}".
+REGRA CRÍTICA:
+- Extraia SOMENTE produtos reais de mercado, feira, açougue, padaria ou farmácia.
+- IGNORE TOTALMENTE frases de conversa, testes de microfone, perguntas, cumprimentos ou verbos (ex: "quero comprar", "coloca na lista", "testando se o áudio está ligado", "amor vê se tem"). Uma frase NÃO é um produto!
+- Se a fala não contiver nenhum produto real, retorne {"itens": []}.
+Retorne APENAS um JSON válido no formato:
+{"itens": [{"produto": "Nome do Produto", "quantidade": 1, "unidade": "un", "preco": 0.0, "estabelecimento": ""}]}
+Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha preco com o valor numérico unitário.`;
+
+        const parsed = await window.callGeminiAPI([{ text: prompt }], 0.1);
+        if (parsed && Array.isArray(parsed.itens)) {
+          extractedItems = parsed.itens.filter(it => window.isLikelyRealShoppingProduct(it.produto));
+        }
+      } catch (e) {
+        console.warn('Fallback local para lista de compras por voz:', e);
+      }
+    }
+
+    if (extractedItems.length === 0) {
+      // Se a frase inteira for claramente conversa/teste e sem IA, rejeita antes de quebrar
+      const parts = cleanText
+        .split(/(?:,|\s+e\s+|\s+mais\s+|\s+também\s+|;)/i)
+        .map(s => window.cleanSpokenProductChunk(s))
+        .filter(s => s.length > 1);
+
+      for (const p of parts) {
+        const priceMatch = p.match(/(?:por|a|de|r\$|\$)?\s*(\d+[.,]\d{1,2}|\d+)\s*(?:reais|real|conto)?$/i);
+        let prodPart = p;
+        let priceVal = 0;
+        if (priceMatch) {
+          priceVal = parseFloat(priceMatch[1].replace(',', '.')) || 0;
+          prodPart = p.slice(0, priceMatch.index).replace(/(?:por|a|de|r\$|custando|valor)\s*$/i, '').trim();
+        }
+        const qtdMatch = prodPart.match(/^(\d+(?:[.,]\d+)?)\s*(kg|quilos?|g|gramas?|l|litros?|un|unidades?|pacotes?|caixas?|garrafas?|latas?|fardos?)?\s+(?:de\s+)?(.+)$/i);
+        let qtd = 1;
+        let un = 'un';
+        let nome = prodPart;
+        if (qtdMatch) {
+          qtd = parseFloat(qtdMatch[1].replace(',', '.')) || 1;
+          const rawUn = (qtdMatch[2] || 'un').toLowerCase();
+          if (rawUn.startsWith('kg') || rawUn.startsWith('quilo')) un = 'kg';
+          else if (rawUn.startsWith('l') && !rawUn.startsWith('lata')) un = 'L';
+          else if (rawUn.startsWith('g') && !rawUn.startsWith('garrafa')) un = 'g';
+          else un = 'un';
+          nome = qtdMatch[3].trim();
+        }
+        nome = window.cleanSpokenProductChunk(nome);
+        if (nome && window.isLikelyRealShoppingProduct(nome)) {
+          extractedItems.push({
+            produto: nome.charAt(0).toUpperCase() + nome.slice(1),
+            quantidade: qtd,
+            unidade: un,
+            preco: priceVal
+          });
+        }
+      }
+    }
+
+    if (extractedItems.length === 0) {
+      showToastUndo('🎙️ Nenhum produto de compra identificado na fala (frases soltas são ignoradas).', false);
+      return;
+    }
+
+    const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
+    const addedNames = [];
+
+    extractedItems.forEach(item => {
+      const nome = String(item.produto || '').trim();
+      if (!nome || !window.isLikelyRealShoppingProduct(nome)) return;
+      const qtd = parseFloat(item.quantidade) || 1;
+      const unidade = item.unidade || 'un';
+      const preco = parseFloat(item.preco) || 0;
+      const loja = item.estabelecimento || 'Supermercado';
+
+      if (typeof builderSelectedItems !== 'undefined') {
+        builderSelectedItems[nome] = {
+          selected: true,
+          qtd: qtd,
+          unidade: unidade,
+          lojaNome: loja,
+          preco: preco,
+          ultimoPreco: preco
+        };
+      }
+
+      if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
+        if (!customBuilderProducts.some(p => p.produto.toLowerCase() === nome.toLowerCase())) {
+          customBuilderProducts.push({ produto: nome, categoria: 'Mercearia', unidade: unidade, precoEstimado: preco });
+          localStorage.setItem('financas_custom_builder_products', JSON.stringify(customBuilderProducts));
+        }
+      }
+
+      activeItems.push({
+        id: 'shop_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        nome: nome,
+        qtd: qtd,
+        unidade: unidade,
+        precoEstimado: preco,
+        loja: loja,
+        comprado: false
+      });
+
+      if (preco > 0 && typeof priceHistory !== 'undefined') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        priceHistory.unshift({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          produto: nome,
+          estabelecimento: loja,
+          data: todayStr,
+          preco: preco,
+          precoAnterior: null,
+          unidade: unidade
+        });
+        if (typeof savePriceHistory === 'function') savePriceHistory();
+      }
+
+      addedNames.push(`${qtd} ${unidade} ${nome}${preco > 0 ? ` (R$ ${preco.toFixed(2).replace('.', ',')})` : ''}`);
+    });
+
+    if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
+    if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
+    if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+
+    if (addedNames.length > 0) {
+      showToastUndo(`🛒 Adicionado à lista: ${addedNames.join(', ')}`, false);
+      if (typeof playChatDing === 'function') playChatDing();
+      if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // 3. FREQUÊNCIA DIÁRIA DE REMÉDIOS ("Quantas vezes ao dia?") + AGENDAMENTO
+  //    NO ALARM MANAGER DO ANDROID PARA FUNCIONAR MESMO COM O APP FECHADO
+  // --------------------------------------------------------------------------
+  window.getMedTimesPerDay = function(med) {
+    if (med.vezesAoDia && parseInt(med.vezesAoDia, 10) > 0) {
+      return parseInt(med.vezesAoDia, 10);
+    }
+    const r = Array.isArray(med.rotinas) ? med.rotinas : [];
+    if (r.includes('morning') && r.includes('evening')) return 2;
+    return 1;
+  };
+
+  window.getMedDaysRemaining = function(med) {
+    const timesPerDay = window.getMedTimesPerDay(med);
+    const dosePerTime = Math.max(1, parseInt(med.dosePorVez, 10) || 1);
+    const dailyConsumption = Math.max(1, timesPerDay * dosePerTime);
+    const stock = Math.max(0, parseInt(med.estoqueAtual, 10) || 0);
+    return Math.floor(stock / dailyConsumption);
+  };
+
+  window.syncNativeAndroidMedAlarms = function() {
+    if (!window.FlutterBridge || typeof window.FlutterBridge.postMessage !== 'function') return;
+    try {
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+      const alarms = [];
+
+      meds.forEach((m, index) => {
+        const timesPerDay = window.getMedTimesPerDay(m);
+        const rawTime = m.horario || (m.rotinas && m.rotinas.includes('evening') ? (settings.eveningTime || '20:00') : (settings.morningTime || '08:00'));
+        const parts = String(rawTime).split(':');
+        if (parts.length === 2) {
+          const h = parseInt(parts[0], 10);
+          const min = parseInt(parts[1], 10);
+          if (!isNaN(h) && !isNaN(min)) {
+            alarms.push({
+              id: 8000 + index,
+              hour: h,
+              minute: min,
+              title: `⏰ Hora do Remédio: ${m.nome} (${rawTime})`,
+              body: `Tomar ${m.dosePorVez || 1} cp (${timesPerDay}x ao dia). Estoque: ${m.estoqueAtual} un (~${window.getMedDaysRemaining(m)} dias).`
+            });
+          }
+        }
+      });
+
+      window.FlutterBridge.postMessage(JSON.stringify({
+        action: 'schedule_med_alarms',
+        alarms: alarms
+      }));
+    } catch (e) {
+      console.warn('Aviso ao sincronizar alarmes nativos Android:', e);
+    }
+  };
+
+  // Quando o usuário clica em "✓ Já Tomei" direto na notificação branca do Android (mesmo com o app fechado)
+  window.onNativeNotificationMedTaken = function(notifTitle) {
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const todayStr = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    let matched = false;
+
+    meds.forEach(m => {
+      if (notifTitle && notifTitle.toLowerCase().includes(m.nome.toLowerCase())) {
+        m.ultimaDoseData = todayStr;
+        m.lastTakenCustomDate = todayStr;
+        m.lastTakenCustomTime = nowTime;
+        m.estoqueAtual = Math.max(0, (m.estoqueAtual || 0) - (m.dosePorVez || 1));
+        matched = true;
+      }
+    });
+
+    if (matched) {
+      saveHealthMeds(meds);
+      if (typeof renderHealthMedsUI === 'function') renderHealthMedsUI();
+      showToastUndo('✅ Dose confirmada pela notificação do celular e descontada do estoque!', false);
+    }
+  };
+
+  // Atualiza handleSaveNewContinuousMed, openEditMedicationModal, saveEditedMedication e renderHealthMedsUI para incluir "vezesAoDia"
+  window.handleSaveNewContinuousMed = function(e) {
+    e.preventDefault();
+    const nome = document.getElementById('newMedNome').value.trim();
+    const concentracao = document.getElementById('newMedConcentracao').value.trim();
+    const tipo = document.getElementById('newMedTipo').value.trim();
+    const checkedRotinas = Array.from(document.querySelectorAll('input[name="newMedRotina"]:checked')).map(cb => cb.value);
+    const horarioIndiv = (document.getElementById('newMedHorarioIndividual')?.value || '08:00').trim();
+    const vezesDia = parseInt(document.getElementById('newMedVezesDia')?.value || '1', 10) || 1;
+    
+    const cartelaAberta = parseInt(document.getElementById('newMedCartelaAberta')?.value, 10) || 0;
+    const compPorCartela = parseInt(document.getElementById('newMedCompPorCartela')?.value, 10) || 10;
+    const cartelasFechadas = parseInt(document.getElementById('newMedCartelasFechadas')?.value, 10) || 0;
+    const estoque = parseInt(document.getElementById('newMedEstoque')?.value, 10) || (cartelaAberta + (cartelasFechadas * compPorCartela));
+    const preco = parseFloat(document.getElementById('newMedPreco').value.replace(',', '.')) || 25.00;
+
+    if (!nome) return;
+
+    let finalRotinas = checkedRotinas.length > 0 ? checkedRotinas : ['custom'];
+    if (vezesDia >= 2 && !finalRotinas.includes('morning') && !finalRotinas.includes('evening')) {
+      finalRotinas = ['morning', 'evening'];
+    }
+
+    const meds = getHealthMeds();
+    meds.push({
+      id: 'med_' + Date.now(),
+      nome: nome,
+      concentracao: concentracao,
+      tipo: tipo,
+      indicacao: tipo,
+      vezesAoDia: vezesDia,
+      frequencia: `${vezesDia}x ao dia (${horarioIndiv})`,
+      horariosPadrao: [horarioIndiv],
+      horario: horarioIndiv,
+      dosePorVez: 1,
+      unidadeDose: 'comprimido',
+      cartelaAberta: cartelaAberta,
+      compPorCartela: compPorCartela,
+      cartelasFechadas: cartelasFechadas,
+      estoqueAtual: estoque,
+      estoqueAlerta: 5,
+      precoMedio: preco,
+      rotinas: finalRotinas
+    });
+
+    saveHealthMeds(meds);
+    renderHealthMedsUI();
+    window.syncNativeAndroidMedAlarms();
+    closeAddNewContinuousMedModal();
+    showToastUndo(`✓ "${nome}" (${vezesDia}x ao dia • ${horarioIndiv}) cadastrado! 💊`, false);
+  };
+
+  const _origOpenEditMedV201 = window.openEditMedicationModal;
+  window.openEditMedicationModal = function(medId) {
+    if (typeof _origOpenEditMedV201 === 'function') _origOpenEditMedV201(medId);
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const med = meds.find(m => m.id === medId);
+    if (!med) return;
+    const vezesSel = document.getElementById('editMedVezesDia');
+    if (vezesSel) {
+      vezesSel.value = String(window.getMedTimesPerDay(med));
+    }
+  };
+
+  window.saveEditedMedication = function() {
+    const id = document.getElementById('editMedId').value;
+    const nome = document.getElementById('editMedNome').value.trim();
+    const tipo = document.getElementById('editMedTipo').value.trim();
+    const rotinaVal = document.getElementById('editMedRotina').value;
+    const customTime = (document.getElementById('editMedCustomHorario')?.value || '08:00').trim();
+    const vezesDia = parseInt(document.getElementById('editMedVezesDia')?.value || '1', 10) || 1;
+    const estoque = parseInt(document.getElementById('editMedEstoque').value, 10) || 0;
+    const preco = parseFloat(document.getElementById('editMedPreco').value) || 0;
+
+    if (!nome) {
+      showToastUndo('Por favor, informe o nome do medicamento.', false);
+      return;
+    }
+
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+    let rotinas = [];
+    let horario = customTime || '08:00';
+
+    if (rotinaVal === 'both' || vezesDia >= 2) {
+      rotinas = ['morning', 'evening'];
+    } else if (rotinaVal === 'morning') {
+      rotinas = (customTime && customTime !== (settings.morningTime || '08:00')) ? ['custom'] : ['morning'];
+    } else if (rotinaVal === 'evening') {
+      rotinas = (customTime && customTime !== (settings.eveningTime || '20:00')) ? ['custom'] : ['evening'];
+    } else {
+      rotinas = ['custom'];
+    }
+
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const idx = meds.findIndex(m => m.id === id);
+    if (idx !== -1) {
+      meds[idx].nome = nome;
+      meds[idx].tipo = tipo;
+      meds[idx].rotinas = rotinas;
+      meds[idx].horario = horario;
+      meds[idx].vezesAoDia = vezesDia;
+      meds[idx].horariosPadrao = [horario];
+      meds[idx].frequencia = `${vezesDia}x ao dia (${horario})`;
+      meds[idx].estoqueAtual = estoque;
+      meds[idx].precoMedio = preco;
+      saveHealthMeds(meds);
+      renderHealthMedsUI();
+      window.syncNativeAndroidMedAlarms();
+      closeEditMedicationModal();
+      if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+      showToastUndo(`💊 "${nome}" atualizado (${vezesDia}x ao dia • ${horario})!`, false);
+    }
+  };
+
+  // Enriquecer os cards de Doses e Controle de Estoque com "🔁 Toma: Xx ao dia"
+  const _origRenderHealthMedsV201 = window.renderHealthMedsUI;
+  window.renderHealthMedsUI = function() {
+    if (typeof _origRenderHealthMedsV201 === 'function') {
+      _origRenderHealthMedsV201();
+    }
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+
+    const stockGridEl = document.getElementById('healthMedsStockGrid');
+    if (stockGridEl) {
+      stockGridEl.innerHTML = meds.map(m => {
+        const timesPerDay = window.getMedTimesPerDay(m);
+        const daysLeft = window.getMedDaysRemaining(m);
+        const isFiveDaysWarning = daysLeft <= 5;
+        const scheduleStr = window.getMedIndividualScheduleLabel(m, settings);
+        return `
+          <div class="p-3 rounded-2xl border ${isFiveDaysWarning ? 'border-rose-300 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-950/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850/60'} flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-1 mb-1">
+                <h5 class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(m.nome)}</h5>
+                <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${isFiveDaysWarning ? 'bg-rose-600 text-white animate-pulse' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
+                  ${isFiveDaysWarning ? `⚠️ Acaba em ${daysLeft} dia(s)!` : `✓ Dura ~${daysLeft} dias`}
+                </span>
+              </div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1.5 flex-wrap">
+                <span>${escapeHtml(m.tipo || 'Contínuo')}</span>
+                <span>•</span>
+                <span class="font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-200">🔁 Toma: ${timesPerDay}x ao dia</span>
+                <span>•</span>
+                <span class="font-mono font-bold text-blue-700 dark:text-blue-400">⏰ ${escapeHtml(scheduleStr)}</span>
+              </div>
+              <div class="mt-2 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400">Restam: <strong>${m.estoqueAtual} un</strong></span>
+                <span class="text-[10px] font-bold ${isFiveDaysWarning ? 'text-rose-600' : 'text-slate-600'}">Estimativa: ${daysLeft} dia(s)</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mt-1">
+                <div class="h-full ${isFiveDaysWarning ? 'bg-rose-500' : 'bg-emerald-500'}" style="width: ${Math.min(100, (daysLeft / 30) * 100)}%"></div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between gap-2">
+              <span class="text-[10px] text-slate-500 font-mono">Ref: ${formatBRL(m.precoMedio || 0)}</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="openEditMedicationModal('${m.id}')" class="px-2 py-1 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer" title="Editar remédio, vezes ao dia e horário">
+                  <i data-lucide="pencil" class="w-3 h-3"></i>
+                  <span>Editar</span>
+                </button>
+                ${(function(){
+                  let inList = false;
+                  try {
+                    const items = (typeof getActiveShoppingItems === 'function') ? getActiveShoppingItems() : [];
+                    inList = items.some(it => it.nome && it.nome.toLowerCase().includes(m.nome.toLowerCase()));
+                  } catch(e) {}
+                  if (inList) {
+                    return `<button type="button" onclick="showToastUndo('Este medicamento já está na sua Lista de Compras!', false)" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all cursor-pointer">
+                      <i data-lucide="check" class="w-3 h-3"></i>
+                      <span>✓ Na Lista de Compras</span>
+                    </button>`;
+                  } else {
+                    return `<button type="button" onclick="addMedToShoppingList('${m.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
+                      <i data-lucide="shopping-cart" class="w-3 h-3"></i>
+                      <span>Adicionar à Lista de Compras</span>
+                    </button>`;
+                  }
+                })()}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    if (window.lucide) lucide.createIcons();
+    window.syncNativeAndroidMedAlarms();
+  };
+
+  // --------------------------------------------------------------------------
+  // 4. CARD AZUL: "Saldo Positivo: R$ 1.200,00" + SOMA IMEDIATA DE PARCELADOS
+  // --------------------------------------------------------------------------
+  const _origUpdateDashboardV202 = window.updateDashboard;
+  window.updateDashboard = function() {
+    if (typeof _origUpdateDashboardV202 === 'function') {
+      _origUpdateDashboardV202();
+    }
+
+    // A. Atualiza rótulo inline "Saldo Positivo:" / "Saldo Negativo:" ao lado do valor
+    const isNeg = document.body.classList.contains('theme-negative-alert');
+    const heroBadgeEl = document.getElementById('heroSaldoStatusBadge');
+    if (heroBadgeEl) {
+      if (isNeg) {
+        heroBadgeEl.className = 'inline-flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-rose-200 whitespace-nowrap flex-shrink-0';
+        heroBadgeEl.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-rose-300"></i><span id="heroSaldoLabelText">Saldo Negativo:</span>';
+      } else {
+        heroBadgeEl.className = 'inline-flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-emerald-200 whitespace-nowrap flex-shrink-0';
+        heroBadgeEl.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-300"></i><span id="heroSaldoLabelText">Saldo Positivo:</span>';
+      }
+    }
+
+    // B. Corrige o card "Parcelados" (#heroMiniFixas) no Card Azul para SEMPRE somar todos os parcelados ativos do ciclo
+    const heroMiniFixasEl = document.getElementById('heroMiniFixas');
+    if (heroMiniFixasEl && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+      const parceladasDoCiclo = transactions.filter(t =>
+        t &&
+        t.ciclo === currentCycle &&
+        t.tipo !== 'Receita' &&
+        t.tipo !== '__CLOUD_SNAPSHOT__' &&
+        (t.parcelado === true || t.tipo === 'Despesa Parcelada' || (t.descricao && /\(\d+\/\d+\)/.test(t.descricao)) || (parseInt(t.total_parcelas, 10) > 1))
+      );
+      const totalParceladosMes = parceladasDoCiclo.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
+      if (parceladasDoCiclo.length > 0) {
+        heroMiniFixasEl.textContent = `${parceladasDoCiclo.length} (${formatBRL(totalParceladosMes)})`;
+      } else {
+        heroMiniFixasEl.textContent = 'R$ 0,00';
+      }
+    }
+
+    if (typeof window.syncHeroCardEyeAndBalance === 'function') {
+      window.syncHeroCardEyeAndBalance();
+    }
+    if (typeof window.applyDashboardVisibilitySettings === 'function') {
+      window.applyDashboardVisibilitySettings();
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // 5. BLOQUEIO DE SEGURANÇA OBRIGATÓRIO AO SAIR E VOLTAR PARA O APLICATIVO
+  // --------------------------------------------------------------------------
+  window.lockAppSessionNow = function() {
+    localStorage.setItem('financas_session_locked', 'true');
+    sessionStorage.removeItem('pigctrl_session_authenticated');
+    document.documentElement.classList.add('require-auth');
+    const authEl = document.getElementById('authOverlayContainer');
+    if (authEl) {
+      authEl.classList.remove('hidden');
+      authEl.style.display = 'flex';
+    }
+  };
+
+  window.onAppResumedFromBackground = function() {
+    setTimeout(() => {
+      if (typeof checkHealthScheduleTimers === 'function') checkHealthScheduleTimers();
+    }, 500);
+
+    if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
+      window.lockAppSessionNow();
+      if (typeof triggerNativeBiometrics === 'function') {
+        setTimeout(triggerNativeBiometrics, 350);
+      }
+    }
+  };
+
+  const _origUnlockAppV203 = window.unlockAppAndEnterDashboard;
+  window.unlockAppAndEnterDashboard = function(userSession) {
+    localStorage.removeItem('financas_session_locked');
+    sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+    document.documentElement.classList.remove('require-auth');
+    const authEl = document.getElementById('authOverlayContainer');
+    if (authEl) {
+      authEl.classList.add('hidden');
+      authEl.style.display = 'none';
+    }
+    if (typeof _origUnlockAppV203 === 'function') {
+      _origUnlockAppV203(userSession);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // 6. PERSONALIZADOR DE MÓDULOS DO DASHBOARD NO ADMIN (MOSTRAR / OCULTAR)
+  // --------------------------------------------------------------------------
+  const DASHBOARD_CUSTOMIZABLE_MODULES = [
+    { id: 'fintechQuickHub', label: '⚡ Carrossel de Acesso Rápido (Lista, Saúde, Viagens)' },
+    { id: 'sectionMetrics', label: '📊 Resumo das Contas do Mês' },
+    { id: 'cardHeroInstallments', label: '💳 Compras Parceladas do Ciclo' },
+    { id: 'sectionFoodBudget', label: '🛒 Orçamento Previsto — Alimentação' },
+    { id: 'sectionCharts', label: '📈 Gráficos e Análise Mensal' },
+    { id: 'sectionPiggy', label: '🐷 Cofrinho & Metas Financeiras' },
+    { id: 'sectionCards', label: '🪪 Meus Cartões de Crédito' },
+    { id: 'mascotAdvisorBanner', label: '💡 Dicas do Mentor Piggy' }
+  ];
+
+  window.getDashboardVisibilityMap = function() {
+    try {
+      return JSON.parse(localStorage.getItem('ctrlpig_dashboard_visibility_v1') || '{}') || {};
+    } catch (e) {
+      return {};
+    }
+  };
+
+  window.toggleDashboardModuleVisibility = function(moduleId) {
+    const map = window.getDashboardVisibilityMap();
+    const currentlyHidden = map[moduleId] === false;
+    map[moduleId] = currentlyHidden ? true : false;
+    localStorage.setItem('ctrlpig_dashboard_visibility_v1', JSON.stringify(map));
+    window.applyDashboardVisibilitySettings();
+    window.renderAdminDashboardCustomizer();
+    if (typeof window.scheduleCloudStatePush === 'function') window.scheduleCloudStatePush();
+  };
+
+  window.applyDashboardVisibilitySettings = function() {
+    const map = window.getDashboardVisibilityMap();
+    DASHBOARD_CUSTOMIZABLE_MODULES.forEach(mod => {
+      const el = document.getElementById(mod.id);
+      if (!el) return;
+      if (map[mod.id] === false) {
+        el.style.display = 'none';
+      } else {
+        el.style.display = '';
+      }
+    });
+  };
+
+  window.renderAdminDashboardCustomizer = function() {
+    const container = document.getElementById('adminDashboardModulesToggleList');
+    if (!container) return;
+    const map = window.getDashboardVisibilityMap();
+
+    container.innerHTML = DASHBOARD_CUSTOMIZABLE_MODULES.map(mod => {
+      const isVisible = map[mod.id] !== false;
+      return `
+        <button type="button" onclick="toggleDashboardModuleVisibility('${mod.id}')" class="p-2.5 rounded-xl border text-left flex items-center justify-between gap-2 transition-all cursor-pointer ${
+          isVisible
+            ? 'bg-white dark:bg-slate-800 border-emerald-300 dark:border-emerald-800 text-slate-900 dark:text-white shadow-2xs'
+            : 'bg-slate-100 dark:bg-slate-900/50 border-slate-300 dark:border-slate-800 text-slate-400 line-through'
+        }">
+          <span class="font-bold text-[11px] truncate">${mod.label}</span>
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-black flex-shrink-0 ${
+            isVisible ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-600'
+          }">
+            ${isVisible ? '✓ Visível' : 'Oculto'}
+          </span>
+        </button>
+      `;
+    }).join('');
+  };
+
+  const _origOpenAdminModal = window.openAdminModal;
+  if (typeof _origOpenAdminModal === 'function') {
+    window.openAdminModal = function() {
+      _origOpenAdminModal();
+      window.renderAdminDashboardCustomizer();
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.applyDashboardVisibilitySettings();
+      window.renderAdminDashboardCustomizer();
+      window.syncNativeAndroidMedAlarms();
+      if (typeof updateDashboard === 'function') updateDashboard();
+    }, 450);
   });
 })();
 </script>
