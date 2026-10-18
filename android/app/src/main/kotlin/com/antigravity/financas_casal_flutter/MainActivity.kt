@@ -153,10 +153,13 @@ object AlarmAudioPlayer {
 
 object NotificationHelper {
     const val NOTIF_CHANNEL_ID = "ctrlpig_white_high_channel_v3"
+    const val NOTIF_SHOPPING_CHANNEL_ID = "ctrlpig_shopping_channel_v1"
     const val ACTION_FIRE_ALARM = "com.antigravity.ctrlpig.ACTION_FIRE_ALARM"
     const val ACTION_SNOOZE_5M = "com.antigravity.ctrlpig.ACTION_SNOOZE_5M"
     const val ACTION_DISMISS = "com.antigravity.ctrlpig.ACTION_DISMISS"
     const val ACTION_MARK_TAKEN = "com.antigravity.ctrlpig.ACTION_MARK_TAKEN"
+    const val ACTION_ACCEPT_SHOPPING = "com.antigravity.ctrlpig.ACTION_ACCEPT_SHOPPING"
+    const val ACTION_OPEN_CHAT = "com.antigravity.ctrlpig.ACTION_OPEN_CHAT"
 
     fun ensureChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -178,8 +181,91 @@ object NotificationHelper {
                     setSound(alarmSound, audioAttrs)
                 }
             }
+
+            val shopName = "Lista de Compras da Família"
+            val shopDesc = "Notificações de envio e recebimento da Lista de Compras"
+            val shopChannel = NotificationChannel(NOTIF_SHOPPING_CHANNEL_ID, shopName, NotificationManager.IMPORTANCE_HIGH).apply {
+                description = shopDesc
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 300, 200, 300)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(channel)
+            nm.createNotificationChannel(shopChannel)
+        }
+    }
+
+    fun showShoppingNotification(
+        context: Context,
+        title: String,
+        body: String,
+        notifId: Int,
+        sender: String = "",
+        partner: String = ""
+    ): Boolean {
+        return try {
+            ensureChannel(context)
+
+            val pendingFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+
+            val openIntent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                putExtra("open_chat", true)
+            }
+            val openPending = PendingIntent.getActivity(context, notifId, openIntent, pendingFlags)
+
+            // Intent: Aceitar lista de compras ("Recebi a lista")
+            val acceptIntent = Intent(context, MedAlarmReceiver::class.java).apply {
+                action = ACTION_ACCEPT_SHOPPING
+                putExtra("title", title)
+                putExtra("sender", sender)
+                putExtra("partner", partner)
+                putExtra("id", notifId)
+            }
+            val acceptPending = PendingIntent.getBroadcast(context, notifId + 40000, acceptIntent, pendingFlags)
+
+            val remoteViews = RemoteViews(context.packageName, R.layout.custom_shopping_notification).apply {
+                setTextViewText(R.id.notif_shopping_title, title)
+                setTextViewText(R.id.notif_shopping_body, body)
+                setOnClickPendingIntent(R.id.btn_notif_accept_shopping, acceptPending)
+                setOnClickPendingIntent(R.id.btn_notif_open_chat, openPending)
+            }
+
+            val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NOTIF_SHOPPING_CHANNEL_ID else NOTIF_CHANNEL_ID
+            val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Notification.Builder(context, channelId)
+            } else {
+                @Suppress("DEPRECATION")
+                Notification.Builder(context).setPriority(Notification.PRIORITY_MAX)
+            }
+
+            builder.setSmallIcon(context.applicationInfo.icon)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setContentIntent(openPending)
+                .setColor(0xFFFFFFFF.toInt())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                builder.setCustomContentView(remoteViews)
+                builder.setCustomBigContentView(remoteViews)
+                builder.setStyle(Notification.DecoratedCustomViewStyle())
+            } else {
+                @Suppress("DEPRECATION")
+                builder.setContent(remoteViews)
+            }
+
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.notify(notifId, builder.build())
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 
@@ -402,6 +488,28 @@ class MedAlarmReceiver : BroadcastReceiver() {
                     .apply()
                 Toast.makeText(context, "✅ Dose marcada como tomada!", Toast.LENGTH_SHORT).show()
             }
+            NotificationHelper.ACTION_ACCEPT_SHOPPING -> {
+                nm.cancel(notifId)
+                val sender = intent.getStringExtra("sender") ?: "Amor"
+                val partner = intent.getStringExtra("partner") ?: "Parceiro"
+                val nowTs = System.currentTimeMillis()
+                val shopPrefs = context.getSharedPreferences("ctrlpig_shopping_actions", Context.MODE_PRIVATE)
+                shopPrefs.edit()
+                    .putString("last_accepted_by", partner)
+                    .putString("last_requested_by", sender)
+                    .putLong("last_accepted_ts", nowTs)
+                    .putBoolean("has_unread_acceptance", true)
+                    .apply()
+                Toast.makeText(context, "🛒 Lista de compras aceita! Abrindo detalhes...", Toast.LENGTH_SHORT).show()
+
+                // Abre a tela do aplicativo diretamente no Chat
+                val openIntent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra("open_chat", true)
+                    putExtra("accepted_by", partner)
+                }
+                context.startActivity(openIntent)
+            }
         }
     }
 }
@@ -429,6 +537,15 @@ class MainActivity: FlutterFragmentActivity() {
                     val slot = call.argument<String>("slot") ?: ""
                     val notifId = call.argument<Int>("id") ?: (System.currentTimeMillis() % 100000).toInt()
                     val ok = NotificationHelper.showWhiteCardNotification(this, title, body, notifId, speech, slot)
+                    result.success(ok)
+                }
+                "showShoppingNotification" -> {
+                    val title = call.argument<String>("title") ?: "🛒 Lista de Compras"
+                    val body = call.argument<String>("body") ?: ""
+                    val sender = call.argument<String>("sender") ?: ""
+                    val partner = call.argument<String>("partner") ?: ""
+                    val notifId = call.argument<Int>("id") ?: (System.currentTimeMillis() % 100000).toInt()
+                    val ok = NotificationHelper.showShoppingNotification(this, title, body, notifId, sender, partner)
                     result.success(ok)
                 }
                 "stopNativeAlarm" -> {
@@ -466,6 +583,26 @@ class MainActivity: FlutterFragmentActivity() {
                                 "dismissedTitle" to (dismissedTitle ?: ""),
                                 "dismissedSlot" to (dismissedSlot ?: ""),
                                 "dismissedTs" to dismissedTs
+                            )
+                        )
+                    } else {
+                        result.success(null)
+                    }
+                }
+                "consumePendingShoppingAcceptance" -> {
+                    val shopPrefs = getSharedPreferences("ctrlpig_shopping_actions", Context.MODE_PRIVATE)
+                    val acceptedBy = shopPrefs.getString("last_accepted_by", null)
+                    val requestedBy = shopPrefs.getString("last_requested_by", null)
+                    val ts = shopPrefs.getLong("last_accepted_ts", 0L)
+                    val hasUnread = shopPrefs.getBoolean("has_unread_acceptance", false)
+
+                    if (acceptedBy != null && hasUnread) {
+                        shopPrefs.edit().putBoolean("has_unread_acceptance", false).apply()
+                        result.success(
+                            mapOf(
+                                "acceptedBy" to acceptedBy,
+                                "requestedBy" to (requestedBy ?: ""),
+                                "ts" to ts
                             )
                         )
                     } else {

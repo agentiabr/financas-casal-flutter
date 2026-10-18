@@ -96,6 +96,25 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     } catch (e) {
       debugPrint('Aviso ao checar consumePendingMedTaken: $e');
     }
+  Future<void> _checkPendingShoppingAcceptance() async {
+    try {
+      final res = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+          .invokeMethod('consumePendingShoppingAcceptance');
+      if (res != null && res is Map) {
+        final acceptedBy = res['acceptedBy']?.toString() ?? '';
+        final requestedBy = res['requestedBy']?.toString() ?? '';
+        final ts = res['ts'] ?? 0;
+        final safeAcceptedBy = jsonEncode(acceptedBy);
+        final safeRequestedBy = jsonEncode(requestedBy);
+        await _controller.runJavaScript("""
+          if (typeof window.onNativeShoppingListAccepted === 'function') {
+            window.onNativeShoppingListAccepted($safeAcceptedBy, $safeRequestedBy, $ts);
+          }
+        """);
+      }
+    } catch (e) {
+      debugPrint('Aviso ao checar consumePendingShoppingAcceptance: $e');
+    }
   }
 
   @override
@@ -113,6 +132,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     } else if (state == AppLifecycleState.resumed) {
       // Consome primeiro qualquer ação da notificação (Desligar, Adiar ou Já Tomei) ANTES de verificar os timers de alarme
       _checkPendingNativeMedTaken().then((_) {
+        _checkPendingShoppingAcceptance();
         _controller.runJavaScript("""
           if (typeof window.onAppResumedFromBackground === 'function') {
             window.onAppResumedFromBackground();
@@ -139,6 +159,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           onPageFinished: (String url) {
             _injectNativeBridge();
             _checkPendingNativeMedTaken();
+            _checkPendingShoppingAcceptance();
             // Abertura imediata e suave do painel financeiro
             Future.delayed(const Duration(milliseconds: 600), () {
               if (mounted) {
@@ -318,6 +339,26 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           });
         } catch (e) {
           debugPrint('Aviso ao disparar notificação nativa: $e');
+        }
+      } else if (action == 'show_shopping_notification') {
+        final title = data['title'] as String? ?? '🛒 Lista de Compras';
+        final body = data['body'] as String? ?? '';
+        final sender = data['sender'] as String? ?? '';
+        final partner = data['partner'] as String? ?? '';
+        final id = data['id'] is int
+            ? data['id'] as int
+            : (DateTime.now().millisecondsSinceEpoch % 100000);
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('showShoppingNotification', {
+            'title': title,
+            'body': body,
+            'sender': sender,
+            'partner': partner,
+            'id': id,
+          });
+        } catch (e) {
+          debugPrint('Aviso ao disparar notificação de compras nativa: $e');
         }
       } else if (action == 'schedule_med_alarms') {
         final rawAlarms = data['alarms'];
