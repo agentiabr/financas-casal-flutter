@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -152,6 +153,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
+  static const String _kCurrentAppVersion = '2.1.2+79';
+
   void _initWebViewController() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -191,8 +194,24 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       ..addJavaScriptChannel(
         'FlutterBridge',
         onMessageReceived: _handleJavaScriptMessage,
-      )
-      ..loadFlutterAsset('assets/index.html');
+      );
+
+    _prepareAndLoadWebView();
+  }
+
+  Future<void> _prepareAndLoadWebView() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final lastVersion = prefs.getString('ctrlpig_installed_version');
+      if (lastVersion != _kCurrentAppVersion) {
+        debugPrint('CtrlPig: Nova versão detectada ($lastVersion -> $_kCurrentAppVersion). Limpando cache de renderização do WebView...');
+        await _controller.clearCache();
+        await prefs.setString('ctrlpig_installed_version', _kCurrentAppVersion);
+      }
+    } catch (e) {
+      debugPrint('Aviso ao verificar versão do app no cache: $e');
+    }
+    await _controller.loadFlutterAsset('assets/index.html');
   }
 
   Future<void> _openExternalUrl(String url) async {

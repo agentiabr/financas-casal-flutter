@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Diretivas Anti-Cache para Atualizações Instantâneas entre Versões -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <script>
+    window.APP_BUILD_VERSION = "2.1.2";
+    try {
+      var prevVer = localStorage.getItem('ctrlpig_html_version');
+      if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
+        console.log("CtrlPig: Nova versão detectada (" + window.APP_BUILD_VERSION + "). Atualizando cache de interface.");
+      }
+      localStorage.setItem('ctrlpig_html_version', window.APP_BUILD_VERSION);
+    } catch(e) {}
+  </script>
   <!-- Bloqueio Seguro de Autenticação Imediato ao Abrir o App -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
