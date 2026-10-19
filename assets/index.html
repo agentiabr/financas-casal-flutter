@@ -3271,7 +3271,7 @@
               </div>
               <div class="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-1.5">
                 <span class="text-[10px] text-slate-400">R$:</span>
-                <input type="text" id="inputNewBuilderProductPrice" placeholder="0,00" class="w-16 text-xs font-mono font-bold text-right bg-transparent text-slate-900 dark:text-white focus:outline-none">
+                <input type="text" inputmode="numeric" id="inputNewBuilderProductPrice" placeholder="0,00" oninput="formatCurrencyInput(this)" class="w-16 text-xs font-mono font-bold text-right bg-transparent text-slate-900 dark:text-white focus:outline-none">
               </div>
               <select id="selectNewBuilderProductStore" class="px-2.5 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
                 <option value="Supermercados Roldão">Roldão</option>
@@ -8625,9 +8625,12 @@
     function addCustomItemToBuilder() {
       const input = document.getElementById('inputNewBuilderProductName');
       const qtdInput = document.getElementById('inputNewBuilderProductQtd');
+      const priceInput = document.getElementById('inputNewBuilderProductPrice');
       const storeSelect = document.getElementById('selectNewBuilderProductStore');
       const name = (input?.value || '').trim();
       const qtd = parseInt(qtdInput?.value) || 1;
+      const rawPrice = (priceInput?.value || '0').replace(',', '.');
+      const price = parseFloat(rawPrice) || 0;
       const store = storeSelect?.value || 'Supermercados Roldão';
 
       if (!name) {
@@ -8641,14 +8644,28 @@
         qtd: qtd,
         unidade: 'un',
         lojaNome: store,
-        menorPreco: 0,
-        lojaMenorPreco: '',
-        ultimoPreco: 0,
-        lojaUltimoPreco: ''
+        preco: price,
+        menorPreco: price,
+        lojaMenorPreco: store,
+        ultimoPreco: price,
+        lojaUltimoPreco: store
       };
+
+      if (price > 0 && typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) {
+        priceHistory.unshift({
+          id: Date.now(),
+          produto: name,
+          estabelecimento: store,
+          preco: price,
+          data: new Date().toISOString().split('T')[0],
+          responsavel: 'Comum'
+        });
+        localStorage.setItem('financas_price_history_v1', JSON.stringify(priceHistory));
+      }
 
       if (input) input.value = '';
       if (qtdInput) qtdInput.value = '1';
+      if (priceInput) priceInput.value = '';
       renderShoppingListBuilder();
       showToastUndo(`Produto "${name}" adicionado à lista!`, false);
     }
@@ -13553,7 +13570,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
                   <span>🛒</span> Lista de Compras
                 </span>
-                <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-bold font-mono">
+                <span id="chatShoppingCardHeaderTotal" class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-bold font-mono">
                   R$ ${summary.total.toFixed(2).replace('.', ',')}
                 </span>
               </div>
@@ -13675,7 +13692,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                             <div class="flex items-center gap-1.5 flex-shrink-0">
                               <div class="flex items-center gap-0.5 font-mono font-black text-xs text-slate-900 dark:text-white whitespace-nowrap">
                                 ${priceArrowHtml}
-                                <span>R$ ${itemSubtotal.toFixed(2).replace('.', ',')}</span>
+                                <span id="chatItemSubtotal_${it.id}">R$ ${itemSubtotal.toFixed(2).replace('.', ',')}</span>
                               </div>
 
                               <button type="button" onclick="removeShoppingItemToTrash('${it.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer flex-shrink-0" title="Excluir item">
@@ -13697,7 +13714,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
                             <div class="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 shadow-2xs flex-1 max-w-[115px] min-w-[76px]">
                               <span class="text-[10px] text-slate-400 font-bold">R$</span>
-                              <input type="number" step="0.01" min="0" value="${curPrice > 0 ? curPrice : ''}" placeholder="0,00" onchange="updateItemUnitPrice('${it.id}', this.value)" class="w-full text-xs font-mono font-bold bg-transparent text-slate-900 dark:text-white outline-none">
+                              <input type="text" inputmode="numeric" value="${curPrice > 0 ? curPrice.toFixed(2).replace('.', ',') : ''}" placeholder="0,00" oninput="handleChatPriceInput('${it.id}', this)" class="w-full text-xs font-mono font-bold bg-transparent text-slate-900 dark:text-white outline-none">
                             </div>
 
                             <button type="button" onclick="toggleItemMissing('${it.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 flex-shrink-0 ${isOut ? 'bg-rose-600 text-white border border-rose-700 shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 dark:border-slate-700'}" title="${isOut ? 'Clique para desmarcar falta' : 'Marcar que não tem no mercado'}">
@@ -14040,6 +14057,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         saveActiveShoppingItems(items);
         updateCartSummaryUI();
         renderCleanChatStream();
+        const summary = calculateCartTotal();
+        const headerBadge = document.getElementById('chatShoppingCardHeaderTotal');
+        if (headerBadge) {
+          headerBadge.textContent = `R$ ${summary.total.toFixed(2).replace('.', ',')}`;
+        }
       }
     }
 
@@ -14091,14 +14113,62 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       showToastUndo('Item removido da lista.', false);
     }
 
-    function updateItemPrice(id, val) {
+    // Formata o input de preço monetário automaticamente com casas decimais (ex: digita 5 -> 0,05; digita 50 -> 0,50; digita 500 -> 5,00)
+    function formatCurrencyInput(inputEl) {
+      if (!inputEl) return 0;
+      let val = inputEl.value.replace(/\D/g, '');
+      if (!val || val === '0' || val === '00') {
+        inputEl.value = '';
+        return 0;
+      }
+      const num = parseInt(val, 10) / 100;
+      inputEl.value = num.toFixed(2).replace('.', ',');
+      return num;
+    }
+
+    function handleChatPriceInput(itemId, inputEl) {
+      const price = formatCurrencyInput(inputEl);
+      updateItemPrice(itemId, price, true);
+    }
+
+    function updateItemPrice(id, val, skipRerenderInput) {
       const items = getActiveShoppingItems();
       const it = items.find(x => x.id === id);
       if (it) {
-        it.precoUnitario = parseFloat(val.toString().replace(',', '.')) || 0;
+        let numericPrice = 0;
+        if (typeof val === 'number') {
+          numericPrice = isNaN(val) ? 0 : val;
+        } else {
+          numericPrice = parseFloat((val || '0').toString().replace(',', '.')) || 0;
+        }
+        it.precoUnitario = Math.max(0, numericPrice);
+        // Se preencheu preço > 0 e ainda estava pendente, coloca automaticamente no carrinho
+        if (it.precoUnitario > 0 && it.status === 'pendente') {
+          it.status = 'no_carrinho';
+          if (!it.qtdComprada) it.qtdComprada = it.qtdDesejada || 1;
+        }
         saveActiveShoppingItems(items);
+
+        // Atualização instantânea dos elementos visuais sem perder foco no teclado do celular
+        const itemQtd = parseFloat(it.qtdComprada) || parseFloat(it.qtdDesejada) || 1;
+        const itemSubtotal = it.precoUnitario * itemQtd;
+        const subtotalEl = document.getElementById(`chatItemSubtotal_${id}`);
+        if (subtotalEl) {
+          subtotalEl.textContent = `R$ ${itemSubtotal.toFixed(2).replace('.', ',')}`;
+        }
+        
         updateCartSummaryUI();
-        renderCleanChatStream();
+
+        // Atualiza também o badge do topo da lista se existir
+        const summary = calculateCartTotal();
+        const headerBadge = document.getElementById('chatShoppingCardHeaderTotal');
+        if (headerBadge) {
+          headerBadge.textContent = `R$ ${summary.total.toFixed(2).replace('.', ',')}`;
+        }
+
+        if (!skipRerenderInput) {
+          renderCleanChatStream();
+        }
       }
     }
 
@@ -14135,7 +14205,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       document.getElementById('editItemQtd').value = it.qtdComprada || it.qtdDesejada || 1;
       document.getElementById('editItemUnidade').value = it.unidade || 'un';
       document.getElementById('editItemMarca').value = it.marca || '';
-      document.getElementById('editItemPreco').value = it.precoUnitario ? it.precoUnitario.toFixed(2) : '';
+      document.getElementById('editItemPreco').value = it.precoUnitario ? it.precoUnitario.toFixed(2).replace('.', ',') : '';
 
       const modal = document.getElementById('modalEditShoppingItem');
       if (modal) modal.classList.remove('hidden');
@@ -16394,10 +16464,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <img id="petQrImageViewerImg" src="${imgDataUrl}" alt="QR Code Pet" class="w-48 h-48 block mx-auto rounded-lg">
             </div>
             <div class="grid grid-cols-2 gap-2 w-full mb-3">
-              <button type="button" onclick="sharePetQrCodeWhatsApp()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>💬 Whats</span>
+              <button type="button" onclick="sharePetQrCodeWhatsApp()" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer">
+                <span>💬 Enviar no Whats</span>
               </button>
-              <button type="button" onclick="copyPetRescueUrl()" class="py-2 px-3 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+              <button type="button" onclick="copyPetRescueUrl()" class="py-2.5 px-3 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
                 <span>📋 Copiar Link</span>
               </button>
             </div>
@@ -16435,18 +16505,28 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function sharePetQrCodeWhatsApp() {
-      const pet = getActivePet() || { nome: 'Pantone' };
-      const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Tutor Responsável';
-      const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || '(11) 98765-4321';
+      const pet = getActivePet() || { nome: 'Pantone', especie: 'Cão' };
+      const name = (document.getElementById('petTutorName')?.value || '').trim() || (currentUserSession && currentUserSession.nome ? currentUserSession.nome : 'Tutor Responsável');
+      const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || (currentUserSession && currentUserSession.whatsapp ? currentUserSession.whatsapp : '');
+      const phone2 = (document.getElementById('petTutorPhone2')?.value || '').trim();
+      const address = (document.getElementById('petTutorAddress')?.value || '').trim();
+      const notes = (document.getElementById('petTutorNotes')?.value || '').trim();
       const url = window._lastGeneratedPetQrUrl || buildPetRescueTargetUrl();
 
-      const shareText =
-        `🏷️ *QR Code de Identificação da Coleira — ControlPig*\n\n` +
+      // Monta texto estruturado e completo com todos os dados do Pet, Tutor e Link para gravação
+      let shareText = `🏷️ *IDENTIFICAÇÃO DE COLEIRA / MEDALHA PET*\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━\n\n` +
         `🐾 *Pet:* ${pet.nome} (${pet.especie || 'Pet'})\n` +
-        `👤 *Tutor:* ${name}\n` +
-        `📞 *Contato:* ${phone}\n\n` +
-        `📲 *Link para Gravação da Medalha/Coleira:*\n${url}\n\n` +
-        `ℹ️ *Instruções para a Fábrica:* Favor gerar o QR Code correspondente ao link acima para gravação na medalha/coleira.`;
+        `👤 *Tutor:* ${name}\n`;
+
+      if (phone) shareText += `📞 *WhatsApp/Telefone:* ${phone}\n`;
+      if (phone2) shareText += `📱 *Telefone Alternativo:* ${phone2}\n`;
+      if (address) shareText += `📍 *Região/Endereço:* ${address}\n`;
+      if (notes) shareText += `⚠️ *Observações:* ${notes}\n`;
+
+      shareText += `\n🌐 *LINK OFICIAL DE RESGATE (Para Gravar no QR Code):*\n${url}\n\n` +
+        `📋 *Instruções para Gravação:* Favor gravar o QR Code com o link acima na medalha ou coleira. Qualquer pessoa com a câmera do celular poderá escanear e ver os dados de contato do tutor!\n\n` +
+        `📱 _Gerado pelo ControlPig App_`;
 
       if (typeof window.shareTextToWhatsApp === 'function') {
         window.shareTextToWhatsApp(shareText);
@@ -16457,6 +16537,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         } else {
           window.open(waUrl, '_blank');
         }
+      }
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('💬 Abrindo WhatsApp com dados e link do QR Code...', false);
       }
     }
 
@@ -20146,7 +20229,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
           <div>
             <label class="block font-bold text-slate-400 mb-1">Preço Unitário (R$)</label>
-            <input type="number" step="0.01" min="0" id="editItemPreco" placeholder="0,00" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-500">
+            <input type="text" inputmode="numeric" id="editItemPreco" placeholder="0,00" oninput="formatCurrencyInput(this)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-500">
           </div>
         </div>
 
@@ -22535,7 +22618,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Último Preço (R$)</label>
-            <input type="text" id="editBuilderNewPrice" placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold">
+            <input type="text" inputmode="numeric" id="editBuilderNewPrice" placeholder="0,00" oninput="formatCurrencyInput(this)" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold">
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
