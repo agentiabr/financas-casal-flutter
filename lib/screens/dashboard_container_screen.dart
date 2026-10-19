@@ -170,7 +170,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.10+87';
+  static const String _kCurrentAppVersion = '2.1.11+88';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -426,6 +426,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                   .invokeMethod<bool>('getMedAudioEnabled') ??
               true;
         } catch (_) {}
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('setAlarmStyle', {'style': alarmStyle});
+        } catch (_) {}
         if (alarmStyle == 'vibrate') {
           try {
             HapticFeedback.vibrate();
@@ -624,6 +628,24 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         Future.delayed(const Duration(seconds: 2), () {
           _isPickingExternalMedia = false;
         });
+      } else if (action == 'save_image') {
+        final base64Data = data['base64Data'] as String? ?? '';
+        final filename = data['filename'] as String? ?? 'qrcode_coleira_pet.png';
+        try {
+          final ok = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                  .invokeMethod<bool>('saveImage', {
+                'base64Data': base64Data,
+                'filename': filename,
+              }) ??
+              false;
+          _controller.runJavaScript("""
+            if (typeof window.onNativeImageSaved === 'function') {
+              window.onNativeImageSaved($ok);
+            }
+          """);
+        } catch (e) {
+          debugPrint('Aviso ao salvar imagem via MethodChannel: $e');
+        }
       } else if (action == 'authenticate_biometric' || action == 'authenticate_biometrics') {
         _isPickingExternalMedia = true;
         await _authenticateBiometric();
@@ -845,12 +867,56 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       _flutterTts ??= FlutterTts();
       await _flutterTts!.setLanguage("pt-BR");
       await _flutterTts!.setVolume(1.0);
+      try {
+        final voices = await _flutterTts!.getVoices;
+        if (voices is List) {
+          final ptBrVoices = voices.where((v) {
+            final locale = (v['locale'] ?? '').toString().toLowerCase();
+            return locale.contains('pt-br') || locale.contains('pt_br');
+          }).toList();
+
+          if (alarmStyle == 'female') {
+            final femaleVoice = ptBrVoices.firstWhere(
+              (v) =>
+                  (v['name'] ?? '').toString().toLowerCase().contains('female') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('afs') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('yfn') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('luciana') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('mulher'),
+              orElse: () => null,
+            );
+            if (femaleVoice != null) {
+              await _flutterTts!.setVoice({
+                'name': femaleVoice['name'].toString(),
+                'locale': femaleVoice['locale'].toString()
+              });
+            }
+          } else if (alarmStyle == 'male') {
+            final maleVoice = ptBrVoices.firstWhere(
+              (v) =>
+                  (v['name'] ?? '').toString().toLowerCase().contains('male') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('ptd') ||
+                  (v['name'] ?? '').toString().toLowerCase().contains('homem'),
+              orElse: () => null,
+            );
+            if (maleVoice != null) {
+              await _flutterTts!.setVoice({
+                'name': maleVoice['name'].toString(),
+                'locale': maleVoice['locale'].toString()
+              });
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('Aviso ao consultar vozes pt-BR no FlutterTts: $e');
+      }
+
       if (alarmStyle == 'male') {
-        await _flutterTts!.setPitch(0.72); // Tom encorpado / grave masculino
+        await _flutterTts!.setPitch(0.70); // Tom encorpado / grave masculino
         await _flutterTts!.setSpeechRate(0.46);
       } else {
-        await _flutterTts!.setPitch(1.15); // Tom nítido / agudo feminino
-        await _flutterTts!.setSpeechRate(0.48);
+        await _flutterTts!.setPitch(1.35); // Tom nítido / agudo feminino
+        await _flutterTts!.setSpeechRate(0.50);
       }
       _flutterTts!.setCompletionHandler(() {
         _controller.runJavaScript("""

@@ -87,8 +87,18 @@ object AlarmAudioPlayer {
                         if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
                             engine.setLanguage(Locale.getDefault())
                         }
-                        engine.setSpeechRate(0.98f)
-                        engine.setPitch(1.0f)
+                        val audioPrefs = appCtx.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                        val alarmStyle = audioPrefs.getString("alarm_style", "female") ?: "female"
+                        if (alarmStyle == "female") {
+                            engine.setPitch(1.35f)
+                            engine.setSpeechRate(0.92f)
+                        } else if (alarmStyle == "male") {
+                            engine.setPitch(0.70f)
+                            engine.setSpeechRate(0.92f)
+                        } else {
+                            engine.setSpeechRate(0.98f)
+                            engine.setPitch(1.0f)
+                        }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             val attrs = AudioAttributes.Builder()
@@ -672,6 +682,51 @@ class MainActivity: FlutterFragmentActivity() {
                     val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                     val enabled = audioPrefs.getBoolean("med_audio_enabled", true)
                     result.success(enabled)
+                }
+                "setAlarmStyle" -> {
+                    val style = call.argument<String>("style") ?: "female"
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    audioPrefs.edit().putString("alarm_style", style).apply()
+                    result.success(true)
+                }
+                "getAlarmStyle" -> {
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    val style = audioPrefs.getString("alarm_style", "female") ?: "female"
+                    result.success(style)
+                }
+                "saveImage" -> {
+                    val base64Data = call.argument<String>("base64Data") ?: ""
+                    val filename = call.argument<String>("filename") ?: "qrcode_pet.png"
+                    try {
+                        val pureBase64 = if (base64Data.contains(",")) base64Data.substringAfter(",") else base64Data
+                        val bytes = android.util.Base64.decode(pureBase64, android.util.Base64.DEFAULT)
+                        val resolver = contentResolver
+                        val contentValues = android.content.ContentValues().apply {
+                            put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                            put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/ControlPig")
+                                put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
+                            }
+                        }
+                        val uri = resolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                        if (uri != null) {
+                            resolver.openOutputStream(uri)?.use { out ->
+                                out.write(bytes)
+                            }
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                contentValues.clear()
+                                contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+                                resolver.update(uri, contentValues, null, null)
+                            }
+                            android.widget.Toast.makeText(this@MainActivity, "📥 QR Code salvo na Galeria de Fotos!", android.widget.Toast.LENGTH_LONG).show()
+                            result.success(true)
+                        } else {
+                            result.success(false)
+                        }
+                    } catch (e: Exception) {
+                        result.error("SAVE_ERROR", e.message, null)
+                    }
                 }
                 else -> {
                     result.notImplemented()
