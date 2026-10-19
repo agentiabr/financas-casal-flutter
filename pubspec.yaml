@@ -36,7 +36,7 @@ dependencies:
   local_auth: ^2.3.0
   # Engine de Alta Fidelidade do Dashboard
   webview_flutter: ^4.14.1
-  webview_flutter_android: ^3.16.9
+  webview_flutter_android: ^4.12.0
   # Abrir lojas, WhatsApp e sites externos fora do WebView
   url_launcher: ^6.3.1
 
