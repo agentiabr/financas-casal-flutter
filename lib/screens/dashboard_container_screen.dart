@@ -153,7 +153,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.6+83';
+  static const String _kCurrentAppVersion = '2.1.7+84';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -388,14 +388,21 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         }
       } else if (action == 'speak_alarm') {
         final text = data['text'] as String? ?? '';
+        final alarmStyle = data['alarmStyle'] as String? ?? 'female';
         bool audioEnabled = true;
         try {
           audioEnabled = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
                   .invokeMethod<bool>('getMedAudioEnabled') ??
               true;
         } catch (_) {}
-        if (text.isNotEmpty && audioEnabled) {
-          _speakNativeTTS(text);
+        if (alarmStyle == 'vibrate') {
+          try {
+            HapticFeedback.vibrate();
+            Future.delayed(const Duration(milliseconds: 350), () => HapticFeedback.vibrate());
+            Future.delayed(const Duration(milliseconds: 700), () => HapticFeedback.vibrate());
+          } catch (_) {}
+        } else if (text.isNotEmpty && audioEnabled) {
+          _speakNativeTTS(text, alarmStyle: alarmStyle);
         }
       } else if (action == 'set_med_audio_enabled') {
         final enabled = data['enabled'] as bool? ?? true;
@@ -788,13 +795,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     );
   }
 
-  Future<void> _speakNativeTTS(String text) async {
+  Future<void> _speakNativeTTS(String text, {String alarmStyle = 'female'}) async {
     try {
       _flutterTts ??= FlutterTts();
       await _flutterTts!.setLanguage("pt-BR");
-      await _flutterTts!.setSpeechRate(0.48);
       await _flutterTts!.setVolume(1.0);
-      await _flutterTts!.setPitch(1.0);
+      if (alarmStyle == 'male') {
+        await _flutterTts!.setPitch(0.72); // Tom encorpado / grave masculino
+        await _flutterTts!.setSpeechRate(0.46);
+      } else {
+        await _flutterTts!.setPitch(1.15); // Tom nítido / agudo feminino
+        await _flutterTts!.setSpeechRate(0.48);
+      }
       _flutterTts!.setCompletionHandler(() {
         _controller.runJavaScript("""
           if (typeof window.onNativeTtsCompleted === 'function') {

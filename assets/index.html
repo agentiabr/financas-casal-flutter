@@ -16730,12 +16730,17 @@ Frase falada: "${spokenText}"`;
     function getHealthScheduleSettings() {
       try {
         const stored = localStorage.getItem('ctrlpig_health_settings');
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (!parsed.alarmStyle) parsed.alarmStyle = 'female';
+          return parsed;
+        }
       } catch (e) {}
       return {
         morningTime: '08:00',
         eveningTime: '20:00',
         voiceAlarmEnabled: true,
+        alarmStyle: 'female',
         lastMorningTakenDate: '',
         lastMorningTakenTime: '',
         lastEveningTakenDate: '',
@@ -16743,6 +16748,55 @@ Frase falada: "${spokenText}"`;
         lastAlarmNotification: ''
       };
     }
+
+    window.getHealthAlarmStyle = function() {
+      const settings = getHealthScheduleSettings();
+      return settings.alarmStyle || 'female';
+    };
+
+    window.setHealthAlarmStyle = function(style) {
+      const settings = getHealthScheduleSettings();
+      settings.alarmStyle = style || 'female';
+      saveHealthScheduleSettings(settings);
+      window.renderHealthAlarmStyleUI();
+
+      if (style === 'female') {
+        showToastUndo('👩 Alarme configurado para Voz Feminina (Mulher)!', false);
+        if (typeof speakMedicationAlarm === 'function') {
+          speakMedicationAlarm('Alarme configurado para voz feminina.');
+        }
+      } else if (style === 'male') {
+        showToastUndo('👨 Alarme configurado para Voz Masculina (Homem)!', false);
+        if (typeof speakMedicationAlarm === 'function') {
+          speakMedicationAlarm('Alarme configurado para voz masculina.');
+        }
+      } else if (style === 'vibrate') {
+        showToastUndo('📳 Alarme configurado para Somente Vibrar (Silencioso)!', false);
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'speak_alarm',
+            text: '',
+            alarmStyle: 'vibrate'
+          }));
+        } else if ('vibrate' in navigator) {
+          try { navigator.vibrate([200, 100, 200, 100, 300]); } catch(e) {}
+        }
+      }
+    };
+
+    window.renderHealthAlarmStyleUI = function() {
+      const current = window.getHealthAlarmStyle();
+      const btnFemale = document.getElementById('btnAlarmStyleFemale');
+      const btnMale = document.getElementById('btnAlarmStyleMale');
+      const btnVibrate = document.getElementById('btnAlarmStyleVibrate');
+
+      const activeClass = "bg-sky-600 text-white border-sky-500 shadow-sm ring-2 ring-sky-400/40";
+      const inactiveClass = "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800";
+
+      if (btnFemale) btnFemale.className = `py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all ${current === 'female' ? activeClass : inactiveClass}`;
+      if (btnMale) btnMale.className = `py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all ${current === 'male' ? activeClass : inactiveClass}`;
+      if (btnVibrate) btnVibrate.className = `py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all ${current === 'vibrate' ? activeClass : inactiveClass}`;
+    };
 
     function saveHealthScheduleSettings(settings) {
       localStorage.setItem('ctrlpig_health_settings', JSON.stringify(settings));
@@ -16755,6 +16809,7 @@ Frase falada: "${spokenText}"`;
       if (modal) {
         modal.classList.remove('hidden');
         renderHealthMedsUI();
+        window.renderHealthAlarmStyleUI();
         runPharma10PriceComparison();
         if (window.lucide) lucide.createIcons();
       }
@@ -16843,6 +16898,18 @@ Frase falada: "${spokenText}"`;
           switchThumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-0";
           switchBtn.setAttribute('aria-checked', 'false');
         }
+      }
+
+      const styleBox = document.getElementById('alarmStyleSelectorBox');
+      if (styleBox) {
+        if (isAudio) {
+          styleBox.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+          styleBox.classList.add('opacity-40', 'pointer-events-none');
+        }
+      }
+      if (typeof window.renderHealthAlarmStyleUI === 'function') {
+        window.renderHealthAlarmStyleUI();
       }
 
       if (window.lucide) lucide.createIcons();
@@ -19946,23 +20013,44 @@ Frase falada: "${spokenText}"`;
         </button>
       </div>
 
-      <!-- CARD DESTAQUE: LIGAR / DESLIGAR NOTIFICAÇÃO VIA ÁUDIO -->
-      <div class="my-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2.5">
-          <div id="healthAudioNotifCardIconBox" class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center flex-shrink-0">
-            <i data-lucide="volume-2" id="healthAudioNotifCardIcon" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Notificação via Áudio</h4>
-              <span id="healthAudioNotifBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">Ligada</span>
+      <!-- CARD DESTAQUE: LIGAR / DESLIGAR NOTIFICAÇÃO VIA ÁUDIO E ESCOLHA DO TIPO DE ALARME -->
+      <div class="my-2 p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div id="healthAudioNotifCardIconBox" class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="volume-2" id="healthAudioNotifCardIcon" class="w-5 h-5"></i>
             </div>
-            <p id="healthAudioNotifDesc" class="text-[11px] text-slate-500 dark:text-slate-400">O celular fala o nome dos remédios em voz alta e toca alarme sonoro.</p>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Alarme dos Remédios</h4>
+                <span id="healthAudioNotifBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">Ligado</span>
+              </div>
+              <p id="healthAudioNotifDesc" class="text-[11px] text-slate-500 dark:text-slate-400">Personalize como o alarme toca: voz feminina, masculina ou só vibrar.</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleHealthAudioNotification()" id="btnToggleHealthAudioSwitch" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-emerald-600" role="switch" aria-checked="true" title="Ligar ou desligar áudio das notificações de remédios">
+            <span id="healthAudioSwitchThumb" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- SELETOR DE ESTILO DO ALARME: VOZ FEMININA / VOZ MASCULINA / SOMENTE VIBRAR -->
+        <div id="alarmStyleSelectorBox" class="pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Como você quer ouvir o alarme?</label>
+            <span class="text-[10px] text-slate-400">Toque para escolher</span>
+          </div>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="setHealthAlarmStyle('female')" id="btnAlarmStyleFemale" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+              <span>👩</span> <span>Voz Mulher</span>
+            </button>
+            <button type="button" onclick="setHealthAlarmStyle('male')" id="btnAlarmStyleMale" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+              <span>👨</span> <span>Voz Homem</span>
+            </button>
+            <button type="button" onclick="setHealthAlarmStyle('vibrate')" id="btnAlarmStyleVibrate" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+              <span>📳</span> <span>Só Vibrar</span>
+            </button>
           </div>
         </div>
-        <button type="button" onclick="toggleHealthAudioNotification()" id="btnToggleHealthAudioSwitch" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none bg-emerald-600" role="switch" aria-checked="true" title="Ligar ou desligar áudio das notificações de remédios">
-          <span id="healthAudioSwitchThumb" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-        </button>
       </div>
 
       <!-- SEÇÃO 1: ROTINAS DO DIA (MANHÃ E NOITE) COM CHECK-IN FLEXÍVEL -->
@@ -21630,26 +21718,35 @@ Frase falada: "${spokenText}"`;
       if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
         return; // Notificação por áudio desativada pelo usuário
       }
-      playMedAlarmBeepSequence();
+      const style = window.getHealthAlarmStyle ? window.getHealthAlarmStyle() : 'female';
+      if (style !== 'vibrate') {
+        playMedAlarmBeepSequence();
+      }
 
       // 1. Dispara no alto-falante do celular via FlutterBridge (speak_alarm ignora bloqueio de fone!)
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
             action: 'speak_alarm',
-            text: text
+            text: text,
+            alarmStyle: style
           }));
         } catch (e) {}
       }
 
-      // 2. Dispara também no Web Speech Synthesis como garantia
-      if ('speechSynthesis' in window) {
+      // 2. Dispara também no Web Speech Synthesis / Vibrate como garantia
+      if (style === 'vibrate') {
+        if ('vibrate' in navigator) {
+          try { navigator.vibrate([300, 150, 300, 150, 400]); } catch(e) {}
+        }
+      } else if ('speechSynthesis' in window) {
         try {
           window.speechSynthesis.cancel();
           const utter = new SpeechSynthesisUtterance(text);
           utter.lang = 'pt-BR';
-          utter.rate = 0.98;
+          utter.rate = 0.95;
           utter.volume = 1.0;
+          utter.pitch = style === 'male' ? 0.72 : 1.15;
           window.speechSynthesis.speak(utter);
         } catch (e) {}
       }
@@ -27119,10 +27216,14 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     });
 
     saveHealthScheduleSettings(settings);
-    const banner = document.getElementById('floatingHealthAlarmBanner');
-    if (banner) banner.remove();
-    if ('speechSynthesis' in window) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
+    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
+      window.dismissAllHealthAlarmBanners();
+    } else {
+      const banner = document.getElementById('floatingHealthAlarmBanner');
+      if (banner) banner.remove();
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
     }
   };
 
@@ -27182,10 +27283,43 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     }
   };
 
+  // Função unificada para fechar e remover COMPLETAMENTE todos os avisos, caixas e modais de alarme
+  // Impede que pré-alarme e alarme principal fiquem sobrepostos na tela (evita ter que interagir duas vezes)
+  window.dismissAllHealthAlarmBanners = function() {
+    try {
+      // 1. Remove qualquer banner flutuante existente no DOM
+      const floatingBanners = document.querySelectorAll('#floatingHealthAlarmBanner, .floating-health-alarm-banner');
+      floatingBanners.forEach(b => {
+        try { b.remove(); } catch(e) {}
+      });
+
+      // 2. Oculta o modal de tela cheia
+      const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+      if (modalFull) {
+        modalFull.classList.add('hidden');
+      }
+
+      // 3. Cancela síntese de voz e para áudio
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'stop_speak' }));
+        } catch(e) {}
+      }
+    } catch(err) {
+      console.warn('Erro ao fechar banners de alarme:', err);
+    }
+  };
+
   // Ao clicar em "🔕 Desligar" dentro do próprio aplicativo, também grava o acknowledge do horário atual
   const _origStopMedicationAlarmAudio = window.stopMedicationAlarmAudio;
   window.stopMedicationAlarmAudio = function() {
     window.onNativeNotificationMedDismissed('', '');
+    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
+      window.dismissAllHealthAlarmBanners();
+    }
     if (typeof _origStopMedicationAlarmAudio === 'function') {
       _origStopMedicationAlarmAudio();
     }
@@ -27253,11 +27387,15 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
       if (diff >= 1 && diff <= 10 && localStorage.getItem(preKey) !== 'true') {
         localStorage.setItem(preKey, 'true');
+        // Fecha qualquer banner antigo antes de exibir o pré-alarme
+        if (typeof window.dismissAllHealthAlarmBanners === 'function') window.dismissAllHealthAlarmBanners();
         const speechPre = `Atenção ${personName}: faltam ${diff} minutos para o horário das ${slotTime}. Tomar seu remédio ${medNamesJoined}.`;
         if (typeof speakMedicationAlarm === 'function') speakMedicationAlarm(speechPre);
         window.showFloatingHealthAlarmBanner(`⏰ Faltam ${diff} min (${slotTime}) • ${personName}`, speechPre, group.routine, slotTime);
       } else if (diff <= 0 && diff >= -25 && localStorage.getItem(dueKey) !== 'true') {
         localStorage.setItem(dueKey, 'true');
+        // Fecha IMEDIATAMENTE a caixa de pré-alarme para NUNCA haver duas caixas sobrepostas na tela
+        if (typeof window.dismissAllHealthAlarmBanners === 'function') window.dismissAllHealthAlarmBanners();
         if (typeof speakMedicationAlarm === 'function') speakMedicationAlarm(speechDue, true);
         window.showFloatingHealthAlarmBanner(`⏰ Dose das ${slotTime} • ${personName}`, speechDue, group.routine, slotTime);
       }
@@ -27267,6 +27405,10 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   window.currentAlarmContext = null;
 
   window.showFloatingHealthAlarmBanner = function(title, message, routine, slotTime, petCareId) {
+    // Garante remoção de banners anteriores para que NUNCA haja sobreposição de caixas
+    const oldBanners = document.querySelectorAll('#floatingHealthAlarmBanner, .floating-health-alarm-banner');
+    oldBanners.forEach(b => { try { b.remove(); } catch(e) {} });
+
     // Exibição exclusiva no novo modelo de alarme em tela cheia sem repetir na barra de notificações
     window.currentAlarmContext = {
       title: title || '⏰ Alarme Programado',
@@ -27316,10 +27458,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   window.handleFullAlarmTaken = function() {
     const ctx = window.currentAlarmContext || {};
-    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
-
-    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
-    if (modalFull) modalFull.classList.add('hidden');
+    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
+      window.dismissAllHealthAlarmBanners();
+    } else if (typeof stopMedicationAlarmAudio === 'function') {
+      stopMedicationAlarmAudio();
+    }
 
     if (ctx.petCareId) {
       if (typeof markPetCareCompleted === 'function') {
@@ -27343,10 +27486,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   window.handleFullAlarmSnooze = function() {
     const ctx = window.currentAlarmContext || {};
-    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
-
-    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
-    if (modalFull) modalFull.classList.add('hidden');
+    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
+      window.dismissAllHealthAlarmBanners();
+    } else if (typeof stopMedicationAlarmAudio === 'function') {
+      stopMedicationAlarmAudio();
+    }
 
     if (typeof snoozeMedicationAlarm5Min === 'function') {
       snoozeMedicationAlarm5Min(ctx.title, ctx.message, ctx.routine);
@@ -27356,10 +27500,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   };
 
   window.handleFullAlarmDismiss = function() {
-    if (typeof stopMedicationAlarmAudio === 'function') stopMedicationAlarmAudio();
-
-    const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
-    if (modalFull) modalFull.classList.add('hidden');
+    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
+      window.dismissAllHealthAlarmBanners();
+    } else if (typeof stopMedicationAlarmAudio === 'function') {
+      stopMedicationAlarmAudio();
+    }
 
     showToastUndo('🔕 Alarme desligado.', false);
     window.currentAlarmContext = null;

@@ -34,11 +34,22 @@ class AlarmAlertActivity : Activity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_alarm_alert)
 
-        val title = intent.getStringExtra("title") ?: "⏰ Hora do Medicamento"
-        val body = intent.getStringExtra("body") ?: "Confirme a conclusão ou adie por 5 minutos."
-        val speech = intent.getStringExtra("speech") ?: ""
-        val slot = intent.getStringExtra("slot") ?: ""
-        val notifId = intent.getIntExtra("id", 1001)
+        updateAlarmUI(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Substitui imediatamente o alarme anterior (ex: pré-alarme) sem duplicar telas ou exigir dupla interação
+        updateAlarmUI(intent)
+    }
+
+    private fun updateAlarmUI(currentIntent: Intent?) {
+        val title = currentIntent?.getStringExtra("title") ?: "⏰ Hora do Medicamento"
+        val body = currentIntent?.getStringExtra("body") ?: "Confirme a conclusão ou adie por 5 minutos."
+        val speech = currentIntent?.getStringExtra("speech") ?: ""
+        val slot = currentIntent?.getStringExtra("slot") ?: ""
+        val notifId = currentIntent?.getIntExtra("id", 1001) ?: 1001
 
         val tvBadge = findViewById<TextView>(R.id.tv_alarm_badge)
         val tvIcon = findViewById<TextView>(R.id.tv_alarm_icon)
@@ -63,7 +74,6 @@ class AlarmAlertActivity : Activity() {
         tvBody.text = body
 
         btnTaken.setOnClickListener {
-            // Dispara ação de Concluído
             val takenIntent = Intent(this, MedAlarmReceiver::class.java).apply {
                 action = NotificationHelper.ACTION_MARK_TAKEN
                 putExtra("title", title)
@@ -76,7 +86,6 @@ class AlarmAlertActivity : Activity() {
         }
 
         btnSnooze.setOnClickListener {
-            // Dispara ação de Adiar 5 minutos
             val snoozeIntent = Intent(this, MedAlarmReceiver::class.java).apply {
                 action = NotificationHelper.ACTION_SNOOZE_5M
                 putExtra("title", title)
@@ -91,7 +100,6 @@ class AlarmAlertActivity : Activity() {
         }
 
         btnDismiss.setOnClickListener {
-            // Dispara ação de Desligar
             val dismissIntent = Intent(this, MedAlarmReceiver::class.java).apply {
                 action = NotificationHelper.ACTION_DISMISS
                 putExtra("title", title)
