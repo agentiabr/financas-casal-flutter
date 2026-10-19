@@ -67,4 +67,5 @@ migrate_working_dir/
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 scripts/
+scratch/
 
