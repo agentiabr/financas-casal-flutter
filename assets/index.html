@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.12";
+    window.APP_BUILD_VERSION = "2.1.13";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -2368,8 +2368,8 @@
             </div>
 
             <!-- Balão Interativo de Dicas do Mascote Piggy (Chat, Mercado, OCR, Parcelas e Mentor) -->
-            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none min-h-[148px] sm:min-h-[108px] flex flex-col justify-between" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
-              <div class="flex items-center justify-between mb-1.5">
+            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none h-[162px] sm:h-[118px] max-h-[162px] sm:max-h-[118px] overflow-hidden flex flex-col justify-between" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
+              <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
                 <div class="flex items-center gap-1.5 min-w-0">
                   <span id="piggyTipIconBadge" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs flex-shrink-0">💡</span>
                   <span id="piggyTipCategoryBadge" class="text-[11px] font-black uppercase tracking-wider text-amber-200 truncate">Dica do Piggy</span>
@@ -2387,13 +2387,13 @@
                 </div>
               </div>
 
-              <!-- Conteúdo da Dica Ativa (Altura consistente baseada no maior texto) -->
-              <div id="piggyTipContentArea" class="min-h-[76px] sm:min-h-[46px] flex flex-col justify-center">
+              <!-- Conteúdo da Dica Ativa (Altura constante e travada calculada para o maior texto) -->
+              <div id="piggyTipContentArea" class="h-[88px] sm:h-[50px] max-h-[88px] sm:max-h-[50px] overflow-hidden flex flex-col justify-between flex-shrink-0">
                 <!-- Injetado dinamicamente via renderPiggyTip() -->
               </div>
 
               <!-- Dots de Paginação -->
-              <div class="flex items-center justify-center gap-1.5 mt-2 pt-1.5 border-t border-white/10" id="piggyTipDots">
+              <div class="flex items-center justify-center gap-1.5 mt-2 pt-1.5 border-t border-white/10 flex-shrink-0" id="piggyTipDots">
                 <!-- Dots dinâmicos -->
               </div>
             </div>
@@ -8739,19 +8739,13 @@
 
       saveActiveShoppingItems(chatItems);
 
-      // 2. Montar mensagem no chat agrupada por lojas
-      const storeMap = {};
-      chatItems.forEach(it => {
-        storeMap[it.lojaNome] = (storeMap[it.lojaNome] || 0) + 1;
-      });
-      const storeSummaryText = Object.entries(storeMap).map(([l, c]) => `${c} no ${l}`).join(' e ');
-
+      // 2. Montar mensagem no chat
       const newMsg = {
         id: 'm_' + Date.now(),
         sender: senderName,
         avatar: senderName.toLowerCase().includes('marcia') ? '👩' : '👨',
         isMe: true,
-        text: `🛒 Oi amor! Montei uma nova Lista de Compras dividida por mercado: ${storeSummaryText}. Com indicação de onde estava mais barato e o último preço registrado para economizarmos. Conforme for pegando na gôndola, vai marcando no chat! ❤️`,
+        text: `🛒 Oi amor! Montei uma nova Lista de Compras com base nos últimos preços para comparativo. Conforme for pegando na gôndola, vai marcando no chat! ❤️`,
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -10838,18 +10832,18 @@
       }
 
       contentEl.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-2.5 transition-all">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2.5 h-full">
           <div class="flex items-start gap-2.5 flex-1 min-w-0">
             <span class="text-xl sm:text-2xl leading-none flex-shrink-0 mt-0.5 select-none">${tip.icon || '🐷'}</span>
             <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5 flex-wrap mb-0.5 min-h-[20px]">
-                <span class="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-xs">${tip.category || 'Dica'}</span>
-                <h4 class="text-xs sm:text-sm font-bold text-white tracking-wide truncate">${tip.title}</h4>
+              <div class="flex items-center gap-1.5 mb-0.5 h-[20px] overflow-hidden">
+                <span class="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-xs flex-shrink-0">${tip.category || 'Dica'}</span>
+                <h4 class="text-xs sm:text-sm font-bold text-white tracking-wide truncate flex-1 min-w-0" title="${tip.title}">${tip.title}</h4>
               </div>
-              <p class="text-[11px] sm:text-xs text-white/90 line-clamp-2 leading-relaxed mt-0.5 min-h-[34px] sm:min-h-[32px] flex items-start">${tip.text}</p>
+              <p class="text-[11px] sm:text-xs text-white/90 line-clamp-2 leading-snug mt-0.5 h-[34px] sm:h-[30px] overflow-hidden flex items-start">${tip.text}</p>
             </div>
           </div>
-          <button type="button" onclick="${tip.action || 'goToMetricsSection()'}" class="flex-shrink-0 self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer h-[28px] sm:h-[30px]">
+          <button type="button" onclick="${tip.action || 'goToMetricsSection()'}" class="flex-shrink-0 self-start sm:self-center px-3 py-1 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer h-[26px] sm:h-[28px]">
             <span>${tip.buttonText || 'Acessar'}</span>
             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </button>
@@ -13501,201 +13495,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         window.updateChatStoreStatusHeader();
       }
 
-      container.innerHTML = msgs.map(m => {
-        if (m.type === 'shopping_list_card') {
-          // Agrupa itens por estabelecimento se houver divisão
-          const groups = {};
-          items.forEach(it => {
-            const loc = it.estabelecimento || storeLocation || '🛒 Supermercado';
-            if (!groups[loc]) groups[loc] = [];
-            groups[loc].push(it);
-          });
-          const groupKeys = Object.keys(groups);
-          const hasMultipleGroups = groupKeys.length > 1;
-
-          return `
-            <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-3 sm:p-4 shadow-sm my-2">
-              
-              <!-- Cabeçalho Limpo da Lista de Compras -->
-              <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-200 dark:border-slate-750">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <span>🛒</span> Lista de Compras
-                  </span>
-                  <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-bold font-mono">
-                    R$ ${summary.total.toFixed(2).replace('.', ',')}
-                  </span>
-                </div>
-                
-                <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end">
-                  <button type="button" onclick="confirmShoppingListReceipt()" id="btnConfirmReceiptShopping" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black flex items-center gap-1 transition-all shadow-xs cursor-pointer whitespace-nowrap active:scale-95" title="Avisar que você recebeu e aceitou a lista de compras">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                    <span>✓ Recebi a lista</span>
-                  </button>
-                  ${getDeletedShoppingItems().length > 0 ? `
-                    <button type="button" onclick="restoreLastDeletedShoppingItem()" class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-extrabold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap" title="Voltar com o último produto excluído">
-                      <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-                      <span>Desfazer (${getDeletedShoppingItems().length})</span>
-                    </button>
-                  ` : ''}
-                  <button type="button" onclick="sendWhatsAppShoppingReminder()" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs cursor-pointer whitespace-nowrap" title="Enviar lembrete amigável no WhatsApp para abrir o app">
-                    <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-                    <span class="hidden xs:inline">Aviso WhatsApp</span>
-                  </button>
-                  <button type="button" onclick="openAddNewItemPrompt()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>+ Item</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Indicador em Destaque de Estabelecimento Geral / Onde Comprar -->
-              <div class="flex items-center justify-between text-xs px-3.5 py-2.5 mb-3 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800/80 shadow-xs">
-                <div class="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
-                    📍
-                  </div>
-                  <div class="min-w-0">
-                    <span class="text-[10px] text-blue-700 dark:text-blue-300 font-black uppercase tracking-wider block">Onde estou comprando</span>
-                    <span class="text-xs font-black truncate block mt-0.5">
-                      ${storeLocation ? `<span class="text-slate-800 dark:text-white">Local atual: <strong class="text-blue-600 dark:text-amber-300">${escapeHtml(storeLocation)}</strong></span>` : '<span class="text-slate-500 dark:text-slate-400 italic">Local livre (decidir na hora)</span>'}
-                    </span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1.5 flex-shrink-0">
-                  <button type="button" onclick="openStoreLocationModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95">
-                    <i data-lucide="edit-3" class="w-3 h-3"></i>
-                    <span>${storeLocation ? 'Alterar' : 'Definir'}</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Lista de Produtos Agrupados por Estabelecimento -->
-              <div class="space-y-3">
-                ${items.length === 0 ? `
-                  <div class="p-4 text-center text-slate-400 text-xs">
-                    Nenhum produto na lista. Fale no microfone ou clique em "+ Item".
-                  </div>
-                ` : groupKeys.map(storeName => {
-                  const storeItems = groups[storeName];
-                  return `
-                    <div class="space-y-1.5">
-                      ${hasMultipleGroups ? `
-                        <div class="flex items-center gap-2 pt-2 pb-1 px-1 border-b border-slate-200/70 dark:border-slate-700/60">
-                          <span class="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wide flex items-center gap-1">
-                            ${escapeHtml(storeName)}
-                          </span>
-                          <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                            ${storeItems.length} ${storeItems.length === 1 ? 'item' : 'itens'}
-                          </span>
-                        </div>
-                      ` : ''}
-
-                      ${storeItems.map((it, idx) => {
-                        const isCart = it.status === 'no_carrinho';
-                        const isOut = it.status === 'nao_tinha';
-                        const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(it.nome) : null;
-                        
-                        let rowBg = 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750';
-                        if (isCart) {
-                          rowBg = 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/60';
-                        } else if (isOut) {
-                          rowBg = 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-300/90 dark:border-amber-700/70 shadow-xs';
-                        } else if (idx % 2 !== 0) {
-                          rowBg = 'bg-slate-50/80 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-750';
-                        }
-
-                        // Comparação de preço com compra anterior:
-                        // ▲ vermelha se mais caro, ▼ azul se mais barato
-                        let priceArrowHtml = '';
-                        const curPrice = parseFloat(it.precoUnitario) || 0;
-                        const oldPrice = prevPurch ? (parseFloat(prevPurch.preco) || 0) : 0;
-                        if (curPrice > 0 && oldPrice > 0) {
-                          if (curPrice > oldPrice) {
-                            const diff = (curPrice - oldPrice).toFixed(2).replace('.', ',');
-                            priceArrowHtml = `<span class="text-rose-500 font-black text-xs px-0.5 cursor-help" title="Mais caro que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • +R$ ${diff}">▲</span>`;
-                          } else if (curPrice < oldPrice) {
-                            const diff = (oldPrice - curPrice).toFixed(2).replace('.', ',');
-                            priceArrowHtml = `<span class="text-blue-500 dark:text-sky-400 font-black text-xs px-0.5 cursor-help" title="Mais barato que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • Economia de R$ ${diff}!">▼</span>`;
-                          }
-                        }
-
-                        const itemQtd = parseFloat(it.qtdComprada) || parseFloat(it.qtdDesejada) || 1;
-                        const itemSubtotal = curPrice * itemQtd;
-
-                        return `
-                          <div class="p-3 rounded-2xl border ${rowBg} transition-all flex flex-col gap-2 shadow-2xs w-full overflow-hidden box-border">
-                            <!-- LINHA 1: Checkbox Quadrado (V) + Nome do Produto + Botão (i) + Subtotal + Lixeira (Alinhada dentro da caixa) -->
-                            <div class="flex items-center justify-between gap-2 w-full">
-                              <div class="flex items-center gap-2 min-w-0 flex-1">
-                                <!-- Checkbox QUADRADO com sinal de V (marcado) -->
-                                <button type="button" onclick="toggleItemInCart('${it.id}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${isCart ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs' : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent hover:border-emerald-500'} cursor-pointer flex-shrink-0" title="${isCart ? 'Desmarcar' : 'Marcar como pego'}">
-                                  ${isCart ? '✓' : ''}
-                                </button>
-
-                                <span class="text-xs sm:text-sm font-black leading-snug break-words ${isCart ? 'line-through text-slate-400 dark:text-slate-500' : (isOut ? 'line-through text-rose-700 dark:text-rose-300' : 'text-slate-900 dark:text-white')}">
-                                  ${escapeHtml(it.nome)}
-                                </span>
-
-                                <!-- Botão (i) de Informações de Compra Anterior -->
-                                <button type="button" onclick="showStoreInfoToast('${escapeHtml(it.nome)}', ${prevPurch ? (prevPurch.preco || 0) : (it.ultimoPreco || it.menorPreco || 0)}, '${escapeHtml(prevPurch ? (prevPurch.estabelecimento || '') : (it.lojaUltimoPreco || it.lojaNome || it.estabelecimento || ''))}', '${it.id}')" class="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center font-serif italic font-black text-[11px] hover:bg-blue-100 transition-colors cursor-pointer flex-shrink-0" title="Ver histórico de compra anterior">
-                                  i
-                                </button>
-                              </div>
-                              
-                              <div class="flex items-center gap-1.5 flex-shrink-0">
-                                <div class="flex items-center gap-0.5 font-mono font-black text-xs text-slate-900 dark:text-white whitespace-nowrap">
-                                  ${priceArrowHtml}
-                                  <span>R$ ${itemSubtotal.toFixed(2).replace('.', ',')}</span>
-                                </div>
-
-                                <!-- Botão Lixeira posicionado dentro da linha superior sem jamais ultrapassar a caixa -->
-                                <button type="button" onclick="removeShoppingItemToTrash('${it.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer flex-shrink-0" title="Excluir item">
-                                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                </button>
-                              </div>
-                            </div>
-
-                            <!-- Faixa de Histórico Inline ao clicar no (i) -->
-                            <div id="chatItemInfoBox_${it.id}" class="hidden text-[11px] font-semibold px-2.5 py-1.5 rounded-xl bg-blue-50/90 dark:bg-slate-800 text-blue-800 dark:text-sky-300 border border-blue-200/70 dark:border-slate-700"></div>
-
-                            <!-- LINHA 2: Quantidade em 1 Linha + Valor Unitário (R$ 0,00) + Botão Não Tem em 1 Linha -->
-                            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-750 text-xs w-full">
-                              <!-- Caixa Quantidade em 1 ÚNICA LINHA -->
-                              <div class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-xs shadow-2xs flex-shrink-0 whitespace-nowrap">
-                                <button type="button" onclick="stepItemQuantity('${it.id}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
-                                <span class="px-1.5 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200 whitespace-nowrap">${itemQtd} ${it.unidade || 'un'}</span>
-                                <button type="button" onclick="stepItemQuantity('${it.id}', 1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar">+</button>
-                              </div>
-
-                              <!-- Campo de Preço Unitário (R$ 0,00) -->
-                              <div class="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 shadow-2xs flex-1 max-w-[115px] min-w-[76px]">
-                                <span class="text-[10px] text-slate-400 font-bold">R$</span>
-                                <input type="number" step="0.01" min="0" value="${curPrice > 0 ? curPrice : ''}" placeholder="0,00" onchange="updateItemUnitPrice('${it.id}', this.value)" class="w-full text-xs font-mono font-bold bg-transparent text-slate-900 dark:text-white outline-none">
-                              </div>
-
-                              <!-- Botão Não Tem em 1 única linha com X vermelho -->
-                              <button type="button" onclick="toggleItemMissing('${it.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 flex-shrink-0 ${isOut ? 'bg-rose-600 text-white border border-rose-700 shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 dark:border-slate-700'}" title="${isOut ? 'Clique para desmarcar falta' : 'Marcar que não tem no mercado'}">
-                                <span class="${isOut ? 'text-white font-black' : 'text-rose-500 font-black'}">✕</span>
-                                <span>Não tem</span>
-                              </button>
-                            </div>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-
-              <!-- Confirmação Dinâmica de Recebimento da Lista no Chat -->
-              ${renderShoppingListConfirmationSection()}
-
-            </div>
-          `;
-        }
-
-        // Mensagens normais do chat com botão de exclusão
+      // 1. Mensagens normais da conversa da família
+      const regularMsgs = msgs.filter(m => m.type !== 'shopping_list_card');
+      const chatHtml = regularMsgs.map(m => {
         const isMe = m.isMe || (m.sender === ('Eu'));
         const alignCls = isMe ? 'justify-end' : 'justify-start';
         const bubbleBg = isMe 
@@ -13727,6 +13529,198 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         `;
       }).join('');
+
+      // 2. Card da Lista de Compras posicionado SEMPRE EMBAIXO, POR ÚLTIMO APÓS A CONVERSA
+      let shoppingCardHtml = '';
+      const hasShoppingCard = msgs.some(m => m.type === 'shopping_list_card') || items.length > 0;
+      if (hasShoppingCard) {
+        // Agrupa itens por estabelecimento se houver divisão
+        const groups = {};
+        items.forEach(it => {
+          const loc = it.estabelecimento || storeLocation || '🛒 Supermercado';
+          if (!groups[loc]) groups[loc] = [];
+          groups[loc].push(it);
+        });
+        const groupKeys = Object.keys(groups);
+        const hasMultipleGroups = groupKeys.length > 1;
+
+        shoppingCardHtml = `
+          <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-3 sm:p-4 shadow-sm my-2 mt-4">
+            
+            <!-- Cabeçalho Limpo da Lista de Compras -->
+            <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-200 dark:border-slate-750">
+              <div class="flex items-center gap-2">
+                <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>🛒</span> Lista de Compras
+                </span>
+                <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-bold font-mono">
+                  R$ ${summary.total.toFixed(2).replace('.', ',')}
+                </span>
+              </div>
+              
+              <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end">
+                <button type="button" onclick="confirmShoppingListReceipt()" id="btnConfirmReceiptShopping" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black flex items-center gap-1 transition-all shadow-xs cursor-pointer whitespace-nowrap active:scale-95" title="Avisar que você recebeu e aceitou a lista de compras">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>✓ Recebi a lista</span>
+                </button>
+                ${getDeletedShoppingItems().length > 0 ? `
+                  <button type="button" onclick="restoreLastDeletedShoppingItem()" class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-extrabold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap" title="Voltar com o último produto excluído">
+                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                    <span>Desfazer (${getDeletedShoppingItems().length})</span>
+                  </button>
+                ` : ''}
+                <button type="button" onclick="sendWhatsAppShoppingReminder()" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs cursor-pointer whitespace-nowrap" title="Enviar lembrete amigável no WhatsApp para abrir o app">
+                  <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                  <span class="hidden xs:inline">Aviso WhatsApp</span>
+                </button>
+                <button type="button" onclick="openAddNewItemPrompt()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>+ Item</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Indicador em Destaque de Estabelecimento Geral / Onde Comprar -->
+            <div class="flex items-center justify-between text-xs px-3.5 py-2.5 mb-3 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800/80 shadow-xs">
+              <div class="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                  📍
+                </div>
+                <div class="min-w-0">
+                  <span class="text-[10px] text-blue-700 dark:text-blue-300 font-black uppercase tracking-wider block">Onde estou comprando</span>
+                  <span class="text-xs font-black truncate block mt-0.5">
+                    ${storeLocation ? `<span class="text-slate-800 dark:text-white">Local atual: <strong class="text-blue-600 dark:text-amber-300">${escapeHtml(storeLocation)}</strong></span>` : '<span class="text-slate-500 dark:text-slate-400 italic">Local livre (decidir na hora)</span>'}
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button type="button" onclick="openStoreLocationModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95">
+                  <i data-lucide="edit-3" class="w-3 h-3"></i>
+                  <span>${storeLocation ? 'Alterar' : 'Definir'}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Lista de Produtos Agrupados por Estabelecimento -->
+            <div class="space-y-3">
+              ${items.length === 0 ? `
+                <div class="p-4 text-center text-slate-400 text-xs">
+                  Nenhum produto na lista. Fale no microfone ou clique em "+ Item".
+                </div>
+              ` : groupKeys.map(storeName => {
+                const storeItems = groups[storeName];
+                return `
+                  <div class="space-y-1.5">
+                    ${hasMultipleGroups ? `
+                      <div class="flex items-center gap-2 pt-2 pb-1 px-1 border-b border-slate-200/70 dark:border-slate-700/60">
+                        <span class="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wide flex items-center gap-1">
+                          ${escapeHtml(storeName)}
+                        </span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                          ${storeItems.length} ${storeItems.length === 1 ? 'item' : 'itens'}
+                        </span>
+                      </div>
+                    ` : ''}
+
+                    ${storeItems.map((it, idx) => {
+                      const isCart = it.status === 'no_carrinho';
+                      const isOut = it.status === 'nao_tinha';
+                      const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(it.nome) : null;
+                      
+                      let rowBg = 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750';
+                      if (isCart) {
+                        rowBg = 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/60';
+                      } else if (isOut) {
+                        rowBg = 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-300/90 dark:border-amber-700/70 shadow-xs';
+                      } else if (idx % 2 !== 0) {
+                        rowBg = 'bg-slate-50/80 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-750';
+                      }
+
+                      // Comparação de preço com compra anterior:
+                      let priceArrowHtml = '';
+                      const curPrice = parseFloat(it.precoUnitario) || 0;
+                      const oldPrice = prevPurch ? (parseFloat(prevPurch.preco) || 0) : 0;
+                      if (curPrice > 0 && oldPrice > 0) {
+                        if (curPrice > oldPrice) {
+                          const diff = (curPrice - oldPrice).toFixed(2).replace('.', ',');
+                          priceArrowHtml = `<span class="text-rose-500 font-black text-xs px-0.5 cursor-help" title="Mais caro que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • +R$ ${diff}">▲</span>`;
+                        } else if (curPrice < oldPrice) {
+                          const diff = (oldPrice - curPrice).toFixed(2).replace('.', ',');
+                          priceArrowHtml = `<span class="text-blue-500 dark:text-sky-400 font-black text-xs px-0.5 cursor-help" title="Mais barato que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • Economia de R$ ${diff}!">▼</span>`;
+                        }
+                      }
+
+                      const itemQtd = parseFloat(it.qtdComprada) || parseFloat(it.qtdDesejada) || 1;
+                      const itemSubtotal = curPrice * itemQtd;
+
+                      return `
+                        <div class="p-3 rounded-2xl border ${rowBg} transition-all flex flex-col gap-2 shadow-2xs w-full overflow-hidden box-border">
+                          <!-- LINHA 1: Checkbox Quadrado (V) + Nome do Produto + Botão (i) + Subtotal + Lixeira -->
+                          <div class="flex items-center justify-between gap-2 w-full">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                              <button type="button" onclick="toggleItemInCart('${it.id}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${isCart ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs' : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent hover:border-emerald-500'} cursor-pointer flex-shrink-0" title="${isCart ? 'Desmarcar' : 'Marcar como pego'}">
+                                ${isCart ? '✓' : ''}
+                              </button>
+
+                              <span class="text-xs sm:text-sm font-black leading-snug break-words ${isCart ? 'line-through text-slate-400 dark:text-slate-500' : (isOut ? 'line-through text-rose-700 dark:text-rose-300' : 'text-slate-900 dark:text-white')}">
+                                ${escapeHtml(it.nome)}
+                              </span>
+
+                              <!-- Botão (i) de Informações de Compra Anterior -->
+                              <button type="button" onclick="showStoreInfoToast('${escapeHtml(it.nome)}', ${prevPurch ? (prevPurch.preco || 0) : (it.ultimoPreco || it.menorPreco || 0)}, '${escapeHtml(prevPurch ? (prevPurch.estabelecimento || '') : (it.lojaUltimoPreco || it.lojaNome || it.estabelecimento || ''))}', '${it.id}')" class="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center font-serif italic font-black text-[11px] hover:bg-blue-100 transition-colors cursor-pointer flex-shrink-0" title="Ver histórico de compra anterior">
+                                i
+                              </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                              <div class="flex items-center gap-0.5 font-mono font-black text-xs text-slate-900 dark:text-white whitespace-nowrap">
+                                ${priceArrowHtml}
+                                <span>R$ ${itemSubtotal.toFixed(2).replace('.', ',')}</span>
+                              </div>
+
+                              <button type="button" onclick="removeShoppingItemToTrash('${it.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer flex-shrink-0" title="Excluir item">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Faixa de Histórico Inline ao clicar no (i) -->
+                          <div id="chatItemInfoBox_${it.id}" class="hidden text-[11px] font-semibold px-2.5 py-1.5 rounded-xl bg-blue-50/90 dark:bg-slate-800 text-blue-800 dark:text-sky-300 border border-blue-200/70 dark:border-slate-700"></div>
+
+                          <!-- LINHA 2: Quantidade + Valor Unitário + Botão Não Tem -->
+                          <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-750 text-xs w-full">
+                            <div class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-750 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 text-xs shadow-2xs flex-shrink-0 whitespace-nowrap">
+                              <button type="button" onclick="stepItemQuantity('${it.id}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
+                              <span class="px-1.5 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200 whitespace-nowrap">${itemQtd} ${it.unidade || 'un'}</span>
+                              <button type="button" onclick="stepItemQuantity('${it.id}', 1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar">+</button>
+                            </div>
+
+                            <div class="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 shadow-2xs flex-1 max-w-[115px] min-w-[76px]">
+                              <span class="text-[10px] text-slate-400 font-bold">R$</span>
+                              <input type="number" step="0.01" min="0" value="${curPrice > 0 ? curPrice : ''}" placeholder="0,00" onchange="updateItemUnitPrice('${it.id}', this.value)" class="w-full text-xs font-mono font-bold bg-transparent text-slate-900 dark:text-white outline-none">
+                            </div>
+
+                            <button type="button" onclick="toggleItemMissing('${it.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 flex-shrink-0 ${isOut ? 'bg-rose-600 text-white border border-rose-700 shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 dark:border-slate-700'}" title="${isOut ? 'Clique para desmarcar falta' : 'Marcar que não tem no mercado'}">
+                              <span class="${isOut ? 'text-white font-black' : 'text-rose-500 font-black'}">✕</span>
+                              <span>Não tem</span>
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Confirmação Dinâmica de Recebimento da Lista no Chat -->
+            ${renderShoppingListConfirmationSection()}
+
+          </div>
+        `;
+      }
+
+      container.innerHTML = chatHtml + shoppingCardHtml;
 
       if (window.lucide) lucide.createIcons();
     }
@@ -13877,9 +13871,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const nowTs = Date.now();
       const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
+      // Remove mensagens anteriores de confirmação/recusa para não acumular nem repetir caso o usuário clique em Alterar
+      let msgs = getCleanChatMessages();
+      msgs = msgs.filter(m => !m.id || (!m.id.startsWith('m_confirm_') && !m.id.startsWith('m_decline_') && !m.id.startsWith('m_accept_')));
+
       if (willDo) {
         localStorage.setItem('ctrlpig_shopping_receipt_stage', 'confirmed_accepted');
-        const msgs = getCleanChatMessages();
         msgs.push({
           id: 'm_confirm_' + nowTs,
           sender: me,
@@ -13890,14 +13887,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         });
         saveCleanChatMessages(msgs);
         if (typeof window.confirmShoppingListReceipt === 'function') {
-          window.confirmShoppingListReceipt(me);
+          window.confirmShoppingListReceipt(me, { skipChatMessage: true });
         }
         if (typeof showToastUndo === 'function') {
           showToastUndo('🎉 Perfeito! Sua confirmação foi enviada para ' + partner + '.', false);
         }
       } else {
         localStorage.setItem('ctrlpig_shopping_receipt_stage', 'confirmed_declined');
-        const msgs = getCleanChatMessages();
         msgs.push({
           id: 'm_decline_' + nowTs,
           sender: me,
@@ -13923,7 +13919,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     };
 
     window.resetShoppingListReceiptStage = function() {
-      localStorage.removeItem('ctrlpig_shopping_receipt_stage');
+      // Quando clica em "Alterar", vai direto para "Sim, vou fazer as compras!" e "Hoje não consigo", sem pedir confirmação de recebimento novamente
+      localStorage.setItem('ctrlpig_shopping_receipt_stage', 'received');
       if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
     };
 
@@ -25382,6 +25379,36 @@ Frase falada: "${spokenText}"`;
       addedNames.push(`${qtd} ${unidade} ${nome}${preco > 0 ? ` (R$ ${preco.toFixed(2).replace('.', ',')})` : ''}`);
     });
 
+    const productNamesOnly = extractedItems.map(it => (it.nome || '').trim()).filter(Boolean);
+    if (productNamesOnly.length > 0) {
+      const msgs = getCleanChatMessages();
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const senderLower = sender.toLowerCase();
+      let senderRelation = sender;
+      if (senderLower.includes('marcia') || senderLower.includes('márcia')) {
+        senderRelation = 'sua mãe / esposa Márcia';
+      } else if (senderLower.includes('rodrigo')) {
+        senderRelation = 'seu parceiro Rodrigo';
+      }
+
+      const countStr = productNamesOnly.length === 1 
+        ? 'mais 1 produto na lista de compras' 
+        : `mais ${productNamesOnly.length} produtos na lista de compras`;
+      
+      const chatNotice = `🛒 ${senderRelation} incluiu ${countStr}: ${productNamesOnly.join(', ')}.`;
+
+      msgs.push({
+        id: 'msg_voice_add_' + Date.now(),
+        sender: sender,
+        avatar: senderLower.includes('marcia') ? '👩' : '👨',
+        isMe: true,
+        text: chatNotice,
+        time: timeStr
+      });
+      saveCleanChatMessages(msgs);
+    }
+
     if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
     if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
     if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
@@ -29841,23 +29868,26 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   };
 
   // Função para aceitar e confirmar recebimento da lista de compras
-  window.confirmShoppingListReceipt = async function(byWhom) {
+  window.confirmShoppingListReceipt = async function(byWhom, opts = {}) {
     const me = byWhom || ((typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : 'Márcia');
     const partner = me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
     const nowTs = Date.now();
     
-    // Registra mensagem de aceite no Chat da Família
-    const msgs = getCleanChatMessages();
-    msgs.push({
-      id: 'm_accept_' + nowTs,
-      sender: me,
-      avatar: me.toLowerCase().includes('marcia') ? '👩' : '👨',
-      isMe: true,
-      text: `🛒 ✅ Recebi a lista de compras! Já vou providenciar os itens. Pode deixar comigo! ❤️`,
-      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-    });
-    saveCleanChatMessages(msgs);
-    if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    // Registra mensagem de aceite no Chat da Família apenas se não for suprimida por chamada explícita de disponibilidade
+    if (!opts.skipChatMessage) {
+      let msgs = getCleanChatMessages();
+      msgs = msgs.filter(m => !m.id || (!m.id.startsWith('m_confirm_') && !m.id.startsWith('m_decline_') && !m.id.startsWith('m_accept_')));
+      msgs.push({
+        id: 'm_accept_' + nowTs,
+        sender: me,
+        avatar: me.toLowerCase().includes('marcia') ? '👩' : '👨',
+        isMe: true,
+        text: `🛒 ✅ Recebi a lista de compras! Já vou providenciar os itens. Pode deixar comigo! ❤️`,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      });
+      saveCleanChatMessages(msgs);
+      if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    }
 
     // Salva objeto de aceite para sincronizar na nuvem
     const acceptObj = {
@@ -29868,7 +29898,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     localStorage.setItem('ctrlpig_last_shopping_acceptance', JSON.stringify(acceptObj));
     window._pendingShoppingAcceptanceForCloud = acceptObj;
 
-    if (typeof showToastUndo === 'function') {
+    if (!opts.skipChatMessage && typeof showToastUndo === 'function') {
       showToastUndo(`✅ Você aceitou a lista! ${partner} foi notificado(a).`, false);
     }
     if (typeof playChatDing === 'function') playChatDing();
