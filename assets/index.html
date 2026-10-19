@@ -177,7 +177,586 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- QR Code Generator (Offline / Local) -->
-  <script src="qrcode.js"></script>
+  <script>
+// Standalone QR Code Engine Inline
+/**
+ * Standalone QR Code generator for CtrlPig (Offline / Pure JS)
+ * Supports Byte Mode (UTF-8), Versions 1-10, Error Correction L/M/Q/H
+ */
+(function(window) {
+  'use strict';
+
+  var QRMode = { MODE_8BIT_BYTE: 1 << 2 };
+  var QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
+  var QRMaskPattern = {
+    PATTERN000: 0, PATTERN001: 1, PATTERN010: 2, PATTERN011: 3,
+    PATTERN100: 4, PATTERN101: 5, PATTERN110: 6, PATTERN111: 7
+  };
+
+  var QRUtil = {
+    PATTERN_POSITION_TABLE: [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54]
+    ],
+    G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+    G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+    G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
+    getBCHTypeInfo: function(data) {
+      var d = data << 10;
+      while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+        d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15)));
+      }
+      return ((data << 10) | d) ^ QRUtil.G15_MASK;
+    },
+    getBCHTypeNumber: function(data) {
+      var d = data << 12;
+      while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+        d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18)));
+      }
+      return (data << 12) | d;
+    },
+    getBCHDigit: function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit++;
+        data >>>= 1;
+      }
+      return digit;
+    },
+    getPatternPosition: function(typeNumber) {
+      return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1] || [];
+    },
+    getMask: function(maskPattern, i, j) {
+      switch (maskPattern) {
+        case QRMaskPattern.PATTERN000: return (i + j) % 2 == 0;
+        case QRMaskPattern.PATTERN001: return i % 2 == 0;
+        case QRMaskPattern.PATTERN010: return j % 3 == 0;
+        case QRMaskPattern.PATTERN011: return (i + j) % 3 == 0;
+        case QRMaskPattern.PATTERN100: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0;
+        case QRMaskPattern.PATTERN101: return ((i * j) % 2) + ((i * j) % 3) == 0;
+        case QRMaskPattern.PATTERN110: return (((i * j) % 2) + ((i * j) % 3)) % 2 == 0;
+        case QRMaskPattern.PATTERN111: return (((i * j) % 3) + ((i + j) % 2)) % 2 == 0;
+        default: throw new Error('bad maskPattern:' + maskPattern);
+      }
+    },
+    getErrorCorrectPolynomial: function(errorCorrectLength) {
+      var a = new QRPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i++) {
+        a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+      }
+      return a;
+    },
+    getLengthInBits: function(mode, type) {
+      if (1 <= type && type < 10) {
+        switch (mode) {
+          case QRMode.MODE_8BIT_BYTE: return 8;
+          default: return 8;
+        }
+      } else {
+        return 16;
+      }
+    },
+    getLostPoint: function(qrCode) {
+      var moduleCount = qrCode.getModuleCount();
+      var lostPoint = 0;
+      for (var row = 0; row < moduleCount; row++) {
+        for (var col = 0; col < moduleCount; col++) {
+          var sameCount = 0;
+          var dark = qrCode.isDark(row, col);
+          for (var r = -1; r <= 1; r++) {
+            if (row + r < 0 || moduleCount <= row + r) continue;
+            for (var c = -1; c <= 1; c++) {
+              if (col + c < 0 || moduleCount <= col + c) continue;
+              if (r == 0 && c == 0) continue;
+              if (dark == qrCode.isDark(row + r, col + c)) sameCount++;
+            }
+          }
+          if (sameCount > 5) lostPoint += (3 + sameCount - 5);
+        }
+      }
+      for (var row = 0; row < moduleCount - 1; row++) {
+        for (var col = 0; col < moduleCount - 1; col++) {
+          var count = 0;
+          if (qrCode.isDark(row, col)) count++;
+          if (qrCode.isDark(row + 1, col)) count++;
+          if (qrCode.isDark(row, col + 1)) count++;
+          if (qrCode.isDark(row + 1, col + 1)) count++;
+          if (count == 0 || count == 4) lostPoint += 3;
+        }
+      }
+      for (var row = 0; row < moduleCount; row++) {
+        for (var col = 0; col < moduleCount - 6; col++) {
+          if (qrCode.isDark(row, col) && !qrCode.isDark(row, col + 1) && qrCode.isDark(row, col + 2) &&
+              qrCode.isDark(row, col + 3) && qrCode.isDark(row, col + 4) && !qrCode.isDark(row, col + 5) &&
+              qrCode.isDark(row, col + 6)) {
+            lostPoint += 40;
+          }
+        }
+      }
+      for (var col = 0; col < moduleCount; col++) {
+        for (var row = 0; row < moduleCount - 6; row++) {
+          if (qrCode.isDark(row, col) && !qrCode.isDark(row + 1, col) && qrCode.isDark(row + 2, col) &&
+              qrCode.isDark(row + 3, col) && qrCode.isDark(row + 4, col) && !qrCode.isDark(row + 5, col) &&
+              qrCode.isDark(row + 6, col)) {
+            lostPoint += 40;
+          }
+        }
+      }
+      var darkCount = 0;
+      for (var col = 0; col < moduleCount; col++) {
+        for (var row = 0; row < moduleCount; row++) {
+          if (qrCode.isDark(row, col)) darkCount++;
+        }
+      }
+      var ratio = Math.abs((100 * darkCount / moduleCount / moduleCount) - 50) / 5;
+      lostPoint += ratio * 10;
+      return lostPoint;
+    }
+  };
+
+  var QRMath = {
+    glog: function(n) {
+      if (n < 1) throw new Error('glog(' + n + ')');
+      return QRMath.LOG_TABLE[n];
+    },
+    gexp: function(n) {
+      while (n < 0) n += 255;
+      while (n >= 255) n -= 255;
+      return QRMath.EXP_TABLE[n];
+    },
+    EXP_TABLE: new Array(256),
+    LOG_TABLE: new Array(256)
+  };
+  for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
+  for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+  for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
+
+  function QRPolynomial(num, shift) {
+    if (num.length == undefined) throw new Error(num.length + '/' + shift);
+    var offset = 0;
+    while (offset < num.length && num[offset] == 0) offset++;
+    this.num = new Array(num.length - offset + shift);
+    for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+  }
+  QRPolynomial.prototype = {
+    get: function(index) { return this.num[index]; },
+    getLength: function() { return this.num.length; },
+    multiply: function(e) {
+      var num = new Array(this.getLength() + e.getLength() - 1);
+      for (var i = 0; i < this.getLength(); i++) {
+        for (var j = 0; j < e.getLength(); j++) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+        }
+      }
+      return new QRPolynomial(num, 0);
+    },
+    mod: function(e) {
+      if (this.getLength() - e.getLength() < 0) return this;
+      var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+      var num = new Array(this.getLength());
+      for (var i = 0; i < this.getLength(); i++) num[i] = this.get(i);
+      for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+      return new QRPolynomial(num, 0).mod(e);
+    }
+  };
+
+  function QRRSBlock(totalCount, dataCount) {
+    this.totalCount = totalCount;
+    this.dataCount = dataCount;
+  }
+  QRRSBlock.RS_BLOCK_TABLE = [
+    [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
+    [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
+    [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
+    [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9],
+    [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12],
+    [2, 86, 68], [4, 43, 27], [4, 43, 19], [4, 43, 15],
+    [2, 98, 78], [4, 49, 31], [2, 32, 14, 4, 33, 15], [4, 39, 13, 1, 40, 14],
+    [2, 121, 97], [2, 60, 38, 2, 61, 39], [4, 40, 18, 2, 41, 19], [4, 40, 14, 2, 41, 15],
+    [2, 146, 116], [3, 58, 36, 2, 59, 37], [4, 36, 16, 4, 37, 17], [4, 36, 12, 4, 37, 13],
+    [2, 86, 68, 2, 87, 69], [4, 69, 43, 1, 70, 44], [6, 43, 19, 2, 44, 20], [6, 43, 15, 2, 44, 16]
+  ];
+  QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+    var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+    if (rsBlock == undefined) throw new Error('bad rs block @ typeNumber:' + typeNumber + '/errorCorrectLevel:' + errorCorrectLevel);
+    var length = rsBlock.length / 3;
+    var list = [];
+    for (var i = 0; i < length; i++) {
+      var count = rsBlock[i * 3 + 0];
+      var totalCount = rsBlock[i * 3 + 1];
+      var dataCount = rsBlock[i * 3 + 2];
+      for (var j = 0; j < count; j++) list.push(new QRRSBlock(totalCount, dataCount));
+    }
+    return list;
+  };
+  QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+    switch (errorCorrectLevel) {
+      case QRErrorCorrectLevel.L: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectLevel.M: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectLevel.Q: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectLevel.H: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default: return undefined;
+    }
+  };
+
+  function QRBitBuffer() {
+    this.buffer = [];
+    this.length = 0;
+  }
+  QRBitBuffer.prototype = {
+    get: function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ((this.buffer[bufIndex] >>> (7 - index % 8)) & 1) == 1;
+    },
+    put: function(num, length) {
+      for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+    },
+    getLengthInBits: function() { return this.length; },
+    putBit: function(bit) {
+      var bufIndex = Math.floor(this.length / 8);
+      if (this.buffer.length <= bufIndex) this.buffer.push(0);
+      if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+      this.length++;
+    }
+  };
+
+  function QR8bitByte(data) {
+    this.mode = QRMode.MODE_8BIT_BYTE;
+    this.data = data;
+    this.parsedData = [];
+    for (var i = 0, l = this.data.length; i < l; i++) {
+      var byteArray = [];
+      var code = this.data.charCodeAt(i);
+      if (code > 0x10000) {
+        byteArray[0] = 0xF0 | ((code & 0x1C0000) >>> 18);
+        byteArray[1] = 0x80 | ((code & 0x3F000) >>> 12);
+        byteArray[2] = 0x80 | ((code & 0xFC0) >>> 6);
+        byteArray[3] = 0x80 | (code & 0x3F);
+      } else if (code > 0x800) {
+        byteArray[0] = 0xE0 | ((code & 0xF000) >>> 12);
+        byteArray[1] = 0x80 | ((code & 0xFC0) >>> 6);
+        byteArray[2] = 0x80 | (code & 0x3F);
+      } else if (code > 0x7F) {
+        byteArray[0] = 0xC0 | ((code & 0x7C0) >>> 6);
+        byteArray[1] = 0x80 | (code & 0x3F);
+      } else {
+        byteArray[0] = code;
+      }
+      this.parsedData.push(byteArray);
+    }
+    this.parsedData = Array.prototype.concat.apply([], this.parsedData);
+  }
+  QR8bitByte.prototype = {
+    getLength: function() { return this.parsedData.length; },
+    write: function(buffer) {
+      for (var i = 0, l = this.parsedData.length; i < l; i++) buffer.put(this.parsedData[i], 8);
+    }
+  };
+
+  function QRCodeModel(typeNumber, errorCorrectLevel) {
+    this.typeNumber = typeNumber;
+    this.errorCorrectLevel = errorCorrectLevel;
+    this.modules = null;
+    this.moduleCount = 0;
+    this.dataCache = null;
+    this.dataList = [];
+  }
+  QRCodeModel.prototype = {
+    addData: function(data) {
+      this.dataList.push(new QR8bitByte(data));
+      this.dataCache = null;
+    },
+    isDark: function(row, col) {
+      if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) throw new Error(row + ',' + col);
+      return this.modules[row][col];
+    },
+    getModuleCount: function() { return this.moduleCount; },
+    make: function() {
+      if (this.typeNumber < 1) {
+        var typeNumber = 1;
+        for (typeNumber = 1; typeNumber < 10; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+          var buffer = new QRBitBuffer();
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+          for (var i = 0; i < this.dataList.length; i++) {
+            var data = this.dataList[i];
+            buffer.put(data.mode, 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+            data.write(buffer);
+          }
+          if (buffer.getLengthInBits() <= totalDataCount * 8) break;
+        }
+        this.typeNumber = typeNumber;
+      }
+      this.makeImpl(false, this.getBestMaskPattern());
+    },
+    makeImpl: function(test, maskPattern) {
+      this.moduleCount = this.typeNumber * 4 + 17;
+      this.modules = new Array(this.moduleCount);
+      for (var row = 0; row < this.moduleCount; row++) {
+        this.modules[row] = new Array(this.moduleCount);
+        for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
+      }
+      this.setupPositionProbePattern(0, 0);
+      this.setupPositionProbePattern(this.moduleCount - 7, 0);
+      this.setupPositionProbePattern(0, this.moduleCount - 7);
+      this.setupPositionAdjustPattern();
+      this.setupTimingPattern();
+      this.setupTypeInfo(test, maskPattern);
+      if (this.typeNumber >= 7) this.setupTypeNumber(test);
+      if (this.dataCache == null) this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+      this.mapData(this.dataCache, maskPattern);
+    },
+    setupPositionProbePattern: function(row, col) {
+      for (var r = -1; r <= 7; r++) {
+        if (row + r <= -1 || this.moduleCount <= row + r) continue;
+        for (var c = -1; c <= 7; c++) {
+          if (col + c <= -1 || this.moduleCount <= col + c) continue;
+          if ((0 <= r && r <= 6 && (c == 0 || c == 6)) || (0 <= c && c <= 6 && (r == 0 || r == 6)) || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+            this.modules[row + r][col + c] = true;
+          } else {
+            this.modules[row + r][col + c] = false;
+          }
+        }
+      }
+    },
+    getBestMaskPattern: function() {
+      var minLostPoint = 0;
+      var pattern = 0;
+      for (var i = 0; i < 8; i++) {
+        this.makeImpl(true, i);
+        var lostPoint = QRUtil.getLostPoint(this);
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+      return pattern;
+    },
+    setupTimingPattern: function() {
+      for (var r = 8; r < this.moduleCount - 8; r++) {
+        if (this.modules[r][6] !== null) continue;
+        this.modules[r][6] = (r % 2 == 0);
+      }
+      for (var c = 8; c < this.moduleCount - 8; c++) {
+        if (this.modules[6][c] !== null) continue;
+        this.modules[6][c] = (c % 2 == 0);
+      }
+    },
+    setupPositionAdjustPattern: function() {
+      var pos = QRUtil.getPatternPosition(this.typeNumber);
+      for (var i = 0; i < pos.length; i++) {
+        for (var j = 0; j < pos.length; j++) {
+          var row = pos[i];
+          var col = pos[j];
+          if (this.modules[row][col] !== null) continue;
+          for (var r = -2; r <= 2; r++) {
+            for (var c = -2; c <= 2; c++) {
+              if (Math.abs(r) == 2 || Math.abs(c) == 2 || (r == 0 && c == 0)) {
+                this.modules[row + r][col + c] = true;
+              } else {
+                this.modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    },
+    setupTypeNumber: function(test) {
+      var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+      for (var i = 0; i < 18; i++) {
+        var mod = (!test && ((bits >> i) & 1) == 1);
+        this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+      }
+      for (var i = 0; i < 18; i++) {
+        var mod = (!test && ((bits >> i) & 1) == 1);
+        this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    },
+    setupTypeInfo: function(test, maskPattern) {
+      var data = (this.errorCorrectLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+      for (var i = 0; i < 15; i++) {
+        var mod = (!test && ((bits >> i) & 1) == 1);
+        if (i < 6) this.modules[i][8] = mod;
+        else if (i < 8) this.modules[i + 1][8] = mod;
+        else this.modules[this.moduleCount - 15 + i][8] = mod;
+      }
+      for (var i = 0; i < 15; i++) {
+        var mod = (!test && ((bits >> i) & 1) == 1);
+        if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+        else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+        else this.modules[8][15 - i - 1] = mod;
+      }
+      this.modules[this.moduleCount - 8][8] = (!test);
+    },
+    mapData: function(data, maskPattern) {
+      var inc = -1;
+      var row = this.moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+        if (col == 6) col--;
+        while (true) {
+          for (var c = 0; c < 2; c++) {
+            if (this.modules[row][col - c] === null) {
+              var dark = false;
+              if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
+              var mask = QRUtil.getMask(maskPattern, row, col - c);
+              if (mask) dark = !dark;
+              this.modules[row][col - c] = dark;
+              bitIndex--;
+              if (bitIndex == -1) {
+                byteIndex++;
+                bitIndex = 7;
+              }
+            }
+          }
+          row += inc;
+          if (row < 0 || this.moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    }
+  };
+  QRCodeModel.createData = function(typeNumber, errorCorrectLevel, dataList) {
+    var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+    var buffer = new QRBitBuffer();
+    for (var i = 0; i < dataList.length; i++) {
+      var data = dataList[i];
+      buffer.put(data.mode, 4);
+      buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+      data.write(buffer);
+    }
+    var totalDataCount = 0;
+    for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+    if (buffer.getLengthInBits() > totalDataCount * 8) {
+      throw new Error('code length overflow. (' + buffer.getLengthInBits() + '>' + totalDataCount * 8 + ')');
+    }
+    if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+    while (buffer.getLengthInBits() % 8 != 0) buffer.putBit(false);
+    while (true) {
+      if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+      buffer.put(0xEC, 8);
+      if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+      buffer.put(0x11, 8);
+    }
+    return QRCodeModel.createBytes(buffer, rsBlocks);
+  };
+  QRCodeModel.createBytes = function(buffer, rsBlocks) {
+    var offset = 0;
+    var maxDcCount = 0;
+    var maxEcCount = 0;
+    var dcdata = new Array(rsBlocks.length);
+    var ecdata = new Array(rsBlocks.length);
+    for (var r = 0; r < rsBlocks.length; r++) {
+      var dcCount = rsBlocks[r].dataCount;
+      var ecCount = rsBlocks[r].totalCount - dcCount;
+      maxDcCount = Math.max(maxDcCount, dcCount);
+      maxEcCount = Math.max(maxEcCount, ecCount);
+      dcdata[r] = new Array(dcCount);
+      for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xFF & buffer.buffer[i + offset];
+      offset += dcCount;
+      var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+      var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+      var modPoly = rawPoly.mod(rsPoly);
+      ecdata[r] = new Array(rsPoly.getLength() - 1);
+      for (var i = 0; i < ecdata[r].length; i++) {
+        var modIndex = i + modPoly.getLength() - ecdata[r].length;
+        ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+      }
+    }
+    var totalCodeCount = 0;
+    for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+    var data = new Array(totalCodeCount);
+    var index = 0;
+    for (var i = 0; i < maxDcCount; i++) {
+      for (var r = 0; r < rsBlocks.length; r++) {
+        if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+      }
+    }
+    for (var i = 0; i < maxEcCount; i++) {
+      for (var r = 0; r < rsBlocks.length; r++) {
+        if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+      }
+    }
+    return data;
+  };
+
+  /**
+   * Helper function to render QR Code directly to a <canvas> element
+   */
+  window.drawQRCodeToCanvas = function(canvas, text, options) {
+    options = options || {};
+    var size = options.size || 220;
+    var ecLevel = options.ecLevel !== undefined ? options.ecLevel : QRErrorCorrectLevel.M;
+    var qr = new QRCodeModel(0, ecLevel);
+    qr.addData(text);
+    qr.make();
+    var count = qr.getModuleCount();
+    canvas.width = size;
+    canvas.height = size;
+    var ctx = canvas.getContext('2d');
+    var margin = options.margin !== undefined ? options.margin : 10;
+    var drawSize = size - margin * 2;
+    var tile = drawSize / count;
+
+    ctx.fillStyle = options.bgColor || '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+
+    ctx.fillStyle = options.fgColor || '#000000';
+    for (var r = 0; r < count; r++) {
+      for (var c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          ctx.fillRect(margin + Math.round(c * tile), margin + Math.round(r * tile), Math.ceil(tile), Math.ceil(tile));
+        }
+      }
+    }
+  };
+
+  /**
+   * Helper function to render QR Code to an SVG string
+   */
+  window.generateQRCodeSVG = function(text, options) {
+    options = options || {};
+    var size = options.size || 220;
+    var ecLevel = options.ecLevel !== undefined ? options.ecLevel : QRErrorCorrectLevel.M;
+    var qr = new QRCodeModel(0, ecLevel);
+    qr.addData(text);
+    qr.make();
+    var count = qr.getModuleCount();
+    var margin = options.margin !== undefined ? options.margin : 2;
+    var totalCells = count + margin * 2;
+    var fg = options.fgColor || '#000000';
+    var bg = options.bgColor || '#ffffff';
+
+    var rects = [];
+    for (var r = 0; r < count; r++) {
+      for (var c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          rects.push('<rect x="' + (c + margin) + '" y="' + (r + margin) + '" width="1" height="1" fill="' + fg + '"/>');
+        }
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalCells + ' ' + totalCells + '" width="' + size + '\" height="' + size + '"><rect width="100%" height="100%" fill="' + bg + '"/>' + rects.join('') + '</svg>';
+  };
+
+})(window);
+
+</script>
   <style>
     /* Tipografia e Escala de Fonte Proporcional */
     html {
@@ -10106,7 +10685,7 @@
       {
         id: 'viagem',
         icon: '✈️',
-        category: 'Mentor Financeiro',
+        category: 'Dicas do Piggy',
         title: 'Viagem dos Sonhos do Casal',
         text: 'Defina o destino, poupe juntos todo mês e realize a próxima grande conquista a dois!',
         buttonText: 'Planejar Meta',
@@ -10115,7 +10694,7 @@
       {
         id: 'reserva',
         icon: '🛡️',
-        category: 'Mentor Financeiro',
+        category: 'Dicas do Piggy',
         title: 'Reserva de Emergência',
         text: 'Mantenha o equivalente a 3 a 6 meses de custos fixos guardados para imprevistos e paz mental.',
         buttonText: 'Ver Cofrinhos',
@@ -10124,7 +10703,7 @@
       {
         id: 'regra503020',
         icon: '📊',
-        category: 'Mentor Financeiro',
+        category: 'Dicas do Piggy',
         title: 'Regra Financeira 50-30-20',
         text: '50% para necessidades básicas, 30% para desejos pessoais e 20% para investimentos e futuro.',
         buttonText: 'Ver Métricas',
@@ -10133,7 +10712,7 @@
       {
         id: 'contas',
         icon: '📅',
-        category: 'Mentor Financeiro',
+        category: 'Dicas do Piggy',
         title: 'Contas & Lembretes em Dia',
         text: 'Pague seus boletos antes do vencimento para evitar juros e multas desnecessárias no orçamento.',
         buttonText: 'Ver Contas & Boletos',
@@ -10190,7 +10769,7 @@
       if (!tip) return;
 
       if (catBadge) {
-        catBadge.textContent = tip.category || 'Mentor Financeiro';
+        catBadge.textContent = tip.category || 'Dicas do Piggy';
       }
       if (iconBadge) {
         iconBadge.textContent = tip.icon || '🐷';
@@ -10380,7 +10959,7 @@
 
       const titulo = titInput ? titInput.value.trim() : '';
       const texto = txtInput ? txtInput.value.trim() : '';
-      const categoria = catInput && catInput.value.trim() ? catInput.value.trim() : 'Mentor Financeiro';
+      const categoria = catInput && catInput.value.trim() ? catInput.value.trim() : 'Dicas do Piggy';
       const icon = emoInput && emoInput.value.trim() ? emoInput.value.trim() : '🐷';
       const buttonText = btnInput && btnInput.value.trim() ? btnInput.value.trim() : 'Conferir';
 
@@ -12885,6 +13464,10 @@ Frase falada: "${spokenText}"`;
 
     window.detectStoreLocationByGeo = async function() {
       const btn = document.getElementById('btnDetectGpsStore');
+      // Proativamente solicita permissão nativa de GPS ao Android através da FlutterBridge
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_location_permission' }));
+      }
       const feedback = document.getElementById('geoStoreAiFeedback');
       const nameEl = document.getElementById('geoStoreAiName');
       
@@ -15452,6 +16035,8 @@ Frase falada: "${spokenText}"`;
       if (modal) modal.classList.add('hidden');
     }
 
+    window._lastGeneratedPetQrUrl = '';
+
     function openPetQrCodeModal() {
       const modal = document.getElementById('modalPetQrCode');
       if (!modal) return;
@@ -15466,7 +16051,7 @@ Frase falada: "${spokenText}"`;
       document.getElementById('petTutorAddress').value = savedTutor.address || 'São Paulo - SP';
       document.getElementById('petTutorNotes').value = savedTutor.notes || 'Possuo microchip • Sou dócil';
 
-      updatePetQrCodePreview();
+      setTimeout(updatePetQrCodePreview, 60);
       if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
@@ -15498,43 +16083,65 @@ Frase falada: "${spokenText}"`;
         notes: (document.getElementById('petTutorNotes')?.value || '').trim()
       };
       localStorage.setItem('ctrlpig_pet_tutor_info', JSON.stringify(info));
-      showToastUndo('Dados do tutor salvos com sucesso no app! 🐾', false);
+      showToastUndo('Dados do tutor salvos com sucesso! 🐾', false);
       updatePetQrCodePreview();
     }
 
-    function updatePetQrCodePreview() {
+    function buildPetRescueTargetUrl() {
       const pet = getActivePet() || { nome: 'Pantone', especie: 'Cão', idade: '4 anos', emoji: '🐶' };
-      const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Tutor Responsável';
+      const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Rodrigo & Márcia';
       const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || '(11) 98765-4321';
       const phone2 = (document.getElementById('petTutorPhone2')?.value || '').trim();
       const address = (document.getElementById('petTutorAddress')?.value || '').trim();
       const notes = (document.getElementById('petTutorNotes')?.value || '').trim();
 
-      const petTagName = document.getElementById('petTagName');
-      if (petTagName) petTagName.textContent = pet.nome;
-      const petTagEmoji = document.getElementById('petTagEmoji');
-      if (petTagEmoji) petTagEmoji.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
-      const petTagSubtitle = document.getElementById('petTagSubtitle');
-      if (petTagSubtitle) petTagSubtitle.textContent = `${pet.especie || 'Pet'} • ${pet.idade || ''} ${pet.peso ? '• ' + pet.peso + 'kg' : ''}`.trim();
-      
-      const petTagPhone = document.getElementById('petTagPhone');
-      if (petTagPhone) petTagPhone.textContent = phone + (phone2 ? ` / ${phone2}` : '');
-      const petTagTutorInfo = document.getElementById('petTagTutorInfo');
-      if (petTagTutorInfo) petTagTutorInfo.textContent = `Tutor: ${name}${address ? ' • ' + address : ''}`;
-      const petTagNotes = document.getElementById('petTagNotes');
-      if (petTagNotes) petTagNotes.textContent = notes || 'Identificação cadastrada no CtrlPig';
+      const selectedType = document.querySelector('input[name="petQrDestinationType"]:checked')?.value || 'web';
 
       const cleanPhone = phone.replace(/\D/g, '');
       const waNumber = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : '5511987654321';
-      const rescueMsg = `Olá ${name}! Encontrei o seu pet ${pet.nome} e estou entrando em contato através do QR Code da coleira de identificação do CtrlPig.`;
-      const qrTargetUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(rescueMsg)}`;
+
+      if (selectedType === 'whatsapp') {
+        const rescueMsg = `Olá ${name}! Encontrei o seu pet ${pet.nome} e estou entrando em contato através do QR Code da coleira de identificação.`;
+        return `https://wa.me/${waNumber}?text=${encodeURIComponent(rescueMsg)}`;
+      }
+
+      // Página web universal de resgate (funciona sem aplicativo em qualquer smartphone iOS ou Android)
+      const baseWebUrl = 'https://agentiabr.github.io/financas-casal-flutter/pet_sos.html';
+      const qParams = new URLSearchParams({
+        n: pet.nome || 'Pet',
+        e: pet.especie || 'Pet',
+        em: pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶'),
+        t: name,
+        tel: phone,
+        tel2: phone2,
+        c: address,
+        obs: notes
+      });
+
+      return `${baseWebUrl}?${qParams.toString()}`;
+    }
+
+    function updatePetQrCodePreview() {
+      const pet = getActivePet() || { nome: 'Pantone', especie: 'Cão', emoji: '🐶' };
+      const emojiBadge = document.getElementById('petTagEmojiBadge');
+      if (emojiBadge) emojiBadge.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
+      const nameBadge = document.getElementById('petTagNameBadge');
+      if (nameBadge) nameBadge.textContent = pet.nome;
+
+      const qrTargetUrl = buildPetRescueTargetUrl();
+      window._lastGeneratedPetQrUrl = qrTargetUrl;
+
+      const urlEl = document.getElementById('petQrTargetUrlDisplay');
+      if (urlEl) {
+        urlEl.textContent = qrTargetUrl.length > 55 ? qrTargetUrl.substring(0, 52) + '...' : qrTargetUrl;
+      }
 
       const canvas = document.getElementById('petQrCodeCanvas');
       if (canvas && typeof window.drawQRCodeToCanvas === 'function') {
         try {
           window.drawQRCodeToCanvas(canvas, qrTargetUrl, {
-            size: 180,
-            margin: 6,
+            size: 220,
+            margin: 8,
             bgColor: '#ffffff',
             fgColor: '#000000'
           });
@@ -15544,44 +16151,64 @@ Frase falada: "${spokenText}"`;
       }
     }
 
-    function printPetIdentificationTag() {
-      savePetTutorInfo();
-      window.print();
+    function downloadPetQrCodePng() {
+      const pet = getActivePet() || { nome: 'Pantone' };
+      const canvas = document.getElementById('petQrCodeCanvas');
+      if (!canvas) return;
+
+      const link = document.createElement('a');
+      link.download = `qrcode_coleira_${(pet.nome || 'pet').toLowerCase()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToastUndo(`📥 Imagem do QR Code de ${pet.nome} baixada! Envie o arquivo para a empresa gravar na coleira ou plaquinha.`, false);
+    }
+
+    function copyPetRescueUrl() {
+      const url = window._lastGeneratedPetQrUrl || buildPetRescueTargetUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToastUndo('📋 Link do QR Code copiado para a área de transferência!', false);
+        });
+      } else {
+        prompt('Copie o link abaixo:', url);
+      }
+    }
+
+    function testPetRescuePage() {
+      const url = window._lastGeneratedPetQrUrl || buildPetRescueTargetUrl();
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+      } else {
+        window.open(url, '_blank');
+      }
     }
 
     function sharePetQrCodeWhatsApp() {
       const pet = getActivePet() || { nome: 'Pantone' };
       const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Tutor Responsável';
       const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || '(11) 98765-4321';
-      const phone2 = (document.getElementById('petTutorPhone2')?.value || '').trim();
-      const address = (document.getElementById('petTutorAddress')?.value || '').trim();
-      const notes = (document.getElementById('petTutorNotes')?.value || '').trim();
-
-      const cleanPhone = phone.replace(/\D/g, '');
-      const waNumber = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : '5511987654321';
-      const rescueMsg = `Olá ${name}! Encontrei o seu pet ${pet.nome} e estou entrando em contato pela medalha de identificação.`;
-      const directRescueUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(rescueMsg)}`;
+      const url = window._lastGeneratedPetQrUrl || buildPetRescueTargetUrl();
 
       const shareText =
-        `🏷️ *Medalha de Identificação Pet — CtrlPig*\n\n` +
+        `🏷️ *QR Code de Identificação da Coleira — ControlPig*\n\n` +
         `🐾 *Pet:* ${pet.nome} (${pet.especie || 'Pet'})\n` +
         `👤 *Tutor:* ${name}\n` +
-        `📞 *WhatsApp / Tel:* ${phone}${phone2 ? ` / ${phone2}` : ''}\n` +
-        (address ? `📍 *Bairro/Cidade:* ${address}\n` : '') +
-        (notes ? `📝 *Obs:* ${notes}\n` : '') +
-        `\n📲 *Link Direto de Resgate (WhatsApp):*\n${directRescueUrl}`;
+        `📞 *Contato:* ${phone}\n\n` +
+        `📲 *Link para Gravação da Medalha/Coleira:*\n${url}\n\n` +
+        `ℹ️ *Instruções para a Fábrica:* Favor gerar o QR Code correspondente ao link acima para gravação na medalha/coleira.`;
 
       if (typeof window.shareTextToWhatsApp === 'function') {
         window.shareTextToWhatsApp(shareText);
       } else {
-        const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
         if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-          window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url: waUrl }));
         } else {
-          window.open(url, '_blank');
+          window.open(waUrl, '_blank');
         }
       }
     }
+
 
     function renderPetCarouselTabs() {
       const container = document.getElementById('petsCarouselList');
@@ -18187,7 +18814,7 @@ Frase falada: "${spokenText}"`;
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Categoria</label>
-                <input type="text" id="inputAdminPiggyCategoria" placeholder="Ex: Mentor Financeiro" value="Mentor Financeiro" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+                <input type="text" id="inputAdminPiggyCategoria" placeholder="Ex: Dicas do Piggy" value="Dicas do Piggy" class="w-full px-2.5 py-1.5 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Texto do Botão</label>
@@ -18540,110 +19167,110 @@ Frase falada: "${spokenText}"`;
   <!-- TELA COMPLETA: PARA ONDE VOCÊ QUER IR AGORA? (PÓS-LOGIN)       -->
   <!-- Fundo degradê idêntico à abertura com 3 botões verticais       -->
   <!-- ============================================================== -->
-  <div id="modalWelcomeQuickHub" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-6 sm:p-10 bg-gradient-to-br from-slate-950 via-[#06183B] to-slate-900 text-white overflow-y-auto">
+  <div id="modalWelcomeQuickHub" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-br from-slate-950 via-[#06183B] to-slate-900 text-white overflow-hidden">
     
-    <!-- Topo: Logo & Saudação Oficial -->
-    <div class="flex flex-col items-center text-center pt-2 sm:pt-6">
-      <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-3 shadow-lg">
-        <i data-lucide="sparkles" class="w-7 h-7 text-amber-300"></i>
+    <!-- Topo: Logo & Saudação Oficial Compacta -->
+    <div class="flex flex-col items-center text-center pt-1 sm:pt-3">
+      <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-1.5 shadow-md">
+        <i data-lucide="sparkles" class="w-4 h-4 sm:w-5 sm:h-5 text-amber-300"></i>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+      <h1 class="text-lg sm:text-2xl font-black tracking-tight text-white leading-tight">
         Para onde você quer ir agora?
       </h1>
-      <p class="text-xs sm:text-sm text-blue-200/80 mt-1.5 max-w-xs sm:max-w-md">
-        Escolha uma das ações rápidas para começar ou abra o painel completo:
+      <p class="text-[11px] sm:text-xs text-blue-200/80 mt-0.5 max-w-xs sm:max-w-md leading-tight">
+        Escolha uma ação rápida para começar ou abra o painel completo:
       </p>
     </div>
 
-    <!-- Centro: Grade Quadrada em 2 Colunas (4 Cards) -->
-    <div class="w-full max-w-md mx-auto grid grid-cols-2 gap-3.5 my-6 sm:my-8">
+    <!-- Centro: Grade Ergonômica em 2 Colunas (Sem Scroll Vertical) -->
+    <div class="w-full max-w-md mx-auto grid grid-cols-2 gap-2 sm:gap-2.5 my-2 sm:my-3">
       
       <!-- Card 1: Lista de Compras -->
-      <button type="button" onclick="navigateToQuickHubOption('shopping')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-emerald-500/25 border border-emerald-400/40 flex items-center justify-center group-hover:bg-emerald-500/35 transition-colors shadow-inner">
-          <i data-lucide="shopping-cart" class="w-7 h-7 text-emerald-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('shopping')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/25 border border-emerald-400/40 flex items-center justify-center group-hover:bg-emerald-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="shopping-cart" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors leading-tight">
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-emerald-300 transition-colors leading-tight truncate">
             Lista de Compras
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Monte, envie e compare preços
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Monte e compare preços
           </p>
         </div>
       </button>
 
       <!-- Card 2: Chat da Família -->
-      <button type="button" onclick="navigateToQuickHubOption('chat')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center group-hover:bg-indigo-500/35 transition-colors shadow-inner">
-          <i data-lucide="message-circle" class="w-7 h-7 text-indigo-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('chat')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center group-hover:bg-indigo-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-indigo-300 transition-colors leading-tight">
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-indigo-300 transition-colors leading-tight truncate">
             Chat da Família
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Envie lista de compras e recados
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Envie listas e recados
           </p>
         </div>
       </button>
 
       <!-- Card 3: Saúde -->
-      <button type="button" onclick="navigateToQuickHubOption('health')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner">
-          <i data-lucide="heart-pulse" class="w-7 h-7 text-sky-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('health')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="heart-pulse" class="w-4 h-4 sm:w-5 sm:h-5 text-sky-400"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
-            Saúde
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight truncate">
+            Saúde & Remédios
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Controle e Alerta de Horário de medicamentos
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Horários e estoque
           </p>
         </div>
       </button>
 
       <!-- Card 4: Lançar Despesas -->
-      <button type="button" onclick="navigateToQuickHubOption('expenses')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center group-hover:bg-purple-500/35 transition-colors shadow-inner">
-          <i data-lucide="plus-circle" class="w-7 h-7 text-purple-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('expenses')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center group-hover:bg-purple-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="plus-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-purple-300"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-purple-300 transition-colors leading-tight">
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-purple-300 transition-colors leading-tight truncate">
             Lançar Despesas
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Lançamento rápido e organização das finanças
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Lançamento financeiro
           </p>
         </div>
       </button>
 
       <!-- Card 5: Cuidados Pet -->
-      <button type="button" onclick="navigateToQuickHubOption('pet')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-amber-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-amber-500/25 border border-amber-400/40 flex items-center justify-center group-hover:bg-amber-500/35 transition-colors shadow-inner">
-          <i data-lucide="paw-print" class="w-7 h-7 text-amber-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('pet')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-amber-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/25 border border-amber-400/40 flex items-center justify-center group-hover:bg-amber-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="paw-print" class="w-4 h-4 sm:w-5 sm:h-5 text-amber-300"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-300 transition-colors leading-tight">
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-amber-300 transition-colors leading-tight truncate">
             Cuidados Pet
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Perfil, vacinas, gastos e QR Code coleira
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Vacinas e QR coleira
           </p>
         </div>
       </button>
 
       <!-- Card 6: Prestadores -->
-      <button type="button" onclick="navigateToQuickHubOption('providers')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-14 h-14 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner">
-          <i data-lucide="wrench" class="w-7 h-7 text-sky-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('providers')" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md cursor-pointer group">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0">
+          <i data-lucide="wrench" class="w-4 h-4 sm:w-5 sm:h-5 text-sky-300"></i>
         </div>
-        <div>
-          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
+        <div class="min-w-0">
+          <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight truncate">
             Prestadores
           </h3>
-          <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Contatos de confiança e indicações
+          <p class="text-[10px] text-white/70 mt-0.5 leading-tight line-clamp-1">
+            Contatos e serviços
           </p>
         </div>
       </button>
@@ -18651,10 +19278,10 @@ Frase falada: "${spokenText}"`;
     </div>
 
     <!-- Rodapé: Atalho direto para o Dashboard -->
-    <div class="w-full max-w-md mx-auto pb-4 sm:pb-8 flex flex-col items-center">
-      <button type="button" onclick="navigateToQuickHubOption('dashboard')" class="w-full py-3.5 rounded-full bg-white text-blue-950 font-black text-sm flex items-center justify-center gap-2 shadow-2xl hover:bg-blue-50 active:scale-98 transition-all cursor-pointer">
+    <div class="w-full max-w-md mx-auto pb-1 sm:pb-3 flex flex-col items-center flex-shrink-0">
+      <button type="button" onclick="navigateToQuickHubOption('dashboard')" class="w-full py-2.5 sm:py-3 rounded-full bg-white text-blue-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl hover:bg-blue-50 active:scale-98 transition-all cursor-pointer">
         <span>Abrir Dashboard Completo</span>
-        <i data-lucide="arrow-right" class="w-4 h-4 text-blue-950"></i>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-blue-950"></i>
       </button>
     </div>
 
@@ -19979,20 +20606,21 @@ Frase falada: "${spokenText}"`;
 
   <!-- ============================================================== -->
   <!-- MODAL: QR CODE DE IDENTIFICAÇÃO DO PET (TAG DE COLEIRA / IMPRIMIR) -->
-  <!-- ============================================================== -->
   <div id="modalPetQrCode" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetQrCodeModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho -->
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="text-xl">🏷️</span>
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-lg font-black">
+            🏷️
+          </div>
           <div>
             <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
-              Identificação do Pet • Tag da Coleira
+              QR Code do Pet para Coleira & Medalha
             </h3>
             <p class="text-[11px] text-slate-500 dark:text-slate-400">
-              Gere o QR Code com seus contatos de tutor e imprima a medalha de coleira
+              Gere o código oficial para enviar à gráfica ou fabricante de placas e coleiras
             </p>
           </div>
         </div>
@@ -20001,13 +20629,23 @@ Frase falada: "${spokenText}"`;
         </button>
       </div>
 
-      <!-- Formulário de Dados do Tutor (Cadastrados no App) -->
+      <!-- Explicação Objetiva para o Usuário -->
+      <div class="mt-3 p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 text-slate-700 dark:text-slate-300">
+        <div class="flex items-start gap-2">
+          <span class="text-base flex-shrink-0">💡</span>
+          <div class="text-[11px] leading-relaxed">
+            <strong>Como funciona:</strong> Este QR Code pode ser enviado diretamente para uma empresa que confecciona plaquinhas de metal, coleiras gravadas ou tags acrílicas. <strong>Quem encontrar seu pet na rua poderá ler o QR Code com a câmera do celular e ver seus dados imediatamente, mesmo sem ter o ControlPig instalado!</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário de Dados do Tutor & Pet -->
       <div class="py-3 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
         <div class="flex items-center justify-between">
           <span class="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            👤 Dados do Tutor (Contato de Emergência)
+            👤 Dados de Emergência para o QR Code
           </span>
-          <span class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Salvo no App</span>
+          <span class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Atualização em tempo real</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -20033,82 +20671,89 @@ Frase falada: "${spokenText}"`;
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Observações na Tag (Microchip, Saúde, Recompensa)</label>
+          <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Observações Médicas / Importantes</label>
           <input type="text" id="petTutorNotes" placeholder="Ex: Possuo microchip • Tomo remédio diário • Sou dócil" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-xs" oninput="updatePetQrCodePreview()">
         </div>
+
+        <!-- Seletor do Tipo de Destino do QR Code -->
+        <div class="pt-1">
+          <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1">Ao ler o QR Code com a câmera do celular:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2 rounded-xl border border-amber-400/60 bg-amber-500/10 cursor-pointer">
+              <input type="radio" name="petQrDestinationType" value="web" checked onchange="updatePetQrCodePreview()" class="text-amber-500">
+              <div>
+                <div class="text-[11px] font-bold text-slate-900 dark:text-white">🌐 Página Web Completa (Recomendado)</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Foto, nome, botões de ligar e WhatsApp direto sem app.</div>
+              </div>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 cursor-pointer">
+              <input type="radio" name="petQrDestinationType" value="whatsapp" onchange="updatePetQrCodePreview()" class="text-emerald-500">
+              <div>
+                <div class="text-[11px] font-bold text-slate-900 dark:text-white">💬 WhatsApp SOS Imediato</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Abre o WhatsApp com mensagem de resgate pronta.</div>
+              </div>
+            </label>
+          </div>
+        </div>
       </div>
 
-      <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DA TAG DA COLEIRA (E ÁREA DE IMPRESSÃO) -->
-      <div class="py-4">
-        <div class="text-center mb-2">
-          <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-            ✂️ Pré-visualização da Medalha / Tag de Coleira para Impressão
-          </span>
+      <!-- ÁREA CENTRAL DO QR CODE DE ALTA RESOLUÇÃO -->
+      <div class="py-4 flex flex-col items-center text-center">
+        
+        <div class="p-3 bg-white rounded-3xl border-2 border-slate-300 dark:border-slate-700 shadow-xl relative group">
+          <canvas id="petQrCodeCanvas" width="220" height="220" class="w-[220px] h-[220px] block rounded-xl bg-white"></canvas>
+          <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+            <span id="petTagEmojiBadge">🐶</span> <span id="petTagNameBadge">Pantone</span>
+          </div>
         </div>
 
-        <!-- Tag Container com Borda Pontilhada para Recorte -->
-        <div id="printablePetTagArea" class="max-w-[320px] mx-auto p-4 bg-white text-slate-950 rounded-3xl border-2 border-dashed border-slate-400 shadow-xl relative flex flex-col items-center text-center">
+        <div class="mt-4 text-center space-y-1">
+          <p class="text-xs font-black text-slate-800 dark:text-slate-200" id="petQrTargetDescription">
+            Destino: Página de Resgate Oficial (Qualquer Celular)
+          </p>
+          <p class="text-[10px] text-slate-400 font-mono" id="petQrTargetUrlDisplay">
+            https://agentiabr.github.io/financas-casal-flutter/pet_sos.html
+          </p>
+        </div>
+
+        <!-- Botões de Ação para o QR Code -->
+        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
+          <button type="button" onclick="downloadPetQrCodePng()" class="py-2 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[11px] flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Baixar PNG</span>
+          </button>
           
-          <!-- Orifício para Argola da Coleira -->
-          <div class="w-5 h-5 rounded-full border-2 border-slate-400 bg-slate-100 flex items-center justify-center mb-1 shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-white border border-slate-400"></span>
-          </div>
-          <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Furo da argola</span>
+          <button type="button" onclick="sharePetQrCodeWhatsApp()" class="py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>Enviar no Whats</span>
+          </button>
 
-          <!-- Cabeçalho da Tag com Nome do Pet -->
-          <div class="w-full pb-2 mb-2 border-b border-slate-200 flex items-center justify-center gap-2">
-            <span id="petTagEmoji" class="text-2xl">🐶</span>
-            <div>
-              <h4 id="petTagName" class="text-xl font-black text-slate-950 tracking-tight leading-none">Pantone</h4>
-              <p id="petTagSubtitle" class="text-[10px] font-bold text-amber-700">Cão • 4 anos</p>
-            </div>
-          </div>
+          <button type="button" onclick="copyPetRescueUrl()" class="py-2 px-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Copiar Link</span>
+          </button>
 
-          <!-- QR Code Canvas -->
-          <div class="p-2.5 bg-white rounded-2xl border border-slate-300 shadow-sm mb-2 flex items-center justify-center">
-            <canvas id="petQrCodeCanvas" width="180" height="180" class="w-[180px] h-[180px] block"></canvas>
-          </div>
-
-          <!-- Mensagem de Resgate e Contato Direto -->
-          <div class="space-y-1 w-full">
-            <div class="text-[10px] font-black uppercase text-rose-600 tracking-wider">
-              🚨 SE ME ENCONTRAR, AVISE MEU TUTOR!
-            </div>
-            <div id="petTagPhone" class="text-sm font-black text-slate-950 font-mono tracking-wide">
-              (11) 98765-4321
-            </div>
-            <div id="petTagTutorInfo" class="text-[10px] text-slate-600 font-bold leading-tight">
-              Tutor: Rodrigo & Márcia • São Paulo/SP
-            </div>
-            <div id="petTagNotes" class="text-[9px] text-slate-500 italic mt-0.5">
-              Possuo microchip • Tomo remédio controlado
-            </div>
-          </div>
-
-          <div class="mt-2 pt-1.5 border-t border-slate-200 w-full text-[8px] text-slate-400 font-bold uppercase tracking-widest">
-            Aponte a câmera para abrir no WhatsApp • CtrlPig
-          </div>
+          <button type="button" onclick="testPetRescuePage()" class="py-2 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span>Testar Leitura</span>
+          </button>
         </div>
+
       </div>
 
-      <!-- Botões de Ação -->
-      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-end gap-2">
-        <button type="button" onclick="savePetTutorInfo()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-          💾 Salvar Dados
+      <!-- Rodapé do Modal -->
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <button type="button" onclick="savePetTutorInfo()" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+          💾 Salvar Meus Dados
         </button>
-        <button type="button" onclick="sharePetQrCodeWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm cursor-pointer transition-all active:scale-95">
-          <span>📲 Compartilhar no WhatsApp</span>
-        </button>
-        <button type="button" onclick="printPetIdentificationTag()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md cursor-pointer transition-all active:scale-95">
-          <span>🖨️ Imprimir Tag da Coleira</span>
+        <button type="button" onclick="closePetQrCodeModal()" class="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-black text-xs cursor-pointer">
+          Concluir
         </button>
       </div>
 
     </div>
   </div>
 
-
-  <!-- ============================================================== -->
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
   <div id="modalHealthMeds" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
@@ -25968,12 +26613,28 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     }
   };
 
-  window.onAppResumedFromBackground = function() {
+  window.onAppPausedToBackground = function() {
+    localStorage.setItem('ctrlpig_last_paused_timestamp', Date.now().toString());
+  };
+
+  window.onAppResumedFromBackground = function(diffSeconds) {
     setTimeout(() => {
       if (typeof checkHealthScheduleTimers === 'function') checkHealthScheduleTimers();
     }, 500);
 
-    if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
+    const lastPaused = parseInt(localStorage.getItem('ctrlpig_last_paused_timestamp') || '0', 10);
+    const timeoutMin = parseInt(localStorage.getItem('ctrlpig_session_lock_timeout') || '5', 10);
+    const elapsedMinutes = lastPaused > 0 ? (Date.now() - lastPaused) / 60000 : 999;
+
+    // Se estiver dentro da tolerância de inatividade (ex: 5 minutos) E não foi logout explícito:
+    if (timeoutMin > 0 && elapsedMinutes < timeoutMin && localStorage.getItem('financas_auth_logged_out') !== 'true') {
+      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+      localStorage.removeItem('financas_session_locked');
+      if (typeof window.forceUnlockAuthOverlay === 'function') {
+        window.forceUnlockAuthOverlay();
+      }
+      document.documentElement.classList.remove('require-auth');
+    } else if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
       window.lockAppSessionNow();
     }
   };
@@ -25999,7 +26660,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     { id: 'sectionCharts', label: '📈 Gráficos e Análise Mensal' },
     { id: 'sectionPiggy', label: '🐷 Cofrinho & Metas Financeiras' },
     { id: 'sectionCards', label: '🪪 Meus Cartões de Crédito' },
-    { id: 'mascotAdvisorBanner', label: '💡 Dicas do Mentor Piggy' }
+    { id: 'mascotAdvisorBanner', label: '💡 Dicas do Piggy' }
   ];
 
   window.getDashboardVisibilityMap = function() {

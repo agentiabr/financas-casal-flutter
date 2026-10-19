@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -31,6 +32,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   final OcrService _ocrService = OcrService();
   FlutterTts? _flutterTts;
   DateTime? _lastBackPressTime;
+  DateTime? _lastPausedTime;
   bool _isPickingExternalMedia = false;
   Timer? _chatVoiceDebounceTimer;
   String _lastChatRecognizedText = '';
@@ -123,7 +125,22 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
+      _lastPausedTime = DateTime.now();
       if (!_isPickingExternalMedia) {
+        _controller.runJavaScript("""
+          localStorage.setItem('ctrlpig_last_paused_timestamp', '${DateTime.now().millisecondsSinceEpoch}');
+          if (typeof window.onAppPausedToBackground === 'function') {
+            window.onAppPausedToBackground();
+          }
+        """);
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      final now = DateTime.now();
+      final difference = _lastPausedTime != null ? now.difference(_lastPausedTime!) : Duration.zero;
+      _lastPausedTime = null;
+
+      // Tolerância de 5 minutos: só bloqueia por inatividade se o usuário ficou fora por 5 min ou mais
+      if (difference.inMinutes >= 5 && !_isPickingExternalMedia) {
         _controller.runJavaScript("""
           localStorage.setItem('financas_session_locked', 'true');
           sessionStorage.removeItem('pigctrl_session_authenticated');
@@ -132,13 +149,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       }
-    } else if (state == AppLifecycleState.resumed) {
+
       // Consome primeiro qualquer ação da notificação (Desligar, Adiar ou Já Tomei) ANTES de verificar os timers de alarme
       _checkPendingNativeMedTaken().then((_) {
         _checkPendingShoppingAcceptance();
         _controller.runJavaScript("""
           if (typeof window.onAppResumedFromBackground === 'function') {
-            window.onAppResumedFromBackground();
+            window.onAppResumedFromBackground(${difference.inSeconds});
           }
         """);
       });
@@ -153,7 +170,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.8+85';
+  static const String _kCurrentAppVersion = '2.1.9+86';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -195,6 +212,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         'FlutterBridge',
         onMessageReceived: _handleJavaScriptMessage,
       );
+
+    // Habilita permissão de geolocalização nativa no WebView Android
+    final platform = _controller.platform;
+    if (platform is AndroidWebViewController) {
+      platform.setGeolocationPermissionsPromptCallbacks(
+        onShowPrompt: (request) async {
+          final status = await Permission.location.request();
+          return GeolocationPermissionsResponse(
+            allow: status.isGranted,
+            retain: true,
+          );
+        },
+      );
+    }
 
     _prepareAndLoadWebView();
   }
@@ -436,6 +467,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         _controller.runJavaScript("""
           if (typeof window.onNativeNotificationPermissionResult === 'function') {
             window.onNativeNotificationPermissionResult($granted, true);
+          }
+        """);
+      } else if (action == 'request_location_permission') {
+        var status = await Permission.location.status;
+        if (!status.isGranted) {
+          status = await Permission.location.request();
+        }
+        final granted = status.isGranted;
+        if (!granted) {
+          await openAppSettings();
+        }
+        _controller.runJavaScript("""
+          if (typeof window.onNativeLocationPermissionResult === 'function') {
+            window.onNativeLocationPermissionResult($granted);
           }
         """);
       } else if (action == 'show_notification') {
