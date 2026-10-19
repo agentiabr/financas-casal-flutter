@@ -9,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -285,48 +284,21 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   Future<void> _pickContactFromPhone() async {
     _isPickingExternalMedia = true;
     try {
-      final bool permissionGranted = await FlutterContacts.requestPermission(readonly: true);
-      if (permissionGranted) {
-        final contact = await FlutterContacts.openExternalPick();
-        if (contact != null) {
-          final fullContact = await FlutterContacts.getContact(contact.id);
-          final name = fullContact?.displayName ?? contact.displayName;
-          String phone = '';
-          if (fullContact != null && fullContact.phones.isNotEmpty) {
-            phone = fullContact.phones.first.number;
-          } else if (contact.phones.isNotEmpty) {
-            phone = contact.phones.first.number;
+      final contact = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+          .invokeMapMethod<String, dynamic>('pickContact');
+      if (contact != null) {
+        final name = (contact['name'] as String? ?? '').trim();
+        final phone = (contact['phone'] as String? ?? '').trim();
+        final safeName = jsonEncode(name);
+        final safePhone = jsonEncode(phone);
+        _controller.runJavaScript("""
+          if (typeof window.onNativeContactPicked === 'function') {
+            window.onNativeContactPicked($safeName, $safePhone);
           }
-          final safeName = jsonEncode(name);
-          final safePhone = jsonEncode(phone);
-          _controller.runJavaScript("""
-            if (typeof window.onNativeContactPicked === 'function') {
-              window.onNativeContactPicked($safeName, $safePhone);
-            }
-          """);
-        }
-      } else {
-        debugPrint('Permissão de contatos negada pelo usuário.');
+        """);
       }
     } catch (e) {
-      debugPrint('Erro ao selecionar contato via FlutterContacts: $e. Tentando via MethodChannel...');
-      try {
-        final contact = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-            .invokeMapMethod<String, dynamic>('pickContact');
-        if (contact != null) {
-          final name = contact['name'] as String? ?? '';
-          final phone = contact['phone'] as String? ?? '';
-          final safeName = jsonEncode(name);
-          final safePhone = jsonEncode(phone);
-          _controller.runJavaScript("""
-            if (typeof window.onNativeContactPicked === 'function') {
-              window.onNativeContactPicked($safeName, $safePhone);
-            }
-          """);
-        }
-      } catch (err2) {
-        debugPrint('Erro no fallback MethodChannel pickContact: $err2');
-      }
+      debugPrint('Erro ao selecionar contato via MethodChannel: $e');
     } finally {
       Future.delayed(const Duration(seconds: 2), () {
         _isPickingExternalMedia = false;
