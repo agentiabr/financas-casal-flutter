@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.11";
+    window.APP_BUILD_VERSION = "2.1.12";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -2368,7 +2368,7 @@
             </div>
 
             <!-- Balão Interativo de Dicas do Mascote Piggy (Chat, Mercado, OCR, Parcelas e Mentor) -->
-            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
+            <div class="mt-3.5 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none min-h-[148px] sm:min-h-[108px] flex flex-col justify-between" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
               <div class="flex items-center justify-between mb-1.5">
                 <div class="flex items-center gap-1.5 min-w-0">
                   <span id="piggyTipIconBadge" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs flex-shrink-0">💡</span>
@@ -2387,8 +2387,8 @@
                 </div>
               </div>
 
-              <!-- Conteúdo da Dica Ativa -->
-              <div id="piggyTipContentArea" class="min-h-[46px] flex flex-col justify-between">
+              <!-- Conteúdo da Dica Ativa (Altura consistente baseada no maior texto) -->
+              <div id="piggyTipContentArea" class="min-h-[76px] sm:min-h-[46px] flex flex-col justify-center">
                 <!-- Injetado dinamicamente via renderPiggyTip() -->
               </div>
 
@@ -10838,18 +10838,18 @@
       }
 
       contentEl.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-2.5 transition-all">
           <div class="flex items-start gap-2.5 flex-1 min-w-0">
             <span class="text-xl sm:text-2xl leading-none flex-shrink-0 mt-0.5 select-none">${tip.icon || '🐷'}</span>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap mb-0.5 min-h-[20px]">
                 <span class="px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-xs">${tip.category || 'Dica'}</span>
                 <h4 class="text-xs sm:text-sm font-bold text-white tracking-wide truncate">${tip.title}</h4>
               </div>
-              <p class="text-[11px] sm:text-xs text-white/90 line-clamp-2 leading-relaxed mt-0.5">${tip.text}</p>
+              <p class="text-[11px] sm:text-xs text-white/90 line-clamp-2 leading-relaxed mt-0.5 min-h-[34px] sm:min-h-[32px] flex items-start">${tip.text}</p>
             </div>
           </div>
-          <button type="button" onclick="${tip.action || 'goToMetricsSection()'}" class="flex-shrink-0 self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+          <button type="button" onclick="${tip.action || 'goToMetricsSection()'}" class="flex-shrink-0 self-start sm:self-center px-3 py-1.5 rounded-xl bg-white/25 hover:bg-white/35 active:scale-95 text-white font-bold text-[11px] sm:text-xs backdrop-blur-md border border-white/30 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer h-[28px] sm:h-[30px]">
             <span>${tip.buttonText || 'Acessar'}</span>
             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
           </button>
@@ -13688,6 +13688,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 }).join('')}
               </div>
 
+              <!-- Confirmação Dinâmica de Recebimento da Lista no Chat -->
+              ${renderShoppingListConfirmationSection()}
+
             </div>
           `;
         }
@@ -13727,6 +13730,309 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       if (window.lucide) lucide.createIcons();
     }
+
+    // ==========================================================================
+    // FLUXO DE CONFIRMAÇÃO DE RECEBIMENTO DE LISTA DE COMPRAS NO CHAT & ALERTAS
+    // ==========================================================================
+    function getShoppingSenderDisplayName(sender) {
+      if (!sender) return 'sua mãe';
+      const sLower = sender.toLowerCase();
+      if (sLower.includes('mãe') || sLower.includes('mae')) return 'sua mãe';
+      if (sLower.includes('marcia') || sLower.includes('márcia')) return 'sua mãe Márcia';
+      if (sLower.includes('pai')) return 'seu pai';
+      if (sLower.includes('rodrigo')) return 'seu parceiro Rodrigo';
+      return sender;
+    }
+
+    function renderShoppingListConfirmationSection() {
+      const myName = (typeof currentUserSession !== 'undefined' && currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      const myFirstName = myName.split(' ')[0];
+      let notif = {};
+      try {
+        notif = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
+      } catch(e) {}
+      
+      const sender = notif.sender || (myName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia');
+      const senderDisplayName = getShoppingSenderDisplayName(sender);
+      const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || 'pending';
+
+      if (stage === 'pending') {
+        return `
+          <div id="shoppingReceiptBox" class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750">
+            <div class="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/90 border-2 border-blue-400 dark:border-blue-600 p-3 sm:p-3.5 shadow-sm">
+              <div class="flex items-start gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
+                  🛒
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
+                    ${myFirstName}, ${senderDisplayName} enviou essa lista de compras, confirme o recebimento
+                  </h4>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">
+                    Toque no botão abaixo para avisar que a lista foi recebida com sucesso:
+                  </p>
+                </div>
+              </div>
+              <div class="mt-3 pt-2 border-t border-blue-200/60 dark:border-slate-700 flex justify-end">
+                <button type="button" onclick="handleChatAcknowledgeShoppingList()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Recebi a lista</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (stage === 'received') {
+        return `
+          <div id="shoppingReceiptBox" class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750">
+            <div class="rounded-2xl bg-gradient-to-r from-amber-50 to-emerald-50 dark:from-slate-800 dark:to-slate-800/90 border-2 border-emerald-400 dark:border-emerald-600 p-3 sm:p-3.5 shadow-sm animate-fade-in">
+              <div class="flex items-start gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
+                  🛍️
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-0.5">
+                    <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">✓ Recebimento Confirmado</span>
+                  </div>
+                  <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
+                    Vai conseguir fazer as compras pra mim?
+                  </h4>
+                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">
+                    ${senderDisplayName} aguarda sua confirmação:
+                  </p>
+                </div>
+              </div>
+              <div class="mt-3 pt-2 border-t border-emerald-200/60 dark:border-slate-700 flex items-center justify-end gap-2 flex-wrap">
+                <button type="button" onclick="handleChatConfirmShoppingAvailability(false)" class="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer active:scale-95">
+                  Hoje não consigo
+                </button>
+                <button type="button" onclick="handleChatConfirmShoppingAvailability(true)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95">
+                  <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                  <span>Sim, vou fazer as compras!</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (stage === 'confirmed_accepted') {
+        return `
+          <div id="shoppingReceiptBox" class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750">
+            <div class="rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 p-3 sm:p-3.5 flex items-center justify-between gap-2 shadow-xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                  ✓
+                </div>
+                <div class="min-w-0">
+                  <span class="text-xs font-black text-emerald-900 dark:text-emerald-200 block truncate">Compras Confirmadas!</span>
+                  <span class="text-[11px] text-emerald-700 dark:text-emerald-400 block truncate">Você confirmou que vai fazer as compras. ${senderDisplayName} já foi avisado(a).</span>
+                </div>
+              </div>
+              <button type="button" onclick="resetShoppingListReceiptStage()" class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline flex-shrink-0 cursor-pointer">Alterar</button>
+            </div>
+          </div>
+        `;
+      }
+
+      if (stage === 'confirmed_declined') {
+        return `
+          <div id="shoppingReceiptBox" class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750">
+            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-3 sm:p-3.5 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-slate-400 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                  ✕
+                </div>
+                <div class="min-w-0">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300 block truncate">Não será possível hoje</span>
+                  <span class="text-[11px] text-slate-500 dark:text-slate-400 block truncate">Você informou que não conseguirá ir às compras hoje.</span>
+                </div>
+              </div>
+              <button type="button" onclick="resetShoppingListReceiptStage()" class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline flex-shrink-0 cursor-pointer">Alterar</button>
+            </div>
+          </div>
+        `;
+      }
+
+      return '';
+    }
+
+    window.handleChatAcknowledgeShoppingList = function() {
+      localStorage.setItem('ctrlpig_shopping_receipt_stage', 'received');
+      if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('✓ Recebimento confirmado! Agora informe se conseguirá fazer as compras.', false);
+      }
+    };
+
+    window.handleChatConfirmShoppingAvailability = function(willDo) {
+      const me = (typeof currentUserSession !== 'undefined' && currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      let notif = {};
+      try {
+        notif = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
+      } catch(e) {}
+      const partner = notif.sender || (me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia');
+      const nowTs = Date.now();
+      const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      if (willDo) {
+        localStorage.setItem('ctrlpig_shopping_receipt_stage', 'confirmed_accepted');
+        const msgs = getCleanChatMessages();
+        msgs.push({
+          id: 'm_confirm_' + nowTs,
+          sender: me,
+          avatar: me.toLowerCase().includes('marcia') ? '👩' : '👨',
+          isMe: true,
+          text: `🛒 Sim, vou fazer as compras pra você agora! Pode deixar comigo ❤️`,
+          time: timeStr
+        });
+        saveCleanChatMessages(msgs);
+        if (typeof window.confirmShoppingListReceipt === 'function') {
+          window.confirmShoppingListReceipt(me);
+        }
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('🎉 Perfeito! Sua confirmação foi enviada para ' + partner + '.', false);
+        }
+      } else {
+        localStorage.setItem('ctrlpig_shopping_receipt_stage', 'confirmed_declined');
+        const msgs = getCleanChatMessages();
+        msgs.push({
+          id: 'm_decline_' + nowTs,
+          sender: me,
+          avatar: me.toLowerCase().includes('marcia') ? '👩' : '👨',
+          isMe: true,
+          text: `Oi! Recebi a lista certinho, mas hoje infelizmente não vou conseguir ir ao mercado.`,
+          time: timeStr
+        });
+        saveCleanChatMessages(msgs);
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('Aviso enviado no chat da família.', false);
+        }
+        if (typeof window.pushCloudSnapshotNow === 'function') {
+          setTimeout(() => window.pushCloudSnapshotNow(), 200);
+        }
+      }
+
+      localStorage.removeItem('ctrlpig_shopping_snooze_until');
+      if (typeof window.closeShoppingListAlertBanner === 'function') {
+        window.closeShoppingListAlertBanner();
+      }
+      if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    };
+
+    window.resetShoppingListReceiptStage = function() {
+      localStorage.removeItem('ctrlpig_shopping_receipt_stage');
+      if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    };
+
+    // Alerta de Lista de Compras recebida idêntico ao de remédio, mas SEM SOM
+    window.showShoppingListReceivedAlert = function(notifData) {
+      const currentStage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || '';
+      if (currentStage === 'confirmed_accepted' || currentStage === 'confirmed_declined') {
+        return;
+      }
+
+      let banner = document.getElementById('floatingShoppingAlertBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'floatingShoppingAlertBanner';
+        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[95] max-w-md w-[94vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-emerald-500 flex flex-col gap-3 transition-all animate-bounce-short';
+        document.body.appendChild(banner);
+      }
+
+      const sender = (notifData && notifData.sender) ? notifData.sender : 'Sua família';
+      const senderLabel = getShoppingSenderDisplayName(sender);
+      const count = (notifData && notifData.count) ? notifData.count : '';
+      const countText = count ? ` com ${count} itens` : '';
+
+      banner.innerHTML = `
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="text-3xl animate-bounce">🛒</span>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-[9px] uppercase tracking-wider border border-emerald-400/30">Lista de Compras</span>
+                <span class="text-[10px] text-slate-400 font-mono">🔕 Notificação silenciosa</span>
+              </div>
+              <h4 class="font-black text-sm text-white mt-0.5">🛒 Nova Lista de Preços Recebida!</h4>
+              <p class="text-xs text-slate-200 mt-0.5 leading-snug">
+                ${senderLabel} acabou de enviar uma lista de compras${countText} para você com comparador de preços.
+              </p>
+            </div>
+          </div>
+          <button type="button" onclick="closeShoppingListAlertBanner()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs cursor-pointer flex-shrink-0" title="Fechar">
+            ✕
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="button" onclick="snoozeShoppingListAlert20Min()" class="py-2.5 px-3 bg-amber-500 hover:bg-amber-400 font-black text-xs text-slate-950 rounded-xl shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+            <span>⏰ Ver Depois</span>
+          </button>
+          <button type="button" onclick="openShoppingListInChatFromAlert()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 font-black text-xs text-white rounded-xl shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <span>💬 Ver Lista</span>
+          </button>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.closeShoppingListAlertBanner = function() {
+      const banner = document.getElementById('floatingShoppingAlertBanner');
+      if (banner) banner.remove();
+    };
+
+    window.snoozeShoppingListAlert20Min = function() {
+      window.closeShoppingListAlertBanner();
+      const snoozeUntil = Date.now() + 20 * 60 * 1000; // 20 minutos
+      localStorage.setItem('ctrlpig_shopping_snooze_until', String(snoozeUntil));
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('⏰ Alarme da lista de compras adiado para daqui a 20 minutos.', false);
+      }
+    };
+
+    window.openShoppingListInChatFromAlert = function() {
+      window.closeShoppingListAlertBanner();
+      localStorage.removeItem('ctrlpig_shopping_snooze_until');
+      if (typeof openFamilyChatModal === 'function') {
+        openFamilyChatModal();
+      }
+    };
+
+    window.checkSnoozedShoppingListAlert = function() {
+      const snoozeUntil = parseInt(localStorage.getItem('ctrlpig_shopping_snooze_until') || '0', 10);
+      if (snoozeUntil > 0 && Date.now() >= snoozeUntil) {
+        localStorage.removeItem('ctrlpig_shopping_snooze_until');
+        const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || '';
+        if (stage !== 'confirmed_accepted' && stage !== 'confirmed_declined') {
+          let notifData = {};
+          try {
+            notifData = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
+          } catch(e) {}
+          window.showShoppingListReceivedAlert(notifData);
+        }
+      }
+    };
+
+    window.testShoppingListReceivedAlertFlow = function() {
+      const me = (typeof currentUserSession !== 'undefined' && currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      const partner = me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia (Mãe)';
+      const sampleNotif = {
+        id: 'test_notif_' + Date.now(),
+        sender: partner,
+        partner: me,
+        count: 6,
+        itemsPreview: 'Leite, Café, Pão, Ovos, Banana, Arroz',
+        ts: Date.now()
+      };
+      localStorage.setItem('ctrlpig_last_shopping_notif_v1', JSON.stringify(sampleNotif));
+      localStorage.removeItem('ctrlpig_shopping_receipt_stage');
+      localStorage.removeItem('ctrlpig_shopping_snooze_until');
+      window.showShoppingListReceivedAlert(sampleNotif);
+    };
 
     function stepItemQuantity(itemId, delta) {
       const items = getActiveShoppingItems();
@@ -19119,7 +19425,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- TELA COMPLETA: PARA ONDE VOCÊ QUER IR AGORA? (PÓS-LOGIN)       -->
   <!-- Fundo degradê idêntico à abertura com 3 botões verticais       -->
   <!-- ============================================================== -->
-  <div id="modalWelcomeQuickHub" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-3 sm:p-5 bg-gradient-to-br from-slate-950 via-[#06183B] to-slate-900 text-white select-none" style="height: 100vh; height: 100dvh; max-height: 100dvh; overflow: hidden; overscroll-behavior: none; touch-action: none;">
+  <div id="modalWelcomeQuickHub" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-3.5 sm:p-6 bg-gradient-to-br from-slate-950 via-[#06183B] to-slate-900 text-white select-none overflow-y-auto custom-scrollbar" style="min-height: 100vh; min-height: 100dvh;">
     
     <!-- Topo: Logo & Saudação Oficial -->
     <div class="flex flex-col items-center text-center pt-1 sm:pt-2 flex-shrink-0">
@@ -19134,95 +19440,95 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </p>
     </div>
 
-    <!-- Centro: Grade Quadrada em 2 Colunas no Formato Original (Ajustada para Caber na Tela Sem Rolagem) -->
-    <div class="w-full max-w-sm sm:max-w-md mx-auto grid grid-cols-2 gap-2 sm:gap-2.5 my-auto flex-shrink-0">
+    <!-- Centro: Grade com 6 Botões Quadrados de Mesma Largura e Altura (Aspect-Square) -->
+    <div class="w-full max-w-sm sm:max-w-xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4 my-auto py-2 flex-shrink-0">
       
       <!-- Card 1: Lista de Compras -->
-      <button type="button" onclick="navigateToQuickHubOption('shopping')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/25 border border-emerald-400/40 flex items-center justify-center group-hover:bg-emerald-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="shopping-cart" class="w-6 h-6 text-emerald-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('shopping')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500/25 border border-emerald-400/40 flex items-center justify-center group-hover:bg-emerald-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-emerald-300 transition-colors leading-tight">
             Lista de Compras
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
             Monte, envie e compare preços
           </p>
         </div>
       </button>
 
       <!-- Card 2: Chat da Família -->
-      <button type="button" onclick="navigateToQuickHubOption('chat')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center group-hover:bg-indigo-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="message-circle" class="w-6 h-6 text-indigo-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('chat')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-500/25 border border-indigo-400/40 flex items-center justify-center group-hover:bg-indigo-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="message-circle" class="w-6 h-6 sm:w-7 sm:h-7 text-indigo-400"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-indigo-300 transition-colors leading-tight">
             Chat da Família
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
-            Envie lista de compras e recados
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
+            Envie lista e recados
           </p>
         </div>
       </button>
 
       <!-- Card 3: Saúde -->
-      <button type="button" onclick="navigateToQuickHubOption('health')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="heart-pulse" class="w-6 h-6 text-sky-400"></i>
+      <button type="button" onclick="navigateToQuickHubOption('health')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="heart-pulse" class="w-6 h-6 sm:w-7 sm:h-7 text-sky-400"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
             Saúde & Remédios
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
             Controle e alerta de horários
           </p>
         </div>
       </button>
 
       <!-- Card 4: Lançar Despesas -->
-      <button type="button" onclick="navigateToQuickHubOption('expenses')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center group-hover:bg-purple-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="plus-circle" class="w-6 h-6 text-purple-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('expenses')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center group-hover:bg-purple-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="plus-circle" class="w-6 h-6 sm:w-7 sm:h-7 text-purple-300"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-purple-300 transition-colors leading-tight">
             Lançar Despesas
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
-            Lançamento rápido e organização
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
+            Lançamento rápido
           </p>
         </div>
       </button>
 
       <!-- Card 5: Cuidados Pet -->
-      <button type="button" onclick="navigateToQuickHubOption('pet')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-amber-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-500/25 border border-amber-400/40 flex items-center justify-center group-hover:bg-amber-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="paw-print" class="w-6 h-6 text-amber-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('pet')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-amber-400/30 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-500/25 border border-amber-400/40 flex items-center justify-center group-hover:bg-amber-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="paw-print" class="w-6 h-6 sm:w-7 sm:h-7 text-amber-300"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-amber-300 transition-colors leading-tight">
             Cuidados Pet
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
             Perfil, vacinas e QR coleira
           </p>
         </div>
       </button>
 
       <!-- Card 6: Prestadores -->
-      <button type="button" onclick="navigateToQuickHubOption('providers')" class="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-xl cursor-pointer group">
-        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0">
-          <i data-lucide="wrench" class="w-6 h-6 text-sky-300"></i>
+      <button type="button" onclick="navigateToQuickHubOption('providers')" class="aspect-square flex flex-col items-center justify-center text-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl shadow-xl transition-all cursor-pointer group">
+        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner flex-shrink-0 mb-1 sm:mb-2">
+          <i data-lucide="wrench" class="w-6 h-6 sm:w-7 sm:h-7 text-sky-300"></i>
         </div>
-        <div>
+        <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
             Prestadores
           </h3>
-          <p class="text-[10px] sm:text-[11px] text-white/75 mt-0.5 leading-snug">
-            Contatos de confiança e serviços
+          <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
+            Contatos e serviços
           </p>
         </div>
       </button>
@@ -19521,6 +19827,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
         <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+          <button type="button" onclick="testShoppingListReceivedAlertFlow()" class="px-2 py-1 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 text-xs font-bold flex items-center gap-1 border border-amber-300/30 shadow-xs transition-colors cursor-pointer" title="Simular e testar notificação de lista recebida (sem som)">
+            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span class="hidden sm:inline">Testar Alerta</span>
+          </button>
           <button type="button" onclick="openTrashChatMessagesModal()" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center border border-white/20 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
             <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-300"></i>
           </button>
@@ -28334,6 +28644,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   window.checkHealthScheduleTimers = function() {
     if (typeof window.checkSnoozedMedicationAlarm === 'function') window.checkSnoozedMedicationAlarm();
     if (typeof window.checkFiveDaysMedStockWarning === 'function') window.checkFiveDaysMedStockWarning();
+    if (typeof window.checkSnoozedShoppingListAlert === 'function') window.checkSnoozedShoppingListAlert();
 
     const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00', voiceAlarmEnabled: true };
     if (settings.voiceAlarmEnabled === false) return;
@@ -29609,9 +29920,17 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         const isRecipient = myName ? (myName.toLowerCase() === (notif.partner || '').toLowerCase() || myName.toLowerCase() !== (notif.sender || '').toLowerCase()) : true;
         if (isRecipient && notif.id !== lastSeen && (Date.now() - (notif.ts || 0)) < 24 * 60 * 60 * 1000) {
           localStorage.setItem('ctrlpig_seen_shopping_notif_id', notif.id);
+          localStorage.setItem('ctrlpig_last_shopping_notif_v1', JSON.stringify(notif));
+          localStorage.removeItem('ctrlpig_shopping_receipt_stage');
+          localStorage.removeItem('ctrlpig_shopping_snooze_until');
+
           const title = `🛒 Nova Lista de Compras de ${notif.sender || 'Parceiro(a)'}`;
           const body = `${notif.count || ''} itens na lista: ${notif.itemsPreview || 'Toque para abrir o Chat da Família'}`;
-          const speech = `Atenção ${notif.partner || ''}: ${notif.sender || ''} acabou de enviar uma lista de compras com ${notif.count || ''} itens.`;
+
+          // Dispara a notificação em tela idêntica à do remédio, porém SEM SOM
+          if (typeof window.showShoppingListReceivedAlert === 'function') {
+            window.showShoppingListReceivedAlert(notif);
+          }
           
           // Dispara a notificação de compras nativa customizada (com botões "✓ Recebi a lista" e "💬 Ver no Chat")
           if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
@@ -29625,7 +29944,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
               id: (notif.ts ? (notif.ts % 100000) : 98765)
             }));
           } else if (typeof window.triggerNativeSystemNotification === 'function') {
-            window.triggerNativeSystemNotification(title, body, speech, '');
+            window.triggerNativeSystemNotification(title, body, '', ''); // Silencioso, sem fala
           }
           showToastUndo(`🛒 ${notif.sender} enviou uma nova Lista de Compras (${notif.count} itens)!`, false);
         }
