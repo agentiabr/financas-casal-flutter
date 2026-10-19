@@ -451,9 +451,7 @@ class MedAlarmReceiver : BroadcastReceiver() {
 
         when (action) {
             NotificationHelper.ACTION_FIRE_ALARM -> {
-                NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
-                
-                // Tenta abrir a tela de alarme diretamente para acender o display
+                // Abre exclusivamente o novo modelo de tela cheia sem repetir na barra de notificações
                 try {
                     val alertIntent = Intent(context, AlarmAlertActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -464,7 +462,10 @@ class MedAlarmReceiver : BroadcastReceiver() {
                         putExtra("id", notifId)
                     }
                     context.startActivity(alertIntent)
-                } catch (_: Exception) {}
+                } catch (e: Exception) {
+                    // Fallback de segurança apenas se o Android bloquear a inicialização da Activity
+                    NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
+                }
 
                 val audioPrefs = context.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                 val isAudioEnabled = audioPrefs.getBoolean("med_audio_enabled", true)

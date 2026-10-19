@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.4";
+    window.APP_BUILD_VERSION = "2.1.5";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -4126,12 +4126,8 @@
       { id: 'piggy_2', nome: 'Reserva de Emergência', icone: '🛡️', target: 10000.00, balance: 0.00 }
     ];
 
-    // Carteira de Cartões Padrão
-    let creditCards = [
-      { id: 'card_nubank', nome: 'Nubank Rodrigo', titular: 'Rodrigo', limite: 8000, digitos: '8412', cor: 'purple' },
-      { id: 'card_xp', nome: 'XP Márcia', titular: 'Márcia', limite: 15000, digitos: '1093', cor: 'black' },
-      { id: 'card_itau', nome: 'Itaú Click', titular: 'Comum', limite: 6000, digitos: '4521', cor: 'orange' }
-    ];
+    // Carteira de Cartões (Inicia vazio se o usuário não tiver incluído)
+    let creditCards = [];
 
     // Ordem das Colunas na Tabela (Drag & Drop)
     const DEFAULT_COLUMNS = ['tipo', 'data', 'descricao', 'categoria', 'valor', 'pagamento', 'responsavel', 'acoes'];
@@ -4397,6 +4393,19 @@
       const savedCards = localStorage.getItem('financas_credit_cards');
       if (savedCards) {
         try { creditCards = JSON.parse(savedCards); } catch(e) {}
+      }
+      if (!Array.isArray(creditCards) || creditCards.length === 0) {
+        creditCards = [];
+        // Quando o usuário não incluir o cartão de crédito, o acordeão vem fechado por padrão
+        const secCards = document.getElementById('sectionCardsContent');
+        const iconCards = document.getElementById('iconCollapse_sectionCardsContent');
+        const headerCards = document.getElementById('headerAcc_sectionCardsContent');
+        if (secCards) secCards.classList.add('collapsed');
+        if (headerCards) headerCards.classList.remove('is-open');
+        if (iconCards) {
+          iconCards.setAttribute('data-lucide', 'chevron-down');
+          iconCards.classList.remove('accordion-chevron-rotated', 'rotate-180');
+        }
       }
 
       // Seções Colapsadas
@@ -6338,6 +6347,56 @@
     function renderCreditCards() {
       const cont = document.getElementById('creditCardsContainer');
       if (!cont) return;
+
+      if (!creditCards || creditCards.length === 0) {
+        cont.innerHTML = `
+          <div class="col-span-full md:col-span-1">
+            <div class="rounded-none p-5 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 text-white shadow-md border-2 border-dashed border-indigo-400/60 relative flex flex-col justify-between h-48 cursor-pointer hover:border-indigo-400 transition-all group" onclick="openCreateFirstCardModal()">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-1.5 mb-1">
+                    <span class="px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/40 text-[9px] font-extrabold tracking-wider uppercase">
+                      ✨ Modelo de Exemplo
+                    </span>
+                  </div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rodrigo & Márcia</span>
+                  <h4 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+                    <span>Nubank / Itaú / Seu Cartão</span>
+                  </h4>
+                </div>
+                <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+                  <button type="button" onclick="openCreateFirstCardModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 shadow-xs" title="Editar e Cadastrar o Seu Cartão">
+                    <span>✏️ Editar</span>
+                  </button>
+                  <div class="p-1.5 bg-white/10 rounded-lg">
+                    <i data-lucide="credit-card" class="w-3.5 h-3.5 text-white"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-[10px] uppercase tracking-wider text-slate-400">Fatura no Ciclo Ativo</span>
+                <div class="text-xl font-black mt-0.5 text-white">R$ 0,00</div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mb-1">
+                  <span>•••• 1234</span>
+                  <span>Limite Sugerido: R$ 5.000,00 (0%)</span>
+                </div>
+                <div class="w-full bg-white/20 h-1.5 rounded-none overflow-hidden">
+                  <div class="bg-indigo-500 h-full rounded-none transition-all" style="width: 0%"></div>
+                </div>
+                <div class="mt-1.5 text-[10px] text-indigo-300 font-medium flex items-center gap-1">
+                  <span>👆</span> Toque para editar e cadastrar seu próprio cartão de crédito!
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        return;
+      }
 
       const activeTxs = transactions.filter(t => t.ciclo === currentCycle && t.tipo !== 'Receita');
 
@@ -22480,16 +22539,35 @@ Frase falada: "${spokenText}"`;
       if (modal) modal.classList.add('hidden');
     };
 
-    // 10. CRUD de Cartões de Crédito (Editar & Excluir)
+    // 10. CRUD de Cartões de Crédito (Editar, Criar Primeiro & Excluir)
+    window.openCreateFirstCardModal = function() {
+      document.getElementById('editCardId').value = 'new_first_card';
+      document.getElementById('editCardNome').value = 'Nubank';
+      document.getElementById('editCardLimite').value = '5000,00';
+      document.getElementById('editCardFechamento').value = '25';
+      document.getElementById('editCardVencimento').value = '5';
+      const modal = document.getElementById('modalEditCreditCard');
+      if (modal) {
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.textContent = 'Personalizar e Cadastrar Meu Cartão';
+        modal.classList.remove('hidden');
+      }
+    };
+
     window.openEditCreditCardModal = function(cardId) {
       const card = creditCards.find(c => c.id === cardId);
       if (!card) return;
       document.getElementById('editCardId').value = card.id;
       document.getElementById('editCardNome').value = card.nome;
       document.getElementById('editCardLimite').value = card.limite;
-      document.getElementById('editCardFechamento').value = card.fechamento;
-      document.getElementById('editCardVencimento').value = card.vencimento;
-      document.getElementById('modalEditCreditCard').classList.remove('hidden');
+      document.getElementById('editCardFechamento').value = card.fechamento || 25;
+      document.getElementById('editCardVencimento').value = card.vencimento || 5;
+      const modal = document.getElementById('modalEditCreditCard');
+      if (modal) {
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.textContent = 'Editar Cartão de Crédito';
+        modal.classList.remove('hidden');
+      }
     };
 
     window.closeEditCreditCardModal = function() {
@@ -22500,18 +22578,38 @@ Frase falada: "${spokenText}"`;
     window.handleSaveEditedCreditCard = function(e) {
       e.preventDefault();
       const id = document.getElementById('editCardId').value;
-      const card = creditCards.find(c => c.id === id);
-      if (!card) return;
+      let card = creditCards.find(c => c.id === id);
+      const isNew = (!card || id === 'new_first_card');
 
-      card.nome = document.getElementById('editCardNome').value.trim();
-      card.limite = parseFloat(document.getElementById('editCardLimite').value.replace(',', '.')) || card.limite;
-      card.fechamento = parseInt(document.getElementById('editCardFechamento').value) || card.fechamento;
-      card.vencimento = parseInt(document.getElementById('editCardVencimento').value) || card.vencimento;
+      const nome = document.getElementById('editCardNome').value.trim() || 'Meu Cartão';
+      const limite = parseFloat(document.getElementById('editCardLimite').value.toString().replace(/\./g, '').replace(',', '.')) || 5000;
+      const fechamento = parseInt(document.getElementById('editCardFechamento').value) || 25;
+      const vencimento = parseInt(document.getElementById('editCardVencimento').value) || 5;
+
+      if (isNew) {
+        card = {
+          id: 'card_' + Date.now(),
+          nome: nome,
+          titular: 'Rodrigo',
+          limite: limite,
+          fechamento: fechamento,
+          vencimento: vencimento,
+          digitos: '1234',
+          cor: 'purple'
+        };
+        creditCards.push(card);
+      } else {
+        card.nome = nome;
+        card.limite = limite;
+        card.fechamento = fechamento;
+        card.vencimento = vencimento;
+      }
 
       localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
       closeEditCreditCardModal();
-      renderCreditCardsUI();
-      showToastUndo('💳 Cartão atualizado com sucesso!', false);
+      renderCreditCards();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      showToastUndo(isNew ? '💳 Primeiro cartão cadastrado com sucesso!' : '💳 Cartão atualizado com sucesso!', false);
     };
 
     window.handleDeleteCreditCard = function(cardId) {
@@ -22521,9 +22619,12 @@ Frase falada: "${spokenText}"`;
 
       creditCards = creditCards.filter(c => c.id !== cardId);
       localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
-      renderCreditCardsUI();
+      renderCreditCards();
+      if (typeof updateDashboard === 'function') updateDashboard();
       showToastUndo(`Cartão "${card.nome}" removido.`, false);
     };
+
+    window.renderCreditCardsUI = renderCreditCards;
 
     // 11. PROMPT E PARSER MULTIMODAL GEMINI FLASH VISION (TREINAMENTO ESPECIALISTA DIA)
     window.processInvoicePhotosWithAI = async function() {
@@ -23717,7 +23818,7 @@ Frase falada: "${spokenText}"`;
 
   const _origShowFloatingHealthAlarmBanner = window.showFloatingHealthAlarmBanner;
   window.showFloatingHealthAlarmBanner = function(title, desc, shift) {
-    window.triggerNativeSystemNotification(title || '⏰ Horário de Medicamento • CtrlPig', desc || 'Hora de tomar seu medicamento!');
+    // Exibido exclusivamente no novo modelo de tela cheia sem repetir na barra de notificações
     if (typeof _origShowFloatingHealthAlarmBanner === 'function') {
       _origShowFloatingHealthAlarmBanner(title, desc, shift);
     }
@@ -24454,9 +24555,7 @@ Frase falada: "${spokenText}"`;
 
   // Atualiza o Banner de Alarme de Remédios com o botão "💤 Adiar 5 min"
   window.showFloatingHealthAlarmBanner = function(title, message, routine) {
-    if (typeof window.triggerNativeSystemNotification === 'function') {
-      window.triggerNativeSystemNotification(title || '⏰ Horário de Medicamento • ControlPig', message || 'Hora de tomar seu medicamento!');
-    }
+    // Alarme exclusivo em tela cheia / overlay sem repetir na barra de notificações do Android
 
     let banner = document.getElementById('floatingHealthAlarmBanner');
     if (!banner) {
@@ -26675,13 +26774,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   window.currentAlarmContext = null;
 
   window.showFloatingHealthAlarmBanner = function(title, message, routine, slotTime, petCareId) {
-    window.triggerNativeSystemNotification(
-      title || '⏰ Hora do Remédio • ControlPig',
-      message || 'Rodrigo, tomar seu remédio.',
-      message || 'Rodrigo, tomar seu remédio.',
-      slotTime || ''
-    );
-
+    // Exibição exclusiva no novo modelo de alarme em tela cheia sem repetir na barra de notificações
     window.currentAlarmContext = {
       title: title || '⏰ Alarme Programado',
       message: message || '',
