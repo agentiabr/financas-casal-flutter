@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.5";
+    window.APP_BUILD_VERSION = "2.1.6";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -176,6 +176,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QR Code Generator (Offline / Local) -->
+  <script src="qrcode.js"></script>
   <style>
     /* Tipografia e Escala de Fonte Proporcional */
     html {
@@ -187,6 +189,30 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printablePetTagArea, #printablePetTagArea * {
+        visibility: visible !important;
+      }
+      #printablePetTagArea {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        display: block !important;
+        z-index: 999999 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
     }
 
     /* Scrollbar personalizada */
@@ -10838,24 +10864,32 @@
 
     function navigateToQuickHubOption(destination) {
       closeWelcomeQuickHub();
-      if (destination === 'table') {
-        const tableContent = document.getElementById('sectionTableContent');
-        if (tableContent && tableContent.classList.contains('collapsed')) {
-          tableContent.classList.remove('collapsed');
+      if (destination === 'table' || destination === 'expenses') {
+        if (typeof openAddModal === 'function') {
+          openAddModal();
+        } else {
+          const tableContent = document.getElementById('sectionTableContent');
+          if (tableContent && tableContent.classList.contains('collapsed')) {
+            tableContent.classList.remove('collapsed');
+          }
+          const tableSec = document.getElementById('sectionTable');
+          if (tableSec) {
+            setTimeout(() => {
+              tableSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 120);
+          }
         }
-        const tableSec = document.getElementById('sectionTable');
-        if (tableSec) {
-          setTimeout(() => {
-            tableSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 120);
-        }
-        showToastUndo('Controle de Despesas aberto!', false);
+        showToastUndo('Lançar Despesas!', false);
       } else if (destination === 'shopping') {
         openShoppingListModal();
       } else if (destination === 'chat') {
         openFamilyChatModal();
       } else if (destination === 'health') {
         if (typeof openHealthMedsModal === 'function') openHealthMedsModal();
+      } else if (destination === 'pet') {
+        if (typeof openPetAreaModal === 'function') openPetAreaModal();
+      } else if (destination === 'providers') {
+        if (typeof openServiceProvidersModal === 'function') openServiceProvidersModal();
       } else if (destination === 'dashboard') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         showToastUndo('Painel de Controle Financeiro pronto!', false);
@@ -15386,6 +15420,137 @@ Frase falada: "${spokenText}"`;
       if (modal) modal.classList.add('hidden');
     }
 
+    function openPetQrCodeModal() {
+      const modal = document.getElementById('modalPetQrCode');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      const savedTutor = getPetTutorInfo();
+      const pet = getActivePet();
+
+      document.getElementById('petTutorName').value = savedTutor.name || (currentUserSession ? currentUserSession.nome : 'Rodrigo & Márcia');
+      document.getElementById('petTutorPhone').value = savedTutor.phone || (currentUserSession ? currentUserSession.whatsapp : '(11) 98765-4321');
+      document.getElementById('petTutorPhone2').value = savedTutor.phone2 || '';
+      document.getElementById('petTutorAddress').value = savedTutor.address || 'São Paulo - SP';
+      document.getElementById('petTutorNotes').value = savedTutor.notes || 'Possuo microchip • Sou dócil';
+
+      updatePetQrCodePreview();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function closePetQrCodeModal() {
+      const modal = document.getElementById('modalPetQrCode');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function getPetTutorInfo() {
+      try {
+        const raw = localStorage.getItem('ctrlpig_pet_tutor_info');
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        name: currentUserSession ? currentUserSession.nome : 'Rodrigo & Márcia',
+        phone: currentUserSession ? currentUserSession.whatsapp : '(11) 98765-4321',
+        phone2: '',
+        address: 'São Paulo - SP',
+        notes: 'Possuo microchip • Sou dócil'
+      };
+    }
+
+    function savePetTutorInfo() {
+      const info = {
+        name: (document.getElementById('petTutorName')?.value || '').trim(),
+        phone: (document.getElementById('petTutorPhone')?.value || '').trim(),
+        phone2: (document.getElementById('petTutorPhone2')?.value || '').trim(),
+        address: (document.getElementById('petTutorAddress')?.value || '').trim(),
+        notes: (document.getElementById('petTutorNotes')?.value || '').trim()
+      };
+      localStorage.setItem('ctrlpig_pet_tutor_info', JSON.stringify(info));
+      showToastUndo('Dados do tutor salvos com sucesso no app! 🐾', false);
+      updatePetQrCodePreview();
+    }
+
+    function updatePetQrCodePreview() {
+      const pet = getActivePet() || { nome: 'Pantone', especie: 'Cão', idade: '4 anos', emoji: '🐶' };
+      const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Tutor Responsável';
+      const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || '(11) 98765-4321';
+      const phone2 = (document.getElementById('petTutorPhone2')?.value || '').trim();
+      const address = (document.getElementById('petTutorAddress')?.value || '').trim();
+      const notes = (document.getElementById('petTutorNotes')?.value || '').trim();
+
+      const petTagName = document.getElementById('petTagName');
+      if (petTagName) petTagName.textContent = pet.nome;
+      const petTagEmoji = document.getElementById('petTagEmoji');
+      if (petTagEmoji) petTagEmoji.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
+      const petTagSubtitle = document.getElementById('petTagSubtitle');
+      if (petTagSubtitle) petTagSubtitle.textContent = `${pet.especie || 'Pet'} • ${pet.idade || ''} ${pet.peso ? '• ' + pet.peso + 'kg' : ''}`.trim();
+      
+      const petTagPhone = document.getElementById('petTagPhone');
+      if (petTagPhone) petTagPhone.textContent = phone + (phone2 ? ` / ${phone2}` : '');
+      const petTagTutorInfo = document.getElementById('petTagTutorInfo');
+      if (petTagTutorInfo) petTagTutorInfo.textContent = `Tutor: ${name}${address ? ' • ' + address : ''}`;
+      const petTagNotes = document.getElementById('petTagNotes');
+      if (petTagNotes) petTagNotes.textContent = notes || 'Identificação cadastrada no CtrlPig';
+
+      const cleanPhone = phone.replace(/\D/g, '');
+      const waNumber = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : '5511987654321';
+      const rescueMsg = `Olá ${name}! Encontrei o seu pet ${pet.nome} e estou entrando em contato através do QR Code da coleira de identificação do CtrlPig.`;
+      const qrTargetUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(rescueMsg)}`;
+
+      const canvas = document.getElementById('petQrCodeCanvas');
+      if (canvas && typeof window.drawQRCodeToCanvas === 'function') {
+        try {
+          window.drawQRCodeToCanvas(canvas, qrTargetUrl, {
+            size: 180,
+            margin: 6,
+            bgColor: '#ffffff',
+            fgColor: '#000000'
+          });
+        } catch (e) {
+          console.warn('Erro ao desenhar QR code canvas:', e);
+        }
+      }
+    }
+
+    function printPetIdentificationTag() {
+      savePetTutorInfo();
+      window.print();
+    }
+
+    function sharePetQrCodeWhatsApp() {
+      const pet = getActivePet() || { nome: 'Pantone' };
+      const name = (document.getElementById('petTutorName')?.value || '').trim() || 'Tutor Responsável';
+      const phone = (document.getElementById('petTutorPhone')?.value || '').trim() || '(11) 98765-4321';
+      const phone2 = (document.getElementById('petTutorPhone2')?.value || '').trim();
+      const address = (document.getElementById('petTutorAddress')?.value || '').trim();
+      const notes = (document.getElementById('petTutorNotes')?.value || '').trim();
+
+      const cleanPhone = phone.replace(/\D/g, '');
+      const waNumber = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : '5511987654321';
+      const rescueMsg = `Olá ${name}! Encontrei o seu pet ${pet.nome} e estou entrando em contato pela medalha de identificação.`;
+      const directRescueUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(rescueMsg)}`;
+
+      const shareText =
+        `🏷️ *Medalha de Identificação Pet — CtrlPig*\n\n` +
+        `🐾 *Pet:* ${pet.nome} (${pet.especie || 'Pet'})\n` +
+        `👤 *Tutor:* ${name}\n` +
+        `📞 *WhatsApp / Tel:* ${phone}${phone2 ? ` / ${phone2}` : ''}\n` +
+        (address ? `📍 *Bairro/Cidade:* ${address}\n` : '') +
+        (notes ? `📝 *Obs:* ${notes}\n` : '') +
+        `\n📲 *Link Direto de Resgate (WhatsApp):*\n${directRescueUrl}`;
+
+      if (typeof window.shareTextToWhatsApp === 'function') {
+        window.shareTextToWhatsApp(shareText);
+      } else {
+        const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
+        } else {
+          window.open(url, '_blank');
+        }
+      }
+    }
+
     function renderPetCarouselTabs() {
       const container = document.getElementById('petsCarouselList');
       const badge = document.getElementById('petCountBadge');
@@ -17385,6 +17550,7 @@ Frase falada: "${spokenText}"`;
         'modalEducacaoHub',
         'modalAddNewContinuousMed',
         'modalPetArea',
+        'modalPetQrCode',
         'modalHealthMeds',
         'modalMedTakeConfirmation',
         'modalAddPetVaccine',
@@ -18242,17 +18408,47 @@ Frase falada: "${spokenText}"`;
         </div>
       </button>
 
-      <!-- Card 4: Controle de Despesas -->
-      <button type="button" onclick="navigateToQuickHubOption('table')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
+      <!-- Card 4: Lançar Despesas -->
+      <button type="button" onclick="navigateToQuickHubOption('expenses')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-purple-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
         <div class="w-14 h-14 rounded-2xl bg-purple-500/25 border border-purple-400/40 flex items-center justify-center group-hover:bg-purple-500/35 transition-colors shadow-inner">
-          <i data-lucide="table-properties" class="w-7 h-7 text-purple-300"></i>
+          <i data-lucide="plus-circle" class="w-7 h-7 text-purple-300"></i>
         </div>
         <div>
           <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-purple-300 transition-colors leading-tight">
-            Controle de Despesas
+            Lançar Despesas
           </h3>
           <p class="text-[11px] text-white/75 mt-1 leading-snug">
-            Controle de gastos e organização das finanças
+            Lançamento rápido e organização das finanças
+          </p>
+        </div>
+      </button>
+
+      <!-- Card 5: Cuidados Pet -->
+      <button type="button" onclick="navigateToQuickHubOption('pet')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-amber-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
+        <div class="w-14 h-14 rounded-2xl bg-amber-500/25 border border-amber-400/40 flex items-center justify-center group-hover:bg-amber-500/35 transition-colors shadow-inner">
+          <i data-lucide="paw-print" class="w-7 h-7 text-amber-300"></i>
+        </div>
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-amber-300 transition-colors leading-tight">
+            Cuidados Pet
+          </h3>
+          <p class="text-[11px] text-white/75 mt-1 leading-snug">
+            Perfil, vacinas, gastos e QR Code coleira
+          </p>
+        </div>
+      </button>
+
+      <!-- Card 6: Prestadores -->
+      <button type="button" onclick="navigateToQuickHubOption('providers')" class="aspect-square p-4 rounded-3xl bg-white/10 hover:bg-white/15 active:scale-95 border border-sky-400/30 backdrop-blur-xl flex flex-col items-center justify-center text-center gap-2.5 transition-all shadow-xl cursor-pointer group">
+        <div class="w-14 h-14 rounded-2xl bg-sky-500/25 border border-sky-400/40 flex items-center justify-center group-hover:bg-sky-500/35 transition-colors shadow-inner">
+          <i data-lucide="wrench" class="w-7 h-7 text-sky-300"></i>
+        </div>
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
+            Prestadores
+          </h3>
+          <p class="text-[11px] text-white/75 mt-1 leading-snug">
+            Contatos de confiança e indicações
           </p>
         </div>
       </button>
@@ -19361,14 +19557,28 @@ Frase falada: "${spokenText}"`;
   <div id="modalPetArea" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetAreaModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
+      <!-- CABEÇALHO SUPERIOR DA ÁREA PET COM BOTÃO DE FECHAR NO TOPO À DIREITA -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🐾</span>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Área Pet & Carteira de Vacinas</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Perfil, gastos do ciclo, histórico de vacinas e identificação</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700 shadow-2xs" title="Fechar Área Pet">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
       <!-- BARRA DE SELEÇÃO / CARROSSEL MULTI-PET (CÃES, GATOS, ETC.) -->
-      <div class="pb-3 border-b border-slate-200 dark:border-slate-800">
+      <div class="py-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-1.5">
             <span class="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Meus Pets</span>
             <span id="petCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">1</span>
           </div>
-          <button type="button" onclick="openAddPetModal()" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
+          <button type="button" onclick="openAddPetModal()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl flex items-center gap-1 shadow-2xs transition-all active:scale-95 cursor-pointer">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>+ Adicionar Pet</span>
           </button>
@@ -19403,7 +19613,7 @@ Frase falada: "${spokenText}"`;
             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="petProfileDetails">
               Cão • 4 anos • 8.4 kg • <strong>Wevets Plano de Saúde</strong>
             </p>
-            <div class="flex items-center gap-2 mt-1 flex-wrap">
+            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
               <button type="button" onclick="selectPetPhoto('camera')" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer">
                 <span>📸 Foto</span>
               </button>
@@ -19420,8 +19630,11 @@ Frase falada: "${spokenText}"`;
           </div>
         </div>
 
-        <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar Área Pet">
-          <i data-lucide="x" class="w-4 h-4"></i>
+        <!-- Botão de Ação Rápida: Tag com QR Code para Coleira / Imprimir -->
+        <button type="button" onclick="openPetQrCodeModal()" class="px-3 py-2 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-md transition-all cursor-pointer flex-shrink-0" title="Gerar QR Code de identificação para coleira e imprimir">
+          <span class="text-sm">🏷️</span>
+          <span class="hidden sm:inline">QR Code Coleira</span>
+          <span class="sm:hidden">QR Coleira</span>
         </button>
       </div>
 
@@ -19549,6 +19762,136 @@ Frase falada: "${spokenText}"`;
         <div id="pet10ComparisonResults" class="space-y-2">
           <!-- Renderizado dinamicamente com as 10 lojas ranqueadas -->
         </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: QR CODE DE IDENTIFICAÇÃO DO PET (TAG DE COLEIRA / IMPRIMIR) -->
+  <!-- ============================================================== -->
+  <div id="modalPetQrCode" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetQrCodeModal()">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🏷️</span>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">
+              Identificação do Pet • Tag da Coleira
+            </h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+              Gere o QR Code com seus contatos de tutor e imprima a medalha de coleira
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closePetQrCodeModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário de Dados do Tutor (Cadastrados no App) -->
+      <div class="py-3 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="font-black text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            👤 Dados do Tutor (Contato de Emergência)
+          </span>
+          <span class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Salvo no App</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Nome do Tutor / Responsável *</label>
+            <input type="text" id="petTutorName" placeholder="Ex: Rodrigo & Márcia" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs" oninput="updatePetQrCodePreview()">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">WhatsApp Principal (com DDD) *</label>
+            <input type="tel" id="petTutorPhone" placeholder="(11) 98765-4321" oninput="maskPhone(this); updatePetQrCodePreview();" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black text-xs font-mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Telefone Secundário / Emergência</label>
+            <input type="tel" id="petTutorPhone2" placeholder="(11) 91234-5678" oninput="maskPhone(this); updatePetQrCodePreview();" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-xs font-mono">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Bairro e Cidade</label>
+            <input type="text" id="petTutorAddress" placeholder="Ex: Vila Prudente - São Paulo/SP" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-xs" oninput="updatePetQrCodePreview()">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Observações na Tag (Microchip, Saúde, Recompensa)</label>
+          <input type="text" id="petTutorNotes" placeholder="Ex: Possuo microchip • Tomo remédio diário • Sou dócil" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-xs" oninput="updatePetQrCodePreview()">
+        </div>
+      </div>
+
+      <!-- ÁREA DE PRÉ-VISUALIZAÇÃO DA TAG DA COLEIRA (E ÁREA DE IMPRESSÃO) -->
+      <div class="py-4">
+        <div class="text-center mb-2">
+          <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+            ✂️ Pré-visualização da Medalha / Tag de Coleira para Impressão
+          </span>
+        </div>
+
+        <!-- Tag Container com Borda Pontilhada para Recorte -->
+        <div id="printablePetTagArea" class="max-w-[320px] mx-auto p-4 bg-white text-slate-950 rounded-3xl border-2 border-dashed border-slate-400 shadow-xl relative flex flex-col items-center text-center">
+          
+          <!-- Orifício para Argola da Coleira -->
+          <div class="w-5 h-5 rounded-full border-2 border-slate-400 bg-slate-100 flex items-center justify-center mb-1 shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-white border border-slate-400"></span>
+          </div>
+          <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Furo da argola</span>
+
+          <!-- Cabeçalho da Tag com Nome do Pet -->
+          <div class="w-full pb-2 mb-2 border-b border-slate-200 flex items-center justify-center gap-2">
+            <span id="petTagEmoji" class="text-2xl">🐶</span>
+            <div>
+              <h4 id="petTagName" class="text-xl font-black text-slate-950 tracking-tight leading-none">Pantone</h4>
+              <p id="petTagSubtitle" class="text-[10px] font-bold text-amber-700">Cão • 4 anos</p>
+            </div>
+          </div>
+
+          <!-- QR Code Canvas -->
+          <div class="p-2.5 bg-white rounded-2xl border border-slate-300 shadow-sm mb-2 flex items-center justify-center">
+            <canvas id="petQrCodeCanvas" width="180" height="180" class="w-[180px] h-[180px] block"></canvas>
+          </div>
+
+          <!-- Mensagem de Resgate e Contato Direto -->
+          <div class="space-y-1 w-full">
+            <div class="text-[10px] font-black uppercase text-rose-600 tracking-wider">
+              🚨 SE ME ENCONTRAR, AVISE MEU TUTOR!
+            </div>
+            <div id="petTagPhone" class="text-sm font-black text-slate-950 font-mono tracking-wide">
+              (11) 98765-4321
+            </div>
+            <div id="petTagTutorInfo" class="text-[10px] text-slate-600 font-bold leading-tight">
+              Tutor: Rodrigo & Márcia • São Paulo/SP
+            </div>
+            <div id="petTagNotes" class="text-[9px] text-slate-500 italic mt-0.5">
+              Possuo microchip • Tomo remédio controlado
+            </div>
+          </div>
+
+          <div class="mt-2 pt-1.5 border-t border-slate-200 w-full text-[8px] text-slate-400 font-bold uppercase tracking-widest">
+            Aponte a câmera para abrir no WhatsApp • CtrlPig
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-end gap-2">
+        <button type="button" onclick="savePetTutorInfo()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+          💾 Salvar Dados
+        </button>
+        <button type="button" onclick="sharePetQrCodeWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm cursor-pointer transition-all active:scale-95">
+          <span>📲 Compartilhar no WhatsApp</span>
+        </button>
+        <button type="button" onclick="printPetIdentificationTag()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md cursor-pointer transition-all active:scale-95">
+          <span>🖨️ Imprimir Tag da Coleira</span>
+        </button>
       </div>
 
     </div>
@@ -25532,6 +25875,19 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         <form id="formServiceProvider" onsubmit="handleSaveServiceProvider(event)" class="mt-3 pt-3 border-t border-sky-200/70 dark:border-slate-700 space-y-2.5 hidden">
           <input type="hidden" id="spEditId" value="">
 
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📇</span>
+              <div>
+                <span class="block text-[11px] font-black text-indigo-950 dark:text-indigo-200">Importar da Agenda do Celular</span>
+                <span class="block text-[10px] text-indigo-700 dark:text-indigo-300">Puxa o nome e telefone direto dos seus contatos</span>
+              </div>
+            </div>
+            <button type="button" onclick="pickContactFromPhone()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all">
+              <span>Puxar Contato</span>
+            </button>
+          </div>
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Nome / Apelido do Profissional *</label>
@@ -25603,6 +25959,17 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         <div id="spFilterPills" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
           <!-- Renderizado via JS -->
         </div>
+      </div>
+
+      <!-- 2.5 Barra de Seleção e Ação em Massa -->
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700">
+        <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-extrabold select-none text-xs">
+          <input type="checkbox" id="spSelectAll" onchange="toggleSelectAllProviders(this.checked)" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer">
+          <span id="spSelectAllLabel">Selecionar Todos</span>
+        </label>
+        <button type="button" id="btnShareSelectedSp" onclick="shareSelectedServiceProvidersWhatsApp()" class="hidden px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm cursor-pointer transition-all">
+          <span>📲 Compartilhar Selecionados (<span id="spSelectedCount">0</span>)</span>
+        </button>
       </div>
 
       <!-- 3. Lista de Cards dos Prestadores (Intercalando Branco e Cinza Clarinho) -->
@@ -25817,19 +26184,143 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     showToastUndo(`Prestador "${found ? found.name : ''}" removido.`, false);
   };
 
+  // Puxar contato da agenda do celular nativo
+  window.pickContactFromPhone = function() {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'pick_contact' }));
+    } else {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Acesso à agenda disponível no app Android! 📇', false);
+      }
+    }
+  };
+
+  window.onNativeContactPicked = function(name, phone) {
+    const form = document.getElementById('formServiceProvider');
+    if (form && form.classList.contains('hidden')) {
+      window.toggleServiceProviderForm(true);
+    }
+    const nameInp = document.getElementById('spName');
+    const phoneInp = document.getElementById('spPhone');
+    if (nameInp && name) nameInp.value = name;
+    if (phoneInp && phone) {
+      phoneInp.value = phone;
+      if (typeof maskPhone === 'function') maskPhone(phoneInp);
+    }
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Contato "${name}" carregado da agenda! 📇`, false);
+    }
+  };
+
+  // Envio seguro para WhatsApp sem caracteres corrompidos
+  window.shareTextToWhatsApp = function(text, phone) {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      window.FlutterBridge.postMessage(JSON.stringify({
+        action: 'share_whatsapp',
+        text: text,
+        phone: phone || ''
+      }));
+    } else {
+      const cleanPhone = String(phone || '').replace(/\D/g, '');
+      const waNum = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone) : '';
+      const encoded = encodeURIComponent(text);
+      const url = waNum ? `https://wa.me/${waNum}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+      window.open(url, '_blank');
+    }
+  };
+
+  // Seleção e compartilhamento de múltiplos prestadores
+  const selectedProviderIds = new Set();
+
+  window.toggleSelectAllProviders = function(checked) {
+    const list = window.getServiceProviders();
+    const query = (document.getElementById('spSearchInput')?.value || '').trim().toLowerCase();
+    const filtered = list.filter(item => {
+      const matchCat = activeSpCategoryFilter === 'TODOS' || item.category === activeSpCategoryFilter;
+      const matchQuery = !query ||
+        (item.name && item.name.toLowerCase().includes(query)) ||
+        (item.category && item.category.toLowerCase().includes(query)) ||
+        (item.notes && item.notes.toLowerCase().includes(query)) ||
+        (item.phone && item.phone.toLowerCase().includes(query));
+      return matchCat && matchQuery;
+    });
+
+    filtered.forEach(p => {
+      if (checked) selectedProviderIds.add(p.id);
+      else selectedProviderIds.delete(p.id);
+    });
+
+    const checkboxes = document.querySelectorAll('.sp-provider-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = checked;
+    });
+
+    window.updateSelectedProvidersUI();
+  };
+
+  window.handleProviderCheckboxChange = function(cb, id) {
+    if (cb.checked) {
+      selectedProviderIds.add(id);
+    } else {
+      selectedProviderIds.delete(id);
+    }
+    window.updateSelectedProvidersUI();
+  };
+
+  window.updateSelectedProvidersUI = function() {
+    const count = selectedProviderIds.size;
+    const btn = document.getElementById('btnShareSelectedSp');
+    const countEl = document.getElementById('spSelectedCount');
+    const selectAllCb = document.getElementById('spSelectAll');
+    const selectAllLabel = document.getElementById('spSelectAllLabel');
+
+    if (countEl) countEl.textContent = count;
+    if (btn) {
+      if (count > 0) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+    }
+
+    const allCheckboxes = document.querySelectorAll('.sp-provider-checkbox');
+    if (selectAllCb && allCheckboxes.length > 0) {
+      const checkedBoxes = Array.from(allCheckboxes).filter(cb => cb.checked);
+      selectAllCb.checked = checkedBoxes.length === allCheckboxes.length;
+      if (selectAllLabel) {
+        selectAllLabel.textContent = checkedBoxes.length === allCheckboxes.length
+          ? 'Desmarcar Todos'
+          : `Selecionar Todos (${allCheckboxes.length})`;
+      }
+    }
+  };
+
+  window.shareSelectedServiceProvidersWhatsApp = function() {
+    const list = window.getServiceProviders();
+    const selected = list.filter(p => selectedProviderIds.has(p.id));
+    if (!selected.length) {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Nenhum prestador selecionado para compartilhar.', false);
+      }
+      return;
+    }
+
+    const lines = selected.map((p, i) =>
+      `${i + 1}. *${p.category}* — *${p.name}*\n   📞 WhatsApp: ${p.phone}${p.rating ? `\n   ⭐ ${p.rating}` : ''}${p.notes ? `\n   📝 ${p.notes}` : ''}`
+    ).join('\n\n');
+
+    const text = `🛠️ *Indicações de Prestadores de Confiança — CtrlPig*\n\n${lines}\n\n_Compartilhado via aplicativo CtrlPig_`;
+    window.shareTextToWhatsApp(text);
+  };
+
   window.contactServiceProviderWhatsApp = function(id) {
     const list = window.getServiceProviders();
     const found = list.find(item => item.id === id);
     if (!found) return;
     const digits = String(found.phone || '').replace(/\D/g, '');
     const waNum = digits.length >= 10 ? (digits.startsWith('55') ? digits : '55' + digits) : '';
-    const msg = encodeURIComponent(`Olá ${found.name}, tudo bem? Peguei seu contato aqui no meu app CtrlPig e gostaria de solicitar um orçamento.`);
-    const url = waNum ? `https://wa.me/${waNum}?text=${msg}` : `https://wa.me/?text=${msg}`;
-    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
-    } else {
-      window.open(url, '_blank');
-    }
+    const msg = `Olá ${found.name}, tudo bem? Peguei seu contato aqui no meu app CtrlPig e gostaria de solicitar um orçamento.`;
+    window.shareTextToWhatsApp(msg, waNum);
   };
 
   window.shareSingleServiceProviderWhatsApp = function(id) {
@@ -25842,31 +26333,24 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       `🔧 *Especialidade:* ${found.category}\n` +
       `📞 *WhatsApp / Tel:* ${found.phone}\n` +
       `⭐ *Avaliação:* ${found.rating || 'De confiança'}\n` +
-      (found.notes ? `📝 *Obs:* ${found.notes}\n` : '');
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
-    } else {
-      window.open(url, '_blank');
-    }
+      (found.notes ? `📝 *Obs:* ${found.notes}\n` : '') +
+      `\n_Compartilhado via aplicativo CtrlPig_`;
+    window.shareTextToWhatsApp(text);
   };
 
   window.shareAllServiceProvidersWhatsApp = function() {
     const list = window.getServiceProviders();
     if (!list.length) {
-      showToastUndo('Nenhum prestador cadastrado para compartilhar.', false);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Nenhum prestador cadastrado para compartilhar.', false);
+      }
       return;
     }
     const lines = list.map((p, i) =>
-      `${i + 1}. *${p.category}* — *${p.name}*\n   📞 ${p.phone}${p.notes ? `\n   📝 ${p.notes}` : ''}`
+      `${i + 1}. *${p.category}* — *${p.name}*\n   📞 WhatsApp: ${p.phone}${p.rating ? `\n   ⭐ ${p.rating}` : ''}${p.notes ? `\n   📝 ${p.notes}` : ''}`
     ).join('\n\n');
-    const text = `🛠️ *Lista de Prestadores de Confiança — CtrlPig*\n\n${lines}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-      window.FlutterBridge.postMessage(JSON.stringify({ action: 'open_external_url', url }));
-    } else {
-      window.open(url, '_blank');
-    }
+    const text = `🛠️ *Lista de Prestadores de Confiança — CtrlPig*\n\n${lines}\n\n_Compartilhado via aplicativo CtrlPig_`;
+    window.shareTextToWhatsApp(text);
   };
 
   window.callServiceProviderPhone = function(phone) {
@@ -25925,6 +26409,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
           Nenhum prestador encontrado. Clique em <b>"+ Novo Prestador"</b> acima para cadastrar!
         </div>
       `;
+      window.updateSelectedProvidersUI();
       return;
     }
 
@@ -25932,16 +26417,22 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       const bgClass = idx % 2 === 0
         ? 'bg-white dark:bg-slate-900'
         : 'bg-slate-50/90 dark:bg-slate-800/70';
+      const isChecked = selectedProviderIds.has(item.id);
       return `
-        <div class="${bgClass} p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col gap-2 transition-all">
+        <div class="${bgClass} p-3 sm:p-3.5 rounded-2xl border ${isChecked ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-800'} shadow-2xs flex flex-col gap-2 transition-all">
           <div class="flex items-start justify-between gap-2">
-            <div>
-              <span class="inline-block px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold text-[10px] mb-1">
-                ${item.category || '🔧 Prestador'}
-              </span>
-              <h4 class="font-black text-sm text-slate-900 dark:text-white leading-tight">${item.name}</h4>
-              <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">
-                📞 ${item.phone} <span class="text-slate-400 mx-1">•</span> <span class="text-amber-600 dark:text-amber-400 font-semibold">${item.rating || ''}</span>
+            <div class="flex items-start gap-2.5">
+              <label class="flex items-center cursor-pointer pt-0.5" title="Selecionar para compartilhar">
+                <input type="checkbox" class="sp-provider-checkbox w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer" data-id="${item.id}" ${isChecked ? 'checked' : ''} onchange="handleProviderCheckboxChange(this, '${item.id}')">
+              </label>
+              <div>
+                <span class="inline-block px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold text-[10px] mb-1">
+                  ${item.category || '🔧 Prestador'}
+                </span>
+                <h4 class="font-black text-sm text-slate-900 dark:text-white leading-tight">${item.name}</h4>
+                <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">
+                  📞 ${item.phone} <span class="text-slate-400 mx-1">•</span> <span class="text-amber-600 dark:text-amber-400 font-semibold">${item.rating || ''}</span>
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-1 flex-shrink-0">
@@ -25957,19 +26448,21 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
           ${item.notes ? `<p class="text-[11px] text-slate-600 dark:text-slate-300 bg-slate-100/70 dark:bg-slate-800/50 px-2.5 py-1.5 rounded-xl leading-snug">📝 ${item.notes}</p>` : ''}
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button type="button" onclick="contactServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+            <button type="button" onclick="contactServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer active:scale-95 transition-all">
               <span>💬 WhatsApp</span>
             </button>
-            <button type="button" onclick="shareSingleServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+            <button type="button" onclick="shareSingleServiceProviderWhatsApp('${item.id}')" class="py-2 px-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center justify-center gap-1 shadow-2xs cursor-pointer active:scale-95 transition-all">
               <span>📤 Indicar</span>
             </button>
-            <button type="button" onclick="callServiceProviderPhone('${(item.phone || '').replace(/'/g, '')}')" class="py-2 px-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-800 dark:text-white font-extrabold text-[11px] flex items-center justify-center gap-1 cursor-pointer">
+            <button type="button" onclick="callServiceProviderPhone('${(item.phone || '').replace(/'/g, '')}')" class="py-2 px-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-800 dark:text-white font-extrabold text-[11px] flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-all">
               <span>📞 Ligar</span>
             </button>
           </div>
         </div>
       `;
     }).join('');
+
+    window.updateSelectedProvidersUI();
   };
 
   // Garante fechamento pelo botão voltar do Android

@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
@@ -153,7 +154,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.5+82';
+  static const String _kCurrentAppVersion = '2.1.6+83';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -236,6 +237,103 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
+  Future<void> _shareWhatsAppText(String text, {String? phone}) async {
+    _isPickingExternalMedia = true;
+    Future.delayed(const Duration(seconds: 4), () {
+      _isPickingExternalMedia = false;
+    });
+    try {
+      final encoded = Uri.encodeComponent(text);
+      String cleanPhone = (phone ?? '').replaceAll(RegExp(r'\D'), '');
+      if (cleanPhone.isNotEmpty && !cleanPhone.startsWith('55') && cleanPhone.length >= 10 && cleanPhone.length <= 11) {
+        cleanPhone = '55$cleanPhone';
+      }
+
+      final Uri waUri;
+      if (cleanPhone.isNotEmpty) {
+        waUri = Uri.parse("whatsapp://send?phone=$cleanPhone&text=$encoded");
+      } else {
+        waUri = Uri.parse("whatsapp://send?text=$encoded");
+      }
+
+      bool ok = await launchUrl(waUri, mode: LaunchMode.externalApplication);
+      if (!ok) {
+        final Uri webUri;
+        if (cleanPhone.isNotEmpty) {
+          webUri = Uri.parse("https://api.whatsapp.com/send?phone=$cleanPhone&text=$encoded");
+        } else {
+          webUri = Uri.parse("https://api.whatsapp.com/send?text=$encoded");
+        }
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint("Erro ao compartilhar no WhatsApp: $e");
+      try {
+        final encoded = Uri.encodeComponent(text);
+        String cleanPhone = (phone ?? '').replaceAll(RegExp(r'\D'), '');
+        if (cleanPhone.isNotEmpty && !cleanPhone.startsWith('55') && cleanPhone.length >= 10 && cleanPhone.length <= 11) {
+          cleanPhone = '55$cleanPhone';
+        }
+        final url = cleanPhone.isNotEmpty
+            ? "https://wa.me/$cleanPhone?text=$encoded"
+            : "https://wa.me/?text=$encoded";
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      } catch (_) {}
+    }
+  }
+
+  Future<void> _pickContactFromPhone() async {
+    _isPickingExternalMedia = true;
+    try {
+      final bool permissionGranted = await FlutterContacts.requestPermission(readonly: true);
+      if (permissionGranted) {
+        final contact = await FlutterContacts.openExternalPick();
+        if (contact != null) {
+          final fullContact = await FlutterContacts.getContact(contact.id);
+          final name = fullContact?.displayName ?? contact.displayName;
+          String phone = '';
+          if (fullContact != null && fullContact.phones.isNotEmpty) {
+            phone = fullContact.phones.first.number;
+          } else if (contact.phones.isNotEmpty) {
+            phone = contact.phones.first.number;
+          }
+          final safeName = jsonEncode(name);
+          final safePhone = jsonEncode(phone);
+          _controller.runJavaScript("""
+            if (typeof window.onNativeContactPicked === 'function') {
+              window.onNativeContactPicked($safeName, $safePhone);
+            }
+          """);
+        }
+      } else {
+        debugPrint('Permissão de contatos negada pelo usuário.');
+      }
+    } catch (e) {
+      debugPrint('Erro ao selecionar contato via FlutterContacts: $e. Tentando via MethodChannel...');
+      try {
+        final contact = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+            .invokeMapMethod<String, dynamic>('pickContact');
+        if (contact != null) {
+          final name = contact['name'] as String? ?? '';
+          final phone = contact['phone'] as String? ?? '';
+          final safeName = jsonEncode(name);
+          final safePhone = jsonEncode(phone);
+          _controller.runJavaScript("""
+            if (typeof window.onNativeContactPicked === 'function') {
+              window.onNativeContactPicked($safeName, $safePhone);
+            }
+          """);
+        }
+      } catch (err2) {
+        debugPrint('Erro no fallback MethodChannel pickContact: $err2');
+      }
+    } finally {
+      Future.delayed(const Duration(seconds: 2), () {
+        _isPickingExternalMedia = false;
+      });
+    }
+  }
+
   void _injectNativeBridge() {
     const jsBridge = '''
       window.isNativeApp = true;
@@ -274,6 +372,12 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       if (action == 'open_external_url') {
         final url = data['url'] as String? ?? '';
         if (url.isNotEmpty) _openExternalUrl(url);
+      } else if (action == 'share_whatsapp') {
+        final text = data['text'] as String? ?? '';
+        final phone = data['phone'] as String?;
+        if (text.isNotEmpty) _shareWhatsAppText(text, phone: phone);
+      } else if (action == 'pick_contact') {
+        _pickContactFromPhone();
       } else if (action == 'start_voice') {
         _startNativeVoiceRecording();
       } else if (action == 'stop_voice' || action == 'send_voice') {

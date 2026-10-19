@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.ContactsContract
 import android.speech.tts.TextToSpeech
 import android.widget.RemoteViews
 import android.widget.Toast
@@ -551,12 +552,24 @@ class MedAlarmReceiver : BroadcastReceiver() {
 
 class MainActivity: FlutterFragmentActivity() {
     private val CHANNEL = "com.antigravity.ctrlpig/launcher_icon"
+    private var pendingContactResult: MethodChannel.Result? = null
+    private val REQUEST_CODE_PICK_CONTACT = 9021
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         NotificationHelper.ensureChannel(this)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
+                "pickContact" -> {
+                    pendingContactResult = result
+                    try {
+                        val pickIntent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+                        startActivityForResult(pickIntent, REQUEST_CODE_PICK_CONTACT)
+                    } catch (e: Exception) {
+                        result.error("PICK_ERROR", e.message, null)
+                        pendingContactResult = null
+                    }
+                }
                 "setLauncherIcon" -> {
                     val isPositive = call.argument<Boolean>("isPositive") ?: true
                     updateLauncherIcon(isPositive)
@@ -735,6 +748,31 @@ class MainActivity: FlutterFragmentActivity() {
 
     private fun updateLauncherIcon(isPositive: Boolean) {
         // Ícone único padrão garantido para evitar duplicação no launcher do Android
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_PICK_CONTACT) {
+            if (resultCode == RESULT_OK && data?.data != null) {
+                try {
+                    val cursor = contentResolver.query(data.data!!, arrayOf(
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                        ContactsContract.CommonDataKinds.Phone.NUMBER
+                    ), null, null, null)
+                    if (cursor != null && cursor.moveToFirst()) {
+                        val name = cursor.getString(0) ?: ""
+                        val number = cursor.getString(1) ?: ""
+                        cursor.close()
+                        pendingContactResult?.success(mapOf("name" to name, "phone" to number))
+                        pendingContactResult = null
+                        return
+                    }
+                    cursor?.close()
+                } catch (_: Exception) {}
+            }
+            pendingContactResult?.success(null)
+            pendingContactResult = null
+        }
     }
 }
 
