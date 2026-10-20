@@ -21,26 +21,38 @@ class AlarmAlertActivity : Activity() {
             setTurnScreenOn(true)
             val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
             keyguardManager?.requestDismissKeyguard(this, null)
-        } else {
-            @Suppress("DEPRECATION")
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-            )
         }
+        
+        @Suppress("DEPRECATION")
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        )
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_alarm_alert)
-
         updateAlarmUI(intent)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
+        @Suppress("DEPRECATION")
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        )
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // Substitui imediatamente o alarme anterior (ex: pré-alarme) sem duplicar telas ou exigir dupla interação
         updateAlarmUI(intent)
     }
 
@@ -59,7 +71,7 @@ class AlarmAlertActivity : Activity() {
         val btnSnooze = findViewById<Button>(R.id.btn_alarm_snooze)
         val btnDismiss = findViewById<Button>(R.id.btn_alarm_dismiss)
 
-        val isPet = title.contains("Pet", ignoreCase = true) || title.contains("🐾") || body.contains("Pet", ignoreCase = true)
+        val isPet = title.contains("Pet", ignoreCase = true) || title.contains("🐾") || body.contains("Pet", ignoreCase = true) || title.contains("Vacina", ignoreCase = true)
         if (isPet) {
             tvBadge.text = "🐾 CONTROLPIG • CUIDADO PET AGENDADO"
             tvIcon.text = "🐾"

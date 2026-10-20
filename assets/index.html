@@ -2374,7 +2374,7 @@
                   <span id="piggyTipIconBadge" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs flex-shrink-0">💡</span>
                   <span id="piggyTipCategoryBadge" class="text-[11px] font-black uppercase tracking-wider text-amber-200 truncate">Dica do Piggy</span>
                   <span id="piggyTipIndexBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white flex-shrink-0">1/4</span>
-                  <span id="piggyTipPauseIndicator" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-400/30 text-amber-200 flex-shrink-0">Pausado</span>
+                  <span id="piggyTipPauseIndicator" class="hidden"></span>
                 </div>
                 <!-- Controles Anterior / Próxima -->
                 <div class="flex items-center gap-1 flex-shrink-0">
@@ -2591,7 +2591,7 @@
             </svg>
           </div>
           <div class="font-extrabold text-xs text-slate-900 dark:text-white leading-tight mb-0.5">
-            Prestadores
+            Meus Prestadores
           </div>
           <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-tight h-6 flex items-center justify-center" id="quickHubProvidersSub">
             Eletricista, gás, móveis
@@ -17456,8 +17456,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const all = getAllPetCareEvents();
         const pending = all.filter(c => c.status === 'Pendente' && c.alarmeAtivo && c.data >= todayStr);
         const pets = getRegisteredPets();
+        const vaxes = typeof getAllPetVaccines === 'function' ? getAllPetVaccines() : [];
 
-        const alarmsPayload = pending.slice(0, 15).map((c, idx) => {
+        let alarmsPayload = pending.slice(0, 10).map((c, idx) => {
           const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
           const dtParts = c.data.split('-');
           const tmParts = (c.hora || '09:00').split(':');
@@ -17473,16 +17474,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           };
         }).filter(a => a.triggerMillis > Date.now());
 
+        // Agenda alertas de vacinas: 5 dias antes e no dia do vencimento às 09:00
+        vaxes.forEach((v, vIdx) => {
+          if (!v.proximaDose) return;
+          const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
+          const parts = v.proximaDose.split('-');
+          if (parts.length === 3) {
+            const dueDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 9, 0, 0);
+            const fiveDaysBefore = new Date(dueDate.getTime() - (5 * 24 * 60 * 60 * 1000));
+
+            // Alarme 5 dias antes
+            if (fiveDaysBefore.getTime() > Date.now()) {
+              alarmsPayload.push({
+                id: 9500 + (vIdx * 2),
+                triggerMillis: fiveDaysBefore.getTime(),
+                title: `🐾 Vacina Vencendo em 5 Dias: ${pet.nome}`,
+                body: `A vacina ${v.nome} do ${pet.nome} vence em 5 dias (${v.proximaDose}). Agende a clínica!`,
+                speech: `Atenção Rodrigo e Márcia! A vacina ${v.nome} do ${pet.nome} vence em cinco dias.`,
+                slot: '09:00'
+              });
+            }
+
+            // Alarme no dia do vencimento
+            if (dueDate.getTime() > Date.now()) {
+              alarmsPayload.push({
+                id: 9501 + (vIdx * 2),
+                triggerMillis: dueDate.getTime(),
+                title: `🐾 Vacina Vence Hoje: ${pet.nome}!`,
+                body: `Hoje é o dia da vacina ${v.nome} do ${pet.nome}. Renove a dose anual!`,
+                speech: `Atenção! Hoje é o dia da vacina ${v.nome} do ${pet.nome}.`,
+                slot: '09:00'
+              });
+            }
+          }
+        });
+
         window.FlutterBridge.postMessage(JSON.stringify({
           action: 'schedule_pet_alarms',
-          alarms: alarmsPayload
+          alarms: alarmsPayload.slice(0, 25)
         }));
       } catch (e) {
         console.warn('Erro ao sincronizar alarmes nativos de pet:', e);
       }
     }
 
-    // Monitora a cada minuto se há alarmes de cuidados pet para disparar na tela
+    // Monitora a cada minuto se há alarmes de cuidados pet ou vacinas para disparar na tela
     function checkPetCareScheduleTimers() {
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
@@ -17510,6 +17546,36 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           }
           if (typeof window.showFloatingHealthAlarmBanner === 'function') {
             window.showFloatingHealthAlarmBanner(title, body, 'pet_care', c.hora, c.id);
+          }
+        }
+      });
+
+      // Checa vencimento de vacinas: 5 dias antes e no dia exato
+      const vaxes = typeof getAllPetVaccines === 'function' ? getAllPetVaccines() : [];
+      vaxes.forEach(v => {
+        if (!v.proximaDose) return;
+        const diffDays = Math.ceil((new Date(v.proximaDose + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
+        const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
+
+        if (diffDays === 5 || diffDays === 0) {
+          const firedKey = `vax_fired_${v.id}_${diffDays}_${todayStr}`;
+          if (sessionStorage.getItem(firedKey) === 'true') return;
+          sessionStorage.setItem(firedKey, 'true');
+
+          const isToday = diffDays === 0;
+          const title = isToday ? `💉 Vacina Vence Hoje: ${pet.nome}!` : `⚠️ Vacina Vence em 5 Dias: ${pet.nome}`;
+          const body = isToday
+            ? `Hoje é o dia de aplicar a vacina ${v.nome}. Não esqueça de levar à clínica!`
+            : `A vacina ${v.nome} do ${pet.nome} vence em 5 dias. Já agende o veterinário!`;
+          const speech = isToday
+            ? `Atenção! Hoje é o dia da vacina ${v.nome} do ${pet.nome}.`
+            : `Atenção Rodrigo e Márcia! A vacina ${v.nome} do ${pet.nome} vence em cinco dias.`;
+
+          if (typeof speakMedicationAlarm === 'function') {
+            speakMedicationAlarm(speech, true);
+          }
+          if (typeof window.showFloatingHealthAlarmBanner === 'function') {
+            window.showFloatingHealthAlarmBanner(title, body, 'pet_care', curTime, v.id);
           }
         }
       });
@@ -19605,7 +19671,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
         <div class="w-full px-1">
           <h3 class="text-xs sm:text-sm font-extrabold text-white group-hover:text-sky-300 transition-colors leading-tight">
-            Prestadores
+            Meus Prestadores
           </h3>
           <p class="text-[10px] sm:text-xs text-white/75 mt-0.5 leading-tight line-clamp-2">
             Contatos e serviços
@@ -21336,21 +21402,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       </div>
 
-      <!-- SEÇÃO 2: CONTROLE DE ESTOQUE & COMPRA DIRETA NA LISTA -->
-      <div class="py-3 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-1.5">
-            <span class="text-sm">📦</span>
-            <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Controle de Estoque
-            </h4>
-          </div>
-        </div>
-
-        <div id="healthMedsStockGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <!-- Injetado dinamicamente -->
-        </div>
-      </div>
+      <!-- SEÇÃO 2: CONTROLE DE ESTOQUE (INCORPORADO DIRETAMENTE EM CADA CARD DE MEDICAMENTO) -->
+      <div id="healthMedsStockGrid" class="hidden"></div>
 
       <!-- SEÇÃO 3: COMPARADOR DE PREÇOS EM 10 FARMÁCIAS VIRTUAIS -->
       <div class="pt-3.5">
@@ -26051,17 +26104,24 @@ Frase falada: "${spokenText}"`;
       morningListEl.innerHTML = morningMeds.map(m => {
         const isTakenIndividually = m.lastTakenMorningDate === todayStr;
         const indivTime = m.horario || settings.morningTime || '08:00';
+        const daysLeft = window.getMedDaysRemaining ? window.getMedDaysRemaining(m) : Math.floor((m.estoqueAtual || 0) / (m.dosePorVez || 1));
+        const isLow = daysLeft <= 5;
         return `
           <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
-            <div class="flex items-center gap-2 min-w-0">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'morning')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
-              <div class="min-w-0">
-                <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500' : ''}">${escapeHtml(m.nome)} <span class="text-[10px] font-mono text-sky-700 bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200 ml-1">⏰ ${indivTime}</span></div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400">${escapeHtml(m.concentracao || '')} • ${m.dosePorVez || 1} cp • <span class="text-sky-600 font-bold">${escapeHtml(m.tipo || '')}</span></div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-nowrap overflow-hidden">
+                  <span class="font-extrabold text-xs text-slate-900 dark:text-white whitespace-nowrap truncate ${isTakenIndividually ? 'line-through text-slate-500' : ''}">${escapeHtml(m.nome)}</span>
+                  ${m.concentracao ? `<span class="text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">(${escapeHtml(m.concentracao)})</span>` : ''}
+                  <span class="text-[10px] font-mono text-sky-700 bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200 whitespace-nowrap flex-shrink-0">⏰ ${indivTime}</span>
+                  <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full ${isLow ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'} whitespace-nowrap flex-shrink-0">📦 ${m.estoqueAtual} un (${daysLeft}d)</span>
+                </div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${m.dosePorVez || 1} cp • <span class="text-sky-600 font-semibold">${escapeHtml(m.tipo || '')}</span></div>
               </div>
             </div>
             <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
-              <button type="button" onclick="openEditMedicationModal('${m.id}')" class="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer" title="Editar horário individual"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+              <button type="button" onclick="openEditMedicationModal('${m.id}')" class="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer" title="Editar estoque e horário"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'morning')" class="px-2 py-0.5 rounded-lg ${isTakenIndividually ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-200 text-slate-700 font-semibold'} text-[10px] cursor-pointer">
                 ${isTakenIndividually ? `✓ Tomado (${m.lastTakenMorningTime || indivTime})` : 'Tomar'}
               </button>
@@ -26077,17 +26137,24 @@ Frase falada: "${spokenText}"`;
       eveningListEl.innerHTML = eveningMeds.map(m => {
         const isTakenIndividually = m.lastTakenEveningDate === todayStr;
         const indivTime = m.horario || settings.eveningTime || '20:00';
+        const daysLeft = window.getMedDaysRemaining ? window.getMedDaysRemaining(m) : Math.floor((m.estoqueAtual || 0) / (m.dosePorVez || 1));
+        const isLow = daysLeft <= 5;
         return `
           <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
-            <div class="flex items-center gap-2 min-w-0">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'evening')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
-              <div class="min-w-0">
-                <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500' : ''}">${escapeHtml(m.nome)} <span class="text-[10px] font-mono text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200 ml-1">⏰ ${indivTime}</span></div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400">${escapeHtml(m.concentracao || '')} • ${m.dosePorVez || 1} cp • <span class="text-indigo-600 font-bold">${escapeHtml(m.tipo || '')}</span></div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-nowrap overflow-hidden">
+                  <span class="font-extrabold text-xs text-slate-900 dark:text-white whitespace-nowrap truncate ${isTakenIndividually ? 'line-through text-slate-500' : ''}">${escapeHtml(m.nome)}</span>
+                  ${m.concentracao ? `<span class="text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">(${escapeHtml(m.concentracao)})</span>` : ''}
+                  <span class="text-[10px] font-mono text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200 whitespace-nowrap flex-shrink-0">⏰ ${indivTime}</span>
+                  <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full ${isLow ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'} whitespace-nowrap flex-shrink-0">📦 ${m.estoqueAtual} un (${daysLeft}d)</span>
+                </div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${m.dosePorVez || 1} cp • <span class="text-indigo-600 font-semibold">${escapeHtml(m.tipo || '')}</span></div>
               </div>
             </div>
             <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
-              <button type="button" onclick="openEditMedicationModal('${m.id}')" class="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer" title="Editar horário individual"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+              <button type="button" onclick="openEditMedicationModal('${m.id}')" class="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer" title="Editar estoque e horário"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'evening')" class="px-2 py-0.5 rounded-lg ${isTakenIndividually ? 'bg-emerald-100 text-emerald-800 font-bold' : 'bg-slate-200 text-slate-700 font-semibold'} text-[10px] cursor-pointer">
                 ${isTakenIndividually ? `✓ Tomado (${m.lastTakenEveningTime || indivTime})` : 'Tomar'}
               </button>
@@ -26115,12 +26182,14 @@ Frase falada: "${spokenText}"`;
             <div class="flex items-center justify-between p-2.5 rounded-xl ${isTaken ? 'bg-emerald-50/80 border border-emerald-300' : 'bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800'}">
               <div class="flex items-center gap-2.5 min-w-0">
                 <button type="button" onclick="toggleCustomMedTakenToday('${m.id}')" class="w-6 h-6 rounded-lg ${isTaken ? 'bg-emerald-600 text-white' : 'border-2 border-purple-300 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs cursor-pointer flex-shrink-0">✓</button>
-                <div class="min-w-0">
-                  <div class="font-extrabold text-xs text-slate-900 dark:text-white ${isTaken ? 'line-through text-slate-500' : ''}">
-                    ${escapeHtml(m.nome)}
-                    <span class="ml-1 text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300">⏰ ${escapeHtml(indivTime)}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-nowrap overflow-hidden">
+                    <span class="font-extrabold text-xs text-slate-900 dark:text-white whitespace-nowrap truncate ${isTaken ? 'line-through text-slate-500' : ''}">${escapeHtml(m.nome)}</span>
+                    ${m.concentracao ? `<span class="text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">(${escapeHtml(m.concentracao)})</span>` : ''}
+                    <span class="text-[10px] font-mono font-black px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 border border-purple-300 whitespace-nowrap flex-shrink-0">⏰ ${escapeHtml(indivTime)}</span>
+                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 whitespace-nowrap flex-shrink-0">📦 ${m.estoqueAtual} un</span>
                   </div>
-                  <div class="text-[10px] text-slate-500">${escapeHtml(m.concentracao || '')} • ${m.dosePorVez || 1} un • <span class="text-purple-700 font-bold">${escapeHtml(m.tipo || 'Suplemento / Uso Diário')}</span></div>
+                  <div class="text-[10px] text-slate-500 truncate">${m.dosePorVez || 1} un • <span class="text-purple-700 font-semibold">${escapeHtml(m.tipo || 'Suplemento / Uso Diário')}</span></div>
                 </div>
               </div>
               <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
@@ -27342,14 +27411,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
           🛠️
         </div>
         <div>
-          <h3 class="font-black text-sm sm:text-base text-white leading-tight">Prestadores de Serviços</h3>
+          <h3 class="font-black text-sm sm:text-base text-white leading-tight">Meus Prestadores</h3>
           <p class="text-[11px] text-sky-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
-        <button type="button" onclick="shareAllServiceProvidersWhatsApp()" title="Compartilhar lista no WhatsApp" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-xs cursor-pointer">
-          <span>📤 Compartilhar Lista</span>
-        </button>
         <button type="button" onclick="closeServiceProvidersModal()" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>

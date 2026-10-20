@@ -89,8 +89,35 @@ object AlarmAudioPlayer {
                         }
                         val audioPrefs = appCtx.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                         val alarmStyle = audioPrefs.getString("alarm_style", "female") ?: "female"
+                        
+                        // Seleciona voz nativa Android para Mulher ou Homem se disponível
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                val voices = engine.voices
+                                if (voices != null) {
+                                    val ptVoices = voices.filter { v -> 
+                                        val loc = v.locale?.toString()?.lowercase() ?: ""
+                                        loc.contains("pt")
+                                    }
+                                    if (alarmStyle == "female") {
+                                        val femVoice = ptVoices.firstOrNull { v ->
+                                            val vn = v.name.lowercase()
+                                            vn.contains("female") || vn.contains("mulher") || vn.contains("afs") || vn.contains("yfn") || vn.contains("luciana")
+                                        }
+                                        if (femVoice != null) engine.voice = femVoice
+                                    } else if (alarmStyle == "male") {
+                                        val maleVoice = ptVoices.firstOrNull { v ->
+                                            val vn = v.name.lowercase()
+                                            vn.contains("male") || vn.contains("homem") || vn.contains("ptd")
+                                        }
+                                        if (maleVoice != null) engine.voice = maleVoice
+                                    }
+                                }
+                            }
+                        } catch (_: Exception) {}
+
                         if (alarmStyle == "female") {
-                            engine.setPitch(1.35f)
+                            engine.setPitch(1.30f)
                             engine.setSpeechRate(0.92f)
                         } else if (alarmStyle == "male") {
                             engine.setPitch(0.70f)
@@ -113,8 +140,8 @@ object AlarmAudioPlayer {
                             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
                         }
 
-                        // Ciclos de 10 em 10 segundos durante 1 minuto (60s)
-                        val offsetsMs = longArrayOf(2200L, 10000L, 20000L, 30000L, 40000L, 50000L, 60000L)
+                        // Toca 2 ciclos para alertar com clareza e sem loop interminável (aos 2.2s e aos 15s)
+                        val offsetsMs = longArrayOf(2200L, 15000L)
                         for ((idx, delayMs) in offsetsMs.withIndex()) {
                             handler.postDelayed({
                                 if (!isStopped) {
@@ -129,12 +156,12 @@ object AlarmAudioPlayer {
                             }, delayMs)
                         }
 
-                        // Encerra automaticamente após completar 1 minuto
+                        // Encerra automaticamente após 25 segundos
                         handler.postDelayed({
                             if (!isStopped) {
                                 stop()
                             }
-                        }, 66000L)
+                        }, 25000L)
                     } catch (_: Exception) {}
                 }
             }
@@ -462,10 +489,13 @@ class MedAlarmReceiver : BroadcastReceiver() {
 
         when (action) {
             NotificationHelper.ACTION_FIRE_ALARM -> {
-                // Abre exclusivamente o novo modelo de tela cheia sem repetir na barra de notificações
+                // 1. Sempre publica a notificação de alta prioridade na tela de bloqueio com botões
+                NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
+
+                // 2. Dispara a Activity de tela cheia com flags para acender a tela
                 try {
                     val alertIntent = Intent(context, AlarmAlertActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                         putExtra("title", title)
                         putExtra("body", body)
                         putExtra("speech", speech)
@@ -473,10 +503,7 @@ class MedAlarmReceiver : BroadcastReceiver() {
                         putExtra("id", notifId)
                     }
                     context.startActivity(alertIntent)
-                } catch (e: Exception) {
-                    // Fallback de segurança apenas se o Android bloquear a inicialização da Activity
-                    NotificationHelper.showWhiteCardNotification(context, title, body, notifId, speech, slot)
-                }
+                } catch (_: Exception) {}
 
                 val audioPrefs = context.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                 val isAudioEnabled = audioPrefs.getBoolean("med_audio_enabled", true)
