@@ -2188,9 +2188,14 @@
 
       <!-- FAIXA 1: BARRA DE UTILITÁRIOS SUPERIOR FULL-WIDTH (SCROLL HORIZONTAL FLUIDO NO MOBILE) -->
       <div class="w-full app-header-top-bar bg-slate-900 text-slate-200 border-b border-slate-800 text-xs px-2.5 sm:px-6 py-1.5 flex items-center justify-between gap-1 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth max-w-full">
-        <!-- Lado Esquerdo: Seletor de Cores (Azul/Escuro) & Estilo (Glass/Flat) -->
+        <!-- Lado Esquerdo: Avatar & Nome do Usuário Ativo + Seletor de Cores -->
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-<!-- Botão de voz do cabeçalho removido (acessibilidade centralizada no login) -->
+          
+          <!-- Avatar e Nome do Usuário Ativo à Esquerda -->
+          <div id="headerActiveUserBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-xs shadow-xs transition-all flex-shrink-0 cursor-default" title="Usuário Ativo no Aplicativo">
+            <span id="headerUserAvatar" class="text-base">👨</span>
+            <span id="headerUserName" class="truncate max-w-[90px] sm:max-w-none">Rodrigo</span>
+          </div>
 
           <!-- Cor: Azul vs Escuro -->
           <div class="inline-flex items-center bg-slate-800/90 p-0.5 rounded-lg border border-slate-700/80 gap-0.5">
@@ -11769,19 +11774,36 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     
     function updateHeaderUserName() {
+      const user = window.currentUserSession;
+      const avatarEl = document.getElementById('headerUserAvatar');
+      const nameEl = document.getElementById('headerUserName');
+      
+      let userName = 'Usuário';
+      let userAvatar = '👤';
+
+      if (user && user.nome) {
+        if (/m[aá]rcia/i.test(user.nome)) {
+          userName = 'Márcia';
+          userAvatar = '👩';
+        } else if (/rodrigo/i.test(user.nome)) {
+          userName = 'Rodrigo';
+          userAvatar = '👨';
+        } else {
+          userName = escapeHtml(user.nome.split(' ')[0]);
+          userAvatar = user.avatar || '👤';
+        }
+      }
+
+      if (avatarEl) avatarEl.textContent = userAvatar;
+      if (nameEl) nameEl.textContent = userName;
+
+      // O botão Admin permanece SEMPRE como Admin ao lado do botão Sair
       const btnAdmin = document.getElementById('btnAdminHeader');
       if (btnAdmin) {
-        const user = window.currentUserSession;
-        let name = 'Admin';
-        let icon = 'shield';
-        if (user && user.nome) {
-          if (/m[aá]rcia/i.test(user.nome)) {
-            name = 'Márcia';
-            btnAdmin.innerHTML = `<span class="text-base">👩</span> <span class="font-extrabold text-white">${name}</span>`;
-            return;
-          } else if (/rodrigo/i.test(user.nome)) {
-            name = 'Rodrigo';
-            btnAdmin.innerHTML = `<span class="text-base">👨</span> <span class="font-extrabold text-white">${name}</span>`;
+        btnAdmin.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-300"></i> <span>Admin</span>`;
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+      }
+    }</span>`;
             return;
           } else {
             name = escapeHtml(user.nome.split(' ')[0]);
@@ -21374,12 +21396,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
-        <!-- Botão de Ação Rápida: Tag com QR Code para Coleira / Imprimir -->
-        <button type="button" onclick="openPetQrCodeModal()" class="px-3 py-2 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-md transition-all cursor-pointer flex-shrink-0" title="Gerar QR Code de identificação para coleira e imprimir">
-          <span class="text-sm">🏷️</span>
-          <span class="hidden sm:inline">QR Code Coleira</span>
-          <span class="sm:hidden">QR Coleira</span>
-        </button>
+        <!-- Botões de Ação do Pet: QR Coleira e Alerta Procura-se WhatsApp -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button type="button" onclick="openPetLostPosterModal()" class="px-3 py-2 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 active:scale-95 text-white font-black text-[11px] flex items-center gap-1.5 shadow-md transition-all cursor-pointer border border-rose-400" title="Criar Cartaz 'PROCURA-SE' e compartilhar no WhatsApp caso o pet fuja ou se perca">
+            <span class="text-sm animate-pulse">🚨</span>
+            <span class="hidden sm:inline">Alerta Procura-se</span>
+            <span class="sm:hidden">Procura-se</span>
+          </button>
+
+          <button type="button" onclick="openPetQrCodeModal()" class="px-3 py-2 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-[11px] flex items-center gap-1.5 shadow-md transition-all cursor-pointer" title="Gerar QR Code de identificação para coleira e imprimir">
+            <span class="text-sm">🏷️</span>
+            <span class="hidden sm:inline">QR Coleira</span>
+            <span class="sm:hidden">QR Coleira</span>
+          </button>
+        </div>
       </div>
 
       <!-- ============================================================== -->
@@ -31171,6 +31201,135 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   });
 })();
 
+
+// ============================================================================
+// SISTEMA: CARTAZ "PROCURA-SE" DE PET DESAPARECIDO (WHATSAPP & REDES)
+// ============================================================================
+(function() {
+  window.openPetLostPosterModal = function() {
+    const modal = document.getElementById('modalPetLostPoster');
+    if (!modal) return;
+
+    const pet = (typeof getActivePet === 'function') ? getActivePet() : { nome: 'Pet', especie: 'Cão', raca: 'SRD' };
+    const savedTutor = (typeof getPetTutorInfo === 'function') ? getPetTutorInfo() : {};
+    const currentUser = (typeof currentUserSession !== 'undefined' && currentUserSession) ? currentUserSession : {};
+
+    // Pré-carrega dados nos inputs
+    const locInput = document.getElementById('lostInputLocation');
+    const phoneInput = document.getElementById('lostInputPhone');
+    const tutorInput = document.getElementById('lostInputTutor');
+    const notesInput = document.getElementById('lostInputNotes');
+
+    if (locInput) locInput.value = savedTutor.address || 'São Paulo, SP';
+    if (phoneInput) phoneInput.value = savedTutor.phone || currentUser.whatsapp || '(11) 98765-4321';
+    if (tutorInput) tutorInput.value = savedTutor.name || currentUser.nome || 'Família';
+    if (notesInput) notesInput.value = 'Muito dócil, usa coleira. Gratifica-se quem encontrar!';
+
+    window.updateLostPosterPreview();
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closePetLostPosterModal = function() {
+    const modal = document.getElementById('modalPetLostPoster');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.updateLostPosterPreview = function() {
+    const pet = (typeof getActivePet === 'function') ? getActivePet() : { nome: 'Pantone', especie: 'Cão' };
+    
+    // Elementos do Cartaz
+    const nameEl = document.getElementById('lostPosterPetName');
+    const breedEl = document.getElementById('lostPosterPetBreed');
+    const locEl = document.getElementById('lostPosterLocationDisplay');
+    const dateEl = document.getElementById('lostPosterDateDisplay');
+    const tutorEl = document.getElementById('lostPosterTutorDisplay');
+    const notesEl = document.getElementById('lostPosterNotesDisplay');
+    const phoneEl = document.getElementById('lostPosterPhoneDisplay');
+    const emojiEl = document.getElementById('lostPosterEmoji');
+    const imgEl = document.getElementById('lostPosterImg');
+
+    // Valores dos Inputs
+    const locVal = document.getElementById('lostInputLocation')?.value || 'Local não informado';
+    const phoneVal = document.getElementById('lostInputPhone')?.value || '(11) 98765-4321';
+    const tutorVal = document.getElementById('lostInputTutor')?.value || 'Tutor';
+    const notesVal = document.getElementById('lostInputNotes')?.value || 'Dócil';
+
+    if (nameEl) nameEl.textContent = (pet.nome || 'PET').toUpperCase();
+    if (breedEl) breedEl.textContent = `${pet.especie || 'Pet'} • ${pet.raca || 'Sem raça definida'}`;
+    if (locEl) locEl.textContent = locVal;
+    if (dateEl) {
+      const today = new Date().toLocaleDateString('pt-BR');
+      dateEl.textContent = today;
+    }
+    if (tutorEl) tutorEl.textContent = tutorVal;
+    if (notesEl) notesEl.textContent = notesVal;
+    if (phoneEl) phoneEl.textContent = phoneVal;
+
+    // Foto do Pet
+    if (pet.foto) {
+      if (imgEl) {
+        imgEl.src = pet.foto;
+        imgEl.classList.remove('hidden');
+      }
+      if (emojiEl) emojiEl.classList.add('hidden');
+    } else {
+      if (imgEl) imgEl.classList.add('hidden');
+      if (emojiEl) {
+        emojiEl.textContent = pet.especie === 'Gato' ? '🐱' : '🐶';
+        emojiEl.classList.remove('hidden');
+      }
+    }
+  };
+
+  window.getLostPetFormattedMessage = function() {
+    const pet = (typeof getActivePet === 'function') ? getActivePet() : { nome: 'Pantone', especie: 'Cão' };
+    const locVal = document.getElementById('lostInputLocation')?.value || 'Local não informado';
+    const phoneVal = document.getElementById('lostInputPhone')?.value || '';
+    const tutorVal = document.getElementById('lostInputTutor')?.value || 'Tutor';
+    const notesVal = document.getElementById('lostInputNotes')?.value || '';
+    const today = new Date().toLocaleDateString('pt-BR');
+
+    const cleanPhone = phoneVal.replace(/\D/g, '');
+    const waLink = cleanPhone ? `https://wa.me/55${cleanPhone}` : '';
+
+    return `🚨🚨 *PROCURA-SE DESESPERADAMENTE!* 🚨🚨\n\n` +
+           `🐾 *Nome do Pet:* ${pet.nome.toUpperCase()}\n` +
+           `🐕 *Espécie/Raça:* ${pet.especie || 'Pet'} • ${pet.raca || 'Dócil'}\n` +
+           `📍 *Visto por último em:* ${locVal}\n` +
+           `📅 *Data:* ${today}\n` +
+           `👤 *Tutor(a):* ${tutorVal}\n` +
+           `💡 *Detalhes:* ${notesVal}\n\n` +
+           `📞 *CONTATO URGENTE:* ${phoneVal}\n` +
+           (waLink ? `👉 Chamar no WhatsApp: ${waLink}\n\n` : `\n`) +
+           `🙏 *Por favor, compartilhe em grupos de bairro e condomínio! Toda a família está muito aflita e agradece do fundo do coração!* ❤️🐾`;
+  };
+
+  window.shareLostPetOnWhatsApp = function() {
+    const msg = window.getLostPetFormattedMessage();
+    const encoded = encodeURIComponent(msg);
+    const url = `https://api.whatsapp.com/send?text=${encoded}`;
+    if (typeof openExternalUrl === 'function') {
+      openExternalUrl(url);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  window.copyLostPetAlertMessage = function() {
+    const msg = window.getLostPetFormattedMessage().replace(/\\n/g, '\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg).then(() => {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('📋 Texto de busca copiado! Cole no WhatsApp, Instagram ou Facebook.', false);
+        }
+      });
+    } else {
+      prompt('Copie o texto de busca abaixo:', msg);
+    }
+  };
+})();
+
 </script>
 
 
@@ -31393,6 +31552,131 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
       </button>
       <button type="button" onclick="closeProfPiggySpotlight()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-sm transition-all active:scale-95 cursor-pointer">
         Entendi, obrigado!
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================================ -->
+<!-- MODAL: CARTAZ DE PET DESAPARECIDO "PROCURA-SE" (COMPARTILHAMENTO WHATSAPP)   -->
+<!-- ============================================================================ -->
+<div id="modalPetLostPoster" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[90] hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto" onclick="if(event.target===this) closePetLostPosterModal()">
+  <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl relative border-2 border-rose-500 max-h-[92vh] overflow-y-auto custom-scrollbar my-auto flex flex-col">
+    
+    <!-- Cabeçalho do Modal -->
+    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl animate-pulse">🚨</span>
+        <div>
+          <h3 class="font-black text-sm sm:text-base text-rose-600 dark:text-rose-400 leading-tight">
+            Alerta "PROCURA-SE" • Pet Desaparecido
+          </h3>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">
+            Gere um cartaz urgente de resgate para compartilhar no WhatsApp e redes
+          </p>
+        </div>
+      </div>
+      <button type="button" onclick="closePetLostPosterModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer">
+        ✕
+      </button>
+    </div>
+
+    <!-- PRE-VISUALIZAÇÃO DO CARTAZ EM ALTO CONTRASTE (ESTILO FLYER DE RESGATE) -->
+    <div class="mt-4 p-4 rounded-3xl bg-slate-950 text-white border-4 border-dashed border-rose-500 text-center relative shadow-xl overflow-hidden" id="petLostPosterCardVisual">
+      
+      <!-- Faixa Superior Alerta Máximo -->
+      <div class="py-1 px-3 rounded-full bg-rose-600 text-white font-black text-[11px] sm:text-xs uppercase tracking-widest inline-block shadow-md mb-2.5 animate-pulse">
+        ⚠️ URGENTE • POR FAVOR COMPARTILHE ⚠️
+      </div>
+
+      <h2 class="text-2xl sm:text-3xl font-black text-amber-300 uppercase tracking-tight mb-2">
+        PROCURA-SE!
+      </h2>
+
+      <!-- Foto Grande do Pet com Moldura -->
+      <div class="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-3xl bg-amber-100 border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center mb-2.5 relative">
+        <span id="lostPosterEmoji" class="text-5xl">🐶</span>
+        <img id="lostPosterImg" src="" alt="Foto do Pet" class="hidden w-full h-full object-cover">
+      </div>
+
+      <!-- Nome do Pet -->
+      <h3 class="text-xl sm:text-2xl font-black text-white" id="lostPosterPetName">
+        PANTONE
+      </h3>
+      <p class="text-xs text-amber-200 font-bold mb-3" id="lostPosterPetBreed">
+        Cão • Vira-lata dócil
+      </p>
+
+      <!-- Caixa de Informações Cruciais -->
+      <div class="bg-slate-900/90 rounded-2xl p-3 border border-slate-700 text-left text-xs space-y-1.5 mb-3">
+        <div>
+          <span class="text-slate-400 font-bold">📍 Visto por último:</span>
+          <strong class="text-white ml-1" id="lostPosterLocationDisplay">Rua / Bairro</strong>
+        </div>
+        <div>
+          <span class="text-slate-400 font-bold">📅 Data e Horário:</span>
+          <span class="text-slate-200 ml-1" id="lostPosterDateDisplay">Hoje</span>
+        </div>
+        <div>
+          <span class="text-slate-400 font-bold">👤 Tutor(a):</span>
+          <span class="text-slate-200 ml-1" id="lostPosterTutorDisplay">Rodrigo</span>
+        </div>
+        <div>
+          <span class="text-slate-400 font-bold">💡 Detalhes:</span>
+          <span class="text-slate-300 ml-1 italic" id="lostPosterNotesDisplay">Usa coleira azul com tag QR Code.</span>
+        </div>
+        <div id="lostPosterRewardContainer" class="hidden pt-1 border-t border-slate-800 text-amber-300 font-black">
+          💰 Recompensa para quem encontrar ou der pista exata!
+        </div>
+      </div>
+
+      <!-- Caixa Gigante de Contato WhatsApp -->
+      <div class="py-2.5 px-3 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 font-black text-xs sm:text-sm flex items-center justify-center gap-2">
+        <span class="text-base">📞</span>
+        <span>Ligue ou mande WhatsApp: <strong class="text-white font-mono text-sm sm:text-base underline" id="lostPosterPhoneDisplay">(11) 98765-4321</strong></span>
+      </div>
+
+    </div>
+
+    <!-- FORMULÁRIO DE EDIÇÃO RÁPIDA DOS DADOS DO DESAPARECIMENTO -->
+    <div class="mt-4 space-y-2.5 text-xs">
+      <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">Ajustar informações para compartilhar:</div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] text-slate-500 font-bold mb-0.5">Local Provável de Desaparecimento</label>
+          <input type="text" id="lostInputLocation" placeholder="Ex: Próximo à Praça Central, Vila Prudente" oninput="updateLostPosterPreview()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+        </div>
+        <div>
+          <label class="block text-[10px] text-slate-500 font-bold mb-0.5">WhatsApp / Telefone com DDD</label>
+          <input type="tel" id="lostInputPhone" placeholder="(11) 98765-4321" oninput="updateLostPosterPreview()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono font-bold">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] text-slate-500 font-bold mb-0.5">Nome do Tutor</label>
+          <input type="text" id="lostInputTutor" placeholder="Seu Nome" oninput="updateLostPosterPreview()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold">
+        </div>
+        <div>
+          <label class="block text-[10px] text-slate-500 font-bold mb-0.5">Características / Recompensa</label>
+          <input type="text" id="lostInputNotes" placeholder="Ex: Muito dócil, atende por Pipoca, gratifica-se" oninput="updateLostPosterPreview()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs">
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÕES DE COMPARTILHAMENTO -->
+    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-2">
+      <button type="button" onclick="shareLostPetOnWhatsApp()" class="w-full sm:flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer">
+        <span class="text-base">🟢</span>
+        <span>Compartilhar no WhatsApp Agora!</span>
+      </button>
+
+      <button type="button" onclick="copyLostPetAlertMessage()" class="w-full sm:w-auto py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-1.5 cursor-pointer">
+        <span>📋</span>
+        <span>Copiar Texto</span>
       </button>
     </div>
 
