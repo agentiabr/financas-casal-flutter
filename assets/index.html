@@ -11320,7 +11320,8 @@
     setTimeout(dismissAppIntroSplash, 1400);
 
     function initAuthSession() {
-      // Estilo Glass Apple garantido por padrão
+ 
+      if (typeof renderAuthDynamicMembersLogin === "function") renderAuthDynamicMembersLogin();     // Estilo Glass Apple garantido por padrão
       const savedStyle = 'style-flat';
       try { setStyle(savedStyle, false); } catch(e) {}
 
@@ -12567,6 +12568,7 @@
         localStorage.setItem('financas_membros_familia', JSON.stringify(din));
         renderDynamicFamilyMembers();
         renderFamilyMembersListInModal();
+        if (typeof renderAuthDynamicMembersLogin === "function") renderAuthDynamicMembersLogin();
         loadUserCustomAssets();
         showToastUndo(`Membro "${target.nome}" removido da família!`, false);
       }
@@ -12591,21 +12593,29 @@
       const nomeInput = document.getElementById('newUserName');
       const nome = nomeInput ? nomeInput.value.trim() : '';
       const papelSel = document.getElementById('newUserRole');
-      const papel = papelSel ? papelSel.value : 'Membro';
-      const avatarInput = document.getElementById('newUserInitials');
-      const avatar = avatarInput && avatarInput.value.trim() ? avatarInput.value.trim() : '👤';
+      const papel = papelSel ? papelSel.value : 'Filho(a)';
+      const avatarSel = document.getElementById('newUserAvatarSelect');
+      const avatar = avatarSel ? avatarSel.value : '👤';
+      const pinInput = document.getElementById('newUserPin');
+      const pin = pinInput && pinInput.value.trim() ? pinInput.value.trim() : '1234';
 
       if (!nome) {
-        alert('Por favor, informe o nome do membro.');
+        showToastUndo('Por favor, informe o nome do membro.', false);
         return;
       }
 
       let membros = getDynamicFamilyMembers();
+      if (membros.length >= 3) {
+        showToastUndo('Limite do Plano Família atingido: 5 membros no total (2 do casal + 3 gratuitos)!', false);
+        return;
+      }
+
       const newMember = {
         id: 'membro_' + Date.now(),
         nome: nome,
         papel: papel,
         avatar: avatar,
+        pin: pin,
         criadoEm: new Date().toISOString()
       };
 
@@ -12615,9 +12625,17 @@
       updateUserDropdowns(nome);
       loadUserCustomAssets();
       renderFamilyMembersListInModal();
+      renderAuthDynamicMembersLogin();
+
       if (nomeInput) nomeInput.value = '';
-      if (avatarInput) avatarInput.value = '';
-      showToastUndo(`Membro "${nome}" adicionado com sucesso! 🎉`, false);
+      if (pinInput) pinInput.value = '1234';
+
+      showToastUndo(`Vaga gratuita ativada para "${nome}"! 🎉`, false);
+
+      // Dispara convite no WhatsApp
+      setTimeout(() => {
+        sendMemberInviteWhatsApp(nome, pin);
+      }, 300);
     }
 
     function updateUserDropdowns(novoNome) {
@@ -12634,6 +12652,184 @@
           }
         }
       });
+    }
+
+    function sendMemberInviteWhatsApp(nome, pin) {
+      const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v2.1.17/CtrlPig-v2.1.17-Universal.apk';
+      const msg = `Olá ${nome}! 👋\n\nVocê foi adicionado(a) ao Plano Família do aplicativo ControlPig (finanças, mercado e chat integrados).\n\n📱 Baixe o aplicativo oficial (Android):\n${urlApp}\n\n🔑 Como acessar no seu celular:\n1. Abra o app e toque no botão com o seu nome "${nome}"\n2. Digite sua senha pessoal de acesso: *${pin}*\n\nNossa lista de compras de mercado e o chat da família já estão prontos para você! 🐷`;
+      openExternalUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+    }
+
+    function renderFamilyMembersListInModal() {
+      const listEl = document.getElementById('modalFamilyMembersList');
+      const badgeCount = document.getElementById('badgeFamilySlotsCount');
+      const slotsGrid = document.getElementById('familySlotsGridContainer');
+      const formFields = document.getElementById('formAddUserFields');
+      const limitNotice = document.getElementById('formAddUserLimitReached');
+
+      const din = getDynamicFamilyMembers();
+      const totalPreenchidas = 2 + din.length;
+
+      if (badgeCount) {
+        badgeCount.textContent = `${totalPreenchidas} de 5 preenchidas`;
+      }
+
+      // 1. Grade Visual dos 5 Slots
+      if (slotsGrid) {
+        let gridHtml = `
+          <!-- Vaga 1: Rodrigo -->
+          <div class="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 border border-blue-300 dark:border-blue-700">
+            <span class="block text-sm">👨</span>
+            <span class="truncate block font-black">Rodrigo</span>
+            <span class="text-[8px] opacity-75">Titular</span>
+          </div>
+
+          <!-- Vaga 2: Márcia -->
+          <div class="p-1.5 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-900 dark:text-rose-200 border border-rose-300 dark:border-rose-700">
+            <span class="block text-sm">👩</span>
+            <span class="truncate block font-black">Márcia</span>
+            <span class="text-[8px] opacity-75">Casal</span>
+          </div>
+        `;
+
+        // Slots 3, 4 e 5 (Gratuitos)
+        for (let i = 0; i < 3; i++) {
+          if (din[i]) {
+            gridHtml += `
+              <div class="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                <span class="block text-sm">${din[i].avatar || '👤'}</span>
+                <span class="truncate block font-black">${escapeHtml(din[i].nome)}</span>
+                <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
+              </div>
+            `;
+          } else {
+            gridHtml += `
+              <div class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-dashed border-slate-300 dark:border-slate-700">
+                <span class="block text-sm">➕</span>
+                <span class="truncate block font-bold">Livre</span>
+                <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
+              </div>
+            `;
+          }
+        }
+        slotsGrid.innerHTML = gridHtml;
+      }
+
+      // 2. Trava de limite de 5 vagas
+      if (din.length >= 3) {
+        if (formFields) formFields.classList.add('hidden');
+        if (limitNotice) limitNotice.classList.remove('hidden');
+      } else {
+        if (formFields) formFields.classList.remove('hidden');
+        if (limitNotice) limitNotice.classList.add('hidden');
+      }
+
+      // 3. Lista detalhada de membros
+      if (!listEl) return;
+
+      let html = `
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-extrabold">👨</div>
+            <div>
+              <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Rodrigo</span>
+              <span class="block text-[10px] text-slate-500">Administrador Master (Titular)</span>
+            </div>
+          </div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Vaga 1 (Casal)</span>
+        </div>
+
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-sm font-extrabold">👩</div>
+            <div>
+              <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Márcia</span>
+              <span class="block text-[10px] text-slate-500">Administradora (Cônjuge)</span>
+            </div>
+          </div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 font-bold">Vaga 2 (Casal)</span>
+        </div>
+      `;
+
+      din.forEach((m, idx) => {
+        html += `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-extrabold flex-shrink-0">${m.avatar || '👤'}</div>
+              <div class="min-w-0">
+                <span class="block text-xs font-black text-slate-800 dark:text-slate-200 truncate">${escapeHtml(m.nome)}</span>
+                <span class="block text-[10px] text-slate-500">${escapeHtml(m.papel || 'Membro')} • Senha/PIN: <strong class="text-emerald-700 dark:text-emerald-300">${m.pin || '1234'}</strong></span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="sendMemberInviteWhatsApp('${escapeHtml(m.nome)}', '${m.pin || '1234'}')" class="p-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 transition-all cursor-pointer" title="Enviar convite no WhatsApp">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="deleteFamilyMember('${m.id}')" class="p-1.5 rounded-lg bg-rose-100 hover:bg-rose-200 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 transition-all cursor-pointer" title="Excluir vaga">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html;
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    }
+
+    function renderAuthDynamicMembersLogin() {
+      const container = document.getElementById('authDynamicMembersLoginContainer');
+      if (!container) return;
+
+      const din = getDynamicFamilyMembers();
+      if (!din || din.length === 0) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      container.innerHTML = din.map(m => `
+        <button type="button" onclick="quickLoginDynamicMember('${m.id}')" class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 border border-emerald-400 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+          <span class="text-sm">${m.avatar || '👤'}</span>
+          <span class="truncate">${escapeHtml(m.nome)}</span>
+        </button>
+      `).join('');
+    }
+
+    function quickLoginDynamicMember(id) {
+      const membros = getDynamicFamilyMembers();
+      const m = membros.find(x => x.id === id);
+      if (!m) return;
+
+      if (m.pin) {
+        const entered = prompt(`Olá, ${m.nome}! Digite seu PIN/Senha de acesso:`);
+        if (entered === null) return;
+        if (entered.trim() !== m.pin) {
+          showToastUndo('Senha / PIN incorreto!', false);
+          return;
+        }
+      }
+
+      currentUserSession = {
+        nome: m.nome,
+        papel: m.papel || 'Membro',
+        avatar: m.avatar || '👤',
+        email: (m.nome.toLowerCase().replace(/\s+/g, '') + '@financas.casal'),
+        plano: 'Membro Família VIP'
+      };
+      window.currentUserSession = currentUserSession;
+
+      try {
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+        localStorage.removeItem('financas_auth_logged_out');
+      } catch(e) {}
+
+      window.forceUnlockAuthOverlay();
+      showToastUndo(`Bem-vindo(a) à família, ${m.nome}! 🎉`, false);
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      openWelcomeQuickHub();
     }
 
     function shareInviteWhatsApp() {
@@ -19338,38 +19534,78 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
-        <form id="formAddUser" onsubmit="handleAddUserSubmit(event)" class="space-y-3.5 mt-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nome Completo ou Apelido *</label>
-            <input type="text" id="newUserName" required placeholder="Ex: Lucas, Filha, Mãe..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <!-- Indicador Visual das 5 Vagas do Plano Família -->
+        <div class="mb-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between text-xs font-bold mb-2">
+            <span class="text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <span>👨‍👩‍👧‍👦</span> Plano Família: <strong>5 Vagas</strong>
+            </span>
+            <span id="badgeFamilySlotsCount" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-[10px]">
+              2 de 5 preenchidas
+            </span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2.5">
+          <!-- Grade dos 5 Slots -->
+          <div id="familySlotsGridContainer" class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-bold">
+            <!-- Renderizado dinamicamente por renderFamilyMembersListInModal() -->
+          </div>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 text-center">
+            2 vagas base do casal + até 3 vagas gratuitas adicionais inclusas.
+          </p>
+        </div>
+
+        <form id="formAddUser" onsubmit="handleAddUserSubmit(event)" class="space-y-3 mt-2">
+          <div id="formAddUserFields">
             <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Inicial (Avatar) *</label>
-              <input type="text" id="newUserInitials" maxlength="2" required placeholder="Ex: L" class="w-full px-3 py-2 text-xs text-center font-bold uppercase rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nome Completo ou Apelido *</label>
+              <input type="text" id="newUserName" required placeholder="Ex: Lucas, Pedro, Filha, Mãe..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
             </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Plano / Papel</label>
-              <select id="newUserRole" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
-                <option value="Membro">Membro da Família</option>
-                <option value="Convidado">Convidado Especial</option>
-                <option value="Administrador">Administrador</option>
-              </select>
+
+            <div class="grid grid-cols-2 gap-2.5 mt-2.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Ícone / Avatar</label>
+                <select id="newUserAvatarSelect" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
+                  <option value="👦">👦 Menino / Filho</option>
+                  <option value="👧">👧 Menina / Filha</option>
+                  <option value="👨">👨 Homem / Adulto</option>
+                  <option value="👩">👩 Mulher / Adulta</option>
+                  <option value="👵">👵 Avó / Mãe</option>
+                  <option value="👴">👴 Avô / Pai</option>
+                  <option value="👤">👤 Outro Membro</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Papel na Família</label>
+                <select id="newUserRole" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
+                  <option value="Filho(a)">Filho(a) / Dependente</option>
+                  <option value="Membro">Membro da Família</option>
+                  <option value="Administrador">Administrador(a)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-2.5">
+              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Senha / PIN Pessoal de Acesso *</label>
+              <input type="text" id="newUserPin" required value="1234" placeholder="Ex: 1234 ou senha secreta" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-widest text-center">
+              <p class="text-[10px] text-slate-400 mt-1">Essa será a senha pessoal para o membro acessar no celular dele.</p>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3">
+              <button type="button" onclick="closeAddUserModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl cursor-pointer">Cancelar</button>
+              <button type="submit" id="btnSubmitAddUser" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                <span>Ativar Vaga Gratuita & Convidar</span>
+              </button>
             </div>
           </div>
 
-          <div class="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-900/40 text-xs">
-            <span class="font-bold text-blue-900 dark:text-blue-300">🎉 Plano do Administrador Rodrigo:</span>
-            <p class="text-blue-700 dark:text-blue-400 text-[11px] mt-0.5">Membros ilimitados com acesso vitalício gratuito.</p>
-          </div>
-
-          <div class="flex items-center justify-end gap-2 pt-2">
-            <button type="button" onclick="closeAddUserModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5">
-              <i data-lucide="check" class="w-3.5 h-3.5"></i>
-              <span>Cadastrar Participante</span>
-            </button>
+          <div id="formAddUserLimitReached" class="hidden p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-center">
+            <p class="text-xs font-bold text-amber-800 dark:text-amber-300">
+              ⚠️ Todas as 5 vagas da família estão preenchidas!
+            </p>
+            <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5">
+              Para adicionar um novo membro, exclua uma das vagas extras na lista abaixo.
+            </p>
           </div>
         </form>
 
@@ -19826,8 +20062,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <span>Márcia</span>
           </button>
         </div>
-        <div class="mt-2.5 pt-2 border-t border-white/15 text-[10px] text-white/70 font-medium">
-          Toque no seu nome acima ou entre com e-mail/senha abaixo:
+
+        <!-- Membros adicionais da família (Vagas 3, 4 e 5 gratuitas) -->
+        <div id="authDynamicMembersLoginContainer" class="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+
+        <div class="mt-2 pt-2 border-t border-white/15 flex items-center justify-between text-[10px] text-white/80">
+          <span>Plano Família (Até 5 Vagas)</span>
+          <button type="button" onclick="openAddUserModal()" class="font-extrabold text-sky-200 hover:text-white underline cursor-pointer">
+            + Convidar Membro
+          </button>
         </div>
       </div>
 
