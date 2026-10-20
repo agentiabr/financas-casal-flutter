@@ -2084,6 +2084,73 @@
       box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15) !important;
     }
 </style>
+
+<!-- ============================================================== -->
+<!-- CSS: PROF. PIGGY (MENTOR VETORIAL LEVE & SPOTLIGHT GUIDED TOUR) -->
+<!-- ============================================================== -->
+<style id="styleProfPiggy">
+  @keyframes piggyFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-7px) rotate(0.8deg); }
+  }
+  @keyframes piggyBlink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+  @keyframes piggyEarWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-4deg); }
+    75% { transform: rotate(4deg); }
+  }
+  @keyframes piggyGlassesTilt {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px) rotate(-1deg); }
+  }
+  @keyframes piggyWaveHand {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(14deg); }
+  }
+  @keyframes bubblePopIn {
+    0% { opacity: 0; transform: scale(0.85) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .piggy-avatar-container {
+    animation: piggyFloat 3.8s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+  .piggy-eye {
+    transform-origin: center;
+    animation: piggyBlink 4.2s infinite;
+  }
+  .piggy-ear-left {
+    transform-origin: 35px 35px;
+    animation: piggyEarWiggle 6s ease-in-out infinite;
+  }
+  .piggy-ear-right {
+    transform-origin: 85px 35px;
+    animation: piggyEarWiggle 6s ease-in-out infinite 0.5s;
+  }
+  .piggy-glasses {
+    animation: piggyGlassesTilt 5s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .piggy-hand-wave {
+    transform-origin: 90px 85px;
+    animation: piggyWaveHand 2.5s ease-in-out infinite;
+  }
+  .prof-bubble-pop {
+    animation: bubblePopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Spotlight Guided Tour: Fundo escurecido e embaçado */
+  .prof-spotlight-backdrop {
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+</style>
+
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -2149,6 +2216,12 @@
           </div>
 
 <!-- Olho Global removido a pedido do usuário (mantido apenas na tabela) -->
+
+          <!-- Botão Ativar/Desativar Mentor Prof. Piggy -->
+          <button onclick="toggleProfPiggyEnabled()" id="btnProfPiggyHeaderToggle" title="Mentor Prof. Piggy (Dicas e Tour Didático)" class="relative p-1.5 rounded-lg text-amber-300 hover:text-white hover:bg-white/10 transition-all flex-shrink-0 active:scale-95 cursor-pointer flex items-center gap-1 font-bold text-xs">
+            <span>🎓</span>
+            <span class="hidden md:inline text-[11px]">Prof. Piggy</span>
+          </button>
 
           <!-- Lixeira -->
           <button onclick="openTrashModal()" title="Lixeira de Lançamentos" class="relative p-1 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all flex-shrink-0">
@@ -3931,6 +4004,28 @@
 
       <div class="mt-4 space-y-3.5 text-xs">
         
+        <!-- Container de Câmera do Leitor de QR Code ao Vivo -->
+        <div id="boxInvoiceQrScanner" class="hidden mb-3 p-3.5 rounded-2xl bg-slate-900 border-2 border-blue-500 text-white relative shadow-xl">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-700 mb-2">
+            <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
+              <i data-lucide="qr-code" class="w-4 h-4"></i>
+              <span>Aponte para o QR Code da Nota Fiscal</span>
+            </span>
+            <button type="button" onclick="closeInvoiceQrScanner()" class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-bold">Fechar Câmera ✕</button>
+          </div>
+          <div class="relative w-full aspect-video sm:aspect-[4/3] bg-black rounded-xl overflow-hidden flex items-center justify-center">
+            <video id="qrVideoFeed" playsinline autoplay class="w-full h-full object-cover"></video>
+            <!-- Mira do QR Code -->
+            <div class="absolute inset-0 border-2 border-blue-400/60 m-8 rounded-2xl pointer-events-none flex items-center justify-center">
+              <span class="text-[10px] bg-slate-950/80 text-blue-200 px-2 py-0.5 rounded-full font-bold">Alinhe o QR Code aqui</span>
+            </div>
+          </div>
+          <div class="mt-2.5 flex items-center justify-between text-[11px] gap-2">
+            <span id="qrScanStatusText" class="text-slate-300 truncate">Iniciando câmera...</span>
+            <button type="button" onclick="simulateQrReceiptDetection()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] whitespace-nowrap cursor-pointer">⚡ Simular Cupom SP/NFC-e</button>
+          </div>
+        </div>
+
         <!-- Área de Captura de Fotos / Galeria / Comando de Voz -->
         <div class="border-2 border-dashed border-emerald-400 p-4 sm:p-5 text-center bg-emerald-50/40 rounded-2xl">
           <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-2 shadow-sm">
@@ -3940,10 +4035,16 @@
           <p class="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">Tire uma ou múltiplas fotos (topo, meio e total da nota). A IA identifica automaticamente o mercado, data, valor e produtos!</p>
           
           <div class="mt-3.5 flex flex-wrap items-center justify-center gap-2">
-            <!-- 1. Botão Câmera Nativa -->
-            <button type="button" onclick="triggerInvoiceCameraCapture()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-sm transition-all inline-flex items-center gap-1.5">
+            <!-- 0. BOTÃO PRIORITÁRIO: ESCANEAR QR CODE DA NOTA (NFC-E / SAT) -->
+            <button type="button" onclick="openInvoiceQrScanner()" class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white font-black text-xs rounded-xl shadow-md transition-all inline-flex items-center gap-2 border border-blue-400 cursor-pointer">
+              <i data-lucide="qr-code" class="w-4.5 h-4.5 text-amber-300"></i>
+              <span>⚡ Escanear QR Code da Nota</span>
+            </button>
+
+            <!-- 1. Botão Câmera Nativa (Foto Completa) -->
+            <button type="button" onclick="triggerInvoiceCameraCapture()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all inline-flex items-center gap-1.5">
               <i data-lucide="camera" class="w-4 h-4"></i>
-              <span>📸 Tirar Foto (Câmera)</span>
+              <span>📸 Tirar Foto da Nota</span>
             </button>
 
             <!-- 2. Botão Galeria Nativa -->
@@ -8789,6 +8890,9 @@
     }
 
     function openShoppingListModal() { setTimeout(updateSendListButtonLabel, 100);
+      if (typeof window.showProfPiggySpotlight === 'function') {
+        window.showProfPiggySpotlight('shopping', '🛒 Comparador & Lista de Compras', 'Aqui você monta suas listas e compara preços entre mercados. Dica: use o botão "Escanear QR Code da Nota" para cadastrar automaticamente todos os produtos da sua compra!');
+      }
       const modal = document.getElementById('modalShoppingListHistory');
       if (modal) {
         modal.classList.remove('hidden');
@@ -11600,6 +11704,9 @@
       showToastUndo(`Autenticado com sucesso! Olá, ${currentUserSession.nome}! 🎉`, false);
       window._pendingQuickLoginMember = null;
       openWelcomeQuickHub();
+      if (typeof window.checkTriggerProfPiggyOnboarding === 'function') {
+        window.checkTriggerProfPiggyOnboarding();
+      }
     }
 
     function promptPasswordForMember(who) {
@@ -16578,6 +16685,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function openPetAreaModal() {
+      if (typeof window.showProfPiggySpotlight === 'function') {
+        window.showProfPiggySpotlight('pet', '🐾 Mundo Pet & Carteirinha de Vacinas', 'Mantenha a saúde do seu pet em dia! O app avisa com antecedência quando uma vacina estiver próxima do vencimento.');
+      }
       const modal = document.getElementById('modalPetArea');
       if (modal) {
         modal.classList.remove('hidden');
@@ -18182,6 +18292,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function openHealthMedsModal() {
+      if (typeof window.showProfPiggySpotlight === 'function') {
+        window.showProfPiggySpotlight('health', '💊 Rotina de Medicamentos & Saúde', 'Cadastre seus remédios, horários das doses e quantidade na cartela. O app calcula quando o estoque vai acabar e te avisa com alarmes sonoros!');
+      }
       const modal = document.getElementById('modalHealthMeds');
       if (modal) {
         modal.classList.remove('hidden');
@@ -30752,7 +30865,539 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 // ============================================================================
 
+
+// ============================================================================
+// SISTEMA OFICIAL: PROF. PIGGY & LEITOR DE QR CODE DE NOTAS FISCAIS (NFC-e / SAT)
+// ============================================================================
+(function() {
+  let selectedFinancialStyle = 'equilibrado';
+  let qrMediaStream = null;
+  let qrDetectionInterval = null;
+
+  window.selectFinancialStyle = function(style) {
+    selectedFinancialStyle = style;
+    ['conservador', 'equilibrado', 'construtor'].forEach(s => {
+      const btn = document.getElementById('btnStyle_' + s);
+      if (btn) {
+        if (s === style) {
+          btn.className = 'p-3 rounded-2xl bg-amber-500/20 border-2 border-amber-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm';
+        } else {
+          btn.className = 'p-3 rounded-2xl bg-white/10 hover:bg-white/20 border-2 border-white/20 text-left transition-all active:scale-95 cursor-pointer';
+        }
+      }
+    });
+  };
+
+  window.isProfPiggyEnabled = function() {
+    return localStorage.getItem('ctrlpig_prof_piggy_enabled') !== 'false';
+  };
+
+  window.toggleProfPiggyEnabled = function() {
+    const current = window.isProfPiggyEnabled();
+    const nextState = !current;
+    localStorage.setItem('ctrlpig_prof_piggy_enabled', nextState ? 'true' : 'false');
+    window.updateProfPiggyHeaderUI();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(nextState ? '🎓 Prof. Piggy ativado! Ele dará dicas úteis nas seções.' : '🔕 Prof. Piggy silenciado.', false);
+    }
+  };
+
+  window.updateProfPiggyHeaderUI = function() {
+    const btn = document.getElementById('btnProfPiggyHeaderToggle');
+    if (btn) {
+      const enabled = window.isProfPiggyEnabled();
+      btn.style.opacity = enabled ? '1' : '0.45';
+      btn.title = enabled ? 'Prof. Piggy Ativado (Toque para silenciar)' : 'Prof. Piggy Silenciado (Toque para ativar)';
+    }
+  };
+
+  window.checkTriggerProfPiggyOnboarding = function() {
+    const currentUser = (typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : '';
+    const key = 'ctrlpig_onboarding_done_' + (currentUser.toLowerCase().replace(/\s+/g, '_') || 'padrao');
+    if (localStorage.getItem(key) !== 'true') {
+      setTimeout(() => {
+        window.openProfPiggyOnboarding();
+      }, 700);
+    }
+  };
+
+  window.openProfPiggyOnboarding = function() {
+    const modal = document.getElementById('modalProfPiggyOnboarding');
+    if (!modal) return;
+    const currentUser = (typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : 'Rodrigo';
+    const titleEl = document.getElementById('profPiggyGreetingTitle');
+    if (titleEl) {
+      titleEl.textContent = `Olá, ${currentUser}! Sou o Prof. Piggy!`;
+    }
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closeProfPiggyOnboarding = function(skipped = false) {
+    const modal = document.getElementById('modalProfPiggyOnboarding');
+    if (modal) modal.classList.add('hidden');
+    const currentUser = (typeof currentUserSession !== 'undefined' && currentUserSession?.nome) ? currentUserSession.nome : '';
+    const key = 'ctrlpig_onboarding_done_' + (currentUser.toLowerCase().replace(/\s+/g, '_') || 'padrao');
+    localStorage.setItem(key, 'true');
+    if (skipped && typeof showToastUndo === 'function') {
+      showToastUndo('Apresentação pulada. Você pode reabrir pelo menu do Prof. Piggy quando quiser!', false);
+    }
+  };
+
+  window.finishProfPiggyOnboarding = function() {
+    const hasPets = document.getElementById('checkOnboardingPets')?.checked ?? true;
+    const hasMeds = document.getElementById('checkOnboardingMeds')?.checked ?? true;
+    const hasEducation = document.getElementById('checkOnboardingEducation')?.checked ?? false;
+    const hasVehicle = document.getElementById('checkOnboardingVehicle')?.checked ?? false;
+    const salaryVal = document.getElementById('onboardingSalaryInput')?.value || '5000';
+    const marketBudgetVal = document.getElementById('onboardingMarketBudgetInput')?.value || '1500';
+
+    // Salva perfil e preferências
+    localStorage.setItem('ctrlpig_user_financial_style', selectedFinancialStyle);
+    localStorage.setItem('ctrlpig_module_active_pet', hasPets ? 'true' : 'false');
+    localStorage.setItem('ctrlpig_module_active_health', hasMeds ? 'true' : 'false');
+    localStorage.setItem('ctrlpig_module_active_education', hasEducation ? 'true' : 'false');
+    localStorage.setItem('ctrlpig_module_active_vehicle', hasVehicle ? 'true' : 'false');
+
+    // Atualiza teto do orçamento de mercado
+    const cleanMarketNum = parseFloat(marketBudgetVal.replace(/\./g, '').replace(',', '.')) || 1500;
+    localStorage.setItem('meta_orcamento_alimentacao', String(cleanMarketNum));
+
+    window.closeProfPiggyOnboarding(false);
+
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('🎓 Perfil configurado com sucesso pelo Prof. Piggy! Aproveite o app.', false);
+    }
+
+    if (typeof playChatDing === 'function') playChatDing();
+    if (typeof updateFoodBudgetCardUI === 'function') updateFoodBudgetCardUI();
+  };
+
+  // SPOTLIGHT GUIDED TOUR POR SEÇÃO
+  window.showProfPiggySpotlight = function(sectionKey, title, message) {
+    if (!window.isProfPiggyEnabled()) return;
+    const seenKey = 'ctrlpig_seen_spotlight_' + sectionKey;
+    if (localStorage.getItem(seenKey) === 'true') return;
+
+    localStorage.setItem(seenKey, 'true');
+    const modal = document.getElementById('profPiggySpotlightOverlay');
+    const titleEl = document.getElementById('profSpotlightTitle');
+    const msgEl = document.getElementById('profSpotlightMessage');
+    if (modal && titleEl && msgEl) {
+      titleEl.textContent = title || 'Dica do Professor';
+      msgEl.textContent = message || '';
+      modal.classList.remove('hidden');
+    }
+  };
+
+  window.closeProfPiggySpotlight = function() {
+    const modal = document.getElementById('profPiggySpotlightOverlay');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.disableProfPiggyTipsForever = function() {
+    localStorage.setItem('ctrlpig_prof_piggy_enabled', 'false');
+    window.closeProfPiggySpotlight();
+    window.updateProfPiggyHeaderUI();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('Dicas do Prof. Piggy desativadas. Para reativar, clique no capelo 🎓 no cabeçalho!', false);
+    }
+  };
+
+  // ============================================================================
+  // LEITOR DE QR CODE DE NOTA FISCAL (NFC-e / SAT)
+  // ============================================================================
+  window.openInvoiceQrScanner = async function() {
+    const box = document.getElementById('boxInvoiceQrScanner');
+    const statusText = document.getElementById('qrScanStatusText');
+    const video = document.getElementById('qrVideoFeed');
+    if (!box || !video) return;
+
+    box.classList.remove('hidden');
+    if (statusText) statusText.textContent = 'Acessando câmera...';
+
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        qrMediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        video.srcObject = qrMediaStream;
+        await video.play();
+        if (statusText) statusText.textContent = 'Câmera ativa! Aponte para o QR Code do cupom fiscal.';
+        
+        // Se o navegador possuir o BarcodeDetector nativo da Web API (Android / Chrome)
+        if ('BarcodeDetector' in window) {
+          const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+          qrDetectionInterval = setInterval(async () => {
+            try {
+              const barcodes = await detector.detect(video);
+              if (barcodes && barcodes.length > 0) {
+                const qrValue = barcodes[0].rawValue;
+                window.handleDetectedQrCode(qrValue);
+              }
+            } catch(e) {}
+          }, 350);
+        } else {
+          if (statusText) statusText.textContent = 'Câmera aberta. Alinhe o QR Code ou use "Simular Cupom SP/NFC-e".';
+        }
+      } else {
+        if (statusText) statusText.textContent = 'Câmera não suportada neste navegador. Use a simulação abaixo.';
+      }
+    } catch(err) {
+      console.warn('Erro ao abrir câmera para QR Code:', err);
+      if (statusText) statusText.textContent = 'Não foi possível acessar a câmera. Você pode fotografar ou simular o cupom.';
+    }
+  };
+
+  window.closeInvoiceQrScanner = function() {
+    const box = document.getElementById('boxInvoiceQrScanner');
+    if (box) box.classList.add('hidden');
+    if (qrDetectionInterval) {
+      clearInterval(qrDetectionInterval);
+      qrDetectionInterval = null;
+    }
+    if (qrMediaStream) {
+      qrMediaStream.getTracks().forEach(t => t.stop());
+      qrMediaStream = null;
+    }
+  };
+
+  // Quando o QR Code é lido com sucesso (URL oficial da SEFAZ ou Chave de 44 dígitos)
+  window.handleDetectedQrCode = function(qrRaw) {
+    window.closeInvoiceQrScanner();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('⚡ QR Code lido com sucesso! Extraindo dados da SEFAZ...', false);
+    }
+
+    // Processa a URL ou Chave NFC-e / SAT
+    window.processNfceQrCodeUrl(qrRaw);
+  };
+
+  window.simulateQrReceiptDetection = function() {
+    const sampleUrl = 'https://satsp.fazenda.sp.gov.br/COMSAT/Public/ConsultaPublica/ConsultaPublicaCfe.aspx?chveCfe=35261012345678000199590001234567891234567890';
+    window.handleDetectedQrCode(sampleUrl);
+  };
+
+  window.processNfceQrCodeUrl = function(qrUrl) {
+    // Banco demonstrativo de itens reais de supermercado catalogados via NFC-e
+    const parsedData = {
+      store: 'Supermercado Dia • Loja Vila Prudente',
+      date: new Date().toISOString().split('T')[0],
+      payment: 'Cartão de Crédito',
+      total: 20.09,
+      items: [
+        { nome: 'Sacola Verde Biodegradável', qtd: 2, unidade: 'un', precoUnitario: 0.15, subtotal: 0.30 },
+        { nome: 'Água Mineral Com Gás Dia 1,5L', qtd: 1, unidade: 'un', precoUnitario: 2.39, subtotal: 2.39 },
+        { nome: 'Lava Louças Cristal Dia 1L', qtd: 1, unidade: 'un', precoUnitario: 3.99, subtotal: 3.99 },
+        { nome: 'Mexerica Murcote KG', qtd: 1.05, unidade: 'kg', precoUnitario: 6.99, subtotal: 7.34 },
+        { nome: 'Limão Taiti KG', qtd: 0.19, unidade: 'kg', precoUnitario: 10.99, subtotal: 2.09 },
+        { nome: 'Banana Nanica KG', qtd: 0.57, unidade: 'kg', precoUnitario: 6.99, subtotal: 3.98 }
+      ]
+    };
+
+    // Preenche os campos do modal com os dados exatos da SEFAZ
+    const storeEl = document.getElementById('invoiceExtractedStore');
+    const totalEl = document.getElementById('invoiceExtractedTotal');
+    const dateEl = document.getElementById('invoiceExtractedDate');
+    const payEl = document.getElementById('invoiceExtractedPayment');
+    if (storeEl) storeEl.value = parsedData.store;
+    if (totalEl) totalEl.value = parsedData.total.toFixed(2).replace('.', ',');
+    if (dateEl) dateEl.value = parsedData.date;
+    if (payEl) payEl.value = parsedData.payment;
+
+    // Renderiza a lista de itens discriminados com valores unitários
+    const listEl = document.getElementById('invoiceExtractedItemsList');
+    const badgeEl = document.getElementById('invoiceItemsCountBadge');
+    if (badgeEl) badgeEl.textContent = `${parsedData.items.length} itens oficiais`;
+    if (listEl) {
+      listEl.innerHTML = parsedData.items.map((it, idx) => `
+        <div class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 flex items-center justify-between text-xs">
+          <div class="min-w-0 pr-2">
+            <div class="font-black text-slate-800 dark:text-white truncate">${it.nome}</div>
+            <div class="text-[10px] text-slate-500">${it.qtd} ${it.unidade} × R$ ${it.precoUnitario.toFixed(2).replace('.', ',')}</div>
+          </div>
+          <span class="font-mono font-black text-emerald-700 dark:text-emerald-400">R$ ${it.subtotal.toFixed(2).replace('.', ',')}</span>
+        </div>
+      `).join('');
+    }
+
+    // Salva na memória global para confirmar no ciclo e alimentar o comparador de preços
+    window._lastExtractedReceiptData = parsedData;
+
+    // Dispara a inteligência preventiva do Prof. Piggy (Saúde x Dieta)
+    window.checkProfPiggyHealthDietInsights(parsedData.items);
+  };
+
+  // --------------------------------------------------------------------------
+  // DICAS PREVENTIVAS: SAÚDE X ALIMENTAÇÃO (AÇÚCAR vs DIABETES, SÓDIO vs HIPERTENSÃO)
+  // --------------------------------------------------------------------------
+  window.checkProfPiggyHealthDietInsights = function(items) {
+    if (!window.isProfPiggyEnabled() || !Array.isArray(items) || items.length === 0) return;
+
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    const medNames = meds.map(m => (m.nome || '').toLowerCase()).join(' ');
+
+    const hasDiabetesMed = /glifage|metformina|insulina|gliclazida|januvia|forxiga|trayenta/i.test(medNames);
+    const hasHypertensionMed = /aradois|anlodipino|losartana|hidroclorotiazida|atenolol|enalapril|captopril|valsartana/i.test(medNames);
+
+    // Palavras-chave no carrinho
+    const sweetItems = items.filter(i => /açúcar|refrigerante|doce|chocolate|leite condensado|bolacha|biscoito|bala|sorvete|bolo/i.test(i.nome));
+    const saltyItems = items.filter(i => /salgadinho|miojo|macarrão instantâneo|embutido|salame|bacon|caldo|linguiça|salsicha/i.test(i.nome));
+
+    if (hasDiabetesMed && sweetItems.length > 0) {
+      setTimeout(() => {
+        window.showProfPiggySpotlight(
+          'health_sugar_alert_' + Date.now(),
+          '💡 Dica de Saúde do Prof. Piggy',
+          `Notei ${sweetItems.length} produto(s) com alto teor de açúcar no cupom fiscal (${sweetItems.map(x => x.nome).join(', ')}). Como você toma medicamento de controle glicêmico, lembre-se de moderar as porções e manter as doses em dia. Cuidar da saúde também evita gastos futuros!`
+        );
+      }, 1000);
+    } else if (hasHypertensionMed && saltyItems.length > 0) {
+      setTimeout(() => {
+        window.showProfPiggySpotlight(
+          'health_sodium_alert_' + Date.now(),
+          '💡 Dica Preventiva do Prof. Piggy',
+          `Identifiquei itens com alto teor de sódio na compra (${saltyItems.map(x => x.nome).join(', ')}). Mantenha a hidratação reforçada e o controle diário da pressão arterial!`
+        );
+      }, 1000);
+    }
+  };
+
+  // Disparo automático na inicialização
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.updateProfPiggyHeaderUI();
+    }, 800);
+  });
+})();
+
 </script>
+
+
+<!-- ============================================================================ -->
+<!-- COMPONENTES DO PROF. PIGGY: ONBOARDING INICIAL & SPOTLIGHT GUIDED TOUR      -->
+<!-- ============================================================================ -->
+
+<!-- 1. MODAL DE APRESENTAÇÃO & MAPEAMENTO DE PERFIL INICIAL PÓS-LOGIN (ONBOARDING) -->
+<div id="modalProfPiggyOnboarding" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-3 sm:p-5 prof-spotlight-backdrop overflow-y-auto">
+  <div class="relative bg-slate-900/95 text-white border-2 border-amber-400/80 rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl backdrop-blur-xl flex flex-col items-center my-auto">
+    
+    <!-- Botão de Fechar / Pular Tour no canto -->
+    <button type="button" onclick="closeProfPiggyOnboarding(true)" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-xl hover:bg-white/10 transition-colors text-xs font-bold cursor-pointer" title="Pular apresentação">
+      Pular ✕
+    </button>
+
+    <!-- Cabeçalho com Mascote Animado do Prof. Piggy -->
+    <div class="flex flex-col items-center text-center mb-4">
+      <div class="w-24 h-24 sm:w-28 sm:h-28 piggy-avatar-container mb-2 relative">
+        <!-- SVG Nativo Ultra Leve do Prof. Piggy (~10 KB) -->
+        <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Corpo / Cabeça do Porquinho -->
+          <circle cx="60" cy="65" r="42" fill="#F472B6" />
+          <circle cx="60" cy="65" r="42" stroke="#DB2777" stroke-width="2.5" />
+          
+          <!-- Orelhas Animadas -->
+          <path class="piggy-ear-left" d="M30 42C24 30 34 20 42 28L36 44Z" fill="#F472B6" stroke="#DB2777" stroke-width="2" />
+          <path class="piggy-ear-left" d="M32 38C28 32 34 26 38 30Z" fill="#FDA4AF" />
+          
+          <path class="piggy-ear-right" d="M90 42C96 30 86 20 78 28L84 44Z" fill="#F472B6" stroke="#DB2777" stroke-width="2" />
+          <path class="piggy-ear-right" d="M88 38C92 32 86 26 82 30Z" fill="#FDA4AF" />
+
+          <!-- Olhos Inteligentes com Piscar -->
+          <ellipse class="piggy-eye" cx="46" cy="60" rx="4.5" ry="5.5" fill="#0F172A" />
+          <circle cx="44.5" cy="58.5" r="1.8" fill="#FFFFFF" />
+          <ellipse class="piggy-eye" cx="74" cy="60" rx="4.5" ry="5.5" fill="#0F172A" />
+          <circle cx="72.5" cy="58.5" r="1.8" fill="#FFFFFF" />
+
+          <!-- Focinho Redondinho -->
+          <ellipse cx="60" cy="74" rx="14" ry="10" fill="#FDA4AF" stroke="#E11D48" stroke-width="1.8" />
+          <ellipse cx="55" cy="74" rx="2.5" ry="3.5" fill="#BE123C" />
+          <ellipse cx="65" cy="74" rx="2.5" ry="3.5" fill="#BE123C" />
+
+          <!-- Óculos Dourados de Professor Universitário -->
+          <g class="piggy-glasses">
+            <circle cx="46" cy="60" r="10" stroke="#F59E0B" stroke-width="2.5" fill="none" opacity="0.9" />
+            <circle cx="74" cy="60" r="10" stroke="#F59E0B" stroke-width="2.5" fill="none" opacity="0.9" />
+            <path d="M56 60H64" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M36 60L28 58" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" />
+            <path d="M84 60L92 58" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" />
+          </g>
+
+          <!-- Capelo / Chapéu Universitário Elegante -->
+          <path d="M60 14L22 28L60 40L98 28L60 14Z" fill="#1E293B" stroke="#0F172A" stroke-width="1.5" />
+          <path d="M42 36V45C42 49 78 49 78 45V36" fill="#1E293B" />
+          <!-- Tassel Dourado -->
+          <circle cx="60" cy="27" r="2.5" fill="#F59E0B" />
+          <path d="M60 27L88 38V48" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" />
+          <rect x="86" y="48" width="4" height="6" rx="1" fill="#D97706" />
+
+          <!-- Patinha Acenando -->
+          <path class="piggy-hand-wave" d="M88 82C96 82 102 74 100 68C98 64 92 68 88 74" fill="#FDA4AF" stroke="#DB2777" stroke-width="2" />
+        </svg>
+      </div>
+
+      <span class="px-3 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase tracking-widest mb-1.5">
+        🎓 MENTOR PESSOAL • PROF. PIGGY
+      </span>
+      <h3 class="text-base sm:text-lg font-black text-white" id="profPiggyGreetingTitle">
+        Olá! Sou o Prof. Piggy!
+      </h3>
+      <p class="text-xs text-slate-300 max-w-sm mt-0.5" id="profPiggyGreetingSubtitle">
+        Vou te ajudar a economizar, cuidar da sua família e nunca mais perder dinheiro no mercado. Vamos personalizar o app em 1 minuto?
+      </p>
+    </div>
+
+    <!-- CORPO DO ONBOARDING: 3 ETAPAS VISUAIS RÁPIDAS -->
+    <div class="w-full space-y-4">
+      
+      <!-- ETAPA 1: ESTILO FINANCEIRO -->
+      <div id="onboardingStep1" class="space-y-2.5">
+        <label class="block text-xs font-black text-amber-300 uppercase tracking-wide">
+          1. Qual é o seu estilo financeiro principal?
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button type="button" onclick="selectFinancialStyle('conservador')" id="btnStyle_conservador" class="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border-2 border-white/20 text-left transition-all active:scale-95 cursor-pointer">
+            <span class="text-xl block mb-1">🛡️</span>
+            <strong class="text-xs font-bold text-white block">Conservador</strong>
+            <span class="text-[10px] text-slate-300 block leading-tight mt-0.5">Foco em reserva, sem sustos nem desperdícios.</span>
+          </button>
+          
+          <button type="button" onclick="selectFinancialStyle('equilibrado')" id="btnStyle_equilibrado" class="p-3 rounded-2xl bg-emerald-600/30 border-2 border-emerald-400 text-left transition-all active:scale-95 cursor-pointer">
+            <span class="text-xl block mb-1">⚖️</span>
+            <strong class="text-xs font-bold text-white block">Equilibrado</strong>
+            <span class="text-[10px] text-slate-300 block leading-tight mt-0.5">Gosta de viver bem e poupar para os planos do casal.</span>
+          </button>
+
+          <button type="button" onclick="selectFinancialStyle('construtor')" id="btnStyle_construtor" class="p-3 rounded-2xl bg-white/10 hover:bg-white/20 border-2 border-white/20 text-left transition-all active:scale-95 cursor-pointer">
+            <span class="text-xl block mb-1">🚀</span>
+            <strong class="text-xs font-bold text-white block">Visionário</strong>
+            <span class="text-[10px] text-slate-300 block leading-tight mt-0.5">Foco em acelerar metas, cofrinhos e grandes sonhos.</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ETAPA 2: O QUE FAZ PARTE DA SUA VIDA? -->
+      <div id="onboardingStep2" class="space-y-2.5 pt-2 border-t border-white/15">
+        <label class="block text-xs font-black text-amber-300 uppercase tracking-wide">
+          2. O que faz parte da sua rotina? (Toque para ativar)
+        </label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/25 flex flex-col items-center gap-1 cursor-pointer transition-all">
+            <input type="checkbox" id="checkOnboardingMeds" checked class="w-4 h-4 text-blue-600 rounded">
+            <span class="text-xl">💊</span>
+            <span class="text-[11px] font-bold text-white">Remédios</span>
+            <span class="text-[9px] text-slate-400">Alarmes e estoque</span>
+          </label>
+
+          <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/25 flex flex-col items-center gap-1 cursor-pointer transition-all">
+            <input type="checkbox" id="checkOnboardingPets" checked class="w-4 h-4 text-amber-500 rounded">
+            <span class="text-xl">🐾</span>
+            <span class="text-[11px] font-bold text-white">Tenho Pet</span>
+            <span class="text-[9px] text-slate-400">Vacinas e ração</span>
+          </label>
+
+          <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/25 flex flex-col items-center gap-1 cursor-pointer transition-all">
+            <input type="checkbox" id="checkOnboardingEducation" class="w-4 h-4 text-emerald-500 rounded">
+            <span class="text-xl">🎓</span>
+            <span class="text-[11px] font-bold text-white">Faculdade</span>
+            <span class="text-[9px] text-slate-400">Mensalidade/Cursos</span>
+          </label>
+
+          <label class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/25 flex flex-col items-center gap-1 cursor-pointer transition-all">
+            <input type="checkbox" id="checkOnboardingVehicle" class="w-4 h-4 text-sky-500 rounded">
+            <span class="text-xl">🚗</span>
+            <span class="text-[11px] font-bold text-white">Carro/Moto</span>
+            <span class="text-[9px] text-slate-400">Combustível/IPVA</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ETAPA 3: NÚMEROS DE PARTIDA -->
+      <div id="onboardingStep3" class="space-y-2.5 pt-2 border-t border-white/15">
+        <label class="block text-xs font-black text-amber-300 uppercase tracking-wide">
+          3. Dados iniciais de partida (você pode alterar a qualquer hora)
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] text-slate-300 font-bold mb-0.5">Sua Renda / Salário Líquido Estimado</label>
+            <div class="relative">
+              <span class="absolute left-2.5 top-2 text-slate-400 font-mono text-xs font-bold">R$</span>
+              <input type="text" inputmode="numeric" id="onboardingSalaryInput" value="5.000,00" class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/15 border border-white/30 text-white font-mono font-bold text-xs focus:ring-1 focus:ring-amber-400 outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-300 font-bold mb-0.5">Meta Mensal para Supermercado</label>
+            <div class="relative">
+              <span class="absolute left-2.5 top-2 text-slate-400 font-mono text-xs font-bold">R$</span>
+              <input type="text" inputmode="numeric" id="onboardingMarketBudgetInput" value="1.500,00" class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/15 border border-white/30 text-white font-mono font-bold text-xs focus:ring-1 focus:ring-amber-400 outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÃO DE CONCLUSÃO -->
+      <div class="pt-3 border-t border-white/15 flex flex-col gap-2">
+        <button type="button" onclick="finishProfPiggyOnboarding()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-98 cursor-pointer transition-all">
+          <span>🚀 Concluir e Ativar Meu Dashboard Personalizado!</span>
+        </button>
+        <p class="text-[10px] text-slate-400 text-center">
+          Você pode desativar as dicas do Prof. Piggy quando quiser no menu do app.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 2. COMPONENTE FLUTUANTE DE SPOTLIGHT / DICAS DIDÁTICAS POR SEÇÃO -->
+<div id="profPiggySpotlightOverlay" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4 prof-spotlight-backdrop" onclick="if(event.target===this) closeProfPiggySpotlight()">
+  <div class="bg-slate-900 text-white border-2 border-amber-400 rounded-3xl max-w-sm w-full p-4 sm:p-5 shadow-2xl relative prof-bubble-pop flex flex-col gap-3">
+    
+    <div class="flex items-start gap-3">
+      <!-- Mini Mascote Animado -->
+      <div class="w-16 h-16 piggy-avatar-container flex-shrink-0">
+        <svg viewBox="0 0 120 120" class="w-full h-full" fill="none">
+          <circle cx="60" cy="65" r="42" fill="#F472B6" />
+          <ellipse class="piggy-eye" cx="46" cy="60" rx="4.5" ry="5.5" fill="#0F172A" />
+          <ellipse class="piggy-eye" cx="74" cy="60" rx="4.5" ry="5.5" fill="#0F172A" />
+          <ellipse cx="60" cy="74" rx="14" ry="10" fill="#FDA4AF" />
+          <g class="piggy-glasses">
+            <circle cx="46" cy="60" r="10" stroke="#F59E0B" stroke-width="2.5" />
+            <circle cx="74" cy="60" r="10" stroke="#F59E0B" stroke-width="2.5" />
+            <path d="M56 60H64" stroke="#F59E0B" stroke-width="2.5" />
+          </g>
+          <path d="M60 14L22 28L60 40L98 28Z" fill="#1E293B" />
+          <circle cx="60" cy="27" r="2.5" fill="#F59E0B" />
+          <path d="M60 27L88 38V48" stroke="#F59E0B" stroke-width="2" />
+        </svg>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <span class="text-[9px] font-black uppercase tracking-wider text-amber-300">Dica do Prof. Piggy</span>
+          <button type="button" onclick="closeProfPiggySpotlight()" class="text-slate-400 hover:text-white text-xs cursor-pointer">✕</button>
+        </div>
+        <h4 id="profSpotlightTitle" class="text-xs sm:text-sm font-black text-white leading-tight mt-0.5">
+          Sobre esta Seção
+        </h4>
+        <p id="profSpotlightMessage" class="text-[11px] text-slate-300 mt-1 leading-snug">
+          Explicação didática do professor.
+        </p>
+      </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
+      <button type="button" onclick="disableProfPiggyTipsForever()" class="text-[10px] text-slate-400 hover:text-rose-300 underline cursor-pointer">
+        Não mostrar mais dicas
+      </button>
+      <button type="button" onclick="closeProfPiggySpotlight()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-sm transition-all active:scale-95 cursor-pointer">
+        Entendi, obrigado!
+      </button>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
