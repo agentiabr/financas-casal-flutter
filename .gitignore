@@ -69,3 +69,6 @@ migrate_working_dir/
 scripts/
 scratch/
 
+
+apks_v15/
+art_*.zip
