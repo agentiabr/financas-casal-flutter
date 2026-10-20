@@ -48,7 +48,7 @@ android {
 
     defaultConfig {
         applicationId "com.antigravity.financas_casal_flutter"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

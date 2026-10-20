@@ -30,8 +30,10 @@ jobs:
       - name: Instalar Dependências Flutter
         run: flutter pub get
 
-      - name: Compilar APKs Otimizados (Leves para Celular)
-        run: flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
+      - name: Compilar APK Universal e Otimizados
+        run: |
+          flutter build apk --release --android-skip-build-dependency-validation
+          flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
 
       - name: Disponibilizar APKs para Download
         uses: actions/upload-artifact@v4
