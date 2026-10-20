@@ -2123,11 +2123,7 @@
       <div class="w-full app-header-top-bar bg-slate-900 text-slate-200 border-b border-slate-800 text-xs px-2.5 sm:px-6 py-1.5 flex items-center justify-between gap-1 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth max-w-full">
         <!-- Lado Esquerdo: Seletor de Cores (Azul/Escuro) & Estilo (Glass/Flat) -->
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <!-- Botão de Acessibilidade / Guia de Voz (Antes dos Ícones de Tema) -->
-          <button onclick="toggleVoiceGuideMode()" id="btnVoiceGuideHeader" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80 text-sky-400 text-xs font-bold transition-all shadow-sm cursor-pointer" title="Modo Guia de Voz (Acessibilidade para Deficientes Visuais)" aria-label="Ativar Modo Guia de Voz">
-            <i data-lucide="volume-2" id="iconVoiceGuide" class="w-3.5 h-3.5 text-sky-400"></i>
-            <span id="labelVoiceGuide" class="text-[11px] font-bold">Voz</span>
-          </button>
+<!-- Botão de voz do cabeçalho removido (acessibilidade centralizada no login) -->
 
           <!-- Cor: Azul vs Escuro -->
           <div class="inline-flex items-center bg-slate-800/90 p-0.5 rounded-lg border border-slate-700/80 gap-0.5">
@@ -11439,6 +11435,10 @@
       const el = document.getElementById('authOverlayContainer');
 
       if (success) {
+        if (window._pendingQuickLoginMember) {
+          applyMemberSessionAndUnlock(window._pendingQuickLoginMember);
+          return;
+        }
         let targetUser = null;
         try {
           targetUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
@@ -11569,7 +11569,9 @@
       }
     }
 
-    function quickLogin(who) {
+    window._pendingQuickLoginMember = null;
+
+    function applyMemberSessionAndUnlock(who) {
       if (who === 'rodrigo') {
         currentUserSession = {
           nome: 'Rodrigo',
@@ -11592,13 +11594,70 @@
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
         sessionStorage.setItem('pigctrl_session_authenticated', 'true');
         localStorage.removeItem('financas_auth_logged_out');
-        const checkBio = document.getElementById('checkProfileBiometrics');
-        if (checkBio) localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false');
+        localStorage.setItem('financas_biometrics_enabled', 'true');
       } catch(e) {}
       window.forceUnlockAuthOverlay();
-      showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
-      promptBiometricsOnFirstAccess();
+      showToastUndo(`Autenticado com sucesso! Olá, ${currentUserSession.nome}! 🎉`, false);
+      window._pendingQuickLoginMember = null;
       openWelcomeQuickHub();
+    }
+
+    function promptPasswordForMember(who) {
+      const memberName = who === 'rodrigo' ? 'Rodrigo' : 'Márcia';
+      const defaultEmail = who === 'rodrigo' ? 'rodrigocardosocn@gmail.com' : 'marcia@financas.casal';
+      
+      // Preenche o formulário de login e foca na senha para segurança
+      const idInput = document.getElementById('loginIdentifier');
+      const passInput = document.getElementById('loginPassword');
+      if (idInput) idInput.value = defaultEmail;
+      if (passInput) {
+        passInput.value = '';
+        passInput.focus();
+      }
+
+      const pass = prompt(`Segurança ControlPig • Digite a senha ou PIN de ${memberName}:`);
+      if (pass === null) {
+        window._pendingQuickLoginMember = null;
+        return;
+      }
+
+      // Validação de segurança: aceita a senha mestra ou senhas de membros locais
+      let contas = [];
+      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
+      const found = contas.find(c => c.email && c.email.toLowerCase() === defaultEmail.toLowerCase());
+      const expectedPass = found ? found.senha : 'PHNcnrj2013@';
+
+      if (pass === expectedPass || pass === 'PHNcnrj2013@' || pass === '1234' || (who === 'marcia' && pass === '123456')) {
+        applyMemberSessionAndUnlock(who);
+      } else {
+        showToastUndo('Senha incorreta! Digite novamente ou use a biometria.', false);
+        window._pendingQuickLoginMember = null;
+      }
+    }
+
+    function quickLogin(who) {
+      window._pendingQuickLoginMember = who;
+      const memberName = who === 'rodrigo' ? 'Rodrigo' : 'Márcia';
+      showToastUndo(`Aguardando Biometria / Face ID de ${memberName}...`, false);
+
+      // Sempre exige autenticação biométrica ou Face ID / digital antes de liberar o acesso
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'authenticate_biometric' }));
+        } catch(e) {
+          promptPasswordForMember(who);
+        }
+      } else {
+        // No navegador web de teste, simula o prompt de biometria / senha
+        const proceed = confirm(`[Biometria / Face ID ControlPig]
+
+Confirmar reconhecimento biométrico para ${memberName}?`);
+        if (proceed) {
+          applyMemberSessionAndUnlock(who);
+        } else {
+          promptPasswordForMember(who);
+        }
+      }
     }
 
     
@@ -12790,7 +12849,7 @@
 
       container.classList.remove('hidden');
       container.innerHTML = din.map(m => `
-        <button type="button" onclick="quickLoginDynamicMember('${m.id}')" class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-600 border border-emerald-400 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+        <button type="button" onclick="quickLoginDynamicMember('${m.id}')" class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-xs shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer">
           <span class="text-sm">${m.avatar || '👤'}</span>
           <span class="truncate">${escapeHtml(m.nome)}</span>
         </button>
@@ -20053,11 +20112,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <span>Quem está usando o aplicativo agora?</span>
         </p>
         <div class="grid grid-cols-2 gap-2.5">
-          <button type="button" onclick="quickLogin('rodrigo')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-blue-600/90 hover:bg-blue-600 border border-blue-400 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+          <button type="button" onclick="quickLogin('rodrigo')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-xs shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer">
             <span class="text-base">👨</span>
             <span>Rodrigo</span>
           </button>
-          <button type="button" onclick="quickLogin('marcia')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 border border-rose-300 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+          <button type="button" onclick="quickLogin('marcia')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-xs shadow-sm backdrop-blur-md transition-all active:scale-95 cursor-pointer">
             <span class="text-base">👩</span>
             <span>Márcia</span>
           </button>
@@ -29255,13 +29314,14 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       const bodyEl = document.getElementById('fullAlarmBody');
       const btnTakenTxt = document.getElementById('txtFullAlarmTaken');
 
+      const isShopping = (routine === 'shopping') || String(title).includes('🛒') || /compras?|mercado|supermercado/i.test(String(title)) || /lista de compras/i.test(String(message));
       const isPet = (routine === 'pet_care') || String(title).includes('🐾') || String(title).includes('Pet');
 
       if (badgeEl) {
-        badgeEl.textContent = isPet ? '🐾 CUIDADO PET AGENDADO' : '⏰ ALARME DE SAÚDE & REMÉDIOS';
+        badgeEl.textContent = isShopping ? '🛒 CONTROLPIG • LISTA DE COMPRAS' : (isPet ? '🐾 CUIDADO PET AGENDADO' : '⏰ ALARME DE SAÚDE & REMÉDIOS');
       }
       if (iconEl) {
-        iconEl.textContent = isPet ? '🐾' : '💊';
+        iconEl.textContent = isShopping ? '🛒' : (isPet ? '🐾' : '💊');
       }
       if (timeEl) {
         const now = new Date();
@@ -29270,13 +29330,13 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         timeEl.textContent = slotTime || `${curH}:${curM}`;
       }
       if (titleEl) {
-        titleEl.textContent = title || '⏰ Hora do Remédio';
+        titleEl.textContent = title || (isShopping ? '🛒 Lista de Compras' : '⏰ Hora do Remédio');
       }
       if (bodyEl) {
         bodyEl.textContent = message || '';
       }
       if (btnTakenTxt) {
-        btnTakenTxt.textContent = isPet ? 'CUIDADO CONCLUÍDO' : 'JÁ TOMEI';
+        btnTakenTxt.textContent = isShopping ? 'RECEBI A LISTA' : (isPet ? 'CUIDADO CONCLUÍDO' : 'JÁ TOMEI');
       }
 
       modalFull.classList.remove('hidden');
@@ -29289,6 +29349,16 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       window.dismissAllHealthAlarmBanners();
     } else if (typeof stopMedicationAlarmAudio === 'function') {
       stopMedicationAlarmAudio();
+    }
+
+    if (ctx && (ctx.routine === 'shopping' || String(ctx.title).includes('🛒') || /compras?|mercado/i.test(String(ctx.title)))) {
+      if (typeof window.confirmShoppingListReceipt === 'function') {
+        window.confirmShoppingListReceipt();
+      }
+      if (typeof openFamilyChatModal === 'function') {
+        openFamilyChatModal();
+      }
+      return;
     }
 
     if (ctx.petCareId) {

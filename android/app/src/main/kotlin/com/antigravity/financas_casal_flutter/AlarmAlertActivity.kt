@@ -71,28 +71,51 @@ class AlarmAlertActivity : Activity() {
         val btnSnooze = findViewById<Button>(R.id.btn_alarm_snooze)
         val btnDismiss = findViewById<Button>(R.id.btn_alarm_dismiss)
 
+        val isShopping = title.contains("Compras", ignoreCase = true) ||
+                         title.contains("Lista", ignoreCase = true) ||
+                         title.contains("Mercado", ignoreCase = true) ||
+                         title.contains("🛒") ||
+                         body.contains("Lista de Compras", ignoreCase = true) ||
+                         body.contains("🛒", ignoreCase = true)
         val isPet = title.contains("Pet", ignoreCase = true) || title.contains("🐾") || body.contains("Pet", ignoreCase = true) || title.contains("Vacina", ignoreCase = true)
-        if (isPet) {
+
+        if (isShopping) {
+            tvBadge.text = "🛒 CONTROLPIG • LISTA DE COMPRAS"
+            tvIcon.text = "🛒"
+            btnTaken.text = "✓ RECEBI A LISTA"
+            btnSnooze.text = "⏰ VER DEPOIS"
+        } else if (isPet) {
             tvBadge.text = "🐾 CONTROLPIG • CUIDADO PET AGENDADO"
             tvIcon.text = "🐾"
             btnTaken.text = "✓ CUIDADO REALIZADO"
+            btnSnooze.text = "💤 ADIAR 5 MIN"
         } else {
             tvBadge.text = "⏰ CONTROLPIG • ALARME DE SAÚDE"
             tvIcon.text = "💊"
             btnTaken.text = "✓ JÁ TOMEI"
+            btnSnooze.text = "💤 ADIAR 5 MIN"
         }
 
         tvTitle.text = title
         tvBody.text = body
 
         btnTaken.setOnClickListener {
-            val takenIntent = Intent(this, MedAlarmReceiver::class.java).apply {
-                action = NotificationHelper.ACTION_MARK_TAKEN
-                putExtra("title", title)
-                putExtra("slot", slot)
-                putExtra("id", notifId)
+            if (isShopping) {
+                val acceptIntent = Intent(this, MedAlarmReceiver::class.java).apply {
+                    action = NotificationHelper.ACTION_ACCEPT_SHOPPING
+                    putExtra("title", title)
+                    putExtra("id", notifId)
+                }
+                sendBroadcast(acceptIntent)
+            } else {
+                val takenIntent = Intent(this, MedAlarmReceiver::class.java).apply {
+                    action = NotificationHelper.ACTION_MARK_TAKEN
+                    putExtra("title", title)
+                    putExtra("slot", slot)
+                    putExtra("id", notifId)
+                }
+                sendBroadcast(takenIntent)
             }
-            sendBroadcast(takenIntent)
             AlarmAudioPlayer.stop()
             finish()
         }

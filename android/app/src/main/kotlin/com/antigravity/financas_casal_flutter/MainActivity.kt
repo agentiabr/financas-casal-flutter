@@ -315,6 +315,17 @@ object NotificationHelper {
         speechText: String = "",
         slotTime: String = ""
     ): Boolean {
+        // Se a notificação for de Lista de Compras, nunca usar botões de remédio ("Já Tomei")!
+        val isShopping = title.contains("Compras", ignoreCase = true) ||
+                         title.contains("Lista", ignoreCase = true) ||
+                         title.contains("Mercado", ignoreCase = true) ||
+                         title.contains("🛒") ||
+                         body.contains("Lista de Compras", ignoreCase = true) ||
+                         body.contains("🛒", ignoreCase = true)
+        if (isShopping) {
+            return showShoppingNotification(context, title, body, notifId)
+        }
+
         return try {
             ensureChannel(context)
 
