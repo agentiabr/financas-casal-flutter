@@ -33,6 +33,8 @@ class ReceiptOcrResult {
   final String? storeName;
   final double? totalAmount;
   final DateTime? date;
+  final String? nfceKey;
+  final String? nfceUrl;
   final List<ReceiptItem> items;
   final List<String> lines;
   final String rawText;
@@ -41,6 +43,8 @@ class ReceiptOcrResult {
     this.storeName,
     this.totalAmount,
     this.date,
+    this.nfceKey,
+    this.nfceUrl,
     required this.items,
     required this.lines,
     required this.rawText,
@@ -56,6 +60,8 @@ class ReceiptOcrResult {
       'data': dateStr,
       'data_reconhecida': date != null,
       'valor_total': totalAmount ?? 0.0,
+      'chave_nfce': nfceKey ?? '',
+      'url_nfce': nfceUrl ?? '',
       'itens': items.map((e) => e.toJson()).toList(),
       'linhas': lines,
       'raw_text': rawText,
@@ -232,10 +238,29 @@ class OcrService {
       detectedTotal = items.fold<double>(0.0, (double acc, item) => acc + item.total);
     }
 
+    // 5. Detectar Chave de Acesso de 44 dígitos ou URL de NFC-e / SAT / SEFAZ
+    String? detectedNfceKey;
+    String? detectedNfceUrl;
+    final nfceUrlRegex = RegExp(
+      r'(https?:\/\/[^\s]+(?:fazenda|sefaz|satsp|nfce|danfe|recibo)[^\s]*)',
+      caseSensitive: false,
+    );
+    final urlMatch = nfceUrlRegex.firstMatch(rawText);
+    if (urlMatch != null) {
+      detectedNfceUrl = urlMatch.group(1);
+    }
+    final nfceKeyRegex = RegExp(r'\b([0-9]{4}\s*){11}\b|\b([0-9]{44})\b');
+    final keyMatch = nfceKeyRegex.firstMatch(rawText);
+    if (keyMatch != null) {
+      detectedNfceKey = keyMatch.group(0)?.replaceAll(RegExp(r'\s+'), '');
+    }
+
     return ReceiptOcrResult(
       storeName: detectedStore,
       totalAmount: detectedTotal,
       date: detectedDate,
+      nfceKey: detectedNfceKey,
+      nfceUrl: detectedNfceUrl,
       items: items,
       lines: lines,
       rawText: rawText,

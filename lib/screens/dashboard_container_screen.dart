@@ -170,7 +170,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.13+90';
+  static const String _kCurrentAppVersion = '2.1.21+98';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -213,7 +213,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         onMessageReceived: _handleJavaScriptMessage,
       );
 
-    // Habilita permissão de geolocalização nativa no WebView Android
+    // Habilita permissão de geolocalização nativa e câmera no WebView Android
     final platform = _controller.platform;
     if (platform is AndroidWebViewController) {
       platform.setGeolocationPermissionsPromptCallbacks(
@@ -223,6 +223,17 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             allow: status.isGranted,
             retain: true,
           );
+        },
+      );
+      platform.setOnPlatformPermissionRequest(
+        (request) async {
+          final cameraStatus = await Permission.camera.request();
+          final micStatus = await Permission.microphone.request();
+          if (cameraStatus.isGranted || micStatus.isGranted) {
+            request.grant();
+          } else {
+            request.deny();
+          }
         },
       );
     }
@@ -583,6 +594,22 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         } catch (e) {
           debugPrint('Aviso ao atualizar ícone dinâmico do launcher: $e');
         }
+      } else if (action == 'request_camera_permission') {
+        var status = await Permission.camera.status;
+        if (!status.isGranted) {
+          status = await Permission.camera.request();
+        }
+        _controller.runJavaScript("""
+          if (typeof window.onNativeCameraPermissionResult === 'function') {
+            window.onNativeCameraPermissionResult(${status.isGranted});
+          }
+        """);
+      } else if (action == 'scan_invoice_qrcode') {
+        _isPickingExternalMedia = true;
+        await _scanInvoiceQrCode();
+        Future.delayed(const Duration(seconds: 2), () {
+          _isPickingExternalMedia = false;
+        });
       } else if (action == 'pick_invoice_camera') {
         _isPickingExternalMedia = true;
         await _pickInvoicePhoto(source: ImageSource.camera);
@@ -933,6 +960,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
   Future<void> _pickInvoicePhoto({required ImageSource source}) async {
     try {
+      if (source == ImageSource.camera) {
+        var status = await Permission.camera.status;
+        if (!status.isGranted) {
+          status = await Permission.camera.request();
+          if (!status.isGranted) {
+            _controller.runJavaScript("""
+              if (typeof showToastUndo === 'function') {
+                showToastUndo('Permissão de câmera não concedida pelo usuário!', false);
+              }
+            """);
+            return;
+          }
+        }
+      }
       final XFile? photo = await _picker.pickImage(
         source: source,
         preferredCameraDevice: CameraDevice.rear,
@@ -968,6 +1009,72 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao capturar foto da nota: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _scanInvoiceQrCode() async {
+    try {
+      var status = await Permission.camera.status;
+      if (!status.isGranted) {
+        status = await Permission.camera.request();
+        if (!status.isGranted) {
+          _controller.runJavaScript("""
+            if (typeof showToastUndo === 'function') {
+              showToastUndo('Permissão de câmera necessária para ler o QR Code!', false);
+            }
+          """);
+          return;
+        }
+      }
+
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        maxWidth: 2000,
+        maxHeight: 2000,
+        imageQuality: 92,
+      );
+      if (photo == null) return;
+
+      _controller.runJavaScript(
+        "if (typeof window.onNativeOcrProcessingStart === 'function') { window.onNativeOcrProcessingStart(); }"
+      );
+
+      final bytes = await photo.readAsBytes();
+      final base64Str = base64Encode(bytes);
+      final dataUrl = 'data:image/jpeg;base64,$base64Str';
+
+      // Executa OCR Google ML Kit no hardware nativo do dispositivo
+      final ocrResult = await _ocrService.processReceiptImage(photo.path);
+      final jsonResult = jsonEncode(ocrResult.toJson());
+      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+      final safeDataUrl = dataUrl.replaceAll("'", r"\'");
+
+      // Se encontrou URL ou Chave NFC-e de 44 dígitos
+      final nfceKey = ocrResult.nfceUrl ?? ocrResult.nfceKey;
+      if (nfceKey != null && nfceKey.isNotEmpty) {
+        final safeNfce = nfceKey.replaceAll("'", r"\'");
+        _controller.runJavaScript("""
+          if (typeof window.handleDetectedQrCode === 'function') {
+            window.handleDetectedQrCode('$safeNfce');
+          }
+        """);
+      }
+
+      _controller.runJavaScript("""
+        if (typeof window.onNativeInvoiceOcrResult === 'function') {
+          window.onNativeInvoiceOcrResult('$safeJson', '$safeDataUrl');
+        } else if (typeof window.onNativeInvoicePhotoCaptured === 'function') {
+          window.onNativeInvoicePhotoCaptured('$safeDataUrl');
+        }
+      """);
+    } catch (e) {
+      debugPrint('Erro ao escanear QR Code da nota: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao escanear nota fiscal: $e')),
         );
       }
     }
