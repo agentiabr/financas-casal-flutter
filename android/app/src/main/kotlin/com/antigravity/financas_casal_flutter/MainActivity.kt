@@ -507,7 +507,7 @@ object NotificationHelper {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 try {
                     val alertIntent = Intent(context, AlarmAlertActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         putExtra("title", title)
                         putExtra("body", body)
                         putExtra("speech", speechText)
