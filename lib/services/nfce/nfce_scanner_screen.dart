@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'models/nfce_invoice.dart';
 import 'nfce_fetcher.dart';
@@ -53,6 +55,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
       torchEnabled: false,
+      returnImage: false,
     );
 
     _animController = AnimationController(
@@ -64,20 +67,109 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
 
+    _initCamera();
+
     // Se uma URL inicial foi informada diretamente
     if (widget.initialUrl != null && widget.initialUrl!.trim().isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _handleBarcodeValue(widget.initialUrl!.trim());
       });
     } else {
-      // Dica amigável após 10 segundos caso o usuário tenha dificuldade com iluminação
-      _friendlyHintTimer = Timer(const Duration(seconds: 10), () {
+      // Dica amigável após 8 segundos caso o usuário tenha dificuldade com iluminação
+      _friendlyHintTimer = Timer(const Duration(seconds: 8), () {
         if (mounted && !_isProcessing) {
           setState(() {
             _showFriendlyHint = true;
           });
         }
       });
+    }
+  }
+
+  Future<void> _initCamera() async {
+    try {
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        if (mounted) {
+          setState(() {
+            _statusMessage = 'Permissão de câmera necessária. Use o botão abaixo para fotografar.';
+          });
+        }
+        return;
+      }
+      await _scannerController.start();
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('Aviso ao iniciar câmera do MobileScanner: $e');
+    }
+  }
+
+  Future<void> _pickQrFromCamera() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? photo = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 92,
+      );
+      if (photo != null) {
+        await _analyzeImageFile(photo.path);
+      }
+    } catch (e) {
+      debugPrint('Erro ao fotografar QR: $e');
+    }
+  }
+
+  Future<void> _pickQrFromGallery() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? photo = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 92,
+      );
+      if (photo != null) {
+        await _analyzeImageFile(photo.path);
+      }
+    } catch (e) {
+      debugPrint('Erro ao selecionar foto do QR: $e');
+    }
+  }
+
+  Future<void> _analyzeImageFile(String filePath) async {
+    setState(() {
+      _isProcessing = true;
+      _statusMessage = '⚡ Decodificando QR Code da imagem...';
+    });
+    try {
+      final BarcodeCapture? capture = await _scannerController.analyzeImage(filePath);
+      if (capture != null && capture.barcodes.isNotEmpty) {
+        for (final b in capture.barcodes) {
+          final val = b.rawValue?.trim();
+          if (val != null && (val.startsWith('http') || RegExp(r'\d{44}').hasMatch(val))) {
+            await _handleBarcodeDetected(capture);
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Erro no analyzeImage: $e');
+    }
+
+    if (mounted) {
+      setState(() {
+        _isProcessing = false;
+        _statusMessage = 'Não conseguimos ler o QR Code nesta foto. Tente aproximar mais da nota.';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não identificamos o QR Code na foto. Aponte mais de perto com foco nítido.'),
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
@@ -482,11 +574,89 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Câmera contínua de alta taxa de quadros (mobile_scanner)
+          // 1. Câmera contínua de alta taxa de quadros (mobile_scanner) com tratamento de tela preta
           if (!_showInteractiveWebView)
             MobileScanner(
               controller: _scannerController,
+              fit: BoxFit.cover,
               onDetect: _handleBarcodeDetected,
+              placeholderBuilder: (context, child) => Container(
+                color: Colors.black,
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Iniciando câmera nativa...',
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              errorBuilder: (context, error, child) => Container(
+                color: const Color(0xFF0F172A),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.camera_alt_outlined, color: Color(0xFFFBBF24), size: 48),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Visor ao vivo indisponível neste aparelho',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Toque no botão abaixo para tirar uma foto nítida do QR Code da nota fiscal com a câmera do seu celular.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: _pickQrFromCamera,
+                        icon: const Icon(Icons.camera),
+                        label: const Text('Fotografar QR Code'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: _pickQrFromGallery,
+                        icon: const Icon(Icons.image, size: 18),
+                        label: const Text('Escolher da Galeria'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white70,
+                          side: const BorderSide(color: Colors.white30),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: () async {
+                          try {
+                            await _scannerController.stop();
+                            await _scannerController.start();
+                            setState(() {});
+                          } catch (_) {}
+                        },
+                        icon: const Icon(Icons.refresh, color: Colors.white60, size: 16),
+                        label: const Text('Tentar Câmera ao Vivo Novamente', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
 
           // 2. Máscara escura com recorte transparente para a moldura
@@ -583,6 +753,11 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                         tooltip: 'Alternar Câmera',
                         onPressed: _switchCamera,
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt, color: Color(0xFF10B981)),
+                        tooltip: 'Fotografar QR Code',
+                        onPressed: _pickQrFromCamera,
+                      ),
                     ],
                   ),
                 ),
@@ -615,6 +790,37 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: _pickQrFromCamera,
+                            icon: const Icon(Icons.camera_alt, size: 16),
+                            label: const Text('Fotografar QR Code', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF10B981),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 2,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton.icon(
+                            onPressed: _pickQrFromGallery,
+                            icon: const Icon(Icons.image, size: 16),
+                            label: const Text('Galeria', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white24,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 0,
+                            ),
+                          ),
+                        ],
                       ),
                       if (_showFriendlyHint && !_isProcessing) ...[
                         const SizedBox(height: 12),

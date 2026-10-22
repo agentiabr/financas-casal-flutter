@@ -31328,45 +31328,18 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   // ============================================================================
   // LEITOR DE QR CODE DE NOTA FISCAL (NFC-e / SAT)
   // ============================================================================
-  window.openInvoiceQrScanner = async function() {
-    const box = document.getElementById('boxInvoiceQrScanner');
-    const statusText = document.getElementById('qrScanStatusText');
-    const video = document.getElementById('qrVideoFeed');
-    if (!box || !video) return;
-
-    box.classList.remove('hidden');
-    if (statusText) statusText.textContent = 'Acessando câmera...';
-
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        qrMediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
-        video.srcObject = qrMediaStream;
-        await video.play();
-        if (statusText) statusText.textContent = 'Câmera ativa! Aponte para o QR Code do cupom fiscal.';
-        
-        // Se o navegador possuir o BarcodeDetector nativo da Web API (Android / Chrome)
-        if ('BarcodeDetector' in window) {
-          const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
-          qrDetectionInterval = setInterval(async () => {
-            try {
-              const barcodes = await detector.detect(video);
-              if (barcodes && barcodes.length > 0) {
-                const qrValue = barcodes[0].rawValue;
-                window.handleDetectedQrCode(qrValue);
-              }
-            } catch(e) {}
-          }, 350);
-        } else {
-          if (statusText) statusText.textContent = 'Câmera aberta. Alinhe o QR Code ou use "Simular Cupom SP/NFC-e".';
-        }
-      } else {
-        if (statusText) statusText.textContent = 'Câmera não suportada neste navegador. Use a simulação abaixo.';
+  window.openInvoiceQrScanner = function() {
+    if (window.FlutterBridge) {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('⚡ Abrindo leitor contínuo de QR Code...', false);
       }
-    } catch(err) {
-      console.warn('Erro ao abrir câmera para QR Code:', err);
-      if (statusText) statusText.textContent = 'Não foi possível acessar a câmera. Você pode fotografar ou simular o cupom.';
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'scan_invoice_qrcode' }));
+    } else {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Modo Web: selecione a foto do cupom fiscal.', false);
+      }
+      const fileInput = document.getElementById('inputInvoiceFile');
+      if (fileInput) fileInput.click();
     }
   };
 
@@ -32289,41 +32262,16 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     }
   };
 
-  window.openInvoiceQrScanner = async function() {
-    const box = document.getElementById('boxInvoiceQrScanner');
-    const statusText = document.getElementById('qrScanStatusText');
-    const video = document.getElementById('qrVideoFeed');
-    if (!box) return;
-
-    box.classList.remove('hidden');
-
-    // 1. Se estiver no app Flutter nativo, solicita permissão e prepara ponte
+  window.openInvoiceQrScanner = function() {
     if (window.FlutterBridge) {
-      if (statusText) statusText.innerHTML = '<span class="text-blue-400 font-bold animate-pulse">Solicitando permissão de câmera...</span>';
-      window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_camera_permission' }));
+      window.FlutterBridge.postMessage(JSON.stringify({ action: 'scan_invoice_qrcode' }));
+    } else {
+      const fileInput = document.getElementById('inputInvoiceFile');
+      if (fileInput) fileInput.click();
     }
-
-    // 2. Inicia o feed de vídeo na mira do QR Code
-    if (video) {
-      if (statusText) statusText.textContent = 'Iniciando câmera...';
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          if (window.qrMediaStream) {
-            window.qrMediaStream.getTracks().forEach(t => t.stop());
-            window.qrMediaStream = null;
-          }
-          window.qrMediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
-          });
-          video.srcObject = window.qrMediaStream;
-          video.setAttribute('playsinline', 'true');
-          await video.play();
-          if (statusText) statusText.textContent = 'Câmera ativa! Aponte para o QR Code da nota fiscal.';
-
-          if ('BarcodeDetector' in window) {
-            const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
-            if (window.qrDetectionInterval) clearInterval(window.qrDetectionInterval);
-            window.qrDetectionInterval = setInterval(async () => {
+  };
+  /* scanner web fallback */
+  window._disabledQrInterval = setInterval(async () => {
               try {
                 const barcodes = await detector.detect(video);
                 if (barcodes && barcodes.length > 0) {
