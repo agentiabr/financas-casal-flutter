@@ -171,7 +171,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.27+104';
+  static const String _kCurrentAppVersion = '2.1.28+105';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -1087,13 +1087,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
   Future<void> _fetchNfceFromUrl(String url) async {
     try {
-      _controller.runJavaScript("""
-        if (typeof showToastUndo === 'function') {
-          showToastUndo('Consultando dados oficiais da SEFAZ...', false);
-        }
-      """);
+      final NfceInvoice? invoice = await Navigator.of(context).push<NfceInvoice>(
+        MaterialPageRoute(
+          builder: (context) => NfceScannerScreen(initialUrl: url),
+        ),
+      );
 
-      final invoice = await NfceFetcher().fetchAndParse(url);
+      if (invoice == null) return;
+
       final jsonResult = jsonEncode(invoice.toJson());
       final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
 

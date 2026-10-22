@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.27";
+    window.APP_BUILD_VERSION = "2.1.28";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -33340,11 +33340,21 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       ocrStatus.innerHTML = `
         <div class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl text-xs text-amber-900 dark:text-amber-200">
           <div class="font-bold flex items-center gap-1.5 mb-1">
-            <span>⚠️</span> <span>SEFAZ temporariamente indisponível</span>
+            <span>⚠️</span> <span>Aviso SEFAZ</span>
           </div>
           <p class="text-[11px] mb-2">${res.errorMessage || 'A consulta online demorou, mas a Chave de Acesso foi salva.'}</p>
-          <div class="font-mono text-[10px] bg-white dark:bg-slate-900 p-1.5 rounded border border-amber-200 dark:border-amber-800 break-all select-all">
+          <div class="font-mono text-[10px] bg-white dark:bg-slate-900 p-1.5 rounded border border-amber-200 dark:border-amber-800 break-all select-all mb-2.5">
             Chave: <strong>${res.accessKey || 'Não identificada'}</strong>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'fetch_nfce_url', url: '${res.rawUrl || ''}'}));" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 shadow-sm">
+              <span>⚡</span> Consultar com Navegador Integrado
+            </button>
+            ${res.rawUrl ? `
+            <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${res.rawUrl}'}));" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-[10px] flex items-center gap-1">
+              <span>🌐</span> Abrir Navegador
+            </button>
+            ` : ''}
           </div>
         </div>
       `;

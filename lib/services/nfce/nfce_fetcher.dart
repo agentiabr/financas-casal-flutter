@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'models/nfce_invoice.dart';
 import 'nfce_number_parser.dart';
@@ -8,12 +9,11 @@ import 'nfce_parser.dart';
 /// Serviço responsável por requisitar a página oficial da SEFAZ no lado Dart (sem restrições de CORS)
 /// e orquestrar a extração de dados via [NfceParser].
 class NfceFetcher {
-  final http.Client _client;
   final NfceParser _parser;
+  final Map<String, String> _cookies = {};
 
-  NfceFetcher({http.Client? client, NfceParser? parser})
-      : _client = client ?? http.Client(),
-        _parser = parser ?? NfceParser();
+  NfceFetcher({NfceParser? parser})
+      : _parser = parser ?? NfceParser();
 
   /// Busca a página HTML da URL fornecida e retorna o modelo [NfceInvoice]
   Future<NfceInvoice> fetchAndParse(String rawUrl) async {
@@ -29,70 +29,113 @@ class NfceFetcher {
     }
 
     try {
-      final uri = Uri.parse(cleanUrl);
+      var currentUrl = cleanUrl;
+      int redirectCount = 0;
+      http.Response? finalResponse;
+      final client = http.Client();
 
-      // Headers com User-Agent de navegador moderno para evitar bloqueios WAF da SEFAZ
-      final headers = {
-        'User-Agent':
-            'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36',
-        'Accept':
-            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
-      };
+      try {
+        while (redirectCount < 6) {
+          final uri = Uri.parse(currentUrl);
 
-      // Executa a requisição com timeout de 15 segundos
-      final response = await _client
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 15));
+          // Headers com User-Agent de navegador moderno (SEM 'br' para evitar compressão Brotli incompatível no Dart)
+          final headers = {
+            'User-Agent':
+                'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36',
+            'Accept':
+                'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+          };
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final decodedHtml = _decodeResponseBody(response);
-        final invoice = _parser.parse(decodedHtml, rawUrl: cleanUrl);
+          if (_cookies.isNotEmpty) {
+            headers['Cookie'] = _cookies.entries.map((e) => '${e.key}=${e.value}').join('; ');
+          }
+
+          final request = http.Request('GET', uri)
+            ..followRedirects = false
+            ..headers.addAll(headers);
+
+          final streamedResponse = await client.send(request).timeout(const Duration(seconds: 10));
+          final response = await http.Response.fromStream(streamedResponse);
+
+          // Salva cookies retornados no Set-Cookie
+          final rawSetCookie = response.headers['set-cookie'];
+          if (rawSetCookie != null && rawSetCookie.isNotEmpty) {
+            _updateCookies(rawSetCookie);
+          }
+
+          // Se for redirecionamento HTTP (301, 302, 303, 307)
+          if (response.statusCode >= 300 && response.statusCode < 400) {
+            final location = response.headers['location'];
+            if (location != null && location.isNotEmpty) {
+              currentUrl = uri.resolve(location).toString();
+              redirectCount++;
+              continue;
+            }
+          }
+
+          finalResponse = response;
+          break;
+        }
+      } finally {
+        client.close();
+      }
+
+      if (finalResponse != null && finalResponse.statusCode >= 200 && finalResponse.statusCode < 300) {
+        final decodedHtml = _decodeResponseBody(finalResponse);
+        final invoice = _parser.parse(decodedHtml, rawUrl: currentUrl);
 
         // Se o parser não conseguiu extrair itens ou total, verifica se houve fallback
         if (invoice.items.isEmpty && invoice.total == 0.0) {
           return NfceInvoice.fallback(
             accessKey: accessKey ?? invoice.accessKey,
             rawUrl: cleanUrl,
-            errorMessage: 'A página da SEFAZ foi carregada, mas não apresentou itens públicos legíveis.',
+            errorMessage: 'A página da SEFAZ foi carregada, mas não apresentou itens legíveis.',
           );
         }
 
         return invoice;
-      } else if (response.statusCode >= 300 && response.statusCode < 400) {
-        // Redirecionamento HTTP
-        final redirectLocation = response.headers['location'];
-        if (redirectLocation != null && redirectLocation.isNotEmpty) {
-          final nextUri = uri.resolve(redirectLocation).toString();
-          return fetchAndParse(nextUri);
-        }
-        return NfceInvoice.fallback(
-          accessKey: accessKey,
-          rawUrl: cleanUrl,
-          errorMessage: 'Redirecionamento sem destino informado pela SEFAZ (${response.statusCode}).',
-        );
       } else {
+        final status = finalResponse?.statusCode ?? 0;
         return NfceInvoice.fallback(
           accessKey: accessKey,
           rawUrl: cleanUrl,
-          errorMessage: 'Servidor da SEFAZ retornou status de erro ${response.statusCode}.',
+          errorMessage: 'Servidor da SEFAZ retornou status $status.',
         );
       }
     } on TimeoutException {
       return NfceInvoice.fallback(
         accessKey: accessKey,
         rawUrl: cleanUrl,
-        errorMessage: 'Tempo limite esgotado ao conectar com a SEFAZ (15s). Chave de acesso preservada.',
+        errorMessage: 'Tempo limite esgotado ao conectar com a SEFAZ (10s).',
       );
     } catch (e) {
+      debugPrint('Aviso NfceFetcher: $e');
       return NfceInvoice.fallback(
         accessKey: accessKey,
         rawUrl: cleanUrl,
         errorMessage: 'Falha de conexão com a SEFAZ: $e',
       );
+    }
+  }
+
+  void _updateCookies(String rawSetCookie) {
+    for (final cookiePart in rawSetCookie.split(',')) {
+      final nameVal = cookiePart.split(';')[0].trim();
+      final eqIdx = nameVal.indexOf('=');
+      if (eqIdx > 0) {
+        final name = nameVal.substring(0, eqIdx).trim();
+        final value = nameVal.substring(eqIdx + 1).trim();
+        if (name.isNotEmpty &&
+            !name.toLowerCase().startsWith('path') &&
+            !name.toLowerCase().startsWith('domain') &&
+            !name.toLowerCase().startsWith('expires')) {
+          _cookies[name] = value;
+        }
+      }
     }
   }
 
