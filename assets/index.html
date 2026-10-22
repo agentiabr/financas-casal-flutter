@@ -2733,7 +2733,7 @@ html, body {
     <!-- ============================================================== -->
     <!-- CABEÇALHO FINTECH ROYAL BLUE (INSPIRADO NO MODELO OFICIAL ANEXO) -->
     <!-- ============================================================== -->
-    <header class="sticky top-0 z-40 bg-[#0A3981] text-white shadow-md select-none transition-all w-full max-w-full overflow-x-hidden">
+    <header class="sticky top-0 z-40 bg-[#0A3981] text-white border-none shadow-none select-none transition-all w-full max-w-full overflow-x-hidden">
       <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 flex items-center justify-between gap-1.5 sm:gap-3 w-full">
         
         <!-- Lado Esquerdo: Avatar & Membro Ativo -->
@@ -2899,7 +2899,7 @@ html, body {
             <div class="flex-shrink-0 flex items-center justify-center self-center md:self-auto">
               <div class="relative flex flex-col items-center select-none">
                 <div class="relative cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" onclick="triggerMascotMicroReaction(event)" title="Toque no porquinho para interagir!">
-                  <img id="mascotImage" src="images/professor_pig_character_only.png" alt="Mascote Finanças" class="relative z-10 w-24 sm:w-28 md:w-32 h-auto object-contain mascote-flutuante select-none pointer-events-auto drop-shadow-md">
+                  <img id="mascotImage" src="images/professor_pig_character_only.png" alt="Mascote Finanças" class="relative z-10 w-32 sm:w-36 md:w-42 h-auto object-contain mascote-flutuante select-none pointer-events-auto drop-shadow-lg">
                   <div id="mascotChestLight" class="mascot-chest-light"></div>
                   <div id="mascotSadMouth" class="mascot-sad-mouth"></div>
                   <div id="mascotEyeLeft" class="mascot-eyelid mascot-eyelid-left"></div>
@@ -3207,14 +3207,16 @@ html, body {
     
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 w-full relative" id="sectionMetrics">
       <div id="headerAcc_sectionMetricsContent" class="clean-gray-accordion-header is-open flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSectionCollapse('sectionMetricsContent')">
-        <div class="flex items-center gap-3">
-          <div class="p-0.5 text-slate-400 hover:text-slate-600 cursor-grab" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionMetrics')" title="Segure para reordenar">
-            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-          </div>
+        <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="bar-chart-2" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Resumo das Contas do Mês</h2>
+          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 truncate">Resumo das Contas do Mês</h2>
         </div>
-        <i data-lucide="chevron-down" id="iconCollapse_sectionMetricsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon accordion-chevron-rotated"></i>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionMetrics')" title="Segure para reordenar esta seção">
+            <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          </div>
+          <i data-lucide="chevron-down" id="iconCollapse_sectionMetricsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon accordion-chevron-rotated"></i>
+        </div>
       </div>
 
       <div id="sectionMetricsContent" class="collapsible-content">
@@ -3385,14 +3387,16 @@ html, body {
     <!-- ============================================================== -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 w-full relative" id="sectionCharts">
       <div id="headerAcc_sectionChartsContent" class="clean-gray-accordion-header is-open flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSectionCollapse('sectionChartsContent')">
-        <div class="flex items-center gap-3">
-          <div class="p-0.5 text-slate-400 hover:text-slate-600 cursor-grab" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionCharts')" title="Segure para reordenar">
-            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-          </div>
+        <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="pie-chart" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Análise Visual & Categorias</h2>
+          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 truncate">Análise Visual & Categorias</h2>
         </div>
-        <i data-lucide="chevron-down" id="iconCollapse_sectionChartsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon accordion-chevron-rotated"></i>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionCharts')" title="Segure para reordenar esta seção">
+            <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          </div>
+          <i data-lucide="chevron-down" id="iconCollapse_sectionChartsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon accordion-chevron-rotated"></i>
+        </div>
       </div>
 
       <div id="sectionChartsContent" class="collapsible-content">
@@ -3444,14 +3448,16 @@ html, body {
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 w-full" id="sectionPiggy">
       <div id="headerAcc_sectionPiggyContent" class="clean-gray-accordion-header flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSectionCollapse('sectionPiggyContent')">
-        <div class="flex items-center gap-3">
-          <div class="p-0.5 text-slate-400 hover:text-slate-600 cursor-grab" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionPiggy')" title="Segure para reordenar">
-            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-          </div>
+        <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="piggy-bank" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Cofrinho</h2>
+          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 truncate">Cofrinho</h2>
         </div>
-        <i data-lucide="chevron-down" id="iconCollapse_sectionPiggyContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionPiggy')" title="Segure para reordenar esta seção">
+            <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          </div>
+          <i data-lucide="chevron-down" id="iconCollapse_sectionPiggyContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        </div>
       </div>
       <div id="sectionPiggyContent" class="collapsible-content collapsed">
           <!-- Banner de Lembrete Mensal: Já depositou no seu cofrinho esse mês? -->
@@ -3477,16 +3483,18 @@ html, body {
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 w-full" id="sectionFoodBudget">
       <div id="headerAcc_sectionFoodBudgetContent" class="clean-gray-accordion-header flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSectionCollapse('sectionFoodBudgetContent')">
-        <div class="flex items-center gap-3">
-          <div class="p-0.5 text-slate-400 hover:text-slate-600 cursor-grab" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionFoodBudget')" title="Segure para reordenar">
-            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-          </div>
+        <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="shopping-basket" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 leading-tight">Orçamento Previsto</h2>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 truncate">
+            <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 leading-tight truncate">Orçamento Previsto</h2>
           </div>
         </div>
-        <i data-lucide="chevron-down" id="iconCollapse_sectionFoodBudgetContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionFoodBudget')" title="Segure para reordenar esta seção">
+            <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          </div>
+          <i data-lucide="chevron-down" id="iconCollapse_sectionFoodBudgetContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        </div>
       </div>
       <div id="sectionFoodBudgetContent" class="collapsible-content collapsed">
         <!-- BARRA DE DEFINIÇÃO DO VALOR PREVISTO PARA ALIMENTAÇÃO -->
@@ -3586,14 +3594,16 @@ html, body {
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 w-full" id="sectionCards">
       <div id="headerAcc_sectionCardsContent" class="clean-gray-accordion-header flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSectionCollapse('sectionCardsContent')">
-        <div class="flex items-center gap-3">
-          <div class="p-0.5 text-slate-400 hover:text-slate-600 cursor-grab" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionCards')" title="Segure para reordenar">
-            <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-          </div>
+        <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="credit-card" class="w-5 h-5 text-slate-600 dark:text-slate-300 flex-shrink-0"></i>
-          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100">Carteira de Cartões</h2>
+          <h2 class="accordion-title-text text-base text-slate-900 dark:text-slate-100 truncate">Carteira de Cartões</h2>
         </div>
-        <i data-lucide="chevron-down" id="iconCollapse_sectionCardsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <div class="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" onclick="event.stopPropagation()" draggable="true" ondragstart="handleSectionDragStart(event, 'sectionCards')" title="Segure para reordenar esta seção">
+            <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+          </div>
+          <i data-lucide="chevron-down" id="iconCollapse_sectionCardsContent" class="w-5 h-5 text-slate-600 dark:text-slate-400 accordion-chevron-icon"></i>
+        </div>
       </div>
       <div id="sectionCardsContent" class="collapsible-content collapsed">
         <!-- Texto explicativo de privacidade e segurança -->
@@ -24228,46 +24238,45 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
        - Fechado: caixa cinza quase branco (#F3F4F6), cantos 12px, título peso médio (500)
        - Aberto: some a caixa (transparente) e fica somente o ícone, título em negrito (700) e seta ^ */
     .clean-gray-accordion-header {
-      background-color: #F8FAFC !important;
-      border: 1px solid #E2E8F0 !important;
-      border-radius: 16px !important;
-      padding: 12px 16px !important;
-      min-height: 52px !important;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
-      transition: background-color 0.2s ease, border-color 0.2s ease !important;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 8px 2px !important;
+      min-height: auto !important;
+      box-shadow: none !important;
+      transition: opacity 0.2s ease !important;
+    }
+    .clean-gray-accordion-header:hover {
+      opacity: 0.85;
     }
     .clean-gray-accordion-header .accordion-title-text {
-      font-size: 0.9375rem !important; /* 15px */
+      font-size: 1rem !important; /* 16px */
       font-weight: 700 !important;
-      color: #1E293B !important;
+      color: #0F172A !important;
     }
     .clean-gray-accordion-header.is-open {
-      background-color: #F1F5F9 !important;
-      border: 1px solid #CBD5E1 !important;
-      border-radius: 16px 16px 0 0 !important;
-      padding: 12px 16px !important;
-      min-height: 52px !important;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 8px 2px !important;
+      min-height: auto !important;
+      box-shadow: none !important;
     }
     .clean-gray-accordion-header.is-open .accordion-title-text {
       font-weight: 800 !important;
       color: #0F172A !important;
     }
     .dark .clean-gray-accordion-header,
-    body.theme-dark .clean-gray-accordion-header {
-      background-color: #1E293B !important;
-      border: 1px solid #334155 !important;
+    body.theme-dark .clean-gray-accordion-header,
+    .dark .clean-gray-accordion-header.is-open,
+    body.theme-dark .clean-gray-accordion-header.is-open {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
     }
     .dark .clean-gray-accordion-header .accordion-title-text,
     body.theme-dark .clean-gray-accordion-header .accordion-title-text {
       color: #F8FAFC !important;
-    }
-    .dark .clean-gray-accordion-header.is-open,
-    body.theme-dark .clean-gray-accordion-header.is-open {
-      background-color: #0F172A !important;
-      border: 1px solid #475569 !important;
-      border-radius: 16px 16px 0 0 !important;
-      padding: 12px 16px !important;
-      min-height: 52px !important;
     }
   </style>
 

@@ -162,7 +162,7 @@ class NfceParser {
     String s = raw
         .replaceAll(RegExp(r'[\r\n\t]+'), ' ')
         .replaceAll(RegExp(r'\s{2,}'), ' ')
-        .replaceAll(RegExp(r'(?i)CNPJ:?.*'), '')
+        .replaceAll(RegExp(r'CNPJ:?.*', caseSensitive: false), '')
         .trim();
 
     // Mapeamento de Razões Sociais clássicas brasileiras para seus Nomes Fantasia amigáveis
@@ -182,8 +182,8 @@ class NfceParser {
     if (upper.contains('IRMAOS MUFFATO')) return 'Super Muffato';
 
     // Remoção de sufixos societários e filiais
-    s = s.replaceAll(RegExp(r'(?i)\s*(?:SOCIEDADE\s+LIMITADA|LTDA\.?|S/?A\.?|S\.A\.|EIRELI|M\.?E\.?|EPP)\b.*$'), '');
-    s = s.replaceAll(RegExp(r'(?i)\s*[-•]?\s*(?:LOJA|FILIAL|SUCURSAL)\s*[\d\w\s-]*$'), '');
+    s = s.replaceAll(RegExp(r'\s*(?:SOCIEDADE\s+LIMITADA|LTDA\.?|S/?A\.?|S\.A\.|EIRELI|M\.?E\.?|EPP)\b.*$', caseSensitive: false), '');
+    s = s.replaceAll(RegExp(r'\s*[-•]?\s*(?:LOJA|FILIAL|SUCURSAL)\s*[\d\w\s-]*$', caseSensitive: false), '');
     s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
 
     return s.isNotEmpty ? s : raw.trim();
@@ -206,7 +206,7 @@ class NfceParser {
 
     // Busca no corpo geral do documento por "Emissão: DD/MM/YYYY"
     final bodyText = doc.body?.text ?? '';
-    final match = RegExp(r'(?i)emiss[ãa]o[:\s]+(\d{2}/\d{2}/\d{4})').firstMatch(bodyText);
+    final match = RegExp(r'emiss[ãa]o[:\s]+(\d{2}/\d{2}/\d{4})', caseSensitive: false).firstMatch(bodyText);
     if (match != null) {
       return NfceNumberParser.parseDateToIso(match.group(1));
     }
@@ -306,7 +306,7 @@ class NfceParser {
       discount = NfceNumberParser.parseCurrency(descEl.text);
     } else {
       // Procura por texto "Desconto: R$ X,XX" dentro da linha
-      final descMatch = RegExp(r'(?i)desconto[:\s]*R?\$?\s*([\d\.,]+)').firstMatch(row.text);
+      final descMatch = RegExp(r'desconto[:\s]*R?\$?\s*([\d\.,]+)', caseSensitive: false).firstMatch(row.text);
       if (descMatch != null) {
         discount = NfceNumberParser.parseCurrency(descMatch.group(1));
       }
@@ -371,11 +371,11 @@ class NfceParser {
     if (name.isEmpty) return null;
 
     final bodyText = acc.text;
-    final qtdMatch = RegExp(r'(?i)qtd[e\.]*[:\s]*([\d\.,]+)').firstMatch(bodyText);
-    final unMatch = RegExp(r'(?i)un[:\s]*([a-zA-Z]+)').firstMatch(bodyText);
-    final vlMatch = RegExp(r'(?i)vl\.?\s*unit[:\s]*R?\$?\s*([\d\.,]+)').firstMatch(bodyText);
-    final totMatch = RegExp(r'(?i)(total|valor)[:\s]*R?\$?\s*([\d\.,]+)').firstMatch(bodyText);
-    final descMatch = RegExp(r'(?i)desconto[:\s]*R?\$?\s*([\d\.,]+)').firstMatch(bodyText);
+    final qtdMatch = RegExp(r'qtd[e\.]*[:\s]*([\d\.,]+)', caseSensitive: false).firstMatch(bodyText);
+    final unMatch = RegExp(r'un[:\s]*([a-zA-Z]+)', caseSensitive: false).firstMatch(bodyText);
+    final vlMatch = RegExp(r'vl\.?\s*unit[:\s]*R?\$?\s*([\d\.,]+)', caseSensitive: false).firstMatch(bodyText);
+    final totMatch = RegExp(r'(total|valor)[:\s]*R?\$?\s*([\d\.,]+)', caseSensitive: false).firstMatch(bodyText);
+    final descMatch = RegExp(r'desconto[:\s]*R?\$?\s*([\d\.,]+)', caseSensitive: false).firstMatch(bodyText);
 
     final quantity = NfceNumberParser.parseQuantity(qtdMatch?.group(1));
     final unit = NfceNumberParser.normalizeUnit(unMatch?.group(1));
@@ -440,7 +440,7 @@ class NfceParser {
     // 3. Busca por texto "Valor a pagar" no corpo inteiro
     if (total == 0.0) {
       final bodyText = doc.body?.text ?? '';
-      final match = RegExp(r'(?i)valor\s+a\s+pagar\s*R?\$?[:\s]*([\d\.,]+)').firstMatch(bodyText);
+      final match = RegExp(r'valor\s+a\s+pagar\s*R?\$?[:\s]*([\d\.,]+)', caseSensitive: false).firstMatch(bodyText);
       if (match != null) {
         total = NfceNumberParser.parseCurrency(match.group(1));
       }
@@ -468,7 +468,7 @@ class NfceParser {
             el.text.toLowerCase().contains('pagamento')) {
           final numbEl = el.querySelector('.totalNumb');
           final raw = (numbEl?.text ?? el.text)
-              .replaceAll(RegExp(r'(?i)forma\s+de\s+pagamento[:\s]*'), '')
+              .replaceAll(RegExp(r'forma\s+de\s+pagamento[:\s]*', caseSensitive: false), '')
               .trim();
           if (raw.isNotEmpty) return raw;
         }

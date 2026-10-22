@@ -10,7 +10,7 @@ class NfceNumberParser {
     clean = clean
         .replaceAll(r'R$', '')
         .replaceAll('\u00A0', ' ')
-        .replaceAll(RegExp(r'(?i)(valor|total|unit|vl\.|pago|subtotal)[:\s]*'), '')
+        .replaceAll(RegExp(r'(valor|total|unit|vl\.|pago|subtotal)[:\s]*', caseSensitive: false), '')
         .trim();
 
     // Se possui ponto e vírgula (ex: 1.250,50), remove o ponto de milhar e troca vírgula por ponto
@@ -37,7 +37,7 @@ class NfceNumberParser {
     if (clean.isEmpty) return 1.0;
 
     // Remove prefixos como Qtd.:, Qtde:, Qtd
-    clean = clean.replaceAll(RegExp(r'(?i)qtd[e\.]*[:\s]*'), '').trim();
+    clean = clean.replaceAll(RegExp(r'qtd[e\.]*[:\s]*', caseSensitive: false), '').trim();
 
     if (clean.contains('.') && clean.contains(',')) {
       clean = clean.replaceAll('.', '').replaceAll(',', '.');
@@ -58,7 +58,7 @@ class NfceNumberParser {
   static String normalizeUnit(String? raw) {
     if (raw == null) return 'UN';
     var clean = raw
-        .replaceAll(RegExp(r'(?i)un(id(ade)?)?[:\s]*'), '')
+        .replaceAll(RegExp(r'un(id(ade)?)?[:\s]*', caseSensitive: false), '')
         .replaceAll(RegExp(r'[^\wÀ-ÿ]'), '')
         .trim()
         .toUpperCase();
