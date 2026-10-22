@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.29";
+    window.APP_BUILD_VERSION = "2.1.36";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -2697,7 +2697,10 @@ html, body {
 }
 
   </style>
-<style id="ctrlpig-theme-styles">
+<!-- ========================================================================= -->
+  <!-- CONTROLPIG FINTECH DESIGN SYSTEM (OFICIAL v2.1.36)                       -->
+  <!-- ========================================================================= -->
+  <style id="ctrlpig-theme-styles">
 /**
  * ==============================================================================
  * ControlPig Fintech Design System - Stylesheet V2.2
@@ -3205,7 +3208,114 @@ html, body {
   }
 }
 
-</style>
+
+  /* FORÇAR CARD DE SALDO BRANCO PURO NO TEMA CLARO */
+  #heroCardBanner,
+  .card-saldo-white {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+  }
+  html.dark #heroCardBanner,
+  body.theme-dark #heroCardBanner {
+    background: #0F172A !important;
+    background-color: #0F172A !important;
+    color: #FFFFFF !important;
+    border: 1px solid #1E293B !important;
+  }
+  #heroCardBanner #heroSaldoDisponivel,
+  #heroCardBanner #heroSaldoDisponivelVal {
+    color: #0F172A !important;
+  }
+  html.dark #heroCardBanner #heroSaldoDisponivel,
+  html.dark #heroCardBanner #heroSaldoDisponivelVal,
+  body.theme-dark #heroCardBanner #heroSaldoDisponivel,
+  body.theme-dark #heroCardBanner #heroSaldoDisponivelVal {
+    color: #FFFFFF !important;
+  }
+
+  /* REGRAS MANDATÓRIAS PARA TELAS INTEIRAS (FULL SCREEN PAGES) */
+  .full-screen-page {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background-color: #F8FAFC !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .full-screen-page.hidden {
+    display: none !important;
+  }
+  html.dark .full-screen-page,
+  body.theme-dark .full-screen-page {
+    background-color: #0B1120 !important;
+  }
+  .full-screen-page > .full-screen-inner,
+  .full-screen-page > div[class*="max-w-"],
+  .full-screen-page > div[class*="rounded-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* CABEÇALHO PADRÃO DE PÁGINA INTEIRA COM VOLTAR */
+  .page-header-back {
+    background: linear-gradient(135deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
+    color: #FFFFFF !important;
+    padding: 0.85rem 1rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(7, 25, 51, 0.25) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO */
+  #modalMascotSectionPitaco {
+    z-index: 150 !important;
+  }
+  .mascot-speech-bubble-v2 {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 2px solid #38BDF8 !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 20px 40px -10px rgba(10, 57, 129, 0.35) !important;
+  }
+  html.dark .mascot-speech-bubble-v2,
+  body.theme-dark .mascot-speech-bubble-v2 {
+    background: #0F172A !important;
+    color: #F8FAFC !important;
+    border-color: #38BDF8 !important;
+  }
+  </style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -3245,24 +3355,24 @@ html, body {
         <!-- ============================================================== -->
     <!-- TOP HERO BANNER: AURORA BLUE COM PIGGY ESPIANDO ATRÁS DO CARD BRANCO -->
     <!-- ============================================================== -->
-    <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#0A1E3F] via-[#0D2D5E] to-[#123962] text-white pt-3 pb-16 sm:pb-20 px-3.5 sm:px-6 overflow-hidden select-none w-full">
+    <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] text-white pt-4 pb-28 sm:pb-32 px-4 sm:px-6 overflow-hidden select-none w-full min-h-[300px] sm:min-h-[330px]">
       <!-- Luz suave de fundo aurora -->
       <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute top-1/2 -left-12 w-60 h-60 bg-sky-400/15 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Barra Superior do App: Logo CtrlPig à esquerda | Ações à direita -->
-      <div class="max-w-7xl mx-auto flex items-center justify-between mb-3 relative z-10 w-full">
+      <!-- Barra Superior do App: Logo CtrlPig limpo à esquerda | Ações à direita -->
+      <div class="max-w-7xl mx-auto flex items-center justify-between mb-4 relative z-30 w-full">
+        <!-- Logo CtrlPig puro e limpo (sem porquinho emoji conforme solicitado) -->
         <div class="flex items-center gap-2 cursor-pointer group" onclick="switchMainTab('inicio')">
-          <span class="text-2xl">🐷</span>
-          <span class="text-xl font-black tracking-tight text-white drop-shadow-sm">CtrlPig</span>
+          <span class="text-2xl font-black tracking-tight text-white drop-shadow-sm">CtrlPig</span>
         </div>
         
         <div class="flex items-center gap-1.5 sm:gap-2">
           <!-- A- / A+ Zoom -->
-          <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-1.5 py-0.5 text-white text-[10px] font-black shadow-xs">
-            <button type="button" onclick="adjustFontScale(-0.06)" class="px-0.5 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Diminuir fonte">A-</button>
+          <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-2 py-0.5 text-white text-[11px] font-black shadow-xs">
+            <button type="button" onclick="adjustFontScale(-0.06)" class="px-1 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Diminuir fonte">A-</button>
             <span class="text-white/30 text-[9px] select-none mx-0.5">|</span>
-            <button type="button" onclick="adjustFontScale(0.06)" class="px-0.5 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Aumentar fonte">A+</button>
+            <button type="button" onclick="adjustFontScale(0.06)" class="px-1 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Aumentar fonte">A+</button>
           </div>
 
           <!-- Sino de Notificações -->
@@ -3287,17 +3397,17 @@ html, body {
         </div>
       </div>
 
-      <!-- Conteúdo do Topo: Saudação e Ciclo à esquerda -->
-      <div class="max-w-7xl mx-auto flex items-end justify-between relative w-full pt-1">
-        <div class="relative z-10 max-w-[62%] sm:max-w-[68%] pb-1">
+      <!-- Conteúdo do Topo: Saudação e Ciclo à esquerda com respiro amplo -->
+      <div class="max-w-7xl mx-auto flex items-end justify-between relative w-full pt-2">
+        <div class="relative z-20 max-w-[65%] sm:max-w-[70%] pb-2">
           <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">Olá, Família!</h1>
           <p class="text-xs sm:text-sm text-blue-200 mt-1 leading-snug">Tudo certo por aqui. Seu saldo está saudável este mês.</p>
           
-          <!-- Pílula do Ciclo Vigente -->
-          <div class="relative inline-block mt-3">
-            <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer">
+          <!-- Pílula do Ciclo Vigente livre e com z-index alto -->
+          <div class="relative inline-block mt-3.5">
+            <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer">
               <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
-              <span id="heroCycleTag" class="text-[11px] sm:text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
+              <span id="heroCycleTag" class="text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
               <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
             </button>
 
@@ -3320,12 +3430,12 @@ html, body {
           </div>
         </div>
 
-        <!-- O MASCOTE PIGGY 3D POSICIONADO NA BASE DO BLOCO AZUL (ESPIANDO ATRÁS DO CARD BRANCO) -->
+        <!-- O MASCOTE PIGGY 3D POSICIONADO NA BASE DO BLOCO AZUL (ESPIANDO ATRÁS DO CARD BRANCO, SEM TOCAR NOS ÍCONES) -->
         <div class="absolute bottom-0 right-1 sm:right-6 z-0 pointer-events-none select-none flex items-end">
           <img id="mascotImage" src="images/professor_pig_character_only.png" 
                alt="Mascote Piggy" 
                onclick="triggerMascotMicroReaction(event)"
-               class="w-36 sm:w-44 md:w-52 h-auto object-contain pointer-events-auto cursor-pointer drop-shadow-2xl transition-transform duration-300 hover:scale-105 active:scale-95" 
+               class="w-32 sm:w-36 md:w-40 h-auto max-h-[145px] object-contain pointer-events-auto cursor-pointer drop-shadow-2xl transition-transform duration-300 hover:scale-105 active:scale-95" 
                title="Toque no porquinho!">
         </div>
       </div>
@@ -3343,7 +3453,7 @@ html, body {
 
     <!-- CARD BRANCO DE SALDO ATUAL SOBREPOSTO (MARGEM NEGATIVA COBRE A BASE DO PIGGY) -->
     <div class="max-w-7xl mx-auto px-3.5 sm:px-6 -mt-12 sm:-mt-14 relative z-10 w-full select-none">
-      <div id="heroCardBanner" class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100 dark:border-slate-800 transition-all">
+      <div id="heroCardBanner" class="card-saldo-white bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100 dark:border-slate-800 transition-all select-none">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Saldo atual</span>
           <button type="button" onclick="toggleHeroCardPrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all cursor-pointer" title="Ocultar ou mostrar o saldo">
@@ -4182,7 +4292,7 @@ html, body {
       </div>
     </div>
 
-    <div id="modalShoppingListHistory" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
+    <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative my-auto border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
@@ -4762,7 +4872,7 @@ html, body {
   </div>
 
   <!-- MODAL: CRIAR NOVO PORQUINHO 🐷 -->
-  <div id="modalCreatePiggy" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="modalCreatePiggy" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-sm w-full p-6 shadow-2xl relative text-xs border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -5382,7 +5492,7 @@ html, body {
   </div>
 
   <!-- MODAL: GERENCIAR CARTÕES (Z-INDEX 80 ISOLADO) -->
-  <div id="modalManageCards" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
+  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -6202,15 +6312,17 @@ html, body {
       }
       if (typeof updateAppLogo === 'function') updateAppLogo();
 
-      // Atualiza o background e estilo do card herói
+      // Atualiza o background e estilo do card de saldo (BRANCO puro no modo claro!)
       const heroBanner = document.getElementById('heroCardBanner');
       if (heroBanner) {
         if (themeName === 'theme-dark') {
-          heroBanner.style.background = 'linear-gradient(135deg, #0B1120 0%, #111C33 50%, #172544 100%)';
+          heroBanner.style.background = '#0F172A';
           heroBanner.style.borderColor = '#1E293B';
+          heroBanner.style.color = '#FFFFFF';
         } else {
-          heroBanner.style.background = 'var(--hero-gradient)';
-          heroBanner.style.borderColor = 'transparent';
+          heroBanner.style.background = '#FFFFFF';
+          heroBanner.style.borderColor = '#E2E8F0';
+          heroBanner.style.color = '#0F172A';
         }
       }
 
@@ -21359,144 +21471,56 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, FOCADO EM COMPRAS)      -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-blue-600/40 rounded-3xl w-full max-w-xl h-[92vh] max-h-[760px] shadow-2xl flex flex-col overflow-hidden relative">
-      
-      <!-- Cabeçalho na Cor Azul do Dashboard (#1E3A8A a #1D4ED8) -->
-      <div class="bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] text-white border-b border-blue-700/60 px-3.5 py-2.5 flex items-center justify-between flex-shrink-0 shadow-md gap-2">
-        <div class="flex items-center gap-2.5 min-w-0 flex-1">
-          <div class="relative flex-shrink-0">
-            <!-- Ícone em linha azul claro com fundo translúcido suave -->
-            <div class="w-9 h-9 rounded-xl bg-sky-400/20 text-sky-200 flex items-center justify-center border border-sky-300/40 shadow-xs">
-              <i data-lucide="message-square" class="w-4.5 h-4.5 text-sky-200 stroke-[1.85]"></i>
-            </div>
-            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-blue-900"></span>
-          </div>
-          <div class="min-w-0 flex-1">
-            <h3 class="font-black text-sm sm:text-base text-white truncate">
-              Chat
-            </h3>
-            <p class="text-[10px] text-blue-100/80 truncate" id="chatHeaderSubtitle">
-              Rodrigo & Márcia • online
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-          <button type="button" onclick="testShoppingListReceivedAlertFlow()" class="px-2 py-1 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 text-xs font-bold flex items-center gap-1 border border-amber-300/30 shadow-xs transition-colors cursor-pointer" title="Simular e testar notificação de lista recebida (sem som)">
-            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-300"></i>
-            <span class="hidden sm:inline">Testar Alerta</span>
-          </button>
-          <button type="button" onclick="openTrashChatMessagesModal()" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center border border-white/20 shadow-xs transition-colors cursor-pointer" title="Ver mensagens apagadas e restaurar">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-300"></i>
-          </button>
-          <!-- Som / Áudio do Chat -->
-          <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal();" class="px-2 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1 border border-white/20 shadow-xs transition-colors cursor-pointer" title="Abrir Lista de Compras Completa">
-            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-sky-200"></i>
-            <span class="hidden md:inline">Lista</span>
-          </button>
-          <button type="button" id="btnToggleAudioChat" onclick="toggleAppAudio()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all border border-white/20 shadow-xs" title="Ativar/Desativar sons do chat">
-            <i data-lucide="volume-2" id="iconAppAudio" class="w-4 h-4"></i>
-          </button>
-
-          <!-- Alternar Visão: Chat vs Apenas Lista -->
-          <button type="button" onclick="toggleChatListExpanded()" id="btnToggleChatListView" class="px-2 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1 border border-white/25 transition-colors" title="Ver Lista da Gôndola">
-            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-300"></i>
-            <span class="hidden md:inline">Gôndola</span>
-            <span id="badgeChatListCount" class="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">4</span>
-          </button>
-          
-          <!-- Fechar -->
-          <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all border border-white/20 shadow-xs" title="Fechar Chat">
-            <i data-lucide="x" class="w-4.5 h-4.5"></i>
-          </button>
+  <div id="modalFamilyChat" class="full-screen-page hidden">
+    <!-- Cabeçalho Nativo de Página Inteira com Botão Voltar -->
+    <div class="page-header-back">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="closeFamilyChatModal()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h3 class="font-black text-base sm:text-lg text-white leading-tight">Chat da Família</h3>
+          <p class="text-[11px] text-blue-200" id="chatHeaderSubtitle">Rodrigo &amp; Márcia • online</p>
         </div>
       </div>
 
-      <!-- STATUS EM DESTAQUE: ONDE ESTOU COMPRANDO -->
-      <div id="chatStoreStatusHeader" class="bg-[#172554] text-white px-3.5 py-2 border-b border-blue-800/80 flex items-center justify-between gap-2 text-xs flex-shrink-0 shadow-inner">
-        <div class="flex items-center gap-2 min-w-0 flex-1">
-          <div id="chatActiveStoreLiveBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[9px] font-extrabold flex-shrink-0">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Ativo
-          </div>
-          <div class="min-w-0 truncate">
-            <span class="text-[11px] text-blue-100 font-bold flex items-center gap-1.5 truncate">
-              <span>🛒 Onde estou comprando:</span>
-              <span id="chatActiveStoreName" class="text-amber-300 font-black truncate">Local a definir</span>
-            </span>
-          </div>
-        </div>
-        <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button type="button" onclick="openStoreLocationModal()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Alterar ou definir onde estou comprando">
-            <i data-lucide="map-pin" class="w-3 h-3 text-sky-200"></i>
-            <span>Local</span>
-          </button>
-          <button type="button" onclick="openStoreLocationModal(); setTimeout(detectStoreLocationByGeo, 150);" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-[11px] flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95" title="Sugerir por GPS e inteligência de localização">
-            <span>🛰️ GPS</span>
-          </button>
-        </div>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="triggerSectionWithIntelligentMascot('chat', function(){});" class="px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 text-xs font-bold flex items-center gap-1 transition-all" title="Dica do Mascote">
+          <span>💡</span><span class="hidden sm:inline">Dica</span>
+        </button>
+        <button type="button" onclick="openTrashChatMessagesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer" title="Mensagens apagadas">
+          <i data-lucide="trash-2" class="w-4 h-4 text-rose-300"></i>
+        </button>
+        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all cursor-pointer" title="Fechar">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
       </div>
+    </div>
 
-      <!-- Placar ao Vivo do Carrinho na Gôndola (Azul Elegante Integrado) -->
-      <div id="chatShoppingSummaryBar" class="bg-[#1E3A8A] text-white border-b border-blue-700/60 px-3.5 py-2 flex items-center justify-between gap-2 flex-shrink-0 shadow-xs">
-        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-xs font-bold text-blue-100">Carrinho:</span>
-          <span id="chatRunningCartTotal" class="text-sm font-black text-emerald-300 font-mono">R$ 0,00</span>
-          <span class="text-[11px] text-blue-200/80 hidden sm:inline" id="chatRunningCartCounts">(0 pegos • 0 pendentes)</span>
-        </div>
-        <div class="flex items-center gap-1.5 flex-shrink-0">
-          <button type="button" onclick="openAbandonShoppingModal()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-rose-500/20 text-blue-100 hover:text-rose-200 border border-white/20 text-xs font-bold flex items-center gap-1 transition-all" title="Desistir das compras e sair do mercado sem lançar despesas">
-            <span>🚪 Desistir</span>
-          </button>
-          <button type="button" onclick="openFinishShoppingModal()" class="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black flex items-center gap-1 shadow-md transition-all active:scale-95">
-            <span>🏁 Finalizar</span>
-          </button>
-        </div>
+    <!-- Barra Horizontal de Filtro de Membros da Família -->
+    <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto flex-shrink-0 select-none">
+      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs">Todos</button>
+      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors">👨 Rodrigo</button>
+      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors">👩 Márcia</button>
+    </div>
+
+    <!-- Área de Mensagens Rolável Ocupando Toda a Tela -->
+    <div id="chatMessagesFeed" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+      <div id="chatMessagesList" class="space-y-2">
+        <!-- Renderizado dinamicamente por renderCleanChatStream() -->
       </div>
+    </div>
 
-      <!-- Feed de Conversa e Lista Interativa da Gôndola (Fundo suave sutil) -->
-      <div id="chatMessagesFeed" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar bg-gradient-to-b from-indigo-50/60 via-purple-50/40 to-slate-100/80 dark:from-slate-900 dark:via-indigo-950/20 dark:to-slate-900">
-        <!-- Divisor de Data -->
-        <div class="flex justify-center my-1">
-          <span class="px-3 py-0.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-500 dark:text-slate-400 shadow-xs">
-            Hoje
-          </span>
-        </div>
-
-        <!-- Lista de Mensagens e Cards Injetados Dinamicamente -->
-        <div id="chatMessagesList" class="space-y-3"></div>
-      </div>
-
-      <!-- Barra de Envio Fixa na Cor Azul do Dashboard com Input Claro de Alta Visibilidade -->
-      <div class="p-3 bg-gradient-to-r from-[#1E3A8A] via-[#1E40AF] to-[#1D4ED8] border-t border-blue-700/60 flex-shrink-0">
-        <form onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-1.5 sm:gap-2">
-          <!-- Botão Câmera (Com Modal Explicativo de Como Fotografar) -->
-          <button type="button" onclick="openPhotoGuidanceModal()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-sky-200 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Tirar foto do cupom fiscal ou gôndola">
-            <i data-lucide="camera" class="w-4.5 h-4.5"></i>
-          </button>
-          <input type="file" id="chatPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="handleChatPhotoUpload(event)">
-
-          <!-- Botão Microfone (Ditar itens: '10 pãezinhos, 2 litros de leite...') -->
-          <button type="button" onclick="startChatVoiceInput()" id="btnChatVoiceMic" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-emerald-300 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Falar itens da lista de compras por voz">
-            <i data-lucide="mic" id="iconChatVoiceMic" class="w-4.5 h-4.5"></i>
-          </button>
-
-          <!-- Botão + Item de Compra -->
-          <button type="button" onclick="openAddNewItemPrompt()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-amber-300 flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-xs" title="Adicionar item manualmente à lista">
-            <i data-lucide="plus" class="w-4.5 h-4.5"></i>
-          </button>
-
-          <!-- Campo de Digitação com Fundo Branco / Claro de Alta Visibilidade -->
-          <div class="flex-1 relative">
-            <input type="text" id="inputChatMessageClean" placeholder="Escreva aqui ou fale no microfone..." autocomplete="off" class="w-full bg-white text-slate-900 rounded-xl px-3.5 py-2 text-xs sm:text-sm border border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all font-medium placeholder-slate-400 shadow-inner">
-          </div>
-
-          <!-- Botão Enviar -->
-          <button type="submit" class="w-9 h-9 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center transition-all flex-shrink-0 shadow-md cursor-pointer active:scale-95">
-            <i data-lucide="send" class="w-4 h-4"></i>
-          </button>
-        </form>
-      </div>
+    <!-- Barra Inferior de Envio Fixa -->
+    <div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 sm:p-4 flex-shrink-0">
+      <form id="chatMessageForm" onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2 max-w-4xl mx-auto">
+        <input type="text" id="chatMessageInput" placeholder="Escreva uma mensagem para a família..." 
+               class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
+        
+        <button type="submit" class="w-10 h-10 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-md cursor-pointer flex-shrink-0" title="Enviar mensagem">
+          <i data-lucide="send" class="w-4.5 h-4.5"></i>
+        </button>
+      </form>
     </div>
   </div>
 
@@ -22212,7 +22236,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <!-- ============================================================== -->
 <!-- PÁGINA COMPLETA: MUNDO PET • PERFIL, GASTOS & CARTEIRA VACINAS (ESTILO PAYNO) -->
 <!-- ============================================================== -->
-<div id="modalPetArea" class="fixed inset-0 bg-slate-950 z-50 hidden flex flex-col w-full h-full overflow-y-auto">
+<div id="modalPetArea" class="full-screen-page hidden fixed inset-0 bg-slate-950 z-50 hidden flex flex-col w-full h-full overflow-y-auto">
   <div class="bg-slate-900 text-slate-100 min-h-screen w-full flex flex-col max-w-3xl mx-auto p-4 sm:p-6 space-y-4">
 
     <!-- 1. TOP APP BAR (ESTILO PAYNO: VOLTAR, TÍTULO E AÇÃO) -->
@@ -22502,7 +22526,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
+  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal de Saúde -->
@@ -23739,7 +23763,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
-  <div id="modalVeiculosHub" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
+  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -23841,7 +23865,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
-  <div id="modalEducacaoHub" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
+  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -28732,7 +28756,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4">
+<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4">
   <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
 
     <!-- Cabeçalho do Modal -->
@@ -32807,37 +32831,37 @@ setTimeout(window.initCarouselMascotImages, 150);
 <!-- ============================================================================== -->
 <!-- 1. MODAL DE PITACO INTELIGENTE COM FUNDO DA SEÇÃO EMBAÇADO (BACKDROP BLUR)    -->
 <!-- ============================================================================== -->
-<div id="modalMascotSectionPitaco" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-3 sm:p-4">
-  <!-- Fundo Embaçado sobre a Seção -->
-  <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-md transition-all duration-300 pointer-events-auto" onclick="closeMascotPitaco()"></div>
+<div id="modalMascotSectionPitaco" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
+  <!-- Fundo Embaçado sobre a Seção com blur moderno -->
+  <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-md transition-all duration-300 pointer-events-auto" onclick="closeMascotPitaco()"></div>
 
-  <!-- Card com Balão Neon Dark e Mascote Oficial Caracterizado -->
+  <!-- Card Balão com Mascote Oficial Caracterizado e Cores Oficiais -->
   <div class="relative z-10 max-w-sm w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
-    <div class="neon-speech-bubble p-5 text-center text-slate-100 mb-3 w-full relative bg-slate-900/95 border-2 border-sky-400 rounded-3xl shadow-[0_0_30px_rgba(56,189,248,0.35),inset_0_0_15px_rgba(56,189,248,0.1)]">
-      <div id="mascotPitacoBadge" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-500/20 text-sky-300 border-sky-400/40">
-        ⚡ Pitaco Inteligente do Piggy
+    <div class="mascot-speech-bubble-v2 p-5 text-center text-slate-900 dark:text-slate-100 mb-3 w-full relative bg-white dark:bg-slate-900 border-2 border-sky-400 rounded-3xl shadow-2xl">
+      <div id="mascotPitacoBadge" class="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-300 border-sky-300">
+        ⚡ Dica do Piggy
       </div>
-      <h3 id="mascotPitacoHeader" class="font-extrabold text-base text-white mb-2 tracking-tight">
+      <h3 id="mascotPitacoHeader" class="font-black text-lg text-slate-900 dark:text-white mb-2 tracking-tight">
         Minha Saúde &amp; Remédios
       </h3>
-      <div id="mascotPitacoText" class="text-xs text-slate-200 leading-relaxed font-medium mb-3.5 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 text-left">
-        <!-- Texto injetado por JS -->
+      <div id="mascotPitacoText" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed font-medium mb-4 bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-left">
+        <!-- Texto explicativo injetado dinamicamente -->
       </div>
 
-      <button id="btnEnterSectionFromPitaco" type="button" onclick="confirmEnterSectionFromPitaco()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
-        <span id="btnEnterSectionLabel">Acessar Seção Agora</span>
-        <span>→</span>
+      <button id="btnEnterSectionFromPitaco" type="button" onclick="confirmEnterSectionFromPitaco()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#0A3981] to-[#1D4ED8] hover:from-[#082F6D] hover:to-[#1E40AF] text-white font-extrabold text-xs shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95">
+        <span id="btnEnterSectionLabel">Continuar para a Seção</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
 
-      <label class="flex items-center justify-center gap-2 mt-3 cursor-pointer text-[11px] text-slate-400 hover:text-slate-200">
-        <input type="checkbox" id="checkSkipPitacoThisMonth" class="rounded border-slate-700 bg-slate-800 text-sky-500 focus:ring-0 cursor-pointer" />
-        <span>Não exibir este alerta novamente este mês</span>
-      </label>
+      <div class="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+        <input type="checkbox" id="checkSkipPitacoThisMonth" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+        <label for="checkSkipPitacoThisMonth" class="cursor-pointer">Não mostrar esta dica novamente este mês</label>
+      </div>
     </div>
 
-    <!-- Mascote Oficial Caracterizado -->
-    <div class="relative mt-1">
-      <img id="mascotPitacoImg" src="" alt="Mascote Oficial" class="w-36 h-36 object-contain float-mascot drop-shadow-2xl pointer-events-none" />
+    <!-- Imagem do Mascote Caracterizado Oficial -->
+    <div class="relative w-32 h-32 flex items-center justify-center drop-shadow-2xl">
+      <img id="mascotPitacoImg" src="images/professor_pig_character_only.png" alt="Mascote Oficial" class="w-full h-full object-contain filter drop-shadow-lg">
     </div>
   </div>
 </div>
