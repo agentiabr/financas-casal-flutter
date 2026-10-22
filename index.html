@@ -2697,6 +2697,515 @@ html, body {
 }
 
   </style>
+<style id="ctrlpig-theme-styles">
+/**
+ * ==============================================================================
+ * ControlPig Fintech Design System - Stylesheet V2.2
+ * Especialista Fintech Mobile: Nubank / Itaú / Revolut
+ * Compatibilidade: Android WebView (Galaxy A13 e Galaxy M62)
+ * Retrato & Paisagem (Zero Scroll Horizontal, Status Bar Integrada)
+ * ==============================================================================
+ */
+
+/* 1. VARIÁVEIS DE DESIGN SYSTEM */
+:root {
+  /* Cores Institucionais */
+  --cp-primary: #0A3981;
+  --cp-primary-dark: #082F6D;
+  --cp-primary-deep: #051C44;
+  --cp-primary-light: #1D4ED8;
+  --cp-accent: #38BDF8;
+  --cp-accent-glow: rgba(56, 189, 248, 0.35);
+
+  /* Superfícies & Bordas (Modo Claro Padrão) */
+  --cp-bg-app: #F8FAFC;
+  --cp-card-bg: #FFFFFF;
+  --cp-card-muted: #F1F5F9;
+  --cp-border: #E2E8F0;
+  --cp-border-light: #F1F5F9;
+  --cp-border-active: #3B82F6;
+
+  /* Tipografia & Contraste */
+  --cp-text-primary: #0F172A;
+  --cp-text-secondary: #475569;
+  --cp-text-muted: #94A3B8;
+  --cp-text-inverse: #FFFFFF;
+
+  /* Semântica Financeira */
+  --cp-income: #10B981;
+  --cp-income-bg: #ECFDF5;
+  --cp-expense: #EF4444;
+  --cp-expense-bg: #FEF2F2;
+  --cp-fixed: #6366F1;
+  --cp-fixed-bg: #EEF2FF;
+  --cp-installments: #8B5CF6;
+  --cp-installments-bg: #F5F3FF;
+  --cp-warning: #F59E0B;
+  --cp-warning-bg: #FFFBEB;
+
+  /* Sombras Suaves Nubank */
+  --cp-shadow-card: 0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
+  --cp-shadow-elevated: 0 14px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --cp-shadow-hero: 0 12px 30px -4px rgba(10, 57, 129, 0.35);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(15, 23, 42, 0.07);
+
+  /* Dimensões & Raios */
+  --cp-radius-card: 1.5rem;   /* 24px */
+  --cp-radius-tile: 1.125rem; /* 18px */
+  --cp-radius-button: 0.875rem; /* 14px */
+  --cp-radius-pill: 9999px;
+
+  /* Safe Areas Android */
+  --cp-safe-top: env(safe-area-inset-top, 0px);
+  --cp-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Modo Escuro */
+.dark {
+  --cp-bg-app: #0B0F17;
+  --cp-card-bg: #131C2E;
+  --cp-card-muted: #1E293B;
+  --cp-border: #1E293B;
+  --cp-border-light: #162032;
+  --cp-border-active: #38BDF8;
+
+  --cp-text-primary: #F8FAFC;
+  --cp-text-secondary: #94A3B8;
+  --cp-text-muted: #64748B;
+
+  --cp-income-bg: rgba(16, 185, 129, 0.15);
+  --cp-expense-bg: rgba(239, 68, 68, 0.15);
+  --cp-fixed-bg: rgba(99, 102, 241, 0.15);
+  --cp-installments-bg: rgba(139, 92, 246, 0.15);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 2. REGRAS GLOBAIS DE VIEWPORT E ANDROID WEBVIEW */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--cp-bg-app);
+  color: var(--cp-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden !important; /* Proíbe estritamente scroll horizontal */
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 3. CABEÇALHO BANCÁRIO QUE PINTA A STATUS BAR */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  width: 100%;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  box-shadow: 0 4px 16px rgba(10, 57, 129, 0.2);
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.app-header-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Botões translúcidos de ação do cabeçalho */
+.header-glass-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-glass-btn:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.header-glass-btn:active {
+  transform: scale(0.94);
+}
+
+/* 4. CARD AZUL HEROIC DO DASHBOARD */
+.hero-card-banner {
+  background: linear-gradient(135deg, #0A3981 0%, #082F6D 50%, #051C44 100%);
+  border-radius: var(--cp-radius-card);
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+  color: #FFFFFF;
+  box-shadow: var(--cp-shadow-hero);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 0.75rem;
+}
+
+.hero-specular-sheen {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 14rem;
+  height: 14rem;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+/* Balão interativo de dicas do Piggy no card azul */
+.hero-piggy-balloon {
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  padding: 0.875rem;
+  color: #FFFFFF;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+/* 5. CARDS FINTECH (Nubank / Itaú style) */
+.card-fintech {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-card);
+  box-shadow: var(--cp-shadow-card);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-fintech:hover {
+  box-shadow: var(--cp-shadow-elevated);
+}
+
+/* 6. LIST ITEM FINTECH (Transações agrupadas) */
+.list-item-fintech {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-radius: var(--cp-radius-tile);
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.list-item-fintech:active {
+  transform: scale(0.985);
+  background-color: var(--cp-card-muted);
+}
+
+.list-item-icon-box {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* 7. CHIPS & PÍLULAS DE FILTRO */
+.chip-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--cp-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid var(--cp-border);
+  background-color: var(--cp-card-bg);
+  color: var(--cp-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip-pill.active {
+  background-color: var(--cp-primary);
+  color: #FFFFFF;
+  border-color: var(--cp-primary);
+  box-shadow: 0 2px 8px rgba(10, 57, 129, 0.25);
+}
+
+.chip-pill:hover:not(.active) {
+  background-color: var(--cp-card-muted);
+  color: var(--cp-text-primary);
+}
+
+/* 8. TILES DE MÓDULOS (Família & Vida) */
+.module-tile {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-tile);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  box-shadow: var(--cp-shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.module-tile:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.module-icon-halo {
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+/* 9. NAVEGAÇÃO INFERIOR MODERNA (4 ABAS FINTECH) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--cp-border);
+  padding-top: 0.35rem;
+  padding-bottom: max(6px, var(--cp-safe-bottom));
+  box-shadow: var(--cp-shadow-dock);
+  user-select: none;
+}
+
+.dark .bottom-nav {
+  background-color: rgba(19, 28, 46, 0.95);
+  border-top-color: var(--cp-border);
+}
+
+.bottom-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 28rem; /* 448px */
+  margin: 0 auto;
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.25rem;
+  min-height: 48px; /* Touch target Android */
+  color: var(--cp-text-muted);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.1s ease;
+  position: relative;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+}
+
+.bottom-nav-item.active {
+  color: var(--cp-primary);
+}
+
+.dark .bottom-nav-item.active {
+  color: var(--cp-accent);
+}
+
+.bottom-nav-item.active i {
+  stroke-width: 2.4;
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.92);
+}
+
+/* 10. PADRÃO DE TELA INTEIRA (Substitui Modais Flutuantes) */
+.full-screen-page {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: var(--cp-bg-app);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: max(16px, var(--cp-safe-bottom));
+}
+
+.page-header-back {
+  position: sticky;
+  top: 0;
+  z-index: 51;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+}
+
+.btn-back-circle {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-back-circle:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 11. OVERLAY DE PITACO DO MASCOTE COM BACKDROP-FILTER BLUR */
+.mascot-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(5, 28, 68, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mascot-speech-bubble {
+  background: rgba(15, 23, 42, 0.96);
+  border: 2px solid var(--cp-accent);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  color: #F8FAFC;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.1);
+  text-align: center;
+  max-width: 22rem;
+  width: 100%;
+  position: relative;
+}
+
+.mascot-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: var(--cp-accent) transparent;
+  display: block;
+  width: 0;
+}
+
+.mascot-official-img {
+  width: 9rem;
+  height: 9rem;
+  object-contain: contain;
+  margin-top: 0.75rem;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6));
+  animation: cpFloatMascot 3.5s ease-in-out infinite;
+}
+
+@keyframes cpFloatMascot {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+/* 12. ADAPTAÇÃO PARA MODO PAISAGEM (ANDROID WEBVIEW GALAXY A13 / M62) */
+@media (orientation: landscape) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .hero-card-banner {
+    padding: 1rem 1.5rem;
+  }
+
+  /* Ajusta grid do dashboard para side-by-side no landscape */
+  .landscape-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* Reduz altura do balão do herói para não empurrar a tela */
+  .hero-piggy-balloon {
+    min-height: 96px;
+  }
+
+  /* Bottom nav compacta na horizontal */
+  .bottom-nav {
+    padding-top: 0.2rem;
+    padding-bottom: max(4px, var(--cp-safe-bottom));
+  }
+
+  .bottom-nav-item {
+    min-height: 42px;
+    font-size: 0.625rem;
+  }
+}
+
+</style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -2733,53 +3242,92 @@ html, body {
     <!-- ============================================================== -->
     <!-- CABEÇALHO FINTECH ROYAL BLUE (INSPIRADO NO MODELO OFICIAL ANEXO) -->
     <!-- ============================================================== -->
-    <header class="sticky top-0 z-40 bg-[#0A3981] text-white border-none shadow-none select-none transition-all w-full max-w-full overflow-x-hidden">
-      <div class="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 flex items-center justify-between gap-1.5 sm:gap-3 w-full">
-        
-        <!-- Lado Esquerdo: Avatar & Membro Ativo -->
-        <div class="flex items-center gap-2 cursor-pointer group flex-shrink-0 min-w-0" onclick="openMemberModal()" title="Toque para alternar o membro ativo (Rodrigo / Márcia)">
-          <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md flex-shrink-0">
-            <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-base">
-              <span id="headerUserAvatarEmoji">👨</span>
-              <img id="headerUserAvatarImg" src="" alt="Avatar" class="hidden w-full h-full object-cover">
-            </div>
-            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#0A3981]"></span>
-          </div>
-          <div class="flex flex-col text-left leading-tight truncate">
-            <div class="flex items-center gap-1">
-              <span id="headerUserName" class="text-sm sm:text-base font-black text-white truncate">Rodrigo</span>
-              <span class="text-xs">👑</span>
-            </div>
-            <span id="headerUserRole" class="text-[9px] text-blue-300 font-semibold tracking-wider uppercase truncate">@gestor</span>
-          </div>
-        </div>
+        <!-- ============================================================== -->
+    <!-- TOP HERO BANNER: AURORA BLUE COM PIGGY ESPIANDO ATRÁS DO CARD BRANCO -->
+    <!-- ============================================================== -->
+    <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#0A1E3F] via-[#0D2D5E] to-[#123962] text-white pt-3 pb-16 sm:pb-20 px-3.5 sm:px-6 overflow-hidden select-none w-full">
+      <!-- Luz suave de fundo aurora -->
+      <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute top-1/2 -left-12 w-60 h-60 bg-sky-400/15 rounded-full blur-2xl pointer-events-none"></div>
 
-        <!-- Lado Direito: Ações Utilitárias em Linha Única Sem Rolagem Lateral -->
-        <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-          <!-- 1. Ajuste de Tamanho da Fonte (A- / A+) -->
+      <!-- Barra Superior do App: Logo CtrlPig à esquerda | Ações à direita -->
+      <div class="max-w-7xl mx-auto flex items-center justify-between mb-3 relative z-10 w-full">
+        <div class="flex items-center gap-2 cursor-pointer group" onclick="switchMainTab('inicio')">
+          <span class="text-2xl">🐷</span>
+          <span class="text-xl font-black tracking-tight text-white drop-shadow-sm">CtrlPig</span>
+        </div>
+        
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- A- / A+ Zoom -->
           <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-1.5 py-0.5 text-white text-[10px] font-black shadow-xs">
             <button type="button" onclick="adjustFontScale(-0.06)" class="px-0.5 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Diminuir fonte">A-</button>
             <span class="text-white/30 text-[9px] select-none mx-0.5">|</span>
             <button type="button" onclick="adjustFontScale(0.06)" class="px-0.5 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Aumentar fonte">A+</button>
           </div>
 
-          <!-- 2. Central de Notificações com Badge -->
-          <button type="button" onclick="openNotificationsCenterModal()" class="relative w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer" title="Central de Notificações & Alertas">
-            <i data-lucide="bell" class="w-3.5 h-3.5 text-white"></i>
+          <!-- Sino de Notificações -->
+          <button type="button" onclick="openNotificationsCenterModal()" class="relative w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer" title="Central de Notificações">
+            <i data-lucide="bell" class="w-4 h-4 text-white"></i>
             <span id="headerNotifBadge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
           </button>
 
-          <!-- 3. Painel Admin & Cupons -->
-          <button type="button" onclick="openAdminModal()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer" title="Painel do Administrador & Cupons">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-white"></i>
-          </button>
+          <!-- Avatar Membro Ativo -->
+          <div class="relative w-8 h-8 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md cursor-pointer flex-shrink-0 active:scale-95 transition-transform" onclick="openMemberModal()" title="Toque para alternar o membro ativo (Rodrigo / Márcia)">
+            <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-xs">
+              <span id="headerUserAvatarEmoji">👨</span>
+              <img id="headerUserAvatarImg" src="" alt="Avatar" class="hidden w-full h-full object-cover">
+            </div>
+            <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-[#0A3981]"></span>
+          </div>
 
-          <!-- 4. Botão Sair / Encerrar Sessão -->
-          <button type="button" onclick="logoutUser()" class="w-8 h-8 rounded-xl bg-rose-500/20 hover:bg-rose-500/35 border border-rose-300/40 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer" title="Encerrar sessão / Sair do App">
+          <!-- Botão Sair -->
+          <button type="button" onclick="logoutUser()" class="w-8 h-8 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-300/40 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer" title="Encerrar sessão">
             <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-200"></i>
           </button>
         </div>
+      </div>
 
+      <!-- Conteúdo do Topo: Saudação e Ciclo à esquerda -->
+      <div class="max-w-7xl mx-auto flex items-end justify-between relative w-full pt-1">
+        <div class="relative z-10 max-w-[62%] sm:max-w-[68%] pb-1">
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">Olá, Família!</h1>
+          <p class="text-xs sm:text-sm text-blue-200 mt-1 leading-snug">Tudo certo por aqui. Seu saldo está saudável este mês.</p>
+          
+          <!-- Pílula do Ciclo Vigente -->
+          <div class="relative inline-block mt-3">
+            <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
+              <span id="heroCycleTag" class="text-[11px] sm:text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
+            </button>
+
+            <!-- Dropdown Flutuante de Ciclos -->
+            <div id="cycleDropdownMenu" class="hidden absolute left-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs text-slate-800 dark:text-slate-100">
+              <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                <span>Selecionar Período</span>
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
+              </div>
+              <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
+                <!-- Ciclos dinâmicos -->
+              </div>
+              <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
+                <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>+ Criar Novo Ciclo...</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- O MASCOTE PIGGY 3D POSICIONADO NA BASE DO BLOCO AZUL (ESPIANDO ATRÁS DO CARD BRANCO) -->
+        <div class="absolute bottom-0 right-1 sm:right-6 z-0 pointer-events-none select-none flex items-end">
+          <img id="mascotImage" src="images/professor_pig_character_only.png" 
+               alt="Mascote Piggy" 
+               onclick="triggerMascotMicroReaction(event)"
+               class="w-36 sm:w-44 md:w-52 h-auto object-contain pointer-events-auto cursor-pointer drop-shadow-2xl transition-transform duration-300 hover:scale-105 active:scale-95" 
+               title="Toque no porquinho!">
+        </div>
       </div>
 
       <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
@@ -2791,149 +3339,90 @@ html, body {
       <div id="dynamicMembersContainer" class="hidden"></div>
     </header>
 
-    <!-- FAIXA DE PROFUNDIDADE EXTENSÃO DO CABEÇALHO (Desce e ultrapassa ~1/4 da caixa azul) -->
-    <div class="header-dark-extension w-full bg-[#0A3981] dark:bg-[#07132B] h-20 sm:h-24 -mb-14 sm:-mb-16 pointer-events-none transition-colors"></div>
+    <div id="dashboardSectionsContainer" class="space-y-3 relative z-10">
 
-    <div id="dashboardSectionsContainer" class="space-y-2 relative z-10">
-
-    <!-- CARD-HERÓI FLAT AZUL COM MASCOTE 3D & AÇÕES RÁPIDAS (V5.0)     -->
-    <!-- Inspirado no modelo de referência com mascote porquinho-robô    -->
-    <!-- ============================================================== -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-2 w-full">
-      <div id="heroCardBanner" class="hero-card-banner relative rounded-3xl p-4 sm:p-6 text-white shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #0A3981 0%, #082F6D 100%);">
+    <!-- CARD BRANCO DE SALDO ATUAL SOBREPOSTO (MARGEM NEGATIVA COBRE A BASE DO PIGGY) -->
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 -mt-12 sm:-mt-14 relative z-10 w-full select-none">
+      <div id="heroCardBanner" class="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100 dark:border-slate-800 transition-all">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Saldo atual</span>
+          <button type="button" onclick="toggleHeroCardPrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all cursor-pointer" title="Ocultar ou mostrar o saldo">
+            <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4"></i>
+          </button>
+        </div>
         
-        <!-- Efeito suave de luz de fundo -->
-        <div class="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-          <div class="absolute -top-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="heroSaldoDisponivel" class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+            <span id="heroSaldoDisponivelVal">R$ 0,00</span>
+          </span>
+          <span id="heroSaldoStatusBadge" class="hidden"></span>
         </div>
 
-        <div class="relative z-10 space-y-3 sm:space-y-4">
-          
-          <!-- LINHA 1: SALDO DISPONÍVEL COM OLHO INLINE & CICLO VIGENTE (LAYOUT RESPONSIVO DESAFOGADO) -->
-          <div class="flex flex-col gap-2 w-full">
-            
-            <!-- Barra Superior do Card: Label + Olho à esquerda | Ciclo Vigente à direita -->
-            <div class="flex items-center justify-between w-full gap-2">
-              <div class="flex items-center gap-2 flex-nowrap whitespace-nowrap min-w-0">
-                <span class="text-xs sm:text-sm font-semibold text-blue-200 truncate">Saldo Total Disponível</span>
-                <button type="button" onclick="toggleHeroCardPrivacy()" id="btnHeroPrivacyToggle" class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 text-white transition-all shadow-xs cursor-pointer flex-shrink-0" title="Ocultar ou mostrar o saldo">
-                  <i data-lucide="eye" id="iconHeroPrivacy" class="w-3.5 h-3.5 text-white"></i>
-                </button>
-              </div>
-
-              <!-- Bloco Ciclo Vigente (Alinhado à direita, compacto e nunca trunca) -->
-              <div class="relative inline-block flex-shrink-0">
-                <button type="button" onclick="toggleCycleMenu(event)" id="btnHeroCycleTrigger" class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/20 text-white transition-all shadow-xs active:scale-95 cursor-pointer">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
-                  <div class="flex flex-col text-left leading-none">
-                    <span class="text-[8px] font-black uppercase tracking-wider text-amber-200/90">Ciclo Vigente</span>
-                    <span id="heroCycleTag" class="text-[11px] font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
-                  </div>
-                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
-                </button>
-
-                <!-- Dropdown Flutuante de Ciclos Integrado ao Card Azul -->
-                <div id="cycleDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-2 z-50 text-xs text-slate-800 dark:text-slate-100">
-                  <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                    <span>Selecionar Período</span>
-                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
-                  </div>
-                  <div id="cycleDropdownItems" class="space-y-0.5 mt-1 px-1">
-                    <!-- Ciclos injetados dinamicamente via renderCycleDropdownItems() -->
-                  </div>
-                  <div class="border-t border-slate-100 dark:border-slate-800 mt-2 pt-1.5 px-2">
-                    <button type="button" onclick="closeCycleMenu(); openNewCycleModal();" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors">
-                      <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                      <span>+ Criar Novo Ciclo...</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Linha Grande e Imponente do Saldo Disponível -->
-            <div class="flex items-baseline gap-2 pt-0.5">
-              <span id="heroSaldoDisponivel" class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-                <span id="heroSaldoDisponivelVal">R$ 0,00</span>
-              </span>
-              <span id="heroSaldoStatusBadge" class="hidden"></span>
-            </div>
-
-          </div>
-
-          <!-- LINHA 2: BALÃO INTERATIVO DO PIGGY COM SETINHAS + MASCOTE 3D (RESTAURADO COM SUCESSO!) -->
-          <div class="flex flex-col md:flex-row items-center justify-between gap-3 pt-1">
-            
-            <!-- Balão Interativo de Dicas do Mascote Piggy (Chat, Mercado, OCR, Parcelas e Mentor) -->
-            <div class="w-full md:flex-1 bg-white/15 dark:bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-white shadow-sm transition-all select-none min-h-[125px] flex flex-col justify-between" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" onpointerdown="pausePiggyTipAutoPlay()" onpointerup="resumePiggyTipAutoPlay()" ontouchstart="pausePiggyTipAutoPlay()" ontouchend="resumePiggyTipAutoPlay()" title="Toque ou mantenha o mouse em cima para pausar a leitura">
-              <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <span id="piggyTipIconBadge" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black shadow-xs flex-shrink-0">💡</span>
-                  <span id="piggyTipCategoryBadge" class="text-[11px] font-black uppercase tracking-wider text-amber-200 truncate">Dica do Piggy</span>
-                  <span id="piggyTipIndexBadge" class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white flex-shrink-0">1/4</span>
-                  <span id="piggyTipPauseIndicator" class="hidden"></span>
-                </div>
-                <!-- Controles Anterior / Próxima -->
-                <div class="flex items-center gap-1 flex-shrink-0">
-                  <button type="button" onclick="navigatePiggyTip(-1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer" title="Dica anterior">
-                    <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <button type="button" onclick="navigatePiggyTip(1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer" title="Próxima dica">
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Conteúdo da Dica Ativa (Altura constante e travada calculada para o maior texto) -->
-              <div id="piggyTipContentArea" class="min-h-[50px] overflow-hidden flex flex-col justify-between flex-shrink-0">
-                <!-- Injetado dinamicamente via renderPiggyTip() -->
-              </div>
-
-              <!-- Dots de Paginação -->
-              <div class="flex items-center justify-center gap-1.5 mt-2 pt-1.5 border-t border-white/10 flex-shrink-0" id="piggyTipDots">
-                <!-- Dots dinâmicos -->
-              </div>
-            </div>
-
-            <!-- Lado Direito: Mascote 3D Interativo -->
-            <div class="flex-shrink-0 flex items-center justify-center self-center md:self-auto">
-              <div class="relative flex flex-col items-center select-none">
-                <div class="relative cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95" onclick="triggerMascotMicroReaction(event)" title="Toque no porquinho para interagir!">
-                  <img id="mascotImage" src="images/professor_pig_character_only.png" alt="Mascote Finanças" class="relative z-10 w-32 sm:w-36 md:w-42 h-auto object-contain mascote-flutuante select-none pointer-events-auto drop-shadow-lg">
-                  <div id="mascotChestLight" class="mascot-chest-light"></div>
-                  <div id="mascotSadMouth" class="mascot-sad-mouth"></div>
-                  <div id="mascotEyeLeft" class="mascot-eyelid mascot-eyelid-left"></div>
-                  <div id="mascotEyeRight" class="mascot-eyelid mascot-eyelid-right"></div>
-                  <div id="mascotMicroToast" class="absolute -top-7 left-1/2 -translate-x-1/2 z-30 opacity-0 pointer-events-none transition-all duration-300 whitespace-nowrap bg-slate-900/90 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-lg border border-slate-700/80">
-                    <span id="mascotMicroToastText">Oinc! De olho nas contas! 🐷</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- TIRA INFERIOR: 3 MINI-INDICADORES -->
-          <div class="pt-3 border-t border-white/20 grid grid-cols-3 gap-2 sm:gap-4 text-center">
-            <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5">
-              <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Dias Restantes</div>
-              <div id="heroMiniDias" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">Calculando...</div>
-            </div>
-            <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5">
-              <div class="text-[10px] sm:text-xs text-blue-100 font-medium">% Comprometido</div>
-              <div id="heroMiniComprometimento" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0%</div>
-            </div>
-            <div class="bg-black/15 backdrop-blur-xs rounded-xl p-2 sm:p-2.5 cursor-pointer hover:bg-black/25 transition-all" onclick="navigateToAccordionSection('cardHeroInstallments', 'cardHeroInstallmentsContent')" title="Toque para ver compras parceladas do mês">
-              <div class="text-[10px] sm:text-xs text-blue-100 font-medium">Parcelados</div>
-              <div id="heroMiniFixas" class="text-xs sm:text-sm lg:text-base font-extrabold text-white mt-0.5">0 pendentes</div>
-            </div>
-          </div>
-
+        <div class="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400" id="heroSaldoStatusRow">
+          <span>↗</span>
+          <span id="heroMiniComprometimentoText">Saldo livre e saudável no ciclo</span>
         </div>
       </div>
     </div>
-    
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-3 w-full" id="fintechQuickHub">
+
+    <!-- DOIS MINI CARDS LADO A LADO: RECEITAS & DESPESAS (IGUAL AO PRINT DE REFERÊNCIA) -->
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 w-full grid grid-cols-2 gap-3 select-none">
+      <!-- Card 1: Receitas -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Receitas</span>
+        </div>
+        <div class="mt-2 text-lg sm:text-xl font-black text-slate-900 dark:text-white" id="metricReceitasVal">
+          R$ 0,00
+        </div>
+        <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-0.5">
+          <span>↑</span> Entradas no mês
+        </span>
+      </div>
+
+      <!-- Card 2: Despesas -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="trending-down" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Despesas</span>
+        </div>
+        <div class="mt-2 text-lg sm:text-xl font-black text-slate-900 dark:text-white" id="metricDespesasVal">
+          R$ 0,00
+        </div>
+        <span class="text-[10px] font-bold text-rose-600 dark:text-rose-400 mt-1 flex items-center gap-0.5" id="heroMiniComprometimento">
+          <span>↓</span> 0% comprometido
+        </span>
+      </div>
+    </div>
+
+    <!-- BALÃO INTERATIVO DE DICAS DO PIGGY COM SETINHAS (HARMONIZADO COM O DESIGN SYSTEM) -->
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 w-full select-none">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[105px]" id="heroPiggyTipCard" onmouseenter="pausePiggyTipAutoPlay()" onmouseleave="resumePiggyTipAutoPlay()" title="Toque para pausar">
+        <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
+          <div class="flex items-center gap-1.5">
+            <span id="piggyTipIconBadge" class="w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black flex items-center justify-center shadow-xs">💡</span>
+            <span id="piggyTipCategoryBadge" class="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">Dica do Piggy</span>
+            <span id="piggyTipIndexBadge" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">1/4</span>
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" onclick="navigatePiggyTip(-1)" class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 transition-all cursor-pointer active:scale-95" title="Dica anterior">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="navigatePiggyTip(1)" class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 transition-all cursor-pointer active:scale-95" title="Próxima dica">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+        <div id="piggyTipContentArea" class="min-h-[44px] overflow-hidden text-xs text-slate-600 dark:text-slate-300 flex flex-col justify-between"></div>
+        <div class="flex items-center justify-center gap-1.5 mt-2 pt-1 border-t border-slate-100 dark:border-slate-800" id="piggyTipDots"></div>
+      </div>
+    </div>
+<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-3 w-full" id="fintechQuickHub">
       
       <!-- Carrossel Sobreposto ao Card Azul com Rolagem com o Dedo (Estilo Mockup) -->
 <div class="carousel-rotinas-track" id="quickHubCarouselTrack" onscroll="if(window.updateQuickHubDots) updateQuickHubDots()">
@@ -8026,7 +8515,11 @@ html, body {
 
       if (heroSaldoEl) heroSaldoEl.textContent = formatBRL(saldoLivre, 'saldo');
       if (heroCycleTagEl) heroCycleTagEl.textContent = currentCycle;
-      if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}%`;
+            if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}% comprometido`;
+      const despesasEl = document.getElementById('metricDespesasVal') || document.getElementById('metricDespesasFixasVal');
+      if (despesasEl && typeof formatBRL === 'function') despesasEl.textContent = formatBRL(totalDespesas, 'despesa');
+      const heroCompText = document.getElementById('heroMiniComprometimentoText');
+      if (heroCompText) heroCompText.textContent = (saldoLivre >= 0) ? 'Saldo livre e saudável no ciclo' : 'Atenção: Saldo comprometido';
 
       // Regra Dinâmica: Alerta Vermelho se Saldo Negativo
       if (saldoLivre < 0) {
@@ -33455,5 +33948,80 @@ window.confirmEnterSectionFromPitaco = function() {
 
 </script>
 
+  <!-- ============================================================ -->
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR MODERNA (4 ABAS FINTECH)        -->
+  <!-- ============================================================ -->
+  <nav id="appBottomNavBar" class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 py-1.5 px-4 flex items-center justify-around shadow-lg select-none">
+    <!-- Aba 1: Início -->
+    <button type="button" onclick="switchMainTab('inicio')" id="btnNav_inicio" class="flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400 font-extrabold text-[10px] transition-all flex-1 py-1 cursor-pointer">
+      <i data-lucide="home" class="w-5 h-5"></i>
+      <span>Início</span>
+    </button>
+    <!-- Aba 2: Transações -->
+    <button type="button" onclick="switchMainTab('transacoes')" id="btnNav_transacoes" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
+      <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+      <span>Transações</span>
+    </button>
+    <!-- Aba 3: Família & Vida -->
+    <button type="button" onclick="switchMainTab('familia')" id="btnNav_familia" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
+      <i data-lucide="users" class="w-5 h-5"></i>
+      <span>Família & Vida</span>
+    </button>
+    <!-- Aba 4: Chat -->
+    <button type="button" onclick="switchMainTab('chat')" id="btnNav_chat" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer relative">
+      <i data-lucide="message-circle" class="w-5 h-5"></i>
+      <span>Chat</span>
+      <span id="navChatUnreadBadge" class="hidden absolute top-0.5 right-6 w-2 h-2 rounded-full bg-blue-500"></span>
+    </button>
+  </nav>
+
+  <script>
+    // Lógica da Barra de 4 Abas do Novo Design System
+    window.switchMainTab = function(tabName) {
+      window.currentMainTab = tabName;
+      const tabs = ['inicio', 'transacoes', 'familia', 'chat'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('btnNav_' + t);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'flex flex-col items-center justify-center gap-0.5 text-blue-600 dark:text-blue-400 font-extrabold text-[10px] transition-all flex-1 py-1 cursor-pointer';
+          } else {
+            btn.className = 'flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer';
+          }
+        }
+      });
+
+      // Seções do Dashboard (Aba Início)
+      const secDashboard = document.getElementById('dashboardSectionsContainer');
+      const heroHeader = document.getElementById('fintechAuroraHero');
+      const secTable = document.getElementById('sectionTable');
+      const quickHub = document.getElementById('fintechQuickHub');
+      const modalChat = document.getElementById('modalFamilyChat');
+
+      if (tabName === 'inicio') {
+        if (secDashboard) secDashboard.classList.remove('hidden');
+        if (heroHeader) heroHeader.classList.remove('hidden');
+        if (secTable) secTable.classList.remove('hidden');
+        if (quickHub) quickHub.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (tabName === 'transacoes') {
+        if (secDashboard) secDashboard.classList.remove('hidden');
+        if (secTable) {
+          secTable.classList.remove('hidden');
+          secTable.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (tabName === 'familia') {
+        if (quickHub) {
+          quickHub.classList.remove('hidden');
+          quickHub.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (tabName === 'chat') {
+        if (typeof openFamilyChatModal === 'function') {
+          openFamilyChatModal();
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    };
+  </script>
 </body>
 </html>
