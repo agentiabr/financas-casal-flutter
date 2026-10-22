@@ -170,7 +170,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.23+100';
+  static const String _kCurrentAppVersion = '2.1.24+101';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -1341,15 +1341,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
+          statusBarColor: Color(0xFF0A3981),
           statusBarIconBrightness: Brightness.light,
-          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarColor: Color(0xFF020617),
           systemNavigationBarIconBrightness: Brightness.light,
         ),
         child: Scaffold(
-          backgroundColor: const Color(0xFF064066),
-          body: Stack(
-            children: [
+          backgroundColor: const Color(0xFF0A3981),
+          body: SafeArea(
+            top: true,
+            bottom: false,
+            child: Stack(
+              children: [
               WebViewWidget(controller: _controller),
                 AnimatedOpacity(
                   opacity: _isLoading ? 1.0 : 0.0,
@@ -1449,6 +1452,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                   ),
                 ),
               ],
+            ),
           ),
         ),
       ),
