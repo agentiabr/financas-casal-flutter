@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.26";
+    window.APP_BUILD_VERSION = "2.1.27";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -1886,7 +1886,7 @@
       border: 1.5px solid rgba(255, 255, 255, 0.40) !important;
       position: relative;
       z-index: 30; /* Fica claramente SOBREPOSTO POR CIMA do azul #064066 */
-      margin-top: -60px !important; /* Sobe por cima do cabeçalho até onde tem Olá, Família */
+      margin-top: 0 !important; /* Sobe por cima do cabeçalho até onde tem Olá, Família */
       padding-bottom: 2.75rem !important;
     }
 
@@ -1894,7 +1894,7 @@
     #fintechQuickHub {
       position: relative;
       z-index: 40; /* Fica acima do hero card */
-      margin-top: -42px !important; /* Sobreposição destacada no bloco azul do porquinho */
+      margin-top: 0.5rem !important; /* Sobreposição destacada no bloco azul do porquinho */
     }
 
     /* Trilho de rolagem horizontal fluida com o dedo */
@@ -2056,7 +2056,7 @@
       padding-bottom: 130px !important;
     }
     .hero-card-banner {
-      margin-top: -120px !important;
+      margin-top: 0 !important;
       position: relative;
       z-index: 30;
     }
@@ -2759,23 +2759,31 @@ html, body {
           </div>
         </div>
 
-        <!-- Lado Direito: 3 Botões Glassmorphism Quadrados Arredondados do Modelo -->
-        <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Lado Direito: Ações Utilitárias Fintech (A-, A+, Notificações, Admin, Sair) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           
-          <!-- 1. Botão Busca / Lançamento Rápido -->
-          <button type="button" onclick="openActionHubModal()" class="w-10 h-10 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Lançar Gasto, Receita ou Pesquisar">
-            <i data-lucide="search" class="w-4 h-4 text-white"></i>
-          </button>
+          <!-- 1. Ajuste de Tamanho da Fonte (A- / A+) Clean Glass -->
+          <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-2xl px-2 py-1 text-white text-xs font-black shadow-xs" title="Ajustar tamanho da fonte do app">
+            <button type="button" onclick="adjustFontScale(-0.06)" class="px-1 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Diminuir tamanho da fonte">A-</button>
+            <span class="text-white/30 text-[10px] select-none">|</span>
+            <button type="button" onclick="adjustFontScale(0.06)" class="px-1 text-blue-100 hover:text-white active:scale-90 transition-transform cursor-pointer" title="Aumentar tamanho da fonte">A+</button>
+          </div>
 
-          <!-- 2. Botão Central de Notificações com Badge Vermelha -->
-          <button type="button" onclick="openNotificationsCenterModal()" class="relative w-10 h-10 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Central de Notificações & Alertas">
+          <!-- 2. Central de Notificações com Badge Pulsante -->
+          <button type="button" onclick="openNotificationsCenterModal()" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Central de Notificações & Alertas">
             <i data-lucide="bell" class="w-4 h-4 text-white"></i>
-            <span id="headerNotifBadge" class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
+            <span id="headerNotifBadge" class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
           </button>
 
-          <!-- 3. Botão Perfil / Admin / Configurações da Família -->
-          <button type="button" onclick="openAdminModal()" class="w-10 h-10 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Painel Admin, Cupons de Família e Configurações">
-            <i data-lucide="user" class="w-4 h-4 text-white"></i>
+          <!-- 3. Botão Painel Admin & Cupons -->
+          <button type="button" onclick="openAdminModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white flex items-center justify-center transition-all shadow-sm cursor-pointer" title="Painel do Administrador & Cupons">
+            <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
+          </button>
+
+          <!-- 4. Botão Sair / Desconectar Seguro Sem Poluir -->
+          <button type="button" onclick="logoutUser()" class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-2xl bg-rose-500/20 hover:bg-rose-500/35 border border-rose-300/40 text-rose-100 hover:text-white font-bold text-xs transition-all shadow-xs active:scale-95 cursor-pointer flex-shrink-0" title="Desconectar do aplicativo / Encerrar sessão">
+            <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-300"></i>
+            <span class="text-[11px] sm:text-xs">Sair</span>
           </button>
 
         </div>
@@ -33201,6 +33209,32 @@ window.openMemberModal = function() {
               <div class="text-[10px] text-rose-600 dark:text-rose-300">Esposa / Membro</div>
             </div>
             <span class="text-xs font-bold text-rose-600 dark:text-rose-400">Ativar</span>
+          </button>
+        </div>
+
+        <!-- Atalhos Utilitários & Acessibilidade -->
+        <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2 text-left">
+          <div class="flex items-center justify-between text-xs py-1">
+            <span class="font-bold text-slate-700 dark:text-slate-300">Tamanho da Fonte:</span>
+            <div class="inline-flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-1 gap-2 font-black">
+              <button type="button" onclick="adjustFontScale(-0.06)" class="hover:text-blue-500 px-1 cursor-pointer">A-</button>
+              <span id="fontScaleDisplayModal" class="text-[11px] font-mono text-slate-500">100%</span>
+              <button type="button" onclick="adjustFontScale(0.06)" class="hover:text-blue-500 px-1 cursor-pointer">A+</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs py-1">
+            <span class="font-bold text-slate-700 dark:text-slate-300">Tema do App:</span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="setTheme('theme-light')" class="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-blue-50 cursor-pointer">☀️ Claro</button>
+              <button type="button" onclick="setTheme('theme-dark')" class="px-2 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-blue-50 cursor-pointer">🌙 Escuro</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão Sair da Conta -->
+        <div class="mt-3 pt-2">
+          <button type="button" onclick="document.getElementById('modalMemberSwitcher').classList.add('hidden'); logoutUser();" class="w-full py-2.5 px-3 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs">
+            <span>🚪</span> <span>Encerrar Sessão / Sair do App</span>
           </button>
         </div>
       </div>
