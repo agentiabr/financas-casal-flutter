@@ -805,7 +805,7 @@ class _ScannerOverlayPainter extends CustomPainter {
     canvas.drawPath(
       Path.combine(
         PathOperation.difference,
-        Path().addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
+        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
         Path()
           ..addRRect(
             RRect.fromRectAndRadius(
