@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ControlPig • Tela Cheia do Professor Pig (Conceito Visual)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Animação suave de flutuação */
+    @keyframes floatGentle {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    /* Brilho pulsante neon cyan */
+    @keyframes cyanGlowPulse {
+      0%, 100% {
+        box-shadow: 0 0 25px rgba(6, 182, 212, 0.45), inset 0 0 15px rgba(6, 182, 212, 0.2);
+        border-color: rgba(6, 182, 212, 0.85);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(6, 182, 212, 0.75), inset 0 0 25px rgba(6, 182, 212, 0.35);
+        border-color: #22d3ee;
+      }
+    }
+
+    .animate-float {
+      animation: floatGentle 4.5s ease-in-out infinite;
+    }
+
+    .neon-bubble {
+      animation: cyanGlowPulse 3s ease-in-out infinite;
+      backdrop-filter: blur(16px);
+      background: rgba(14, 116, 144, 0.28);
+    }
+
+    /* Bico do balão em estilo holográfico */
+    .bubble-tail {
+      position: absolute;
+      bottom: -16px;
+      right: 48px;
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 18px solid #06b6d4;
+      filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8));
+    }
+    .bubble-tail::after {
+      content: '';
+      position: absolute;
+      top: -19px;
+      left: -12px;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 16px solid #0a3d62;
+    }
+
+    /* Fundo degradê estúdio azul royal profundo */
+    .bg-studio-blue {
+      background: radial-gradient(circle at 50% 38%, #1e40af 0%, #0f2b82 45%, #05164d 100%);
+    }
+
+    /* Scrollbar oculta */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-0 sm:p-6 select-none overflow-x-hidden">
+
+  <!-- MOLDURA SIMULANDO SMARTPHONE OU TELA CHEIA NATIVA -->
+  <div class="relative w-full max-w-[420px] h-screen sm:h-[860px] sm:max-h-[95vh] sm:rounded-[44px] shadow-[0_25px_70px_rgba(0,0,0,0.85)] border-0 sm:border-[8px] sm:border-slate-800 overflow-hidden flex flex-col justify-between bg-studio-blue">
+    
+    <!-- BARRA SUPERIOR (HEADER DISCRETO COM FECHAR & ÁUDIO) -->
+    <header class="relative z-30 px-6 pt-5 pb-2 flex items-center justify-between">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-xs font-black tracking-wider uppercase text-sky-200">Professor Pig Ativo</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Botão de Falar Texto (Voz) -->
+        <button type="button" onclick="speakCurrentTip()" class="w-10 h-10 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-md transition-all cursor-pointer" title="Ouvir a fala do Professor Pig">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+        </button>
+
+        <!-- Botão de Fechar / Pular -->
+        <button type="button" onclick="dismissScreen()" class="w-10 h-10 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-90 text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-md transition-all cursor-pointer" title="Entrar no aplicativo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ÁREA CENTRAL COM BALÃO E MASCOTE 3D -->
+    <main class="relative z-20 flex-1 flex flex-col justify-between px-6 pt-2 pb-0 overflow-hidden">
+
+      <!-- 1. BALÃO HOLOGRÁFICO NEON (FUTURÍSTICO / CLEAN) -->
+      <div class="relative z-30 mt-2 mb-auto animate-float">
+        <div class="neon-bubble rounded-3xl p-5 border-2 border-cyan-400 shadow-2xl relative text-left">
+          
+          <!-- Cabeçalho do Balão -->
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-xl filter drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" id="tipIcon">💡</span>
+              <h3 class="font-black text-sm sm:text-base text-cyan-200 tracking-tight" id="tipCategoryTitle">
+                Dica do Professor Pig:
+              </h3>
+            </div>
+            <!-- Ícone de moeda/gráfico brilhante -->
+            <span class="text-base text-cyan-300 opacity-90" id="tipTagBadge">🪙$</span>
+          </div>
+
+          <!-- Texto do Professor -->
+          <p class="text-xs sm:text-sm font-semibold text-white/95 leading-relaxed tracking-wide min-h-[58px]" id="tipMessageText">
+            Controle seus gastos, faça escolhas conscientes e construa o seu futuro financeiro!
+          </p>
+
+          <!-- Bico do balão holográfico direcionado ao mascote -->
+          <div class="bubble-tail"></div>
+        </div>
+      </div>
+
+      <!-- 2. MASCOTE PROFESSOR PIG EM DESTAQUE NA BASE DA TELA -->
+      <div class="relative z-10 w-full flex items-end justify-center -mb-2 mt-auto">
+        <!-- Reflexo sutil de estúdio -->
+        <div class="absolute bottom-4 w-48 h-8 bg-cyan-400/20 rounded-full blur-xl"></div>
+        
+        <!-- Imagem do Professor Pig (Referência Exata Fornecida) -->
+        <img 
+          src="./professor_pig_screen_ref.png" 
+          alt="Professor Pig Mascote" 
+          class="w-full max-w-[340px] sm:max-w-[360px] object-contain drop-shadow-[0_20px_45px_rgba(0,0,0,0.65)] pointer-events-none transition-transform duration-500 hover:scale-105"
+        />
+      </div>
+
+    </main>
+
+    <!-- RODAPÉ DE AÇÕES & NAVEGAÇÃO -->
+    <footer class="relative z-30 px-6 pb-6 pt-3 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex flex-col gap-3">
+      
+      <!-- Seletor de Tópicos para Testar o Conteúdo -->
+      <div class="flex items-center justify-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+        <button onclick="setTopic('intro')" id="btnTopic-intro" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-cyan-500 text-slate-950 shadow-md cursor-pointer transition-all">
+          👋 Boas-vindas
+        </button>
+        <button onclick="setTopic('financas')" id="btnTopic-financas" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-white/10 text-white hover:bg-white/20 cursor-pointer transition-all">
+          💰 Finanças
+        </button>
+        <button onclick="setTopic('saude')" id="btnTopic-saude" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-white/10 text-white hover:bg-white/20 cursor-pointer transition-all">
+          🏋️‍♂️ Treino & Saúde
+        </button>
+        <button onclick="setTopic('mercado')" id="btnTopic-mercado" class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-white/10 text-white hover:bg-white/20 cursor-pointer transition-all">
+          🛒 Mercado QR
+        </button>
+      </div>
+
+      <!-- Botão Principal de Avançar / Entrar -->
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="nextTip()" class="flex-1 py-3.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 active:scale-95 text-slate-950 font-black text-xs sm:text-sm tracking-wide shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all cursor-pointer flex items-center justify-center gap-2">
+          <span>Próxima Dica</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+
+        <button type="button" onclick="dismissScreen()" class="py-3.5 px-4 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-95 text-white font-extrabold text-xs sm:text-sm backdrop-blur-md border border-white/20 shadow-md transition-all cursor-pointer flex items-center justify-center">
+          Entrar no App
+        </button>
+      </div>
+
+      <!-- Opção de 'Não mostrar mais' discreta -->
+      <div class="text-center">
+        <button type="button" onclick="toggleAutoShow()" id="btnAutoShowToggle" class="text-[11px] font-medium text-slate-400 hover:text-cyan-300 underline underline-offset-4 cursor-pointer transition-colors">
+          Silenciar Professor Pig nas próximas vezes
+        </button>
+      </div>
+
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT INTERATIVO -->
+  <script>
+    const tips = {
+      intro: [
+        {
+          icon: "🎓",
+          category: "Professor Pig • Boas-vindas",
+          tag: "✨",
+          message: "Olá, Rodrigo e Márcia! Eu sou o Professor Pig. Estou aqui para guiar suas conquistas financeiras e sua saúde diária!"
+        },
+        {
+          icon: "💡",
+          category: "Dica do Professor Pig:",
+          tag: "🪙$",
+          message: "Controle seus gastos, faça escolhas conscientes e construa o seu futuro financeiro!"
+        }
+      ],
+      financas: [
+        {
+          icon: "💰",
+          category: "Gestão do Saldo Positivo",
+          tag: "📈",
+          message: "Você já definiu o ciclo deste mês. Separar 15% do saldo para os cofrinhos garante sua viagem sem comprometer as contas fixas!"
+        },
+        {
+          icon: "💳",
+          category: "Cartões & Faturas",
+          tag: "💳",
+          message: "A fatura do Nubank fecha em 5 dias. Concentre compras a partir de amanhã para jogar o pagamento para o mês seguinte!"
+        }
+      ],
+      saude: [
+        {
+          icon: "🏋️‍♂️",
+          category: "Trio Especialista • Treino & Saúde",
+          tag: "🩺",
+          message: "Hoje é dia de treino de pernas! Beba 400ml de água antes de sair e tome o Losartana com antecedência para estabilizar sua pressão."
+        },
+        {
+          icon: "🥗",
+          category: "Nutri & Mercado",
+          tag: "🥑",
+          message: "Na última compra você levou aveia e ovos. Excelente combinação para um pré-treino rápido de 20 minutos!"
+        }
+      ],
+      mercado: [
+        {
+          icon: "⚡",
+          category: "Captura por QR Code",
+          tag: "🧾",
+          message: "Ao pagar no caixa, aponte a câmera para o QR Code da nota fiscal: todos os itens e preços entram automaticamente no seu comparador!"
+        }
+      ]
+    };
+
+    let currentTopic = 'intro';
+    let currentIndex = 0;
+
+    function renderCurrentTip() {
+      const list = tips[currentTopic];
+      const item = list[currentIndex % list.length];
+      
+      const iconEl = document.getElementById('tipIcon');
+      const catEl = document.getElementById('tipCategoryTitle');
+      const tagEl = document.getElementById('tipTagBadge');
+      const msgEl = document.getElementById('tipMessageText');
+
+      // Animação suave de fade out / in
+      msgEl.style.opacity = '0';
+      setTimeout(() => {
+        iconEl.textContent = item.icon;
+        catEl.textContent = item.category;
+        tagEl.textContent = item.tag;
+        msgEl.textContent = item.message;
+        msgEl.style.opacity = '1';
+      }, 150);
+    }
+
+    function setTopic(topic) {
+      currentTopic = topic;
+      currentIndex = 0;
+      
+      // Atualizar botões
+      ['intro', 'financas', 'saude', 'mercado'].forEach(t => {
+        const btn = document.getElementById(`btnTopic-${t}`);
+        if (t === topic) {
+          btn.className = "px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-cyan-400 text-slate-950 shadow-md cursor-pointer transition-all";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-xl text-[11px] font-extrabold bg-white/10 text-white hover:bg-white/20 cursor-pointer transition-all";
+        }
+      });
+
+      renderCurrentTip();
+    }
+
+    function nextTip() {
+      const list = tips[currentTopic];
+      currentIndex = (currentIndex + 1) % list.length;
+      renderCurrentTip();
+    }
+
+    function speakCurrentTip() {
+      const list = tips[currentTopic];
+      const item = list[currentIndex % list.length];
+      const text = `${item.category}. ${item.message}`;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'pt-BR';
+        utter.rate = 1.05;
+        utter.pitch = 1.1;
+        window.speechSynthesis.speak(utter);
+      } else {
+        alert("Navegador sem suporte a síntese de voz nativa.");
+      }
+    }
+
+    function dismissScreen() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      alert("Demonstração: Aqui o app transicionaria com fade suave para a tela inicial do ControlPig!");
+    }
+
+    function toggleAutoShow() {
+      const btn = document.getElementById('btnAutoShowToggle');
+      if (btn.textContent.includes('Silenciar')) {
+        btn.textContent = 'Ativar Professor Pig no próximo login';
+        btn.classList.add('text-amber-400');
+      } else {
+        btn.textContent = 'Silenciar Professor Pig nas próximas vezes';
+        btn.classList.remove('text-amber-400');
+      }
+    }
+
+    // Inicializar
+    renderCurrentTip();
+  </script>
+</body>
+</html>

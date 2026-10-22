@@ -58,8 +58,28 @@ class NfceParser {
     );
   }
 
-  /// Extrai o nome do estabelecimento
+  /// Extrai o nome do estabelecimento (priorizando Nome Fantasia)
   String _extractStoreName(dom.Document doc) {
+    // 0. Prioridade Máxima: Seletores explícitos de Nome Fantasia
+    final fantasiaSelectors = [
+      '.fantasia',
+      '#lblNomeFantasia',
+      '.nomeFantasia',
+      '#nomeFantasia',
+      '.txtFantasia',
+      '#fantasia',
+      '.subTitulo',
+    ];
+    for (final sel in fantasiaSelectors) {
+      final el = doc.querySelector(sel);
+      if (el != null && el.text.trim().isNotEmpty) {
+        final name = _cleanStoreName(el.text);
+        if (name.isNotEmpty && !name.toLowerCase().contains('danfe') && !name.toLowerCase().contains('cnpj')) {
+          return name;
+        }
+      }
+    }
+
     // 1. SEFAZ SP: .txtTopo ou #u20
     final txtTopo = doc.querySelector('.txtTopo') ??
         doc.querySelector('#u20') ??
@@ -113,11 +133,34 @@ class NfceParser {
   }
 
   String _cleanStoreName(String raw) {
-    return raw
+    if (raw.isEmpty) return 'Estabelecimento Comercial';
+    String s = raw
         .replaceAll(RegExp(r'[\r\n\t]+'), ' ')
         .replaceAll(RegExp(r'\s{2,}'), ' ')
         .replaceAll(RegExp(r'(?i)CNPJ:?.*'), '')
         .trim();
+
+    // Mapeamento de Razões Sociais clássicas brasileiras para seus Nomes Fantasia amigáveis
+    final upper = s.toUpperCase();
+    if (upper.contains('DIA BRASIL')) return 'Supermercado Dia';
+    if (upper.contains('SENDAS DISTRIBUIDORA')) return 'Assaí Atacadista';
+    if (upper.contains('COMPANHIA BRASILEIRA DE DISTRIBUI')) return 'Pão de Açúcar / Extra';
+    if (upper.contains('CARREFOUR COMERCIO')) return 'Carrefour';
+    if (upper.contains('ATACADAO S')) return 'Atacadão';
+    if (upper.contains('RAIA DROGASIL')) return 'Droga Raia / Drogasil';
+    if (upper.contains('DROGARIA SAO PAULO') || upper.contains('DPSP')) return 'Drogaria São Paulo';
+    if (upper.contains('DROGARIAS PACHECO')) return 'Drogarias Pacheco';
+    if (upper.contains('SONDA SUPERMERCADOS')) return 'Sonda Supermercados';
+    if (upper.contains('ZAFFARI')) return 'Zaffari';
+    if (upper.contains('SUPERMERCADOS BH')) return 'Supermercados BH';
+    if (upper.contains('IRMAOS MUFFATO')) return 'Super Muffato';
+
+    // Remoção de sufixos societários e filiais
+    s = s.replaceAll(RegExp(r'(?i)\s*(?:SOCIEDADE\s+LIMITADA|LTDA\.?|S/?A\.?|S\.A\.|EIRELI|M\.?E\.?|EPP)\b.*$'), '');
+    s = s.replaceAll(RegExp(r'(?i)\s*[-•]?\s*(?:LOJA|FILIAL|SUCURSAL)\s*[\d\w\s-]*$'), '');
+    s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+
+    return s.isNotEmpty ? s : raw.trim();
   }
 
   /// Extrai data no formato YYYY-MM-DD

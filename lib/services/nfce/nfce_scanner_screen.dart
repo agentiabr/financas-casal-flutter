@@ -333,17 +333,41 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
               for (var i = 0; i < items.length; i++) total += items[i].total;
             }
 
-            // 4. Estabelecimento
-            var storeEl = document.querySelector('.txtTopo') || document.querySelector('#u20') || document.querySelector('.empresa') || document.querySelector('#empresa');
-            if (storeEl) {
-              store = storeEl.textContent.replace(/CNPJ:?.*/gi, '').replace(/\s+/g, ' ').trim();
+            // 4. Estabelecimento (Prioriza Nome Fantasia)
+            var store = '';
+            var fantasiaEl = document.querySelector('.fantasia, #lblNomeFantasia, .nomeFantasia, #nomeFantasia, .txtFantasia, #fantasia');
+            if (fantasiaEl && fantasiaEl.textContent.trim()) {
+              store = fantasiaEl.textContent;
+            } else {
+              var storeEl = document.querySelector('.txtTopo') || document.querySelector('#u20') || document.querySelector('.empresa') || document.querySelector('#empresa');
+              if (storeEl) store = storeEl.textContent;
             }
             if (!store) {
               var h3 = document.querySelector('h3, h4');
               if (h3 && !h3.textContent.toLowerCase().includes('danfe')) {
-                store = h3.textContent.replace(/CNPJ:?.*/gi, '').replace(/\s+/g, ' ').trim();
+                store = h3.textContent;
               }
             }
+            function sanitizeStore(s) {
+              if (!s) return '';
+              s = s.replace(/CNPJ:?.*/gi, '').replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim();
+              var u = s.toUpperCase();
+              if (u.includes('DIA BRASIL')) return 'Supermercado Dia';
+              if (u.includes('SENDAS DISTRIBUIDORA')) return 'Assaí Atacadista';
+              if (u.includes('COMPANHIA BRASILEIRA DE DISTRIBUI')) return 'Pão de Açúcar';
+              if (u.includes('CARREFOUR COMERCIO')) return 'Carrefour';
+              if (u.includes('ATACADAO S')) return 'Atacadão';
+              if (u.includes('RAIA DROGASIL')) return 'Droga Raia';
+              if (u.includes('DROGARIA SAO PAULO') || u.includes('DPSP')) return 'Drogaria São Paulo';
+              if (u.includes('DROGARIAS PACHECO')) return 'Drogarias Pacheco';
+              if (u.includes('SONDA SUPERMERCADOS')) return 'Sonda Supermercados';
+              if (u.includes('ZAFFARI')) return 'Zaffari';
+              if (u.includes('SUPERMERCADOS BH')) return 'Supermercados BH';
+              s = s.replace(/\s*(?:SOCIEDADE\s+LIMITADA|LTDA\.?|S\/?A\.?|S\.A\.|EIRELI|M\.?E\.?|EPP)\b.*/gi, '');
+              s = s.replace(/\s*[-•]?\s*(?:LOJA|FILIAL|SUCURSAL)\s*[\d\w\s-]*$/gi, '');
+              return s.trim();
+            }
+            store = sanitizeStore(store) || 'Estabelecimento Comercial';
 
             // 5. Data da Compra
             var bodyText = document.body ? document.body.textContent : '';
