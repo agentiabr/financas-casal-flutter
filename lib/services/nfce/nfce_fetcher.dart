@@ -18,12 +18,34 @@ class NfceFetcher {
   /// Normaliza URLs de consulta pública conhecidas para ir direto à página de itens
   static String normalizeUrl(String rawUrl) {
     var url = rawUrl.trim();
-    if (url.contains('fazenda.sp.gov.br') && url.contains('/qrcode?p=')) {
-      final pIndex = url.indexOf('/qrcode?p=');
-      final query = url.substring(pIndex + '/qrcode?p='.length);
-      return 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx?p=$query';
+    if (url.contains('fazenda.sp.gov.br')) {
+      if (url.contains('/qrcode?p=')) {
+        final pIndex = url.indexOf('/qrcode?p=');
+        final query = url.substring(pIndex + '/qrcode?p='.length);
+        return 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=$query';
+      }
+      if (url.contains('ConsultaPublica.aspx?p=')) {
+        return url.replaceAll('ConsultaPublica.aspx', 'ConsultaQRCode.aspx');
+      }
     }
     return url;
+  }
+
+  /// Converte strings de URL com caracteres especiais (como pipe '|') em URIs válidos
+  static Uri parseSafeUri(String urlString) {
+    final clean = urlString.trim();
+    try {
+      return Uri.parse(clean);
+    } catch (_) {
+      final qIndex = clean.indexOf('?');
+      if (qIndex != -1) {
+        final base = clean.substring(0, qIndex);
+        final query = clean.substring(qIndex + 1);
+        final safeQuery = query.replaceAll('|', '%7C').replaceAll(' ', '%20');
+        return Uri.parse('$base?$safeQuery');
+      }
+      return Uri.parse(Uri.encodeFull(clean));
+    }
   }
 
   /// Busca a página HTML da URL fornecida e retorna o modelo [NfceInvoice]
@@ -47,7 +69,7 @@ class NfceFetcher {
 
       try {
         while (redirectCount < 6) {
-          final uri = Uri.parse(currentUrl);
+          final uri = parseSafeUri(currentUrl);
 
           // Headers com User-Agent de navegador moderno (SEM 'br' para evitar compressão Brotli incompatível no Dart)
           final headers = {

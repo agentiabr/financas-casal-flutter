@@ -209,7 +209,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       final keyMatch = RegExp(r'\d{44}').firstMatch(val);
       if (keyMatch != null) {
         final key = keyMatch.group(0)!;
-        targetUrl = 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx?p=$key';
+        targetUrl = 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=$key';
       }
     } else {
       targetUrl = NfceFetcher.normalizeUrl(targetUrl);

@@ -178,6 +178,36 @@ void main() {
     });
   });
 
+  group('NfceParser - Layout SEFAZ SP Oficial (ConsultaQRCode.aspx Joanin)', () {
+    late String joaninHtml;
+    final parser = NfceParser();
+
+    setUp(() {
+      final file = File('test/fixtures/nfce_sp_joanin.html');
+      joaninHtml = file.readAsStringSync();
+    });
+
+    test('Extrai nome fantasia Supermercados Joanin, total de 15.87 e 6 itens reais', () {
+      final invoice = parser.parse(joaninHtml);
+
+      expect(invoice.isFallback, isFalse);
+      expect(invoice.storeName, contains('Joanin'));
+      expect(invoice.total, equals(15.87));
+      expect(invoice.items.length, equals(6));
+
+      // Item 1: Água Crystal
+      expect(invoice.items[0].name, contains('AGUA MIN CRYSTAL'));
+      expect(invoice.items[0].unitPrice, equals(4.45));
+      expect(invoice.items[0].totalPrice, equals(4.45));
+
+      // Item 2: Pão Francês (KG)
+      expect(invoice.items[1].name, contains('PAO FRANCES'));
+      expect(invoice.items[1].quantity, equals(0.312));
+      expect(invoice.items[1].unit, equals('KG'));
+      expect(invoice.items[1].totalPrice, equals(5.92));
+    });
+  });
+
   group('NfceParser - Tratamento de Falhas e Fallback', () {
     final parser = NfceParser();
 

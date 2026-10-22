@@ -80,7 +80,32 @@ class NfceParser {
       }
     }
 
-    // 1. SEFAZ SP: .txtTopo ou #u20
+    // 1. SEFAZ SP: Procura Nome Fantasia nos nós complementares de endereço/filial (.txtCenter .text)
+    final textDivs = doc.querySelectorAll('.txtCenter .text, .conteudoTr .text, .text');
+    for (final div in textDivs) {
+      final t = div.text.trim();
+      final parts = t.split(',');
+      for (final part in parts) {
+        final p = part.trim();
+        final pUpper = p.toUpperCase();
+        if (pUpper.contains('MERCADO') ||
+            pUpper.contains('SUPERMERCADO') ||
+            pUpper.contains('DROGARIA') ||
+            pUpper.contains('FARMACIA') ||
+            pUpper.contains('PADARIA') ||
+            pUpper.contains('JOANIN') ||
+            pUpper.contains('ASSAI') ||
+            pUpper.contains('CARREFOUR') ||
+            pUpper.contains('ATACADO')) {
+          final cleaned = _cleanStoreName(p);
+          if (cleaned.isNotEmpty && !cleaned.toLowerCase().contains('cnpj')) {
+            return cleaned;
+          }
+        }
+      }
+    }
+
+    // 1.1 SEFAZ SP: .txtTopo ou #u20 (Razão Social)
     final txtTopo = doc.querySelector('.txtTopo') ??
         doc.querySelector('#u20') ??
         doc.querySelector('.conteudoTr .txtTopo') ??
@@ -142,6 +167,7 @@ class NfceParser {
 
     // Mapeamento de Razões Sociais clássicas brasileiras para seus Nomes Fantasia amigáveis
     final upper = s.toUpperCase();
+    if (upper.contains('COMERCIAL OSWALDO CRUZ') || upper.contains('JOANIN')) return 'Supermercados Joanin';
     if (upper.contains('DIA BRASIL')) return 'Supermercado Dia';
     if (upper.contains('SENDAS DISTRIBUIDORA')) return 'Assaí Atacadista';
     if (upper.contains('COMPANHIA BRASILEIRA DE DISTRIBUI')) return 'Pão de Açúcar / Extra';

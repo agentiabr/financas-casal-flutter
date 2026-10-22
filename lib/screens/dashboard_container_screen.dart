@@ -171,7 +171,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.31+108';
+  static const String _kCurrentAppVersion = '2.1.33+110';
 
   void _initWebViewController() {
     _controller = WebViewController()
