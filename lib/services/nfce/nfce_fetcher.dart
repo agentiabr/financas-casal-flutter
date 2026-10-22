@@ -15,6 +15,17 @@ class NfceFetcher {
   NfceFetcher({NfceParser? parser})
       : _parser = parser ?? NfceParser();
 
+  /// Normaliza URLs de consulta pública conhecidas para ir direto à página de itens
+  static String normalizeUrl(String rawUrl) {
+    var url = rawUrl.trim();
+    if (url.contains('fazenda.sp.gov.br') && url.contains('/qrcode?p=')) {
+      final pIndex = url.indexOf('/qrcode?p=');
+      final query = url.substring(pIndex + '/qrcode?p='.length);
+      return 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx?p=$query';
+    }
+    return url;
+  }
+
   /// Busca a página HTML da URL fornecida e retorna o modelo [NfceInvoice]
   Future<NfceInvoice> fetchAndParse(String rawUrl) async {
     final cleanUrl = rawUrl.trim();
@@ -29,7 +40,7 @@ class NfceFetcher {
     }
 
     try {
-      var currentUrl = cleanUrl;
+      var currentUrl = normalizeUrl(cleanUrl);
       int redirectCount = 0;
       http.Response? finalResponse;
       final client = http.Client();
