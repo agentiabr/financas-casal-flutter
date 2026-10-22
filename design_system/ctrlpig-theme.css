@@ -1,0 +1,506 @@
+/**
+ * ==============================================================================
+ * ControlPig Fintech Design System - Stylesheet V2.2
+ * Especialista Fintech Mobile: Nubank / Itaú / Revolut
+ * Compatibilidade: Android WebView (Galaxy A13 e Galaxy M62)
+ * Retrato & Paisagem (Zero Scroll Horizontal, Status Bar Integrada)
+ * ==============================================================================
+ */
+
+/* 1. VARIÁVEIS DE DESIGN SYSTEM */
+:root {
+  /* Cores Institucionais */
+  --cp-primary: #0A3981;
+  --cp-primary-dark: #082F6D;
+  --cp-primary-deep: #051C44;
+  --cp-primary-light: #1D4ED8;
+  --cp-accent: #38BDF8;
+  --cp-accent-glow: rgba(56, 189, 248, 0.35);
+
+  /* Superfícies & Bordas (Modo Claro Padrão) */
+  --cp-bg-app: #F8FAFC;
+  --cp-card-bg: #FFFFFF;
+  --cp-card-muted: #F1F5F9;
+  --cp-border: #E2E8F0;
+  --cp-border-light: #F1F5F9;
+  --cp-border-active: #3B82F6;
+
+  /* Tipografia & Contraste */
+  --cp-text-primary: #0F172A;
+  --cp-text-secondary: #475569;
+  --cp-text-muted: #94A3B8;
+  --cp-text-inverse: #FFFFFF;
+
+  /* Semântica Financeira */
+  --cp-income: #10B981;
+  --cp-income-bg: #ECFDF5;
+  --cp-expense: #EF4444;
+  --cp-expense-bg: #FEF2F2;
+  --cp-fixed: #6366F1;
+  --cp-fixed-bg: #EEF2FF;
+  --cp-installments: #8B5CF6;
+  --cp-installments-bg: #F5F3FF;
+  --cp-warning: #F59E0B;
+  --cp-warning-bg: #FFFBEB;
+
+  /* Sombras Suaves Nubank */
+  --cp-shadow-card: 0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
+  --cp-shadow-elevated: 0 14px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --cp-shadow-hero: 0 12px 30px -4px rgba(10, 57, 129, 0.35);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(15, 23, 42, 0.07);
+
+  /* Dimensões & Raios */
+  --cp-radius-card: 1.5rem;   /* 24px */
+  --cp-radius-tile: 1.125rem; /* 18px */
+  --cp-radius-button: 0.875rem; /* 14px */
+  --cp-radius-pill: 9999px;
+
+  /* Safe Areas Android */
+  --cp-safe-top: env(safe-area-inset-top, 0px);
+  --cp-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Modo Escuro */
+.dark {
+  --cp-bg-app: #0B0F17;
+  --cp-card-bg: #131C2E;
+  --cp-card-muted: #1E293B;
+  --cp-border: #1E293B;
+  --cp-border-light: #162032;
+  --cp-border-active: #38BDF8;
+
+  --cp-text-primary: #F8FAFC;
+  --cp-text-secondary: #94A3B8;
+  --cp-text-muted: #64748B;
+
+  --cp-income-bg: rgba(16, 185, 129, 0.15);
+  --cp-expense-bg: rgba(239, 68, 68, 0.15);
+  --cp-fixed-bg: rgba(99, 102, 241, 0.15);
+  --cp-installments-bg: rgba(139, 92, 246, 0.15);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 2. REGRAS GLOBAIS DE VIEWPORT E ANDROID WEBVIEW */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--cp-bg-app);
+  color: var(--cp-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden !important; /* Proíbe estritamente scroll horizontal */
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 3. CABEÇALHO BANCÁRIO QUE PINTA A STATUS BAR */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  width: 100%;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  box-shadow: 0 4px 16px rgba(10, 57, 129, 0.2);
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.app-header-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Botões translúcidos de ação do cabeçalho */
+.header-glass-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-glass-btn:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.header-glass-btn:active {
+  transform: scale(0.94);
+}
+
+/* 4. CARD AZUL HEROIC DO DASHBOARD */
+.hero-card-banner {
+  background: linear-gradient(135deg, #0A3981 0%, #082F6D 50%, #051C44 100%);
+  border-radius: var(--cp-radius-card);
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+  color: #FFFFFF;
+  box-shadow: var(--cp-shadow-hero);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 0.75rem;
+}
+
+.hero-specular-sheen {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 14rem;
+  height: 14rem;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+/* Balão interativo de dicas do Piggy no card azul */
+.hero-piggy-balloon {
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  padding: 0.875rem;
+  color: #FFFFFF;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+/* 5. CARDS FINTECH (Nubank / Itaú style) */
+.card-fintech {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-card);
+  box-shadow: var(--cp-shadow-card);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-fintech:hover {
+  box-shadow: var(--cp-shadow-elevated);
+}
+
+/* 6. LIST ITEM FINTECH (Transações agrupadas) */
+.list-item-fintech {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-radius: var(--cp-radius-tile);
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.list-item-fintech:active {
+  transform: scale(0.985);
+  background-color: var(--cp-card-muted);
+}
+
+.list-item-icon-box {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* 7. CHIPS & PÍLULAS DE FILTRO */
+.chip-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--cp-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid var(--cp-border);
+  background-color: var(--cp-card-bg);
+  color: var(--cp-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip-pill.active {
+  background-color: var(--cp-primary);
+  color: #FFFFFF;
+  border-color: var(--cp-primary);
+  box-shadow: 0 2px 8px rgba(10, 57, 129, 0.25);
+}
+
+.chip-pill:hover:not(.active) {
+  background-color: var(--cp-card-muted);
+  color: var(--cp-text-primary);
+}
+
+/* 8. TILES DE MÓDULOS (Família & Vida) */
+.module-tile {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-tile);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  box-shadow: var(--cp-shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.module-tile:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.module-icon-halo {
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+/* 9. NAVEGAÇÃO INFERIOR MODERNA (4 ABAS FINTECH) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--cp-border);
+  padding-top: 0.35rem;
+  padding-bottom: max(6px, var(--cp-safe-bottom));
+  box-shadow: var(--cp-shadow-dock);
+  user-select: none;
+}
+
+.dark .bottom-nav {
+  background-color: rgba(19, 28, 46, 0.95);
+  border-top-color: var(--cp-border);
+}
+
+.bottom-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 28rem; /* 448px */
+  margin: 0 auto;
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.25rem;
+  min-height: 48px; /* Touch target Android */
+  color: var(--cp-text-muted);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.1s ease;
+  position: relative;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+}
+
+.bottom-nav-item.active {
+  color: var(--cp-primary);
+}
+
+.dark .bottom-nav-item.active {
+  color: var(--cp-accent);
+}
+
+.bottom-nav-item.active i {
+  stroke-width: 2.4;
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.92);
+}
+
+/* 10. PADRÃO DE TELA INTEIRA (Substitui Modais Flutuantes) */
+.full-screen-page {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: var(--cp-bg-app);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: max(16px, var(--cp-safe-bottom));
+}
+
+.page-header-back {
+  position: sticky;
+  top: 0;
+  z-index: 51;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+}
+
+.btn-back-circle {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-back-circle:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 11. OVERLAY DE PITACO DO MASCOTE COM BACKDROP-FILTER BLUR */
+.mascot-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(5, 28, 68, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mascot-speech-bubble {
+  background: rgba(15, 23, 42, 0.96);
+  border: 2px solid var(--cp-accent);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  color: #F8FAFC;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.1);
+  text-align: center;
+  max-width: 22rem;
+  width: 100%;
+  position: relative;
+}
+
+.mascot-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: var(--cp-accent) transparent;
+  display: block;
+  width: 0;
+}
+
+.mascot-official-img {
+  width: 9rem;
+  height: 9rem;
+  object-contain: contain;
+  margin-top: 0.75rem;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6));
+  animation: cpFloatMascot 3.5s ease-in-out infinite;
+}
+
+@keyframes cpFloatMascot {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+/* 12. ADAPTAÇÃO PARA MODO PAISAGEM (ANDROID WEBVIEW GALAXY A13 / M62) */
+@media (orientation: landscape) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .hero-card-banner {
+    padding: 1rem 1.5rem;
+  }
+
+  /* Ajusta grid do dashboard para side-by-side no landscape */
+  .landscape-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* Reduz altura do balão do herói para não empurrar a tela */
+  .hero-piggy-balloon {
+    min-height: 96px;
+  }
+
+  /* Bottom nav compacta na horizontal */
+  .bottom-nav {
+    padding-top: 0.2rem;
+    padding-bottom: max(4px, var(--cp-safe-bottom));
+  }
+
+  .bottom-nav-item {
+    min-height: 42px;
+    font-size: 0.625rem;
+  }
+}

@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ControlPig — Fintech Mobile Design System Preview</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ControlPig Design System Stylesheet -->
+  <link rel="stylesheet" href="ctrlpig-theme.css">
+
+  <style>
+    /* Estilos do Wrapper de Apresentação */
+    body.preview-mode {
+      background: #0F172A;
+      color: #F8FAFC;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .device-toolbar {
+      width: 100%;
+      background: #1E293B;
+      border-bottom: 1px solid #334155;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+
+    .device-viewport-frame {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 12px #1E293B, 0 0 0 14px #334155;
+      border-radius: 40px;
+      overflow: hidden;
+      background: #F8FAFC;
+      position: relative;
+      margin: 1.5rem auto 3rem auto;
+    }
+
+    /* Modos de dispositivo */
+    .frame-m62 {
+      width: 412px;
+      height: 915px;
+    }
+
+    .frame-a13 {
+      width: 384px;
+      height: 854px;
+    }
+
+    .frame-landscape {
+      width: 915px;
+      height: 412px;
+    }
+
+    .frame-full {
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+    }
+
+    .app-screen-viewport {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #F8FAFC;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Simulação de Status Bar Android */
+    .android-system-status-bar {
+      height: 28px;
+      background: #051C44;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    /* Esconde barra de rolagem no frame */
+    .app-screen-viewport::-webkit-scrollbar {
+      width: 4px;
+    }
+    .app-screen-viewport::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="preview-mode">
+
+  <!-- BARRA DE FERRAMENTAS DO PREVIEW -->
+  <header class="device-toolbar">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🐷</span>
+        <span class="font-black text-sm tracking-tight text-white">ControlPig Fintech Design System</span>
+      </div>
+      <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">V2.2 Oficial</span>
+    </div>
+
+    <!-- Seletor de Telas -->
+    <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+      <button onclick="switchScreen('dashboard')" id="btnTab_dashboard" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-xs">1. Início</button>
+      <button onclick="switchScreen('transacoes')" id="btnTab_transacoes" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">2. Transações</button>
+      <button onclick="switchScreen('familia')" id="btnTab_familia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">3. Família &amp; Vida</button>
+      <button onclick="switchScreen('chat')" id="btnTab_chat" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">4. Chat</button>
+      <button onclick="toggleMascotOverlay(true)" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40">⚡ Testar Pitaco</button>
+    </div>
+
+    <!-- Seletor de Aparelho / Orientação -->
+    <div class="flex items-center gap-1.5 text-xs">
+      <span class="text-slate-400 font-medium mr-1">Dispositivo:</span>
+      <button onclick="setDeviceFrame('m62')" id="btnDev_m62" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold">Galaxy M62 (412px)</button>
+      <button onclick="setDeviceFrame('a13')" id="btnDev_a13" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Galaxy A13 (384px)</button>
+      <button onclick="setDeviceFrame('landscape')" id="btnDev_landscape" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white">Paisagem (915px)</button>
+    </div>
+  </header>
+
+  <!-- MOLDURA DO SMARTPHONE (SIMULAÇÃO ANDROID WEBVIEW) -->
+  <main id="phoneFrame" class="device-viewport-frame frame-m62">
+    
+    <!-- STATUS BAR ANDROID SEAMLESS PINTADA NA COR DO CABEÇALHO -->
+    <div class="android-system-status-bar">
+      <span>9:41</span>
+      <div class="flex items-center gap-1.5 text-[10px]">
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <span>100%</span>
+        <i data-lucide="battery" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- VIEWPORT DA APLICAÇÃO -->
+    <div id="appViewport" class="app-screen-viewport pb-16">
+
+      <!-- ============================================================ -->
+      <!-- TELA 1: DASHBOARD (INÍCIO)                                   -->
+      <!-- ============================================================ -->
+      <section id="screen_dashboard" class="w-full flex-1">
+        
+        <!-- CABEÇALHO BANCÁRIO UNIFICADO -->
+        <header class="app-header">
+          <div class="app-header-inner">
+            
+            <!-- Avatar do Membro Ativo com Boas-Vindas -->
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="alert('Alternar Membro Ativo: Rodrigo / Márcia')">
+              <div class="relative w-10 h-10 rounded-full border-2 border-sky-400 bg-blue-900 flex items-center justify-center overflow-hidden shadow-xs">
+                <span class="text-xl">👨</span>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0A3981]"></span>
+              </div>
+              <div class="flex flex-col text-left leading-tight">
+                <span class="text-[11px] text-blue-200 font-medium">Bem-vindo de volta,</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-base font-black text-white">Rodrigo</span>
+                  <span class="text-sm">👋</span>
+                </div>
+                <span class="text-[10px] text-blue-300 font-semibold tracking-wider uppercase">Gestor Familiar</span>
+              </div>
+            </div>
+
+            <!-- Botões Translúcidos de Ação (Busca, Notificação com badge, Perfil) -->
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="switchScreen('transacoes')" class="header-glass-btn" title="Buscar">
+                <i data-lucide="search" class="w-4 h-4 text-white"></i>
+              </button>
+              <button type="button" onclick="alert('Central de Notificações: 1 alerta pendente')" class="header-glass-btn relative" title="Alertas">
+                <i data-lucide="bell" class="w-4 h-4 text-white"></i>
+                <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
+              </button>
+              <button type="button" onclick="alert('Painel Admin & Configurações da Família')" class="header-glass-btn" title="Perfil">
+                <i data-lucide="user" class="w-4 h-4 text-white"></i>
+              </button>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- CARD HERÓI AZUL FLAT DO DASHBOARD -->
+        <div class="px-3.5 pt-3 pb-1">
+          <div id="heroCardBanner" class="hero-card-banner">
+            <div class="hero-specular-sheen"></div>
+
+            <div class="relative z-10 space-y-3.5">
+              
+              <!-- Saldo Atual & Ciclo Vigente -->
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-blue-200 uppercase tracking-wider">Saldo Atual</span>
+                    <button type="button" onclick="togglePrivacy()" class="text-blue-300 hover:text-white" title="Ocultar Saldo">
+                      <i id="heroEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                  <div class="flex items-baseline gap-2 mt-0.5 flex-wrap">
+                    <h2 id="heroSaldoText" class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                      R$ 3.270,00
+                    </h2>
+                  </div>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mt-1">
+                    <span>↑ 12%</span> em relação ao mês anterior
+                  </span>
+                </div>
+
+                <!-- Pílula do Ciclo Vigente -->
+                <button type="button" onclick="alert('Ciclo Vigente: 05/Out a 04/Nov 2026')" class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white px-2.5 py-1.5 rounded-2xl transition-all shadow-xs flex-shrink-0">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
+                  <div class="flex flex-col text-left leading-none">
+                    <span class="text-[8px] font-black uppercase text-amber-200">Ciclo</span>
+                    <span class="text-[11px] font-extrabold text-white">Outubro 2026 &gt;</span>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Balão Interativo do Piggy com Setinhas + Mascote 3D -->
+              <div class="flex items-center justify-between gap-3 pt-1">
+                
+                <!-- Balão de Dicas com Navegação -->
+                <div class="w-full flex-1 hero-piggy-balloon">
+                  <div class="flex items-center justify-between mb-1 flex-shrink-0">
+                    <div class="flex items-center gap-1.5">
+                      <span id="previewTipBadgeIcon" class="w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black flex items-center justify-center">💡</span>
+                      <span id="previewTipCategory" class="text-[11px] font-black uppercase tracking-wider text-amber-200">Dica do Piggy</span>
+                      <span id="previewTipIndex" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-white/20 text-white">1/3</span>
+                    </div>
+                    <!-- Setinhas de Navegação de Dicas -->
+                    <div class="flex items-center gap-1">
+                      <button type="button" onclick="stepPiggyTip(-1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white active:scale-90" title="Dica anterior">
+                        <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                      </button>
+                      <button type="button" onclick="stepPiggyTip(1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white active:scale-90" title="Próxima dica">
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Texto da Dica -->
+                  <div id="previewTipText" class="text-xs text-blue-100 font-medium leading-relaxed my-1">
+                    “Tudo certo por aqui! Seu saldo está saudável e a meta de supermercado está sob controle este mês.”
+                  </div>
+
+                  <!-- Dots -->
+                  <div id="previewTipDots" class="flex items-center justify-center gap-1.5 mt-1 pt-1 border-t border-white/10">
+                    <span class="w-2 h-1 rounded-full bg-amber-400"></span>
+                    <span class="w-1 h-1 rounded-full bg-white/40"></span>
+                    <span class="w-1 h-1 rounded-full bg-white/40"></span>
+                  </div>
+                </div>
+
+                <!-- Mascote Piggy 3D Interativo -->
+                <div class="flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="triggerMascotAnim()" title="Toque no Piggy!">
+                  <img id="previewHeroMascot" src="../assets/images/professor_pig_character_only.png" alt="Piggy 3D" class="w-24 h-auto object-contain drop-shadow-md">
+                </div>
+
+              </div>
+
+              <!-- Mini-Indicadores (Dias Restantes, % Comprometido, Parcelados) -->
+              <div class="pt-2.5 border-t border-white/20 grid grid-cols-3 gap-2 text-center">
+                <div class="bg-black/15 rounded-xl p-2">
+                  <div class="text-[10px] text-blue-100 font-medium">Dias Restantes</div>
+                  <div class="text-xs font-black text-white mt-0.5">18 dias</div>
+                </div>
+                <div class="bg-black/15 rounded-xl p-2">
+                  <div class="text-[10px] text-blue-100 font-medium">% Comprometido</div>
+                  <div class="text-xs font-black text-white mt-0.5">61%</div>
+                </div>
+                <div class="bg-black/15 rounded-xl p-2 cursor-pointer" onclick="switchScreen('transacoes')">
+                  <div class="text-[10px] text-blue-100 font-medium">Parcelados</div>
+                  <div class="text-xs font-black text-white mt-0.5">5 ativas</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- DUO DE CARDS: RECEITAS E DESPESAS -->
+        <div class="px-3.5 py-1.5">
+          <div class="grid grid-cols-2 gap-2.5">
+            
+            <!-- Receitas -->
+            <div class="card-fintech p-3.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500">Receitas</span>
+                <div class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                  ↓
+                </div>
+              </div>
+              <div class="mt-1.5">
+                <div class="text-lg sm:text-xl font-black text-emerald-600">
+                  R$ 8.500,00
+                </div>
+                <span class="text-[10px] font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
+                  <span>↑ 12%</span> no mês
+                </span>
+              </div>
+            </div>
+
+            <!-- Despesas -->
+            <div class="card-fintech p-3.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500">Despesas</span>
+                <div class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
+                  ↑
+                </div>
+              </div>
+              <div class="mt-1.5">
+                <div class="text-lg sm:text-xl font-black text-rose-600">
+                  R$ 5.230,00
+                </div>
+                <span class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5 mt-0.5">
+                  <span>↑ 3%</span> no mês
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CARD DESPESAS POR CATEGORIA (DONUT CHART) -->
+        <div class="px-3.5 py-1.5">
+          <div class="card-fintech p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900">Despesas por categoria</h3>
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline">
+                Ver tudo &gt;
+              </button>
+            </div>
+
+            <div class="flex items-center justify-around gap-4">
+              <!-- Donut Chart com Total Central -->
+              <div class="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
+                <canvas id="previewDonutChart" width="144" height="144"></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">Total</span>
+                  <span class="text-base font-black text-slate-900 leading-tight">R$ 5.230</span>
+                  <span class="text-[9px] text-slate-400">no mês</span>
+                </div>
+              </div>
+
+              <!-- Legenda de Fatias -->
+              <div class="space-y-1.5 text-xs w-full max-w-[170px]">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Moradia</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">42%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Alimentação</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">28%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Educação</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">18%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Saúde</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">7%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Outros</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">5%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 2: TRANSAÇÕES                                           -->
+      <!-- ============================================================ -->
+      <section id="screen_transacoes" class="w-full flex-1 hidden">
+        
+        <!-- Header da Seção de Transações -->
+        <header class="app-header">
+          <div class="app-header-inner">
+            <h2 class="text-lg font-black text-white">Transações</h2>
+            <div class="relative w-44">
+              <input type="text" placeholder="Buscar..." class="w-full text-xs rounded-xl bg-white/15 border border-white/25 py-1.5 pl-7 pr-2.5 text-white placeholder-blue-200 focus:outline-none" />
+              <i data-lucide="search" class="w-3.5 h-3.5 text-blue-200 absolute left-2 top-2"></i>
+            </div>
+          </div>
+        </header>
+
+        <div class="px-3.5 py-3">
+          <!-- Pílulas de Filtro -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5">
+            <button class="chip-pill active">Todas</button>
+            <button class="chip-pill">Entradas</button>
+            <button class="chip-pill">Saídas</button>
+            <button class="chip-pill">Parceladas</button>
+          </div>
+
+          <!-- Ações Rápidas (Nova Transação, Escanear NFe, Categorias) -->
+          <div class="grid grid-cols-3 gap-2 my-3">
+            <button type="button" onclick="alert('Abrir Modal de Lançamento')" class="py-2.5 px-2 rounded-2xl bg-[#0A3981] text-white font-black text-xs flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>+ Nova</span>
+            </button>
+            <button type="button" onclick="alert('Abrir Scanner OCR de NFe')" class="py-2.5 px-2 rounded-2xl bg-white border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all">
+              <i data-lucide="camera" class="w-4 h-4 text-blue-600"></i>
+              <span>Escanear</span>
+            </button>
+            <button type="button" onclick="alert('Filtrar por Categoria')" class="py-2.5 px-2 rounded-2xl bg-white border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all">
+              <i data-lucide="tag" class="w-4 h-4 text-purple-600"></i>
+              <span>Categorias</span>
+            </button>
+          </div>
+
+          <!-- Lista Agrupada: Hoje · 20 de outubro -->
+          <div class="mt-4">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Hoje · 20 de outubro</span>
+            
+            <div class="list-item-fintech" onclick="showTxDetail('Supermercado Extra', '- R$ 156,80', 'Alimentação')">
+              <div class="flex items-center gap-3">
+                <div class="list-item-icon-box bg-blue-50 text-blue-600">🛒</div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Supermercado Extra</h4>
+                  <span class="text-[11px] text-slate-500 font-medium">Alimentação • Rodrigo</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600 block">- R$ 156,80</span>
+                <span class="text-[10px] text-slate-400">14:32</span>
+              </div>
+            </div>
+
+            <div class="list-item-fintech" onclick="showTxDetail('Uber Viagem', '- R$ 28,50', 'Transporte')">
+              <div class="flex items-center gap-3">
+                <div class="list-item-icon-box bg-sky-50 text-sky-600">🚗</div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Uber</h4>
+                  <span class="text-[11px] text-slate-500 font-medium">Transporte • Márcia</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600 block">- R$ 28,50</span>
+                <span class="text-[10px] text-slate-400">11:15</span>
+              </div>
+            </div>
+
+            <div class="list-item-fintech" onclick="showTxDetail('Salário Empresa', '+ R$ 5.200,00', 'Receita')">
+              <div class="flex items-center gap-3">
+                <div class="list-item-icon-box bg-emerald-50 text-emerald-600">💼</div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Salário</h4>
+                  <span class="text-[11px] text-slate-500 font-medium">Receita Familiar</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-emerald-600 block">+ R$ 5.200,00</span>
+                <span class="text-[10px] text-slate-400">08:00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista Agrupada: Ontem · 19 de outubro -->
+          <div class="mt-4">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Ontem · 19 de outubro</span>
+
+            <div class="list-item-fintech" onclick="showTxDetail('Farmácia Drogasil', '- R$ 87,90', 'Saúde')">
+              <div class="flex items-center gap-3">
+                <div class="list-item-icon-box bg-rose-50 text-rose-600">💊</div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Farmácia Drogasil</h4>
+                  <span class="text-[11px] text-slate-500 font-medium">Saúde &amp; Remédios</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600 block">- R$ 87,90</span>
+                <span class="text-[10px] text-slate-400">18:40</span>
+              </div>
+            </div>
+
+            <div class="list-item-fintech" onclick="showTxDetail('Restaurante Bom Sabor', '- R$ 92,40', 'Alimentação')">
+              <div class="flex items-center gap-3">
+                <div class="list-item-icon-box bg-amber-50 text-amber-600">🍽️</div>
+                <div>
+                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Restaurante</h4>
+                  <span class="text-[11px] text-slate-500 font-medium">Alimentação Fora</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-black text-sm text-rose-600 block">- R$ 92,40</span>
+                <span class="text-[10px] text-slate-400">12:30</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 3: FAMÍLIA & VIDA                                       -->
+      <!-- ============================================================ -->
+      <section id="screen_familia" class="w-full flex-1 hidden">
+        
+        <!-- Header da Seção -->
+        <header class="app-header">
+          <div class="app-header-inner">
+            <h2 class="text-lg font-black text-white">Família &amp; Vida</h2>
+            <button type="button" class="header-glass-btn" title="Buscar Módulo">
+              <i data-lucide="search" class="w-4 h-4 text-white"></i>
+            </button>
+          </div>
+        </header>
+
+        <div class="px-3.5 py-3">
+          
+          <!-- Banner Hero com Piggy -->
+          <div class="hero-card-banner p-4 flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 class="font-black text-base text-white">Tudo da sua família em um só lugar.</h3>
+              <p class="text-xs text-blue-200 mt-0.5">Organize, planeje e viva com mais tranquilidade.</p>
+              <button type="button" onclick="alert('Explorando todos os módulos familiares!')" class="mt-2.5 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-extrabold text-[11px] border border-white/25 flex items-center gap-1">
+                <span>Explorar módulos</span>
+                <span>→</span>
+              </button>
+            </div>
+            <img src="../assets/images/professor_pig_character_only.png" alt="Piggy" class="w-16 h-auto object-contain flex-shrink-0 drop-shadow-md">
+          </div>
+
+          <!-- Grade 2x4 dos 8 Módulos Oficiais do App -->
+          <div class="grid grid-cols-2 gap-2.5">
+            
+            <!-- 1. Educação -->
+            <div class="module-tile" onclick="triggerSectionMascot('educacao')">
+              <div class="module-icon-halo bg-purple-50 text-purple-600">🎓</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Educação</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Mensalidades</span>
+              </div>
+            </div>
+
+            <!-- 2. Lista de Compras -->
+            <div class="module-tile" onclick="triggerSectionMascot('compras')">
+              <div class="module-icon-halo bg-blue-50 text-blue-600">🛒</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Lista de Compras</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Colaborativa</span>
+              </div>
+            </div>
+
+            <!-- 3. Pets e Vacinas -->
+            <div class="module-tile" onclick="triggerSectionMascot('pet')">
+              <div class="module-icon-halo bg-amber-50 text-amber-600">🐾</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Pets &amp; Vacinas</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Cuidados e gastos</span>
+              </div>
+            </div>
+
+            <!-- 4. Minha Saúde -->
+            <div class="module-tile" onclick="triggerSectionMascot('saude')">
+              <div class="module-icon-halo bg-emerald-50 text-emerald-600">🩺</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Minha Saúde</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Remédios e exames</span>
+              </div>
+            </div>
+
+            <!-- 5. Veículos & Garagem -->
+            <div class="module-tile" onclick="triggerSectionMascot('automoveis')">
+              <div class="module-icon-halo bg-indigo-50 text-indigo-600">🚗</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Veículos</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Manutenção e IPVA</span>
+              </div>
+            </div>
+
+            <!-- 6. Prestadores de Serviço -->
+            <div class="module-tile" onclick="triggerSectionMascot('prestadores')">
+              <div class="module-icon-halo bg-teal-50 text-teal-600">🔧</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Prestadores</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Contatos e orçamentos</span>
+              </div>
+            </div>
+
+            <!-- 7. Cofrinho e Metas -->
+            <div class="module-tile" onclick="triggerSectionMascot('cofrinhos')">
+              <div class="module-icon-halo bg-pink-50 text-pink-600">🐷</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Cofrinhos</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Metas da família</span>
+              </div>
+            </div>
+
+            <!-- 8. Cartões & Faturas -->
+            <div class="module-tile" onclick="triggerSectionMascot('cartoes')">
+              <div class="module-icon-halo bg-sky-50 text-sky-600">💳</div>
+              <div class="min-w-0">
+                <h4 class="font-extrabold text-xs text-slate-900 truncate">Cartões &amp; Faturas</h4>
+                <span class="text-[10px] text-slate-400 truncate block">Faturas e limites</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 4: CHAT DA FAMÍLIA (TELA INTEIRA)                       -->
+      <!-- ============================================================ -->
+      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col h-full">
+        
+        <!-- Header da Tela de Chat com Voltar -->
+        <div class="page-header-back">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="btn-back-circle">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-white"></i>
+            </button>
+            <div>
+              <h3 class="font-black text-sm sm:text-base text-white leading-tight">Chat da Família</h3>
+              <p class="text-[10px] text-blue-200">Rodrigo &amp; Márcia • online</p>
+            </div>
+          </div>
+          <button type="button" class="btn-back-circle">
+            <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
+          </button>
+        </div>
+
+        <!-- Seletor de Membros da Família -->
+        <div class="bg-white border-b border-slate-200 px-3 py-2 flex items-center gap-1.5 overflow-x-auto flex-shrink-0">
+          <button class="chip-pill active">Todos</button>
+          <button class="chip-pill">👨 Rodrigo</button>
+          <button class="chip-pill">👩 Márcia</button>
+          <button class="chip-pill">👦 Lucas</button>
+          <button class="chip-pill">👧 Sofia</button>
+        </div>
+
+        <!-- Timeline de Mensagens -->
+        <div class="flex-1 p-3 space-y-3 overflow-y-auto">
+          
+          <div class="text-center my-1">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-500">Hoje</span>
+          </div>
+
+          <!-- Mensagem de Texto Recebida -->
+          <div class="flex items-start gap-2 max-w-[85%]">
+            <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">👨</div>
+            <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-none shadow-xs text-xs">
+              <span class="font-bold text-[10px] text-blue-600 block mb-0.5">Rodrigo</span>
+              <p class="text-slate-800">Pessoal, já paguei a conta de energia deste mês. ✅</p>
+              <span class="text-[9px] text-slate-400 block text-right mt-1">10:24 ✓✓</span>
+            </div>
+          </div>
+
+          <!-- Card Rico de Conta Compartilhada -->
+          <div class="flex items-start gap-2 max-w-[88%]">
+            <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-xs flex-shrink-0">⚡</div>
+            <div class="bg-amber-50/70 border border-amber-200/90 p-3 rounded-2xl shadow-xs text-xs w-64">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-black text-xs text-slate-900">Energia Elétrica</span>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500 text-white">Pago</span>
+              </div>
+              <div class="text-base font-black text-slate-900">R$ 245,00</div>
+              <span class="text-[10px] text-slate-500 block mb-2">Venceu em 24 out 2026</span>
+              <button type="button" onclick="alert('Detalhes da Fatura de Energia')" class="w-full py-1 bg-white text-blue-600 font-bold rounded-lg text-[11px] border border-slate-200 shadow-2xs hover:bg-slate-50">
+                Ver detalhes &gt;
+              </button>
+            </div>
+          </div>
+
+          <!-- Resposta Márcia -->
+          <div class="flex items-start gap-2 max-w-[85%] ml-auto flex-row-reverse">
+            <div class="w-7 h-7 rounded-full bg-pink-100 flex items-center justify-center text-xs flex-shrink-0">👩</div>
+            <div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-xs text-xs">
+              <span class="font-bold text-[10px] text-blue-200 block mb-0.5">Márcia</span>
+              <p>Ótimo! Obrigada! 🙌</p>
+              <span class="text-[9px] text-blue-200 block text-right mt-1">10:27</span>
+            </div>
+          </div>
+
+          <!-- Anexo PDF do Comprovante -->
+          <div class="flex items-start gap-2 max-w-[85%]">
+            <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">👨</div>
+            <div class="bg-white border border-slate-200 p-2.5 rounded-2xl shadow-xs text-xs flex items-center gap-2.5 cursor-pointer hover:bg-slate-50" onclick="alert('Abrindo Comprovante_energia.pdf')">
+              <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-black text-[10px] flex-shrink-0">
+                PDF
+              </div>
+              <div>
+                <span class="font-bold text-slate-900 block truncate max-w-[140px]">Comprovante_energia.pdf</span>
+                <span class="text-[10px] text-slate-400">248 KB</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Barra Inferior de Entrada do Chat -->
+        <div class="bg-white border-t border-slate-200 p-2 flex items-center gap-2 flex-shrink-0">
+          <button type="button" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+          <input type="text" placeholder="Mensagem..." class="flex-1 bg-slate-100 rounded-2xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none" />
+          <button type="button" onclick="alert('Gravação de Áudio ativada')" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
+            <i data-lucide="mic" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DOCK INFERIOR FIXO COM 4 ABAS FINTECH                        -->
+    <!-- ============================================================ -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-grid">
+        
+        <!-- 1. Início -->
+        <button id="navTab_dashboard" onclick="switchScreen('dashboard')" class="bottom-nav-item active">
+          <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
+          <span>Início</span>
+        </button>
+
+        <!-- 2. Transações -->
+        <button id="navTab_transacoes" onclick="switchScreen('transacoes')" class="bottom-nav-item">
+          <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
+          <span>Transações</span>
+        </button>
+
+        <!-- 3. Família & Vida -->
+        <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
+          <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
+          <span>Família &amp; Vida</span>
+        </button>
+
+        <!-- 4. Chat -->
+        <button id="navTab_chat" onclick="switchScreen('chat')" class="bottom-nav-item relative">
+          <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
+          <span>Chat</span>
+          <span class="absolute top-1 right-6 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!-- OVERLAY DO MASCOTE OFICIAL (PITACO COM FUNDO DESFOCADO)     -->
+    <!-- ============================================================ -->
+    <div id="previewMascotOverlay" class="mascot-overlay-backdrop hidden">
+      <div class="relative z-10 max-w-xs w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Balão Neon com Dica Contextual -->
+        <div class="mascot-speech-bubble">
+          <div id="overlayBadge" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-emerald-500/20 text-emerald-300 border-emerald-400/40">
+            🩺 Dica do Piggy Médico
+          </div>
+          <h3 id="overlayHeader" class="font-extrabold text-base text-white mb-2 tracking-tight">
+            Minha Saúde &amp; Remédios
+          </h3>
+          <div id="overlayText" class="text-xs text-slate-200 leading-relaxed font-medium mb-3.5 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 text-left">
+            “Aqui você cadastra medicamentos contínuos e ativa alarmes para não esquecer os horários, além de controlar despesas com farmácia e consultas.”
+          </div>
+
+          <!-- Botão de Ação Direta -->
+          <button type="button" onclick="toggleMascotOverlay(false)" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span id="overlayBtnLabel">Acessar Minha Saúde</span>
+            <span>→</span>
+          </button>
+
+          <label class="flex items-center justify-center gap-2 mt-3 cursor-pointer text-[10px] text-slate-400 hover:text-slate-200">
+            <input type="checkbox" class="rounded border-slate-700 bg-slate-800 text-sky-500 cursor-pointer" />
+            <span>Não exibir novamente este mês</span>
+          </label>
+        </div>
+
+        <!-- Mascote Oficial Caracterizado -->
+        <div class="relative mt-2">
+          <img id="overlayMascotImg" src="../assets/images/mascote_oficial_saude.png" alt="Mascote Oficial" class="mascot-official-img">
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Inicialização do Lucide Icons
+    lucide.createIcons();
+
+    // Dicas do Balão do Piggy
+    const piggyTips = [
+      {
+        icon: "💡",
+        category: "Dica do Piggy",
+        text: "“Tudo certo por aqui! Seu saldo está saudável e a meta de supermercado está sob controle este mês.”"
+      },
+      {
+        icon: "🛒",
+        category: "Mercado Inteligente",
+        text: "“Economize na feira: os legumes estão 15% mais baratos às quartas no Extra!”"
+      },
+      {
+        icon: "💳",
+        category: "Atenção a Cartões",
+        text: "“Fatura do cartão Nubank fecha em 4 dias. Saldo atual cobre todas as parcelas!”"
+      }
+    ];
+    let currentTipIndex = 0;
+
+    function stepPiggyTip(delta) {
+      currentTipIndex = (currentTipIndex + delta + piggyTips.length) % piggyTips.length;
+      const tip = piggyTips[currentTipIndex];
+      document.getElementById('previewTipBadgeIcon').innerText = tip.icon;
+      document.getElementById('previewTipCategory').innerText = tip.category;
+      document.getElementById('previewTipIndex').innerText = `${currentTipIndex + 1}/${piggyTips.length}`;
+      document.getElementById('previewTipText').innerText = tip.text;
+
+      // Atualiza dots
+      const dots = document.getElementById('previewTipDots').children;
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = (i === currentTipIndex) ? 'w-2 h-1 rounded-full bg-amber-400' : 'w-1 h-1 rounded-full bg-white/40';
+      }
+    }
+
+    // Alternar Telas
+    function switchScreen(screenKey) {
+      const screens = ['dashboard', 'transacoes', 'familia', 'chat'];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen_${s}`);
+        const btn = document.getElementById(`btnTab_${s}`);
+        const nav = document.getElementById(`navTab_${s}`);
+
+        if (s === screenKey) {
+          el.classList.remove('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-xs';
+          nav.classList.add('active');
+        } else {
+          el.classList.add('hidden');
+          btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
+          nav.classList.remove('active');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    // Alternar Frames de Dispositivos
+    function setDeviceFrame(frameKey) {
+      const frame = document.getElementById('phoneFrame');
+      const btns = ['m62', 'a13', 'landscape'];
+      
+      frame.className = `device-viewport-frame frame-${frameKey}`;
+
+      btns.forEach(b => {
+        const btn = document.getElementById(`btnDev_${b}`);
+        if (b === frameKey) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white';
+        }
+      });
+    }
+
+    // Privacidade de Saldo
+    let privacyHidden = false;
+    function togglePrivacy() {
+      privacyHidden = !privacyHidden;
+      document.getElementById('heroSaldoText').innerText = privacyHidden ? '••••••••' : 'R$ 3.270,00';
+      document.getElementById('heroEyeIcon').setAttribute('data-lucide', privacyHidden ? 'eye-off' : 'eye');
+      lucide.createIcons();
+    }
+
+    // Micro-reação ao tocar no mascote
+    function triggerMascotAnim() {
+      const mascot = document.getElementById('previewHeroMascot');
+      mascot.classList.add('scale-125');
+      setTimeout(() => mascot.classList.remove('scale-125'), 200);
+    }
+
+    // Mascotes Oficiais e Pitaco Inteligente
+    const mascotConfig = {
+      saude: {
+        header: "Minha Saúde & Remédios",
+        badge: "🩺 Alerta do Piggy Médico",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40",
+        text: "“Aqui você cadastra medicamentos contínuos e ativa alarmes para não esquecer os horários, além de controlar consultas e exames.”",
+        img: "../assets/images/mascote_oficial_saude.png",
+        btn: "Acessar Minha Saúde"
+      },
+      compras: {
+        header: "Lista de Compras Inteligente",
+        badge: "🛒 Pitaco do Piggy Compras",
+        badgeColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+        text: "“Monte sua lista por gôndola e compare preços entre estabelecimentos para economizar em cada ida ao supermercado!”",
+        img: "../assets/images/mascote_oficial_compras.png",
+        btn: "Acessar Compras"
+      },
+      pet: {
+        header: "Mundo Pet & Saúde",
+        badge: "🐾 Pitaco do Piggy Pet",
+        badgeColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+        text: "“Au au! Acompanhe ração, vacinas e consultas veterinárias do seu amigão sem misturar com as contas gerais da casa!”",
+        img: "../assets/images/mascote_oficial_pet.png",
+        btn: "Acessar Mundo Pet"
+      },
+      automoveis: {
+        header: "Garagem & Automóveis",
+        badge: "🚗 Pitaco do Piggy Garagem",
+        badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-400/40",
+        text: "“Controle manutenções preventivas, troca de óleo, IPVA e abastecimento de cada veículo da família em um só lugar!”",
+        img: "../assets/images/mascote_oficial_automoveis.png",
+        btn: "Acessar Veículos"
+      },
+      prestadores: {
+        header: "Prestadores de Serviço",
+        badge: "🔧 Pitaco do Piggy Obras",
+        badgeColor: "bg-teal-500/20 text-teal-300 border-teal-400/40",
+        text: "“Organize diárias de faxina, eletricistas, encanadores e manutenções do lar com controle de contatos e valores pagos.”",
+        img: "../assets/images/mascote_oficial_prestadores.png",
+        btn: "Acessar Prestadores"
+      },
+      cofrinhos: {
+        header: "Cofrinhos & Metas",
+        badge: "🐷 Pitaco do Piggy Cofrinho",
+        badgeColor: "bg-pink-500/20 text-pink-300 border-pink-400/40",
+        text: "“Junte dinheiro com objetivos claros: Reserva de emergência, viagem dos sonhos ou reforma da casa com progresso visual!”",
+        img: "../assets/images/mascote_oficial_cofrinhos.png",
+        btn: "Acessar Cofrinhos"
+      },
+      educacao: {
+        header: "Educação & Cursos",
+        badge: "🎓 Pitaco do Piggy Professor",
+        badgeColor: "bg-purple-500/20 text-purple-300 border-purple-400/40",
+        text: "“Acompanhe mensalidades escolares, cursos extracurriculares e material didático sem surpresas no início do mês!”",
+        img: "../assets/images/mascote_oficial_educacao.png",
+        btn: "Acessar Educação"
+      },
+      cartoes: {
+        header: "Cartões & Faturas",
+        badge: "💳 Pitaco do Piggy Cartões",
+        badgeColor: "bg-sky-500/20 text-sky-300 border-sky-400/40",
+        text: "“Monitore fechamentos, melhores datas de compra e limite disponível de cada cartão da família sem juros rotativos!”",
+        img: "../assets/images/mascote_oficial_cartoes.png",
+        btn: "Acessar Cartões"
+      }
+    };
+
+    function triggerSectionMascot(key) {
+      const cfg = mascotConfig[key] || mascotConfig.saude;
+      document.getElementById('overlayHeader').innerText = cfg.header;
+      document.getElementById('overlayBadge').innerText = cfg.badge;
+      document.getElementById('overlayBadge').className = `inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ${cfg.badgeColor}`;
+      document.getElementById('overlayText').innerText = cfg.text;
+      document.getElementById('overlayMascotImg').src = cfg.img;
+      document.getElementById('overlayBtnLabel').innerText = cfg.btn;
+      toggleMascotOverlay(true);
+    }
+
+    function toggleMascotOverlay(show) {
+      const overlay = document.getElementById('previewMascotOverlay');
+      if (show) overlay.classList.remove('hidden');
+      else overlay.classList.add('hidden');
+    }
+
+    function showTxDetail(name, val, cat) {
+      alert(`Detalhes da Transação:\n${name}\nValor: ${val}\nCategoria: ${cat}`);
+    }
+
+    // Inicialização do Donut Chart via Chart.js
+    window.addEventListener('load', () => {
+      const ctx = document.getElementById('previewDonutChart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Moradia', 'Alimentação', 'Educação', 'Saúde', 'Outros'],
+            datasets: [{
+              data: [42, 28, 18, 7, 5],
+              backgroundColor: ['#2563EB', '#F59E0B', '#0EA5E9', '#A855F7', '#94A3B8'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF',
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            cutout: '72%',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

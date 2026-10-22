@@ -1,7 +1,7 @@
 name: financas_casal_flutter
 description: "Aplicativo de Finanças do Casal • Rodrigo & Márcia (Flutter + Supabase)"
 publish_to: 'none'
-version: 2.1.25+102
+version: 2.1.26+103
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -34,6 +34,16 @@ dependencies:
   permission_handler: ^11.3.1
   # Autenticação Biométrica e Face ID
   local_auth: ^2.3.0
+
+  # Leitura contínua e instantânea de QR Code via câmera nativa
+  mobile_scanner: ^5.2.3
+
+  # Requisições HTTP SEFAZ no Dart (sem limitações de CORS da WebView)
+  http: ^1.2.2
+
+  # Parser HTML para extração dos portais SEFAZ (SP e Nacional)
+  html: ^0.15.4
+
   # Engine de Alta Fidelidade do Dashboard
   webview_flutter: ^4.14.1
   webview_flutter_android: ^4.12.0

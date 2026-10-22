@@ -14,6 +14,7 @@ import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
 import '../services/auth_service.dart';
+import '../services/nfce/nfce.dart';
 import '../models/transaction_model.dart';
 import '../providers/finance_provider.dart';
 
@@ -170,7 +171,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.25+102';
+  static const String _kCurrentAppVersion = '2.1.26+103';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -616,6 +617,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeCameraPermissionResult(${status.isGranted});
           }
         """);
+      } else if (action == 'fetch_nfce_url') {
+        final url = data['url'] as String?;
+        if (url != null && url.isNotEmpty) {
+          await _fetchNfceFromUrl(url);
+        }
       } else if (action == 'scan_invoice_qrcode') {
         _isPickingExternalMedia = true;
         await _scanInvoiceQrCode();
@@ -1034,52 +1040,39 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         if (!status.isGranted) {
           _controller.runJavaScript("""
             if (typeof showToastUndo === 'function') {
-              showToastUndo('Permissão de câmera necessária para ler o QR Code!', false);
+              showToastUndo('PermissÃ£o de cÃ¢mera necessÃ¡ria para ler o QR Code!', false);
             }
           """);
           return;
         }
       }
 
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        preferredCameraDevice: CameraDevice.rear,
-        maxWidth: 2000,
-        maxHeight: 2000,
-        imageQuality: 92,
-      );
-      if (photo == null) return;
+      if (!mounted) return;
 
-      _controller.runJavaScript(
-        "if (typeof window.onNativeOcrProcessingStart === 'function') { window.onNativeOcrProcessingStart(); }"
+      // Abre a tela de scanner contÃ­nuo nativo (mobile_scanner)
+      final NfceInvoice? invoice = await Navigator.of(context).push<NfceInvoice>(
+        MaterialPageRoute(
+          builder: (context) => const NfceScannerScreen(),
+        ),
       );
 
-      final bytes = await photo.readAsBytes();
-      final base64Str = base64Encode(bytes);
-      final dataUrl = 'data:image/jpeg;base64,$base64Str';
-
-      // Executa OCR Google ML Kit no hardware nativo do dispositivo
-      final ocrResult = await _ocrService.processReceiptImage(photo.path);
-      final jsonResult = jsonEncode(ocrResult.toJson());
-      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
-      final safeDataUrl = dataUrl.replaceAll("'", r"\'");
-
-      // Se encontrou URL ou Chave NFC-e de 44 dígitos
-      final nfceKey = ocrResult.nfceUrl ?? ocrResult.nfceKey;
-      if (nfceKey != null && nfceKey.isNotEmpty) {
-        final safeNfce = nfceKey.replaceAll("'", r"\'");
-        _controller.runJavaScript("""
-          if (typeof window.handleDetectedQrCode === 'function') {
-            window.handleDetectedQrCode('$safeNfce');
-          }
-        """);
+      if (invoice == null) {
+        // UsuÃ¡rio cancelou ou fechou a cÃ¢mera sem escanear
+        return;
       }
 
+      final jsonResult = jsonEncode(invoice.toJson());
+      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+      final safeUrl = (invoice.rawUrl ?? '').replaceAll("'", r"\'");
+
+      // Injeta os dados oficiais diretamente na WebView (alimenta modal, tabela de mercado e comparador)
       _controller.runJavaScript("""
-        if (typeof window.onNativeInvoiceOcrResult === 'function') {
-          window.onNativeInvoiceOcrResult('$safeJson', '$safeDataUrl');
-        } else if (typeof window.onNativeInvoicePhotoCaptured === 'function') {
-          window.onNativeInvoicePhotoCaptured('$safeDataUrl');
+        if (typeof window.onNativeInvoiceQrResult === 'function') {
+          window.onNativeInvoiceQrResult('$safeJson');
+        } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
+          window.applyOcrResultToInvoiceModal($jsonResult);
+        } else if (typeof window.handleDetectedQrCode === 'function') {
+          window.handleDetectedQrCode('$safeUrl');
         }
       """);
     } catch (e) {
@@ -1089,6 +1082,30 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           SnackBar(content: Text('Erro ao escanear nota fiscal: $e')),
         );
       }
+    }
+  }
+
+  Future<void> _fetchNfceFromUrl(String url) async {
+    try {
+      _controller.runJavaScript("""
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('Consultando dados oficiais da SEFAZ...', false);
+        }
+      """);
+
+      final invoice = await NfceFetcher().fetchAndParse(url);
+      final jsonResult = jsonEncode(invoice.toJson());
+      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+
+      _controller.runJavaScript("""
+        if (typeof window.onNativeInvoiceQrResult === 'function') {
+          window.onNativeInvoiceQrResult('$safeJson');
+        } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
+          window.applyOcrResultToInvoiceModal($jsonResult);
+        }
+      """);
+    } catch (e) {
+      debugPrint('Erro ao consultar NFC-e via URL: $e');
     }
   }
 
