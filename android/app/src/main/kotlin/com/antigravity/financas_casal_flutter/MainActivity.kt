@@ -76,12 +76,18 @@ object AlarmAudioPlayer {
             }
         } catch (_: Exception) {}
 
-        // 3. Fala em voz alta (TTS nativo Android no canal de Alarme) repetindo de 10 em 10 segundos durante 1 minuto (0s, 10s, 20s, 30s, 40s, 50s, 60s)
+        // 3. Fala em voz alta (TTS nativo Android no canal de Alarme) repetindo em 2 ciclos claros
         try {
-            tts = TextToSpeech(appCtx) { status ->
+            var googleTtsPkg: String? = null
+            try {
+                appCtx.packageManager.getPackageInfo("com.google.android.tts", 0)
+                googleTtsPkg = "com.google.android.tts"
+            } catch (_: Exception) {}
+
+            val ttsInitListener = TextToSpeech.OnInitListener { status ->
                 if (status == TextToSpeech.SUCCESS && !isStopped) {
                     try {
-                        val engine = tts ?: return@TextToSpeech
+                        val engine = tts ?: return@OnInitListener
                         val ptBr = Locale("pt", "BR")
                         val res = engine.setLanguage(ptBr)
                         if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -89,8 +95,23 @@ object AlarmAudioPlayer {
                         }
                         val audioPrefs = appCtx.getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                         val alarmStyle = audioPrefs.getString("alarm_style", "female") ?: "female"
-                        
-                        // Seleciona voz nativa Android para Mulher ou Homem se disponível
+                        val speakNameDisabled = audioPrefs.getBoolean("med_speak_name_disabled", false)
+
+                        // Se a opção de não falar o nome estiver ativa, formata a fala de forma respeitosa e direta
+                        var formattedSpeech = speechText
+                        if (speakNameDisabled) {
+                            val clean = speechText
+                                .replace(Regex("^(?:Rodrigo|Márcia|Marcia|Amor|Admin|Usuário)[\\s,:-]*", RegexOption.IGNORE_CASE), "")
+                                .replace(Regex("\\b(?:Rodrigo|Márcia|Marcia)\\b", RegexOption.IGNORE_CASE), "")
+                                .trim()
+                            formattedSpeech = if (!clean.startsWith("Atenção", ignoreCase = true) && !clean.startsWith("Hora", ignoreCase = true)) {
+                                "Atenção! Hora de tomar seu remédio: $clean"
+                            } else {
+                                clean
+                            }
+                        }
+
+                        // Seleciona voz nativa Android para Mulher ou Homem se disponível (Compatível com Google TTS e Samsung M62/A13)
                         try {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 val voices = engine.voices
@@ -102,13 +123,16 @@ object AlarmAudioPlayer {
                                     if (alarmStyle == "female") {
                                         val femVoice = ptVoices.firstOrNull { v ->
                                             val vn = v.name.lowercase()
-                                            vn.contains("female") || vn.contains("mulher") || vn.contains("afs") || vn.contains("yfn") || vn.contains("luciana")
-                                        }
+                                            vn.contains("female") || vn.contains("mulher") || vn.contains("f0") || vn.contains("fem") ||
+                                            vn.contains("afs") || vn.contains("yfn") || vn.contains("luciana") || vn.contains("helena") ||
+                                            vn.contains("raquel") || vn.contains("leticia") || vn.contains("camila") || vn.contains("pt_br_f") ||
+                                            (v.features != null && v.features.contains("gender=female"))
+                                        } ?: ptVoices.firstOrNull()
                                         if (femVoice != null) engine.voice = femVoice
                                     } else if (alarmStyle == "male") {
                                         val maleVoice = ptVoices.firstOrNull { v ->
                                             val vn = v.name.lowercase()
-                                            vn.contains("male") || vn.contains("homem") || vn.contains("ptd")
+                                            vn.contains("male") || vn.contains("homem") || vn.contains("ptd") || vn.contains("m0")
                                         }
                                         if (maleVoice != null) engine.voice = maleVoice
                                     }
@@ -117,7 +141,7 @@ object AlarmAudioPlayer {
                         } catch (_: Exception) {}
 
                         if (alarmStyle == "female") {
-                            engine.setPitch(1.30f)
+                            engine.setPitch(1.15f) // Tom natural feminino seguro em Samsung TTS
                             engine.setSpeechRate(0.92f)
                         } else if (alarmStyle == "male") {
                             engine.setPitch(0.70f)
@@ -147,10 +171,10 @@ object AlarmAudioPlayer {
                                 if (!isStopped) {
                                     try { ringtone?.stop() } catch (_: Exception) {}
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                        engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, params, "med_alarm_cycle_$idx")
+                                        engine.speak(formattedSpeech, TextToSpeech.QUEUE_FLUSH, params, "med_alarm_cycle_$idx")
                                     } else {
                                         @Suppress("DEPRECATION")
-                                        engine.speak(speechText, TextToSpeech.QUEUE_FLUSH, null)
+                                        engine.speak(formattedSpeech, TextToSpeech.QUEUE_FLUSH, null)
                                     }
                                 }
                             }, delayMs)
@@ -164,6 +188,11 @@ object AlarmAudioPlayer {
                         }, 25000L)
                     } catch (_: Exception) {}
                 }
+            }
+            tts = if (googleTtsPkg != null) {
+                TextToSpeech(appCtx, ttsInitListener, googleTtsPkg)
+            } else {
+                TextToSpeech(appCtx, ttsInitListener)
             }
         } catch (_: Exception) {}
     }
@@ -473,6 +502,25 @@ object NotificationHelper {
                 PendingIntent.FLAG_UPDATE_CURRENT
             }
             val pi = PendingIntent.getBroadcast(context, notifId, intent, flags)
+
+            // Usa setAlarmClock (Padrão Ouro do Android): acorda do Doze mode, sem atraso em bateria econômica (Samsung A13/M62)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                try {
+                    val alertIntent = Intent(context, AlarmAlertActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("title", title)
+                        putExtra("body", body)
+                        putExtra("speech", speechText)
+                        putExtra("slot", slotTime)
+                        putExtra("id", notifId)
+                    }
+                    val showPending = PendingIntent.getActivity(context, notifId + 70000, alertIntent, flags)
+                    val clockInfo = AlarmManager.AlarmClockInfo(triggerAtMillis, showPending)
+                    am.setAlarmClock(clockInfo, pi)
+                    return
+                } catch (_: Exception) {}
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 try {
                     am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi)
@@ -546,7 +594,7 @@ class MedAlarmReceiver : BroadcastReceiver() {
                     speech,
                     slot
                 )
-                Toast.makeText(context, "💤 Alarme adiado! Repetirá em 5 minutos.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "💤 Alarme adiado! Repetirá em 5 minutos exatos.", Toast.LENGTH_SHORT).show()
             }
             NotificationHelper.ACTION_DISMISS -> {
                 AlarmAudioPlayer.stop()
@@ -731,6 +779,17 @@ class MainActivity: FlutterFragmentActivity() {
                     val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
                     val style = audioPrefs.getString("alarm_style", "female") ?: "female"
                     result.success(style)
+                }
+                "setMedSpeakNameDisabled" -> {
+                    val disabled = call.argument<Boolean>("disabled") ?: false
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    audioPrefs.edit().putBoolean("med_speak_name_disabled", disabled).apply()
+                    result.success(true)
+                }
+                "getMedSpeakNameDisabled" -> {
+                    val audioPrefs = getSharedPreferences("ctrlpig_med_audio_settings", Context.MODE_PRIVATE)
+                    val disabled = audioPrefs.getBoolean("med_speak_name_disabled", false)
+                    result.success(disabled)
                 }
                 "saveImage" -> {
                     val base64Data = call.argument<String>("base64Data") ?: ""

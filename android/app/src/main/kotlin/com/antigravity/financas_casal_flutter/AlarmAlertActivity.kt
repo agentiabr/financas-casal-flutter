@@ -6,16 +6,31 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 
 class AlarmAlertActivity : Activity() {
 
+    private var screenWakeLock: PowerManager.WakeLock? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Configuração para acender a tela e aparecer mesmo com o celular bloqueado
+        // 1. Acorda e acende imediatamente a tela mesmo em bloqueio total (Samsung A13, M62, etc.)
+        try {
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            @Suppress("DEPRECATION")
+            screenWakeLock = pm.newWakeLock(
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
+                "ctrlpig:AlarmAlertWakeLock"
+            ).apply {
+                acquire(25000L)
+            }
+        } catch (_: Exception) {}
+
+        // 2. Configuração nativa para acender a tela e aparecer sobre a tela de bloqueio
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
@@ -149,6 +164,12 @@ class AlarmAlertActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            if (screenWakeLock?.isHeld == true) {
+                screenWakeLock?.release()
+            }
+            screenWakeLock = null
+        } catch (_: Exception) {}
         AlarmAudioPlayer.stop()
     }
 }

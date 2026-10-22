@@ -170,7 +170,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.22+99';
+  static const String _kCurrentAppVersion = '2.1.23+100';
 
   void _initWebViewController() {
     _controller = WebViewController()
@@ -498,6 +498,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeLocationPermissionResult($granted);
           }
         """);
+      } else if (action == 'set_med_speak_name_disabled') {
+        final disabled = data['disabled'] as bool? ?? false;
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('setMedSpeakNameDisabled', {'disabled': disabled});
+        } catch (_) {}
+      } else if (action == 'set_alarm_style') {
+        final style = data['style'] as String? ?? 'female';
+        try {
+          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+              .invokeMethod('setAlarmStyle', {'style': style});
+        } catch (_) {}
       } else if (action == 'show_notification') {
         final title = data['title'] as String? ?? 'ControlPig';
         final body = data['body'] as String? ?? '';
@@ -1330,14 +1342,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.light,
         ),
         child: Scaffold(
-          backgroundColor: const Color(0xFFEEF3FB),
-          body: SafeArea(
-            child: Stack(
-              children: [
-                WebViewWidget(controller: _controller),
+          backgroundColor: const Color(0xFF064066),
+          body: Stack(
+            children: [
+              WebViewWidget(controller: _controller),
                 AnimatedOpacity(
                   opacity: _isLoading ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 450),
@@ -1436,7 +1449,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                   ),
                 ),
               ],
-            ),
           ),
         ),
       ),
