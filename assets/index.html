@@ -3400,8 +3400,8 @@ html, body {
       <!-- Conteúdo do Topo: Saudação e Ciclo à esquerda com respiro amplo -->
       <div class="max-w-7xl mx-auto flex items-end justify-between relative w-full pt-2">
         <div class="relative z-20 max-w-[65%] sm:max-w-[70%] pb-2">
-          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">Olá, Família!</h1>
-          <p class="text-xs sm:text-sm text-blue-200 mt-1 leading-snug">Tudo certo por aqui. Seu saldo está saudável este mês.</p>
+          <h1 id="heroGreetingTitle" class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight cursor-pointer" onclick="toggleUserProfileType()" title="Toque para alternar entre Olá, Família e Olá individual (solteiro)">Olá, Família!</h1>
+          <p id="heroGreetingSubtitle" class="text-xs sm:text-sm text-blue-200 mt-1 leading-snug max-w-[280px] cursor-pointer hover:underline" onclick="openAdminCustomTextModal()" title="Toque para editar o subtítulo via Admin (máx 50 caracteres)">Tudo certo por aqui. Seu saldo está saudável este mês.</p>
           
           <!-- Pílula do Ciclo Vigente livre e com z-index alto -->
           <div class="relative inline-block mt-3.5">
@@ -3431,13 +3431,7 @@ html, body {
         </div>
 
         <!-- O MASCOTE PIGGY 3D POSICIONADO NA BASE DO BLOCO AZUL (ESPIANDO ATRÁS DO CARD BRANCO, SEM TOCAR NOS ÍCONES) -->
-        <div class="absolute bottom-0 right-1 sm:right-6 z-0 pointer-events-none select-none flex items-end">
-          <img id="mascotImage" src="images/professor_pig_character_only.png" 
-               alt="Mascote Piggy" 
-               onclick="triggerMascotMicroReaction(event)"
-               class="w-32 sm:w-36 md:w-40 h-auto max-h-[145px] object-contain pointer-events-auto cursor-pointer drop-shadow-2xl transition-transform duration-300 hover:scale-105 active:scale-95" 
-               title="Toque no porquinho!">
-        </div>
+        
       </div>
 
       <!-- Select nativo invisível mantido para compatibilidade total de filtros -->
@@ -3451,8 +3445,17 @@ html, body {
 
     <div id="dashboardSectionsContainer" class="space-y-3 relative z-10">
 
-    <!-- CARD BRANCO DE SALDO ATUAL SOBREPOSTO (MARGEM NEGATIVA COBRE A BASE DO PIGGY) -->
-    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 -mt-12 sm:-mt-14 relative z-10 w-full select-none">
+        <!-- PIGGY PISANDO NA BORDA SUPERIOR DIREITA DA CAIXA BRANCA -->
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 -mt-10 relative z-20 w-full select-none">
+      <div class="absolute -top-[124px] right-4 sm:right-8 z-30 pointer-events-none select-none flex flex-col items-end">
+        <img id="mascotImage" src="images/mascote_saldo_positivo.png" 
+             onerror="this.src='assets/images/mascote_saldo_positivo.png'"
+             alt="Piggy Mascote Pisando na Caixa Branca" 
+             onclick="triggerMascotMicroReaction(event)"
+             class="h-[142px] w-auto max-h-[142px] object-contain pointer-events-auto cursor-pointer drop-shadow-[0_8px_14px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-105 active:scale-95" 
+             title="Piggy pisando no card de saldo!">
+        <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
+      </div>
       <div id="heroCardBanner" class="card-saldo-white bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100 dark:border-slate-800 transition-all select-none">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Saldo atual</span>
@@ -8629,7 +8632,7 @@ html, body {
       if (heroCycleTagEl) heroCycleTagEl.textContent = currentCycle;
             if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}% comprometido`;
       const despesasEl = document.getElementById('metricDespesasVal') || document.getElementById('metricDespesasFixasVal');
-      if (despesasEl && typeof formatBRL === 'function') despesasEl.textContent = formatBRL(totalDespesas, 'despesa');
+      if (despesasEl && typeof formatBRL === 'function') despesasEl.textContent = formatBRL(totalGastos, 'despesa');
       const heroCompText = document.getElementById('heroMiniComprometimentoText');
       if (heroCompText) heroCompText.textContent = (saldoLivre >= 0) ? 'Saldo livre e saudável no ciclo' : 'Atenção: Saldo comprometido';
 
@@ -11627,6 +11630,16 @@ html, body {
       const icon = document.getElementById('mascotMoodIcon');
       const label = document.getElementById('mascotMoodLabel');
       const speech = document.getElementById('mascotSpeechText');
+      if (!img) return;
+
+      // Atualização dos 3 Mascotes Oficiais baseada no saldo real:
+      if (saldoLivre < 0) {
+        img.src = 'images/mascote_saldo_negativo.png';
+      } else if (saldoLivre < 100) {
+        img.src = 'images/mascote_saldo_alerta.png';
+      } else {
+        img.src = 'images/mascote_saldo_positivo.png';
+      }
       if (!img) return;
 
       if (!window.ORIGINAL_MASCOT_SRC) {
@@ -20375,6 +20388,29 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <!-- 1. PAINEL MASTER (EXCLUSIVO RODRIGO) -->
+        
+        <!-- SEÇÃO: PERSONALIZAÇÃO DO CABEÇALHO (SUBTÍTULO & MODO SOLTEIRO) -->
+        <div class="p-3.5 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800/90 dark:to-slate-850 rounded-2xl border border-indigo-200/80 dark:border-indigo-900/60 shadow-xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>✏️</span><span>Personalizar Saudação e Subtítulo</span>
+            </h4>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-600 text-white">Layout</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2.5 leading-relaxed">
+            Configure o subtítulo com limite de até 50 caracteres (para não quebrar o layout) e alterne entre o modo Família e Solteiro (ex: Olá, Rodrigo!).
+          </p>
+          <div class="space-y-2">
+            <div class="flex gap-2">
+              <input type="text" id="adminInputSubtitle" maxlength="50" placeholder="Subtítulo (máx 50 caracteres)" class="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
+              <button type="button" onclick="window.saveAdminCustomSubtitle()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">Salvar</button>
+            </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-xs text-slate-700 dark:text-slate-300 font-bold">Modo Solteiro / Individual:</span>
+              <button type="button" onclick="window.toggleUserProfileType()" id="adminBtnToggleSingle" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-xs font-bold transition-all cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">Alternar Perfil</button>
+            </div>
+          </div>
+        </div>
       <div id="adminMasterView" class="mt-4 space-y-3.5">
         
         <!-- SEÇÃO: MODO DEMONSTRAÇÃO / TESTAR VISÃO DO USUÁRIO -->
@@ -32802,30 +32838,8 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
       if (fileInput) fileInput.click();
     }
   };
-  /* scanner web fallback */
-  window._disabledQrInterval = setInterval(async () => {
-              try {
-                const barcodes = await detector.detect(video);
-                if (barcodes && barcodes.length > 0) {
-                  const qrValue = barcodes[0].rawValue;
-                  window.handleDetectedQrCode(qrValue);
-                }
-              } catch(e) {}
-            }, 300);
-          } else {
-            if (statusText) statusText.innerHTML = 'Câmera ativa! Alinhe o QR Code ou clique em <strong>"📸 Fotografar QR Code"</strong>.';
-          }
-        } else {
-          if (statusText) statusText.innerHTML = 'Use o botão <strong>"📸 Fotografar QR Code"</strong> ou simule abaixo.';
-        }
-      } catch(err) {
-        console.warn('Erro ao abrir câmera para QR Code:', err);
-        if (statusText) statusText.innerHTML = '<span class="text-amber-400 font-bold">Câmera em uso. Use <strong>"📸 Fotografar QR Code"</strong> para capturar com a câmera nativa!</span>';
-      }
-    }
-  };
-
-setTimeout(window.initCarouselMascotImages, 150);
+  
+  setTimeout(window.initCarouselMascotImages, 150);
 </script>
 
 <!-- ============================================================================== -->
@@ -34046,6 +34060,80 @@ window.confirmEnterSectionFromPitaco = function() {
       }
       if (window.lucide) lucide.createIcons();
     };
-  </script>
+  
+  // ============================================================================
+  // FUNÇÕES DE PERSONALIZAÇÃO DO CABEÇALHO: SUBTÍTULO E MODO SOLTEIRO
+  // ============================================================================
+  window.syncHeaderGreeting = function() {
+    try {
+      const elTitle = document.getElementById('heroGreetingTitle');
+      const elSubtitle = document.getElementById('heroGreetingSubtitle');
+      
+      const customSub = localStorage.getItem('financas_custom_subtitle');
+      if (customSub && elSubtitle) {
+        elSubtitle.textContent = customSub.trim().slice(0, 50);
+      }
+
+      const isSingle = localStorage.getItem('financas_modo_solteiro') === 'true';
+      if (elTitle) {
+        if (isSingle) {
+          let userNome = 'Rodrigo';
+          try {
+            const u = JSON.parse(localStorage.getItem('financas_auth_user') || '{}');
+            if (u && u.nome) userNome = u.nome.trim().split(' ')[0];
+          } catch(e) {}
+          elTitle.textContent = `Olá, ${userNome}!`;
+        } else {
+          elTitle.textContent = 'Olá, Família!';
+        }
+      }
+
+      const inputSub = document.getElementById('adminInputSubtitle');
+      if (inputSub) {
+        inputSub.value = customSub || (elSubtitle ? elSubtitle.textContent : '');
+      }
+      const btnToggle = document.getElementById('adminBtnToggleSingle');
+      if (btnToggle) {
+        btnToggle.textContent = isSingle ? 'Ativo: Solteiro (Mudar p/ Família)' : 'Ativo: Família (Mudar p/ Solteiro)';
+      }
+    } catch(err) {
+      console.warn('Erro ao sincronizar saudação:', err);
+    }
+  };
+
+  window.openAdminCustomTextModal = function() {
+    const current = localStorage.getItem('financas_custom_subtitle') || 'Tudo certo por aqui. Seu saldo está saudável este mês.';
+    const newText = prompt('Editar Subtítulo do Cabeçalho (Limite máximo: 50 caracteres para não quebrar o layout):', current);
+    if (newText !== null) {
+      const trimmed = newText.trim().slice(0, 50);
+      localStorage.setItem('financas_custom_subtitle', trimmed);
+      const el = document.getElementById('heroGreetingSubtitle');
+      if (el) el.textContent = trimmed;
+      if (typeof showToastUndo === 'function') showToastUndo('Subtítulo do cabeçalho atualizado!', false);
+    }
+  };
+
+  window.saveAdminCustomSubtitle = function() {
+    const input = document.getElementById('adminInputSubtitle');
+    if (!input) return;
+    const trimmed = input.value.trim().slice(0, 50);
+    localStorage.setItem('financas_custom_subtitle', trimmed);
+    window.syncHeaderGreeting();
+    if (typeof showToastUndo === 'function') showToastUndo('Subtítulo salvo com sucesso!', false);
+  };
+
+  window.toggleUserProfileType = function() {
+    const isSingle = localStorage.getItem('financas_modo_solteiro') === 'true';
+    localStorage.setItem('financas_modo_solteiro', (!isSingle).toString());
+    window.syncHeaderGreeting();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(!isSingle ? 'Modo Conta Individual (Solteiro) ativado!' : 'Modo Gestão Familiar ativado!', false);
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(window.syncHeaderGreeting, 300);
+  });
+</script>
 </body>
 </html>

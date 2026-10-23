@@ -169,192 +169,233 @@
       <!-- ============================================================ -->
       <!-- TELA 1: DASHBOARD (INÍCIO)                                   -->
       <!-- ============================================================ -->
-      <section id="screen_dashboard" class="w-full flex-1">
+            <section id="screen_dashboard" class="w-full flex-1">
         
-        <!-- CABEÇALHO BANCÁRIO UNIFICADO -->
-        <header class="app-header">
-          <div class="app-header-inner">
+        <!-- ============================================================== -->
+        <!-- 1. TOPO AURORA AZUL PROFUNDO COM LOGO CTRLPIG E ÍCONES LIVRES -->
+        <!-- ============================================================== -->
+        <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] text-white pt-4 pb-16 px-4 select-none w-full min-h-[220px]">
+          <!-- Efeitos de iluminação aurora sutil -->
+          <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute top-1/2 -left-12 w-60 h-60 bg-sky-400/15 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Linha Superior: Avatar com Nome do Membro à esquerda | Ações à direita -->
+          <div class="flex items-center justify-between mb-4 relative z-20 w-full">
             
-            <!-- Avatar do Membro Ativo com Boas-Vindas -->
-            <div class="flex items-center gap-2.5 cursor-pointer" onclick="alert('Alternar Membro Ativo: Rodrigo / Márcia')">
-              <div class="relative w-10 h-10 rounded-full border-2 border-sky-400 bg-blue-900 flex items-center justify-center overflow-hidden shadow-xs">
-                <span class="text-xl">👨</span>
-                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0A3981]"></span>
+            <!-- Avatar e Nome do Membro Ativo à Esquerda -->
+            <div class="flex items-center gap-2.5 cursor-pointer group" onclick="toggleUserProfileType()" title="Toque para alternar Família / Solteiro">
+              <div class="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md flex-shrink-0">
+                <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-sm">
+                  <span>👨</span>
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
               </div>
               <div class="flex flex-col text-left leading-tight">
-                <span class="text-[11px] text-blue-200 font-medium">Bem-vindo de volta,</span>
-                <div class="flex items-center gap-1">
-                  <span class="text-base font-black text-white">Rodrigo</span>
-                  <span class="text-sm">👋</span>
-                </div>
-                <span class="text-[10px] text-blue-300 font-semibold tracking-wider uppercase">Gestor Familiar</span>
+                <span class="text-base font-black text-white tracking-tight">Rodrigo</span>
+                <span id="headerUserRoleBadge" class="text-[10px] text-blue-200 font-semibold tracking-wider uppercase">GESTOR FAMILIAR</span>
               </div>
             </div>
+            
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <!-- A- / A+ Zoom -->
+              <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-2 py-0.5 text-white text-[11px] font-black shadow-xs">
+                <button type="button" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Diminuir fonte">A-</button>
+                <span class="text-white/30 text-[9px] select-none mx-0.5">|</span>
+                <button type="button" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Aumentar fonte">A+</button>
+              </div>
 
-            <!-- Botões Translúcidos de Ação (Busca, Notificação com badge, Perfil) -->
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="switchScreen('transacoes')" class="header-glass-btn" title="Buscar">
-                <i data-lucide="search" class="w-4 h-4 text-white"></i>
-              </button>
-              <button type="button" onclick="alert('Central de Notificações: 1 alerta pendente')" class="header-glass-btn relative" title="Alertas">
+              <!-- Notificações -->
+              <button type="button" class="relative w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer" title="Notificações">
                 <i data-lucide="bell" class="w-4 h-4 text-white"></i>
-                <span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
               </button>
-              <button type="button" onclick="alert('Painel Admin & Configurações da Família')" class="header-glass-btn" title="Perfil">
-                <i data-lucide="user" class="w-4 h-4 text-white"></i>
+
+              <!-- Ícone de ADMIN Dedicado -->
+              <button type="button" onclick="openAdminCustomTextModal()" class="w-8 h-8 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-300/40 text-amber-300 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Personalizar Subtítulo no Admin">
+                <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i>
+              </button>
+
+              <!-- Sair -->
+              <button type="button" class="w-8 h-8 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-300/40 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Encerrar sessão">
+                <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-200"></i>
               </button>
             </div>
+          </div>
 
+          <!-- Saudação e Pílula do Ciclo Vigente -->
+          <div class="flex items-end justify-between relative w-full pt-1">
+            <div class="relative z-10 max-w-[62%] pb-1">
+              <!-- Título Dinâmico: 'Olá, Família!' (se Conjunto) ou 'Olá, Rodrigo!' (se Solteiro) -->
+              <h1 id="heroGreetingTitle" class="text-2xl font-black text-white tracking-tight leading-tight">Olá, Família!</h1>
+              
+              <!-- Subtítulo Configurável via Admin com limite de caracteres para nunca quebrar o layout -->
+              <p id="heroGreetingSubtitle" class="text-xs text-blue-200 mt-1 leading-snug max-w-[220px]">Tudo certo por aqui. Seu saldo está saudável.</p>
+              
+              <!-- Pílula do Ciclo Vigente -->
+              <div class="relative inline-block mt-3">
+                <button type="button" onclick="alert('Ciclo Vigente: 05/Out a 04/Nov 2026')" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-bold transition-all shadow-md cursor-pointer">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
+                  <span id="heroCycleTag" class="text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
+                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </header>
 
-        <!-- CARD HERÓI AZUL FLAT DO DASHBOARD -->
-        <div class="px-3.5 pt-3 pb-1">
-          <div id="heroCardBanner" class="hero-card-banner">
-            <div class="hero-specular-sheen"></div>
-
-            <div class="relative z-10 space-y-3.5">
-              
-              <!-- Saldo Atual & Ciclo Vigente -->
-              <div class="flex items-start justify-between gap-2">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-blue-200 uppercase tracking-wider">Saldo Atual</span>
-                    <button type="button" onclick="togglePrivacy()" class="text-blue-300 hover:text-white" title="Ocultar Saldo">
-                      <i id="heroEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                  <div class="flex items-baseline gap-2 mt-0.5 flex-wrap">
-                    <h2 id="heroSaldoText" class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                      R$ 3.270,00
-                    </h2>
-                  </div>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mt-1">
-                    <span>↑ 12%</span> em relação ao mês anterior
-                  </span>
-                </div>
-
-                <!-- Pílula do Ciclo Vigente -->
-                <button type="button" onclick="alert('Ciclo Vigente: 05/Out a 04/Nov 2026')" class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 text-white px-2.5 py-1.5 rounded-2xl transition-all shadow-xs flex-shrink-0">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
-                  <div class="flex flex-col text-left leading-none">
-                    <span class="text-[8px] font-black uppercase text-amber-200">Ciclo</span>
-                    <span class="text-[11px] font-extrabold text-white">Outubro 2026 &gt;</span>
-                  </div>
-                </button>
-              </div>
-
-              <!-- Balão Interativo do Piggy com Setinhas + Mascote 3D -->
-              <div class="flex items-center justify-between gap-3 pt-1">
-                
-                <!-- Balão de Dicas com Navegação -->
-                <div class="w-full flex-1 hero-piggy-balloon">
-                  <div class="flex items-center justify-between mb-1 flex-shrink-0">
-                    <div class="flex items-center gap-1.5">
-                      <span id="previewTipBadgeIcon" class="w-5 h-5 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black flex items-center justify-center">💡</span>
-                      <span id="previewTipCategory" class="text-[11px] font-black uppercase tracking-wider text-amber-200">Dica do Piggy</span>
-                      <span id="previewTipIndex" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-white/20 text-white">1/3</span>
-                    </div>
-                    <!-- Setinhas de Navegação de Dicas -->
-                    <div class="flex items-center gap-1">
-                      <button type="button" onclick="stepPiggyTip(-1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white active:scale-90" title="Dica anterior">
-                        <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-                      </button>
-                      <button type="button" onclick="stepPiggyTip(1)" class="w-6 h-6 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center text-white active:scale-90" title="Próxima dica">
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Texto da Dica -->
-                  <div id="previewTipText" class="text-xs text-blue-100 font-medium leading-relaxed my-1">
-                    “Tudo certo por aqui! Seu saldo está saudável e a meta de supermercado está sob controle este mês.”
-                  </div>
-
-                  <!-- Dots -->
-                  <div id="previewTipDots" class="flex items-center justify-center gap-1.5 mt-1 pt-1 border-t border-white/10">
-                    <span class="w-2 h-1 rounded-full bg-amber-400"></span>
-                    <span class="w-1 h-1 rounded-full bg-white/40"></span>
-                    <span class="w-1 h-1 rounded-full bg-white/40"></span>
-                  </div>
-                </div>
-
-                <!-- Mascote Piggy 3D Interativo -->
-                <div class="flex-shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="triggerMascotAnim()" title="Toque no Piggy!">
-                  <img id="previewHeroMascot" src="../assets/images/professor_pig_character_only.png" alt="Piggy 3D" class="w-24 h-auto object-contain drop-shadow-md">
-                </div>
-
-              </div>
-
-              <!-- Mini-Indicadores (Dias Restantes, % Comprometido, Parcelados) -->
-              <div class="pt-2.5 border-t border-white/20 grid grid-cols-3 gap-2 text-center">
-                <div class="bg-black/15 rounded-xl p-2">
-                  <div class="text-[10px] text-blue-100 font-medium">Dias Restantes</div>
-                  <div class="text-xs font-black text-white mt-0.5">18 dias</div>
-                </div>
-                <div class="bg-black/15 rounded-xl p-2">
-                  <div class="text-[10px] text-blue-100 font-medium">% Comprometido</div>
-                  <div class="text-xs font-black text-white mt-0.5">61%</div>
-                </div>
-                <div class="bg-black/15 rounded-xl p-2 cursor-pointer" onclick="switchScreen('transacoes')">
-                  <div class="text-[10px] text-blue-100 font-medium">Parcelados</div>
-                  <div class="text-xs font-black text-white mt-0.5">5 ativas</div>
-                </div>
-              </div>
-
-            </div>
+        <!-- ============================================================== -->
+        <!-- 2. CAIXA DE SALDO 100% BRANCA                                 -->
+        <!--    COM O PIGGY PISANDO NA BORDA DIREITA DA CAIXA BRANCA       -->
+        <!-- ============================================================== -->
+        <div class="px-4 -mt-10 relative z-20 w-full select-none">
+          
+          <!-- O PIGGY PISANDO NA BORDA SUPERIOR DIREITA DA CAIXA BRANCA -->
+          <div class="absolute -top-[124px] right-4 z-30 pointer-events-none select-none flex flex-col items-end">
+            <img id="mascotImage" src="mascote_saldo_positivo.png" 
+                 alt="Piggy Mascote Pisando na Caixa Branca" 
+                 class="h-[142px] w-auto max-h-[142px] object-contain pointer-events-auto cursor-pointer drop-shadow-[0_8px_14px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-105 active:scale-95" 
+                 title="Piggy pisando no card de saldo!">
+            <!-- Sombra de contato suave diretamente sobre a superfície da caixa branca sob as patas -->
+            <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
           </div>
-        </div>
 
-        <!-- DUO DE CARDS: RECEITAS E DESPESAS -->
-        <div class="px-3.5 py-1.5">
-          <div class="grid grid-cols-2 gap-2.5">
+          <div id="heroCardBanner" class="bg-white rounded-3xl p-5 shadow-xl border border-slate-200/80 transition-all select-none text-slate-900 relative z-10">
             
-            <!-- Receitas -->
-            <div class="card-fintech p-3.5">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500">Receitas</span>
-                <div class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+            <div class="flex items-center justify-between pr-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
+              <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar todos os valores">
+                <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4"></i>
+              </button>
+            </div>
+            
+            <div class="mt-1 flex items-baseline gap-2">
+              <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                R$ 4.850,00
+              </h2>
+            </div>
+
+            <div class="mt-1">
+              <span id="heroSaldoBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span>↑ 12%</span> em relação ao mês anterior
+              </span>
+            </div>
+
+            <!-- Balão de Dica do Piggy dentro do card branco com setinhas de navegação -->
+            <div class="mt-4 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-between gap-2.5">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <div class="flex-1 text-center min-w-0 px-1">
+                <div class="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-200/50 px-2 py-0.2 rounded-full">💡 Dica do Piggy</span>
+                  <span id="previewTipIndex" class="text-[9px] font-bold text-blue-600">1/3</span>
+                </div>
+                <p id="previewTipText" class="text-xs font-semibold text-slate-800 leading-snug">
+                  "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
+                </p>
+                <div class="flex items-center justify-center gap-1 mt-1.5">
+                  <span class="w-2 h-1 rounded-full bg-blue-600"></span>
+                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
+                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
+                </div>
+              </div>
+              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Mini cards de Resumo: Dias, Comprometido e Parcelados -->
+            <div class="grid grid-cols-3 gap-2 mt-3.5 text-center">
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Dias Restantes</span>
+                <span class="text-xs font-black text-slate-800">18 dias</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Comprometido</span>
+                <span id="valComprometido" class="text-xs font-black text-amber-600">61%</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Parcelados</span>
+                <span id="valParcelados" class="text-xs font-black text-blue-600">5 ativas</span>
+              </div>
+            </div>
+
+            <!-- Mini cards de Receitas e Despesas -->
+            <div class="grid grid-cols-2 gap-2 mt-3.5">
+              <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-xs">
                   ↓
                 </div>
-              </div>
-              <div class="mt-1.5">
-                <div class="text-lg sm:text-xl font-black text-emerald-600">
-                  R$ 8.500,00
+                <div>
+                  <span class="text-[10px] font-bold text-emerald-800 uppercase block">Receitas</span>
+                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ 8.500,00</span>
                 </div>
-                <span class="text-[10px] font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
-                  <span>↑ 12%</span> no mês
-                </span>
               </div>
-            </div>
-
-            <!-- Despesas -->
-            <div class="card-fintech p-3.5">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-500">Despesas</span>
-                <div class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
+              <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs font-black shadow-xs">
                   ↑
                 </div>
-              </div>
-              <div class="mt-1.5">
-                <div class="text-lg sm:text-xl font-black text-rose-600">
-                  R$ 5.230,00
+                <div>
+                  <span class="text-[10px] font-bold text-rose-800 uppercase block">Despesas</span>
+                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ 3.650,00</span>
                 </div>
-                <span class="text-[10px] font-bold text-rose-600 flex items-center gap-0.5 mt-0.5">
-                  <span>↑ 3%</span> no mês
-                </span>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- CARD DESPESAS POR CATEGORIA (DONUT CHART) -->
-        <div class="px-3.5 py-1.5">
-          <div class="card-fintech p-4">
+        <!-- ============================================================== -->
+        <!-- 3. CAIXA ARREDONDADA COM FUNDO CINZA (#DFEAF7)                 -->
+        <!--    COM AS DEMAIS CAIXAS: ROTINAS, DESPESAS E LANÇAMENTOS      -->
+        <!-- ============================================================== -->
+        <div class="bg-[#DFEAF7] rounded-t-[32px] -mt-6 pt-9 pb-8 px-4 relative z-0 flex flex-col space-y-4 shadow-xl">
+          
+          <!-- CAIXA DE ROTINAS / ACESSO RÁPIDO -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5">
+                <span>⚡</span><span>Acesso Rápido</span>
+              </h3>
+              <span class="text-[11px] font-bold text-blue-600 cursor-pointer" onclick="switchScreen('familia')">Ver todos &gt;</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 text-center select-none">
+              <div onclick="switchScreen('chat')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-blue-600 flex items-center justify-center text-lg mb-1">
+                  💬
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Chat</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('compras')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-lg mb-1">
+                  🛒
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Compras</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('saude')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-rose-100/70 text-rose-600 flex items-center justify-center text-lg mb-1">
+                  💊
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Saúde</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('pet')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-600 flex items-center justify-center text-lg mb-1">
+                  🐾
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Pets</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAIXA DE DESPESAS POR CATEGORIA (DONUT CHART) -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-black text-sm text-slate-900">Despesas por categoria</h3>
-              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline">
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
                 Ver tudo &gt;
               </button>
             </div>
@@ -365,7 +406,7 @@
                 <canvas id="previewDonutChart" width="144" height="144"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
                   <span class="text-[10px] font-bold text-slate-400 uppercase">Total</span>
-                  <span class="text-base font-black text-slate-900 leading-tight">R$ 5.230</span>
+                  <span class="text-base font-black text-slate-900 leading-tight">R$ 3.650</span>
                   <span class="text-[9px] text-slate-400">no mês</span>
                 </div>
               </div>
@@ -409,8 +450,46 @@
                 </div>
               </div>
             </div>
-
           </div>
+
+          <!-- CAIXA DE LANÇAMENTOS RECENTES -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900">Lançamentos Recentes</h3>
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                Ver extrato completo &gt;
+              </button>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+                    🛒
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-900 block leading-tight">Supermercado Pão de Açúcar</span>
+                    <span class="text-[10px] text-slate-500">Hoje • Alimentação</span>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-rose-600">- R$ 342,80</span>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                    💼
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-900 block leading-tight">Salário Rodrigo</span>
+                    <span class="text-[10px] text-slate-500">Ontem • Receita Fixa</span>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-emerald-600">+ R$ 6.200,00</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </section>
@@ -418,335 +497,554 @@
       <!-- ============================================================ -->
       <!-- TELA 2: TRANSAÇÕES                                           -->
       <!-- ============================================================ -->
-      <section id="screen_transacoes" class="w-full flex-1 hidden">
+      <section id="screen_transacoes" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
         
-        <!-- Header da Seção de Transações -->
-        <header class="app-header">
-          <div class="app-header-inner">
-            <h2 class="text-lg font-black text-white">Transações</h2>
-            <div class="relative w-44">
-              <input type="text" placeholder="Buscar..." class="w-full text-xs rounded-xl bg-white/15 border border-white/25 py-1.5 pl-7 pr-2.5 text-white placeholder-blue-200 focus:outline-none" />
-              <i data-lucide="search" class="w-3.5 h-3.5 text-blue-200 absolute left-2 top-2"></i>
+        <!-- Topo Integrado com Setinha Voltar ‹ e Título -->
+        <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-black text-white tracking-tight">Transações</h2>
+          </div>
+          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar Transações">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-5 pt-4 pb-6 space-y-3.5 shadow-2xl">
+          
+          <!-- Pílulas de Filtro com Alto Contraste (Tela 2 do anexo) -->
+          <div class="flex items-center gap-2 overflow-x-auto select-none pt-0.5">
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs">Todas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Entradas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Saídas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Parceladas</button>
+          </div>
+
+          <!-- Grade de 4 Ações Rápidas (Tela 2 do anexo: Nova Transação, Escanear NFe, Transferir, Categorias) -->
+          <div class="grid grid-cols-4 gap-2 text-center select-none">
+            <div onclick="alert('Lançar Nova Transação')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base mb-1 font-black">
+                +
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Nova transação</span>
+            </div>
+
+            <div onclick="alert('Escanear QR Code da NFC-e')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base mb-1 font-bold">
+                📷
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Escanear NFe</span>
+            </div>
+
+            <div onclick="alert('Transferir entre Contas')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base mb-1 font-bold">
+                ⇄
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Transferir</span>
+            </div>
+
+            <div onclick="alert('Gerenciar Categorias')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base mb-1 font-bold">
+                🏷️
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Categorias</span>
             </div>
           </div>
-        </header>
 
-        <div class="px-3.5 py-3">
-          <!-- Pílulas de Filtro -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5">
-            <button class="chip-pill active">Todas</button>
-            <button class="chip-pill">Entradas</button>
-            <button class="chip-pill">Saídas</button>
-            <button class="chip-pill">Parceladas</button>
-          </div>
-
-          <!-- Ações Rápidas (Nova Transação, Escanear NFe, Categorias) -->
-          <div class="grid grid-cols-3 gap-2 my-3">
-            <button type="button" onclick="alert('Abrir Modal de Lançamento')" class="py-2.5 px-2 rounded-2xl bg-[#0A3981] text-white font-black text-xs flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>+ Nova</span>
-            </button>
-            <button type="button" onclick="alert('Abrir Scanner OCR de NFe')" class="py-2.5 px-2 rounded-2xl bg-white border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all">
-              <i data-lucide="camera" class="w-4 h-4 text-blue-600"></i>
-              <span>Escanear</span>
-            </button>
-            <button type="button" onclick="alert('Filtrar por Categoria')" class="py-2.5 px-2 rounded-2xl bg-white border border-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all">
-              <i data-lucide="tag" class="w-4 h-4 text-purple-600"></i>
-              <span>Categorias</span>
-            </button>
-          </div>
-
-          <!-- Lista Agrupada: Hoje · 20 de outubro -->
-          <div class="mt-4">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Hoje · 20 de outubro</span>
+          <!-- LISTA DE TRANSAÇÕES AGRUPADAS POR DATA COM ALTA LEGIBILIDADE -->
+          <div class="space-y-3 pt-1">
             
-            <div class="list-item-fintech" onclick="showTxDetail('Supermercado Extra', '- R$ 156,80', 'Alimentação')">
-              <div class="flex items-center gap-3">
-                <div class="list-item-icon-box bg-blue-50 text-blue-600">🛒</div>
-                <div>
-                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Supermercado Extra</h4>
-                  <span class="text-[11px] text-slate-500 font-medium">Alimentação • Rodrigo</span>
+            <!-- Grupo: Hoje - 20 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">Hoje • 20 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 1: Supermercado Extra -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🛒
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Supermercado Extra</h4>
+                      <span class="text-[11px] text-slate-400">Alimentação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 156,80</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
                 </div>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-sm text-rose-600 block">- R$ 156,80</span>
-                <span class="text-[10px] text-slate-400">14:32</span>
+
+                <!-- Item 2: Uber -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg flex-shrink-0">
+                      🚗
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Uber</h4>
+                      <span class="text-[11px] text-slate-400">Transporte</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 28,50</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+                <!-- Item 3: Salário Rodrigo -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                      💼
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Salário</h4>
+                      <span class="text-[11px] text-slate-400">Receita fixa</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-emerald-600">+ R$ 5.200,00</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <div class="list-item-fintech" onclick="showTxDetail('Uber Viagem', '- R$ 28,50', 'Transporte')">
-              <div class="flex items-center gap-3">
-                <div class="list-item-icon-box bg-sky-50 text-sky-600">🚗</div>
-                <div>
-                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Uber</h4>
-                  <span class="text-[11px] text-slate-500 font-medium">Transporte • Márcia</span>
+            <!-- Grupo: Ontem - 19 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">Ontem • 19 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 4: Farmácia -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg flex-shrink-0">
+                      💊
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Farmácia Drogasil</h4>
+                      <span class="text-[11px] text-slate-400">Saúde</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 87,90</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
                 </div>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-sm text-rose-600 block">- R$ 28,50</span>
-                <span class="text-[10px] text-slate-400">11:15</span>
+
+                <!-- Item 5: Restaurante -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🍽️
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Restaurante Família</h4>
+                      <span class="text-[11px] text-slate-400">Alimentação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 92,40</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <div class="list-item-fintech" onclick="showTxDetail('Salário Empresa', '+ R$ 5.200,00', 'Receita')">
-              <div class="flex items-center gap-3">
-                <div class="list-item-icon-box bg-emerald-50 text-emerald-600">💼</div>
-                <div>
-                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Salário</h4>
-                  <span class="text-[11px] text-slate-500 font-medium">Receita Familiar</span>
+            <!-- Grupo: 18 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">18 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 6: Mensalidade Escola -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🎓
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Mensalidade Escola</h4>
+                      <span class="text-[11px] text-slate-400">Educação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 1.250,00</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
                 </div>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-sm text-emerald-600 block">+ R$ 5.200,00</span>
-                <span class="text-[10px] text-slate-400">08:00</span>
-              </div>
-            </div>
-          </div>
 
-          <!-- Lista Agrupada: Ontem · 19 de outubro -->
-          <div class="mt-4">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Ontem · 19 de outubro</span>
-
-            <div class="list-item-fintech" onclick="showTxDetail('Farmácia Drogasil', '- R$ 87,90', 'Saúde')">
-              <div class="flex items-center gap-3">
-                <div class="list-item-icon-box bg-rose-50 text-rose-600">💊</div>
-                <div>
-                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Farmácia Drogasil</h4>
-                  <span class="text-[11px] text-slate-500 font-medium">Saúde &amp; Remédios</span>
-                </div>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-sm text-rose-600 block">- R$ 87,90</span>
-                <span class="text-[10px] text-slate-400">18:40</span>
               </div>
             </div>
 
-            <div class="list-item-fintech" onclick="showTxDetail('Restaurante Bom Sabor', '- R$ 92,40', 'Alimentação')">
-              <div class="flex items-center gap-3">
-                <div class="list-item-icon-box bg-amber-50 text-amber-600">🍽️</div>
-                <div>
-                  <h4 class="font-extrabold text-sm text-slate-900 leading-tight">Restaurante</h4>
-                  <span class="text-[11px] text-slate-500 font-medium">Alimentação Fora</span>
-                </div>
-              </div>
-              <div class="text-right">
-                <span class="font-black text-sm text-rose-600 block">- R$ 92,40</span>
-                <span class="text-[10px] text-slate-400">12:30</span>
-              </div>
-            </div>
           </div>
 
         </div>
+
       </section>
 
       <!-- ============================================================ -->
       <!-- TELA 3: FAMÍLIA & VIDA                                       -->
       <!-- ============================================================ -->
-      <section id="screen_familia" class="w-full flex-1 hidden">
+      <section id="screen_familia" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
         
-        <!-- Header da Seção -->
-        <header class="app-header">
-          <div class="app-header-inner">
-            <h2 class="text-lg font-black text-white">Família &amp; Vida</h2>
-            <button type="button" class="header-glass-btn" title="Buscar Módulo">
-              <i data-lucide="search" class="w-4 h-4 text-white"></i>
+        <!-- Topo Integrado com Setinha Voltar ‹ e Título -->
+        <div class="px-5 pt-3 pb-2 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
+            <h2 class="text-xl font-black text-white tracking-tight">Família &amp; Vida</h2>
           </div>
-        </header>
+          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </button>
+        </div>
 
-        <div class="px-3.5 py-3">
+        <div class="flex-1 flex flex-col relative overflow-hidden">
           
-          <!-- Banner Hero com Piggy -->
-          <div class="hero-card-banner p-4 flex items-center justify-between gap-3 mb-4">
-            <div>
-              <h3 class="font-black text-base text-white">Tudo da sua família em um só lugar.</h3>
-              <p class="text-xs text-blue-200 mt-0.5">Organize, planeje e viva com mais tranquilidade.</p>
-              <button type="button" onclick="alert('Explorando todos os módulos familiares!')" class="mt-2.5 px-3 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-extrabold text-[11px] border border-white/25 flex items-center gap-1">
-                <span>Explorar módulos</span>
-                <span>→</span>
-              </button>
+          <!-- BANNER HERO COM O PIGGY POUSADO POR CIMA DA CAIXA ARREDONDADA (z-20 com sombra) -->
+          <div class="px-5 pt-1 relative z-20">
+            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
+              <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div class="relative z-10 flex items-center justify-between gap-3">
+                <div class="max-w-[62%]">
+                  <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
+                    Tudo da sua família em um só lugar.
+                  </h3>
+                  <p class="text-xs text-blue-100 mt-1 leading-snug">
+                    Organize, planeje e viva com mais tranquilidade.
+                  </p>
+                  <button type="button" onclick="triggerSectionMascot('saude')" class="mt-3 px-4 py-1.5 rounded-full bg-white text-blue-700 hover:bg-blue-50 text-xs font-black shadow-md transition-all inline-flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <span>Explorar módulos</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+                <!-- Mascote Porquinho Robô 3D sorrindo -->
+                <div class="w-28 sm:w-32 flex-shrink-0 flex items-center justify-center">
+                  <img src="mascote_oficial_mentor.png" alt="Mascote Oficial" class="w-full h-auto max-h-[125px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
+                </div>
+              </div>
             </div>
-            <img src="../assets/images/professor_pig_character_only.png" alt="Piggy" class="w-16 h-auto object-contain flex-shrink-0 drop-shadow-md">
           </div>
 
-          <!-- Grade 2x4 dos 8 Módulos Oficiais do App -->
-          <div class="grid grid-cols-2 gap-2.5">
+          <!-- CAIXA COM CANTOS ARREDONDADOS (rounded-t-[32px]) FICANDO POR BAIXO DO CARD BANNER (-mt-8)
+               COM PADDING TOP (pt-10) PARA NENHUM TEXTO OU CARD FICAR CORTADO! -->
+          <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] -mt-8 relative z-10 flex flex-col overflow-y-auto px-5 pt-11 pb-6 space-y-4 shadow-inner">
             
-            <!-- 1. Educação -->
-            <div class="module-tile" onclick="triggerSectionMascot('educacao')">
-              <div class="module-icon-halo bg-purple-50 text-purple-600">🎓</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Educação</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Mensalidades</span>
-              </div>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
+              <span class="text-[11px] font-bold text-blue-700 bg-blue-100/70 px-2.5 py-0.5 rounded-full">8 disponíveis</span>
             </div>
 
-            <!-- 2. Lista de Compras -->
-            <div class="module-tile" onclick="triggerSectionMascot('compras')">
-              <div class="module-icon-halo bg-blue-50 text-blue-600">🛒</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Lista de Compras</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Colaborativa</span>
+            <!-- GRADE DOS 8 MÓDULOS EM CARTÕES BRANCOS ARREDONDADOS (100% VISÍVEIS SEM CORTES) -->
+            <div class="grid grid-cols-2 gap-3 pb-6">
+              
+              <!-- 1. Educação -->
+              <div onclick="triggerSectionMascot('educacao')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    🎓
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Educação</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Mensalidades e cursos</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 3. Pets e Vacinas -->
-            <div class="module-tile" onclick="triggerSectionMascot('pet')">
-              <div class="module-icon-halo bg-amber-50 text-amber-600">🐾</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Pets &amp; Vacinas</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Cuidados e gastos</span>
+              <!-- 2. Lista de Compras -->
+              <div onclick="triggerSectionMascot('compras')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    🛒
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Colaborativa</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 4. Minha Saúde -->
-            <div class="module-tile" onclick="triggerSectionMascot('saude')">
-              <div class="module-icon-halo bg-emerald-50 text-emerald-600">🩺</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Minha Saúde</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Remédios e exames</span>
+              <!-- 3. Pets e Vacinas -->
+              <div onclick="triggerSectionMascot('pet')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
+                    🐾
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Pets e Vacinas</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Cuidados e gastos</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 5. Veículos & Garagem -->
-            <div class="module-tile" onclick="triggerSectionMascot('automoveis')">
-              <div class="module-icon-halo bg-indigo-50 text-indigo-600">🚗</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Veículos</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Manutenção e IPVA</span>
+              <!-- 4. Minha Saúde -->
+              <div onclick="triggerSectionMascot('saude')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                    ❤️
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Minha Saúde</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Consultas e exames</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 6. Prestadores de Serviço -->
-            <div class="module-tile" onclick="triggerSectionMascot('prestadores')">
-              <div class="module-icon-halo bg-teal-50 text-teal-600">🔧</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Prestadores</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Contatos e orçamentos</span>
+              <!-- 5. Veículos -->
+              <div onclick="triggerSectionMascot('veiculos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
+                    🚗
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Veículos</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Manutenção e multas</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 7. Cofrinho e Metas -->
-            <div class="module-tile" onclick="triggerSectionMascot('cofrinhos')">
-              <div class="module-icon-halo bg-pink-50 text-pink-600">🐷</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Cofrinhos</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Metas da família</span>
+              <!-- 6. Prestadores de Serviço -->
+              <div onclick="triggerSectionMascot('prestadores')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    🔧
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Prestadores</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Contatos e orçamentos</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 8. Cartões & Faturas -->
-            <div class="module-tile" onclick="triggerSectionMascot('cartoes')">
-              <div class="module-icon-halo bg-sky-50 text-sky-600">💳</div>
-              <div class="min-w-0">
-                <h4 class="font-extrabold text-xs text-slate-900 truncate">Cartões &amp; Faturas</h4>
-                <span class="text-[10px] text-slate-400 truncate block">Faturas e limites</span>
+              <!-- 7. Cofrinho e Metas -->
+              <div onclick="triggerSectionMascot('cofrinhos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    🐷
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Cofrinho e Metas</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Objetivos da família</p>
+                </div>
               </div>
+
+              <!-- 8. Documentos & Faturas -->
+              <div onclick="triggerSectionMascot('cartoes')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+                    📄
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Documentos</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Recibos e garantias</p>
+                </div>
+              </div>
+
             </div>
 
           </div>
 
         </div>
+
       </section>
 
       <!-- ============================================================ -->
       <!-- TELA 4: CHAT DA FAMÍLIA (TELA INTEIRA)                       -->
       <!-- ============================================================ -->
-      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col h-full">
+      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
         
-        <!-- Header da Tela de Chat com Voltar -->
-        <div class="page-header-back">
+        <!-- Topo Integrado sem faixa cortada -->
+        <div class="px-5 pt-3 pb-2.5 flex items-center justify-between text-white flex-shrink-0">
           <div class="flex items-center gap-2.5">
-            <button type="button" onclick="switchScreen('dashboard')" class="btn-back-circle">
-              <i data-lucide="arrow-left" class="w-4 h-4 text-white"></i>
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
-            <div>
-              <h3 class="font-black text-sm sm:text-base text-white leading-tight">Chat da Família</h3>
-              <p class="text-[10px] text-blue-200">Rodrigo &amp; Márcia • online</p>
-            </div>
+            <h3 class="font-black text-lg text-white leading-tight">Chat da Família</h3>
           </div>
-          <button type="button" class="btn-back-circle">
-            <i data-lucide="more-vertical" class="w-4 h-4 text-white"></i>
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+              <i data-lucide="phone" class="w-4 h-4"></i>
+            </button>
+            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Seletor de Membros da Família -->
-        <div class="bg-white border-b border-slate-200 px-3 py-2 flex items-center gap-1.5 overflow-x-auto flex-shrink-0">
-          <button class="chip-pill active">Todos</button>
-          <button class="chip-pill">👨 Rodrigo</button>
-          <button class="chip-pill">👩 Márcia</button>
-          <button class="chip-pill">👦 Lucas</button>
-          <button class="chip-pill">👧 Sofia</button>
+        <!-- Carrossel de Membros no Topo -->
+        <div class="px-5 pb-3 flex items-center gap-3 overflow-x-auto flex-shrink-0 select-none">
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="w-12 h-12 rounded-full border-2 border-blue-400 bg-blue-600 flex items-center justify-center text-white shadow-md">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[10px] font-bold text-white">Todos</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👨</span>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Eu</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👩</span>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Marcia</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👦</span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Lucas</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👧</span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Sofia</span>
+          </div>
         </div>
 
-        <!-- Timeline de Mensagens -->
-        <div class="flex-1 p-3 space-y-3 overflow-y-auto">
+        <!-- CORPO DO CHAT COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) -->
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-hidden shadow-2xl">
           
-          <div class="text-center my-1">
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-500">Hoje</span>
-          </div>
-
-          <!-- Mensagem de Texto Recebida -->
-          <div class="flex items-start gap-2 max-w-[85%]">
-            <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">👨</div>
-            <div class="bg-white border border-slate-200 p-2.5 rounded-2xl rounded-tl-none shadow-xs text-xs">
-              <span class="font-bold text-[10px] text-blue-600 block mb-0.5">Rodrigo</span>
-              <p class="text-slate-800">Pessoal, já paguei a conta de energia deste mês. ✅</p>
-              <span class="text-[9px] text-slate-400 block text-right mt-1">10:24 ✓✓</span>
+          <!-- Área rolável de mensagens -->
+          <div class="flex-1 p-4 overflow-y-auto space-y-3">
+            
+            <div class="text-center my-0.5">
+              <span class="text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-200/80 text-slate-600">Hoje</span>
             </div>
-          </div>
 
-          <!-- Card Rico de Conta Compartilhada -->
-          <div class="flex items-start gap-2 max-w-[88%]">
-            <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-xs flex-shrink-0">⚡</div>
-            <div class="bg-amber-50/70 border border-amber-200/90 p-3 rounded-2xl shadow-xs text-xs w-64">
-              <div class="flex items-center justify-between mb-1">
-                <span class="font-black text-xs text-slate-900">Energia Elétrica</span>
-                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500 text-white">Pago</span>
+            <!-- CARD INTERATIVO DA LISTA DE COMPRAS DA GÔNDOLA (COLABORATIVA NO CHAT) -->
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-blue-200/90 max-w-[92%] mx-auto">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                    🛒
+                  </div>
+                  <div>
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras • Supermercado</h4>
+                    <span class="text-[10px] text-slate-400">Marque o que pegar na gôndola e informe o valor</span>
+                  </div>
+                </div>
+                <span class="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Total: R$ 38,40
+                </span>
               </div>
-              <div class="text-base font-black text-slate-900">R$ 245,00</div>
-              <span class="text-[10px] text-slate-500 block mb-2">Venceu em 24 out 2026</span>
-              <button type="button" onclick="alert('Detalhes da Fatura de Energia')" class="w-full py-1 bg-white text-blue-600 font-bold rounded-lg text-[11px] border border-slate-200 shadow-2xs hover:bg-slate-50">
-                Ver detalhes &gt;
-              </button>
-            </div>
-          </div>
 
-          <!-- Resposta Márcia -->
-          <div class="flex items-start gap-2 max-w-[85%] ml-auto flex-row-reverse">
-            <div class="w-7 h-7 rounded-full bg-pink-100 flex items-center justify-center text-xs flex-shrink-0">👩</div>
-            <div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-xs text-xs">
-              <span class="font-bold text-[10px] text-blue-200 block mb-0.5">Márcia</span>
-              <p>Ótimo! Obrigada! 🙌</p>
-              <span class="text-[9px] text-blue-200 block text-right mt-1">10:27</span>
-            </div>
-          </div>
+              <!-- Itens da Gôndola com Checkbox, Quantidade e Valor Unitário -->
+              <div class="space-y-2 mt-2.5 text-xs">
+                
+                <!-- Item 1: Leite Desnatado (Já pego na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 line-through text-slate-500">2x Leite Desnatado 1L</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[11px]">
+                    <span class="text-slate-400">R$ 5,20 un</span>
+                    <span class="font-black text-emerald-700">R$ 10,40</span>
+                  </div>
+                </div>
 
-          <!-- Anexo PDF do Comprovante -->
-          <div class="flex items-start gap-2 max-w-[85%]">
-            <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">👨</div>
-            <div class="bg-white border border-slate-200 p-2.5 rounded-2xl shadow-xs text-xs flex items-center gap-2.5 cursor-pointer hover:bg-slate-50" onclick="alert('Abrindo Comprovante_energia.pdf')">
-              <div class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center font-black text-[10px] flex-shrink-0">
-                PDF
+                <!-- Item 2: Sabão em pó (Pego na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 line-through text-slate-500">1x Sabão em Pó Omo 1kg</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[11px]">
+                    <span class="text-slate-400">R$ 18,90 un</span>
+                    <span class="font-black text-emerald-700">R$ 18,90</span>
+                  </div>
+                </div>
+
+                <!-- Item 3: Café Torrado (Pendente na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200/80">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-900">1x Café Torrado 500g</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <input type="text" placeholder="R$ valor" value="R$ 9,10" class="w-16 px-1.5 py-0.5 rounded-lg border border-slate-200 text-right font-bold text-slate-800 text-[10px]">
+                  </div>
+                </div>
+
               </div>
+
+              <!-- Rodapé da lista de compras -->
+              <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-slate-500 flex items-center gap-1">
+                  <span>✓ 2 de 3 pegos</span>
+                </span>
+                <button type="button" class="font-extrabold text-blue-600 hover:underline">
+                  + Adicionar Item à Lista
+                </button>
+              </div>
+            </div>
+
+            <!-- Mensagem do Rodrigo (Direita) -->
+            <div class="flex justify-end">
+              <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-xs shadow-xs text-xs max-w-[80%]">
+                <p>Já estou no mercado pegando os itens da lista acima! 🛒</p>
+                <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-blue-200">
+                  <span>10:30</span>
+                  <span>✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mensagem da Márcia: Pedido em texto que entrou na lista -->
+            <div class="flex items-start gap-2 max-w-[85%]">
+              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center text-xs flex-shrink-0">👩</div>
               <div>
-                <span class="font-bold text-slate-900 block truncate max-w-[140px]">Comprovante_energia.pdf</span>
-                <span class="text-[10px] text-slate-400">248 KB</span>
+                <span class="text-[10px] font-bold text-rose-600 block mb-0.5">Marcia</span>
+                <div class="bg-white border border-slate-200/80 p-3 rounded-2xl rounded-tl-xs shadow-xs text-xs text-slate-800">
+                  <p>Amor, compra também 1 bandeja de iogurte natural se achar! 🙏</p>
+                  <span class="text-[9px] text-emerald-600 font-bold block mt-1">✨ Item adicionado automaticamente à lista de compras</span>
+                </div>
               </div>
             </div>
+
           </div>
 
-        </div>
+          <!-- BARRA INFERIOR DE ENVIO COM INDICAÇÃO DE COMPRAS INTUITIVA -->
+          <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-2 flex-shrink-0">
+            <button type="button" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 text-lg font-bold transition-all active:scale-95 cursor-pointer" title="Adicionar item à lista ou anexar">
+              +
+            </button>
+            <input type="text" placeholder="Escreva uma mensagem ou peça um item para a lista..." class="flex-1 bg-slate-100 text-slate-900 px-4 py-2 rounded-full text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
+            <button type="button" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer" title="Áudio ou Enviar">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
 
-        <!-- Barra Inferior de Entrada do Chat -->
-        <div class="bg-white border-t border-slate-200 p-2 flex items-center gap-2 flex-shrink-0">
-          <button type="button" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-          </button>
-          <input type="text" placeholder="Mensagem..." class="flex-1 bg-slate-100 rounded-2xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none" />
-          <button type="button" onclick="alert('Gravação de Áudio ativada')" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
-            <i data-lucide="mic" class="w-4 h-4"></i>
-          </button>
         </div>
 
       </section>
@@ -905,12 +1203,48 @@
     }
 
     // Privacidade de Saldo
+    // Suporte a perfil Solteiro / Familiar dinâmico
+    let isSingleUser = false;
+    function toggleUserProfileType() {
+      isSingleUser = !isSingleUser;
+      const elTitle = document.getElementById('heroGreetingTitle');
+      const elRole = document.getElementById('headerUserRoleBadge');
+      if (isSingleUser) {
+        if (elTitle) elTitle.innerText = 'Olá, Rodrigo!';
+        if (elRole) elRole.innerText = 'CONTA INDIVIDUAL';
+      } else {
+        if (elTitle) elTitle.innerText = 'Olá, Família!';
+        if (elRole) elRole.innerText = 'GESTOR FAMILIAR';
+      }
+    }
+
+    function openAdminCustomTextModal() {
+      const current = document.getElementById('heroGreetingSubtitle')?.innerText || '';
+      const newText = prompt('Editar Subtítulo do Cabeçalho (Limite: 50 caracteres):', current);
+      if (newText !== null) {
+        const trimmed = newText.trim().slice(0, 50);
+        const el = document.getElementById('heroGreetingSubtitle');
+        if (el && trimmed) el.innerText = trimmed;
+      }
+    }
+
     let privacyHidden = false;
     function togglePrivacy() {
       privacyHidden = !privacyHidden;
-      document.getElementById('heroSaldoText').innerText = privacyHidden ? '••••••••' : 'R$ 3.270,00';
-      document.getElementById('heroEyeIcon').setAttribute('data-lucide', privacyHidden ? 'eye-off' : 'eye');
-      lucide.createIcons();
+      const elSaldo = document.getElementById('heroSaldoText');
+      const elReceitas = document.getElementById('heroReceitasVal');
+      const elDespesas = document.getElementById('heroDespesasVal');
+      const icon = document.getElementById('iconHeroPrivacy');
+
+      if (privacyHidden) {
+        if (elSaldo) elSaldo.innerText = 'R$ •••••';
+        if (elReceitas) elReceitas.innerText = '+ R$ •••••';
+        if (elDespesas) elDespesas.innerText = '- R$ •••••';
+      } else {
+        if (elSaldo) elSaldo.innerText = 'R$ 4.850,00';
+        if (elReceitas) elReceitas.innerText = '+ R$ 8.500,00';
+        if (elDespesas) elDespesas.innerText = '- R$ 3.650,00';
+      }
     }
 
     // Micro-reação ao tocar no mascote
