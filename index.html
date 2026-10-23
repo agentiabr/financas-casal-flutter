@@ -3316,8 +3316,1503 @@ html, body {
     border-color: #38BDF8 !important;
   }
   </style>
+
+  <!-- ============================================================== -->
+  <!-- DESIGN SYSTEM CTRLPIG OFICIAL V2.2 (PREVIEW APROVADO)          -->
+  <!-- ============================================================== -->
+  <style id="ctrlpigApprovedThemeCss">
+/**
+ * ==============================================================================
+ * ControlPig Fintech Design System - Stylesheet V2.2
+ * Especialista Fintech Mobile: Nubank / Itaú / Revolut
+ * Compatibilidade: Android WebView (Galaxy A13 e Galaxy M62)
+ * Retrato & Paisagem (Zero Scroll Horizontal, Status Bar Integrada)
+ * ==============================================================================
+ */
+
+/* 1. VARIÁVEIS DE DESIGN SYSTEM */
+:root {
+  /* Cores Institucionais */
+  --cp-primary: #0A3981;
+  --cp-primary-dark: #082F6D;
+  --cp-primary-deep: #051C44;
+  --cp-primary-light: #1D4ED8;
+  --cp-accent: #38BDF8;
+  --cp-accent-glow: rgba(56, 189, 248, 0.35);
+
+  /* Superfícies & Bordas (Modo Claro Padrão) */
+  --cp-bg-app: #F8FAFC;
+  --cp-card-bg: #FFFFFF;
+  --cp-card-muted: #F1F5F9;
+  --cp-border: #E2E8F0;
+  --cp-border-light: #F1F5F9;
+  --cp-border-active: #3B82F6;
+
+  /* Tipografia & Contraste */
+  --cp-text-primary: #0F172A;
+  --cp-text-secondary: #475569;
+  --cp-text-muted: #94A3B8;
+  --cp-text-inverse: #FFFFFF;
+
+  /* Semântica Financeira */
+  --cp-income: #10B981;
+  --cp-income-bg: #ECFDF5;
+  --cp-expense: #EF4444;
+  --cp-expense-bg: #FEF2F2;
+  --cp-fixed: #6366F1;
+  --cp-fixed-bg: #EEF2FF;
+  --cp-installments: #8B5CF6;
+  --cp-installments-bg: #F5F3FF;
+  --cp-warning: #F59E0B;
+  --cp-warning-bg: #FFFBEB;
+
+  /* Sombras Suaves Nubank */
+  --cp-shadow-card: 0 4px 18px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
+  --cp-shadow-elevated: 0 14px 28px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  --cp-shadow-hero: 0 12px 30px -4px rgba(10, 57, 129, 0.35);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(15, 23, 42, 0.07);
+
+  /* Dimensões & Raios */
+  --cp-radius-card: 1.5rem;   /* 24px */
+  --cp-radius-tile: 1.125rem; /* 18px */
+  --cp-radius-button: 0.875rem; /* 14px */
+  --cp-radius-pill: 9999px;
+
+  /* Safe Areas Android */
+  --cp-safe-top: env(safe-area-inset-top, 0px);
+  --cp-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Modo Escuro */
+.dark {
+  --cp-bg-app: #0B0F17;
+  --cp-card-bg: #131C2E;
+  --cp-card-muted: #1E293B;
+  --cp-border: #1E293B;
+  --cp-border-light: #162032;
+  --cp-border-active: #38BDF8;
+
+  --cp-text-primary: #F8FAFC;
+  --cp-text-secondary: #94A3B8;
+  --cp-text-muted: #64748B;
+
+  --cp-income-bg: rgba(16, 185, 129, 0.15);
+  --cp-expense-bg: rgba(239, 68, 68, 0.15);
+  --cp-fixed-bg: rgba(99, 102, 241, 0.15);
+  --cp-installments-bg: rgba(139, 92, 246, 0.15);
+  --cp-shadow-dock: 0 -4px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 2. REGRAS GLOBAIS DE VIEWPORT E ANDROID WEBVIEW */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--cp-bg-app);
+  color: var(--cp-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden !important; /* Proíbe estritamente scroll horizontal */
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 3. CABEÇALHO BANCÁRIO QUE PINTA A STATUS BAR */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  width: 100%;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  box-shadow: 0 4px 16px rgba(10, 57, 129, 0.2);
+  user-select: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.app-header-inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Botões translúcidos de ação do cabeçalho */
+.header-glass-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-glass-btn:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.header-glass-btn:active {
+  transform: scale(0.94);
+}
+
+/* 4. CARD AZUL HEROIC DO DASHBOARD */
+.hero-card-banner {
+  background: linear-gradient(135deg, #0A3981 0%, #082F6D 50%, #051C44 100%);
+  border-radius: var(--cp-radius-card);
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+  color: #FFFFFF;
+  box-shadow: var(--cp-shadow-hero);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 0.75rem;
+}
+
+.hero-specular-sheen {
+  position: absolute;
+  top: -3rem;
+  right: -3rem;
+  width: 14rem;
+  height: 14rem;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+/* Balão interativo de dicas do Piggy no card azul */
+.hero-piggy-balloon {
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  padding: 0.875rem;
+  color: #FFFFFF;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+/* 5. CARDS FINTECH (Nubank / Itaú style) */
+.card-fintech {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-card);
+  box-shadow: var(--cp-shadow-card);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-fintech:hover {
+  box-shadow: var(--cp-shadow-elevated);
+}
+
+/* 6. LIST ITEM FINTECH (Transações agrupadas) */
+.list-item-fintech {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-radius: var(--cp-radius-tile);
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.list-item-fintech:active {
+  transform: scale(0.985);
+  background-color: var(--cp-card-muted);
+}
+
+.list-item-icon-box {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* 7. CHIPS & PÍLULAS DE FILTRO */
+.chip-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.45rem 1rem;
+  border-radius: var(--cp-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid var(--cp-border);
+  background-color: var(--cp-card-bg);
+  color: var(--cp-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip-pill.active {
+  background-color: var(--cp-primary);
+  color: #FFFFFF;
+  border-color: var(--cp-primary);
+  box-shadow: 0 2px 8px rgba(10, 57, 129, 0.25);
+}
+
+.chip-pill:hover:not(.active) {
+  background-color: var(--cp-card-muted);
+  color: var(--cp-text-primary);
+}
+
+/* 8. TILES DE MÓDULOS (Família & Vida) */
+.module-tile {
+  background-color: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: var(--cp-radius-tile);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  box-shadow: var(--cp-shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.module-tile:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.module-icon-halo {
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+/* 9. NAVEGAÇÃO INFERIOR MODERNA (4 ABAS FINTECH) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--cp-border);
+  padding-top: 0.35rem;
+  padding-bottom: max(6px, var(--cp-safe-bottom));
+  box-shadow: var(--cp-shadow-dock);
+  user-select: none;
+}
+
+.dark .bottom-nav {
+  background-color: rgba(19, 28, 46, 0.95);
+  border-top-color: var(--cp-border);
+}
+
+.bottom-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 28rem; /* 448px */
+  margin: 0 auto;
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.25rem;
+  min-height: 48px; /* Touch target Android */
+  color: var(--cp-text-muted);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.1s ease;
+  position: relative;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+}
+
+.bottom-nav-item.active {
+  color: var(--cp-primary);
+}
+
+.dark .bottom-nav-item.active {
+  color: var(--cp-accent);
+}
+
+.bottom-nav-item.active i {
+  stroke-width: 2.4;
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.92);
+}
+
+/* 10. PADRÃO DE TELA INTEIRA (Substitui Modais Flutuantes) */
+.full-screen-page {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  background-color: var(--cp-bg-app);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: max(16px, var(--cp-safe-bottom));
+}
+
+.page-header-back {
+  position: sticky;
+  top: 0;
+  z-index: 51;
+  background-color: var(--cp-primary);
+  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  color: #FFFFFF;
+  padding-top: max(10px, var(--cp-safe-top));
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+}
+
+.btn-back-circle {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-back-circle:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 11. OVERLAY DE PITACO DO MASCOTE COM BACKDROP-FILTER BLUR */
+.mascot-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(5, 28, 68, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mascot-speech-bubble {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 1.75rem;
+  padding: 1.5rem;
+  color: #FFFFFF;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  text-align: center;
+  position: relative;
+}
+
+.mascot-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 9px 9px 0;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.35) transparent;
+  display: block;
+  width: 0;
+}
+
+.mascot-official-img {
+  width: 9rem;
+  height: 9rem;
+  object-contain: contain;
+  margin-top: 0.75rem;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6));
+  animation: cpFloatMascot 3.5s ease-in-out infinite;
+}
+
+@keyframes cpFloatMascot {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+/* 12. ADAPTAÇÃO PARA MODO PAISAGEM (ANDROID WEBVIEW GALAXY A13 / M62) */
+@media (orientation: landscape) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .hero-card-banner {
+    padding: 1rem 1.5rem;
+  }
+
+  /* Ajusta grid do dashboard para side-by-side no landscape */
+  .landscape-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* Reduz altura do balão do herói para não empurrar a tela */
+  .hero-piggy-balloon {
+    min-height: 96px;
+  }
+
+  /* Bottom nav compacta na horizontal */
+  .bottom-nav {
+    padding-top: 0.2rem;
+    padding-bottom: max(4px, var(--cp-safe-bottom));
+  }
+
+  .bottom-nav-item {
+    min-height: 42px;
+    font-size: 0.625rem;
+  }
+}
+
+
+    /* Ocultar containers legados em favor do novo layout aprovado */
+    #main-content,
+    nav.block.md\:hidden,
+    #appBottomNavBar {
+      display: none !important;
+    }
+
+    body {
+      background-color: #F8FAFC !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    #approvedAppContainer {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #F8FAFC;
+    }
+  </style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
+
+  <!-- ============================================================== -->
+  <!-- INTERFACE DO NOVO DESIGN SYSTEM FINTECH (PREVIEW APROVADO)     -->
+  <!-- ============================================================== -->
+  <div id="approvedAppContainer" class="w-full min-h-screen flex flex-col pb-16">
+<section id="screen_dashboard" class="w-full flex-1">
+        
+        <!-- ============================================================== -->
+        <!-- 1. TOPO AURORA AZUL PROFUNDO COM LOGO CTRLPIG E ÍCONES LIVRES -->
+        <!-- ============================================================== -->
+        <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] text-white pt-4 pb-16 px-4 select-none w-full min-h-[220px]">
+          <!-- Efeitos de iluminação aurora sutil -->
+          <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute top-1/2 -left-12 w-60 h-60 bg-sky-400/15 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Linha Superior: Avatar com Nome do Membro à esquerda | Ações à direita -->
+          <div class="flex items-center justify-between mb-4 relative z-20 w-full">
+            
+            <!-- Avatar e Nome do Membro Ativo à Esquerda -->
+            <div class="flex items-center gap-2.5 cursor-pointer group" onclick="toggleUserProfileType()" title="Toque para alternar Família / Solteiro">
+              <div class="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md flex-shrink-0">
+                <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-sm">
+                  <span>👨</span>
+                </div>
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
+              </div>
+              <div class="flex flex-col text-left leading-tight">
+                <span class="text-base font-black text-white tracking-tight">Rodrigo</span>
+                <span id="headerUserRoleBadge" class="text-[10px] text-blue-200 font-semibold tracking-wider uppercase">GESTOR FAMILIAR</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <!-- A- / A+ Zoom -->
+              <div class="inline-flex items-center bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl px-2 py-0.5 text-white text-[11px] font-black shadow-xs">
+                <button type="button" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Diminuir fonte">A-</button>
+                <span class="text-white/30 text-[9px] select-none mx-0.5">|</span>
+                <button type="button" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Aumentar fonte">A+</button>
+              </div>
+
+              <!-- Notificações -->
+              <button type="button" class="relative w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer" title="Notificações">
+                <i data-lucide="bell" class="w-4 h-4 text-white"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse border border-[#0A3981]"></span>
+              </button>
+
+              <!-- Ícone de ADMIN Dedicado -->
+              <button type="button" onclick="openAdminCustomTextModal()" class="w-8 h-8 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-300/40 text-amber-300 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Personalizar Subtítulo no Admin">
+                <i data-lucide="shield-check" class="w-4 h-4 text-amber-300"></i>
+              </button>
+
+              <!-- Sair -->
+              <button type="button" class="w-8 h-8 rounded-full bg-rose-500/20 hover:bg-rose-500/35 border border-rose-300/40 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Encerrar sessão">
+                <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-200"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Saudação e Pílula do Ciclo Vigente -->
+          <div class="flex items-end justify-between relative w-full pt-1">
+            <div class="relative z-10 max-w-[62%] pb-1">
+              <!-- Título Dinâmico: 'Olá, Família!' (se Conjunto) ou 'Olá, Rodrigo!' (se Solteiro) -->
+              <h1 id="heroGreetingTitle" class="text-2xl font-black text-white tracking-tight leading-tight">Olá, Família!</h1>
+              
+              <!-- Subtítulo Configurável via Admin com limite de caracteres para nunca quebrar o layout -->
+              <p id="heroGreetingSubtitle" class="text-xs text-blue-200 mt-1 leading-snug max-w-[220px]">Tudo certo por aqui. Seu saldo está saudável.</p>
+              
+              <!-- Pílula do Ciclo Vigente -->
+              <div class="relative inline-block mt-3">
+                <button type="button" onclick="alert('Ciclo Vigente: 05/Out a 04/Nov 2026')" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-bold transition-all shadow-md cursor-pointer">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
+                  <span id="heroCycleTag" class="text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
+                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- ============================================================== -->
+        <!-- 2. CAIXA DE SALDO 100% BRANCA                                 -->
+        <!--    COM O PIGGY PISANDO NA BORDA DIREITA DA CAIXA BRANCA       -->
+        <!-- ============================================================== -->
+        <div class="px-4 -mt-10 relative z-20 w-full select-none">
+          
+          <!-- O PIGGY PISANDO NA BORDA SUPERIOR DIREITA DA CAIXA BRANCA -->
+          <div class="absolute -top-[124px] right-4 z-30 pointer-events-none select-none flex flex-col items-end">
+            <img id="mascotImage" src="images/mascote_saldo_positivo.png" onerror="this.src=\'assets/images/mascote_saldo_positivo.png\'" 
+                 alt="Piggy Mascote Pisando na Caixa Branca" 
+                 class="h-[142px] w-auto max-h-[142px] object-contain pointer-events-auto cursor-pointer drop-shadow-[0_8px_14px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-105 active:scale-95" 
+                 title="Piggy pisando no card de saldo!">
+            <!-- Sombra de contato suave diretamente sobre a superfície da caixa branca sob as patas -->
+            <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
+          </div>
+
+          <div id="heroCardBanner" class="bg-white rounded-3xl p-5 shadow-xl border border-slate-200/80 transition-all select-none text-slate-900 relative z-10">
+            
+            <div class="flex items-center justify-between pr-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
+              <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar todos os valores">
+                <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4"></i>
+              </button>
+            </div>
+            
+            <div class="mt-1 flex items-baseline gap-2">
+              <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                R$ 4.850,00
+              </h2>
+            </div>
+
+            <div class="mt-1">
+              <span id="heroSaldoBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span>↑ 12%</span> em relação ao mês anterior
+              </span>
+            </div>
+
+            <!-- Balão de Dica do Piggy dentro do card branco com setinhas de navegação -->
+            <div class="mt-4 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-between gap-2.5">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <div class="flex-1 text-center min-w-0 px-1">
+                <div class="flex items-center justify-center gap-1.5 mb-0.5">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-200/50 px-2 py-0.2 rounded-full">💡 Dica do Piggy</span>
+                  <span id="previewTipIndex" class="text-[9px] font-bold text-blue-600">1/3</span>
+                </div>
+                <p id="previewTipText" class="text-xs font-semibold text-slate-800 leading-snug">
+                  "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
+                </p>
+                <div class="flex items-center justify-center gap-1 mt-1.5">
+                  <span class="w-2 h-1 rounded-full bg-blue-600"></span>
+                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
+                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
+                </div>
+              </div>
+              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Mini cards de Resumo: Dias, Comprometido e Parcelados -->
+            <div class="grid grid-cols-3 gap-2 mt-3.5 text-center">
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Dias Restantes</span>
+                <span class="text-xs font-black text-slate-800">18 dias</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Comprometido</span>
+                <span id="valComprometido" class="text-xs font-black text-amber-600">61%</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase block">Parcelados</span>
+                <span id="valParcelados" class="text-xs font-black text-blue-600">5 ativas</span>
+              </div>
+            </div>
+
+            <!-- Mini cards de Receitas e Despesas -->
+            <div class="grid grid-cols-2 gap-2 mt-3.5">
+              <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-xs">
+                  ↓
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-emerald-800 uppercase block">Receitas</span>
+                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ 8.500,00</span>
+                </div>
+              </div>
+              <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center text-xs font-black shadow-xs">
+                  ↑
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold text-rose-800 uppercase block">Despesas</span>
+                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ 3.650,00</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- 3. CAIXA ARREDONDADA COM FUNDO CINZA (#DFEAF7)                 -->
+        <!--    COM AS DEMAIS CAIXAS: ROTINAS, DESPESAS E LANÇAMENTOS      -->
+        <!-- ============================================================== -->
+        <div class="bg-[#DFEAF7] rounded-t-[32px] -mt-6 pt-9 pb-8 px-4 relative z-0 flex flex-col space-y-4 shadow-xl">
+          
+          <!-- CAIXA DE ROTINAS / ACESSO RÁPIDO -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5">
+                <span>⚡</span><span>Acesso Rápido</span>
+              </h3>
+              <span class="text-[11px] font-bold text-blue-600 cursor-pointer" onclick="switchScreen('familia')">Ver todos &gt;</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 text-center select-none">
+              <div onclick="switchScreen('chat')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-blue-600 flex items-center justify-center text-lg mb-1">
+                  💬
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Chat</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('compras')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-lg mb-1">
+                  🛒
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Compras</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('saude')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-rose-100/70 text-rose-600 flex items-center justify-center text-lg mb-1">
+                  💊
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Saúde</span>
+              </div>
+
+              <div onclick="triggerSectionMascot('pet')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-600 flex items-center justify-center text-lg mb-1">
+                  🐾
+                </div>
+                <span class="text-[11px] font-bold text-slate-800">Pets</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAIXA DE DESPESAS POR CATEGORIA (DONUT CHART) -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900">Despesas por categoria</h3>
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                Ver tudo &gt;
+              </button>
+            </div>
+
+            <div class="flex items-center justify-around gap-4">
+              <!-- Donut Chart com Total Central -->
+              <div class="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
+                <canvas id="previewDonutChart" width="144" height="144"></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase">Total</span>
+                  <span class="text-base font-black text-slate-900 leading-tight">R$ 3.650</span>
+                  <span class="text-[9px] text-slate-400">no mês</span>
+                </div>
+              </div>
+
+              <!-- Legenda de Fatias -->
+              <div class="space-y-1.5 text-xs w-full max-w-[170px]">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Moradia</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">42%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Alimentação</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">28%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Educação</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">18%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Saúde</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">7%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                    <span class="text-slate-700 font-medium text-[11px]">Outros</span>
+                  </div>
+                  <span class="font-bold text-slate-900 text-[11px]">5%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAIXA DE LANÇAMENTOS RECENTES -->
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-black text-sm text-slate-900">Lançamentos Recentes</h3>
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+                Ver extrato completo &gt;
+              </button>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+                    🛒
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-900 block leading-tight">Supermercado Pão de Açúcar</span>
+                    <span class="text-[10px] text-slate-500">Hoje • Alimentação</span>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-rose-600">- R$ 342,80</span>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                    💼
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-900 block leading-tight">Salário Rodrigo</span>
+                    <span class="text-[10px] text-slate-500">Ontem • Receita Fixa</span>
+                  </div>
+                </div>
+                <span class="text-xs font-black text-emerald-600">+ R$ 6.200,00</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 2: TRANSAÇÕES                                           -->
+      <!-- ============================================================ -->
+      <section id="screen_transacoes" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
+        
+        <!-- Topo Integrado com Setinha Voltar ‹ e Título -->
+        <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-black text-white tracking-tight">Transações</h2>
+          </div>
+          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar Transações">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-5 pt-4 pb-6 space-y-3.5 shadow-2xl">
+          
+          <!-- Pílulas de Filtro com Alto Contraste (Tela 2 do anexo) -->
+          <div class="flex items-center gap-2 overflow-x-auto select-none pt-0.5">
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs">Todas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Entradas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Saídas</button>
+            <button class="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs">Parceladas</button>
+          </div>
+
+          <!-- Grade de 4 Ações Rápidas (Tela 2 do anexo: Nova Transação, Escanear NFe, Transferir, Categorias) -->
+          <div class="grid grid-cols-4 gap-2 text-center select-none">
+            <div onclick="alert('Lançar Nova Transação')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base mb-1 font-black">
+                +
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Nova transação</span>
+            </div>
+
+            <div onclick="alert('Escanear QR Code da NFC-e')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base mb-1 font-bold">
+                📷
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Escanear NFe</span>
+            </div>
+
+            <div onclick="alert('Transferir entre Contas')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base mb-1 font-bold">
+                ⇄
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Transferir</span>
+            </div>
+
+            <div onclick="alert('Gerenciar Categorias')" class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base mb-1 font-bold">
+                🏷️
+              </div>
+              <span class="text-[10px] font-bold text-slate-800 leading-tight">Categorias</span>
+            </div>
+          </div>
+
+          <!-- LISTA DE TRANSAÇÕES AGRUPADAS POR DATA COM ALTA LEGIBILIDADE -->
+          <div class="space-y-3 pt-1">
+            
+            <!-- Grupo: Hoje - 20 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">Hoje • 20 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 1: Supermercado Extra -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🛒
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Supermercado Extra</h4>
+                      <span class="text-[11px] text-slate-400">Alimentação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 156,80</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+                <!-- Item 2: Uber -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg flex-shrink-0">
+                      🚗
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Uber</h4>
+                      <span class="text-[11px] text-slate-400">Transporte</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 28,50</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+                <!-- Item 3: Salário Rodrigo -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                      💼
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Salário</h4>
+                      <span class="text-[11px] text-slate-400">Receita fixa</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-emerald-600">+ R$ 5.200,00</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Grupo: Ontem - 19 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">Ontem • 19 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 4: Farmácia -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg flex-shrink-0">
+                      💊
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Farmácia Drogasil</h4>
+                      <span class="text-[11px] text-slate-400">Saúde</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 87,90</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+                <!-- Item 5: Restaurante -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🍽️
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Restaurante Família</h4>
+                      <span class="text-[11px] text-slate-400">Alimentação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 92,40</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Grupo: 18 de outubro -->
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">18 de outubro</span>
+              <div class="space-y-1.5">
+                
+                <!-- Item 6: Mensalidade Escola -->
+                <div class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg flex-shrink-0">
+                      🎓
+                    </div>
+                    <div>
+                      <h4 class="font-extrabold text-xs text-slate-900">Mensalidade Escola</h4>
+                      <span class="text-[11px] text-slate-400">Educação</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs text-rose-600">- R$ 1.250,00</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 3: FAMÍLIA & VIDA                                       -->
+      <!-- ============================================================ -->
+      <section id="screen_familia" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
+        
+        <!-- Topo Integrado com Setinha Voltar ‹ e Título -->
+        <div class="px-5 pt-3 pb-2 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-xl font-black text-white tracking-tight">Família &amp; Vida</h2>
+          </div>
+          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 flex flex-col relative overflow-hidden">
+          
+          <!-- BANNER HERO COM O PIGGY POUSADO POR CIMA DA CAIXA ARREDONDADA (z-20 com sombra) -->
+          <div class="px-5 pt-1 relative z-20">
+            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
+              <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div class="relative z-10 flex items-center justify-between gap-3">
+                <div class="max-w-[62%]">
+                  <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
+                    Tudo da sua família em um só lugar.
+                  </h3>
+                  <p class="text-xs text-blue-100 mt-1 leading-snug">
+                    Organize, planeje e viva com mais tranquilidade.
+                  </p>
+                  <button type="button" onclick="triggerSectionMascot('saude')" class="mt-3 px-4 py-1.5 rounded-full bg-white text-blue-700 hover:bg-blue-50 text-xs font-black shadow-md transition-all inline-flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <span>Explorar módulos</span>
+                    <span>→</span>
+                  </button>
+                </div>
+
+                <!-- Mascote Porquinho Robô 3D sorrindo -->
+                <div class="w-28 sm:w-32 flex-shrink-0 flex items-center justify-center">
+                  <img src="images/mascote_oficial_mentor.png" onerror="this.src=\'assets/images/mascote_oficial_mentor.png\'" alt="Mascote Oficial" class="w-full h-auto max-h-[125px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAIXA COM CANTOS ARREDONDADOS (rounded-t-[32px]) FICANDO POR BAIXO DO CARD BANNER (-mt-8)
+               COM PADDING TOP (pt-10) PARA NENHUM TEXTO OU CARD FICAR CORTADO! -->
+          <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] -mt-8 relative z-10 flex flex-col overflow-y-auto px-5 pt-11 pb-6 space-y-4 shadow-inner">
+            
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
+              <span class="text-[11px] font-bold text-blue-700 bg-blue-100/70 px-2.5 py-0.5 rounded-full">8 disponíveis</span>
+            </div>
+
+            <!-- GRADE DOS 8 MÓDULOS EM CARTÕES BRANCOS ARREDONDADOS (100% VISÍVEIS SEM CORTES) -->
+            <div class="grid grid-cols-2 gap-3 pb-6">
+              
+              <!-- 1. Educação -->
+              <div onclick="triggerSectionMascot('educacao')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    🎓
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Educação</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Mensalidades e cursos</p>
+                </div>
+              </div>
+
+              <!-- 2. Lista de Compras -->
+              <div onclick="triggerSectionMascot('compras')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    🛒
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Colaborativa</p>
+                </div>
+              </div>
+
+              <!-- 3. Pets e Vacinas -->
+              <div onclick="triggerSectionMascot('pet')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
+                    🐾
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Pets e Vacinas</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Cuidados e gastos</p>
+                </div>
+              </div>
+
+              <!-- 4. Minha Saúde -->
+              <div onclick="triggerSectionMascot('saude')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                    ❤️
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Minha Saúde</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Consultas e exames</p>
+                </div>
+              </div>
+
+              <!-- 5. Veículos -->
+              <div onclick="triggerSectionMascot('veiculos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
+                    🚗
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Veículos</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Manutenção e multas</p>
+                </div>
+              </div>
+
+              <!-- 6. Prestadores de Serviço -->
+              <div onclick="triggerSectionMascot('prestadores')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    🔧
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Prestadores</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Contatos e orçamentos</p>
+                </div>
+              </div>
+
+              <!-- 7. Cofrinho e Metas -->
+              <div onclick="triggerSectionMascot('cofrinhos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    🐷
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Cofrinho e Metas</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Objetivos da família</p>
+                </div>
+              </div>
+
+              <!-- 8. Documentos & Faturas -->
+              <div onclick="triggerSectionMascot('cartoes')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-start justify-between">
+                  <div class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+                    📄
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+                </div>
+                <div>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Documentos</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Recibos e garantias</p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TELA 4: CHAT DA FAMÍLIA (TELA INTEIRA)                       -->
+      <!-- ============================================================ -->
+      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
+        
+        <!-- Topo Integrado sem faixa cortada -->
+        <div class="px-5 pt-3 pb-2.5 flex items-center justify-between text-white flex-shrink-0">
+          <div class="flex items-center gap-2.5">
+            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h3 class="font-black text-lg text-white leading-tight">Chat da Família</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+              <i data-lucide="phone" class="w-4 h-4"></i>
+            </button>
+            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Carrossel de Membros no Topo -->
+        <div class="px-5 pb-3 flex items-center gap-3 overflow-x-auto flex-shrink-0 select-none">
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="w-12 h-12 rounded-full border-2 border-blue-400 bg-blue-600 flex items-center justify-center text-white shadow-md">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[10px] font-bold text-white">Todos</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👨</span>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Eu</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👩</span>
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Marcia</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👦</span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Lucas</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 cursor-pointer">
+            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+              <span>👧</span>
+            </div>
+            <span class="text-[10px] font-medium text-blue-200">Sofia</span>
+          </div>
+        </div>
+
+        <!-- CORPO DO CHAT COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) -->
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-hidden shadow-2xl">
+          
+          <!-- Área rolável de mensagens -->
+          <div class="flex-1 p-4 overflow-y-auto space-y-3">
+            
+            <div class="text-center my-0.5">
+              <span class="text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-200/80 text-slate-600">Hoje</span>
+            </div>
+
+            <!-- CARD INTERATIVO DA LISTA DE COMPRAS DA GÔNDOLA (COLABORATIVA NO CHAT) -->
+            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-blue-200/90 max-w-[92%] mx-auto">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
+                    🛒
+                  </div>
+                  <div>
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras • Supermercado</h4>
+                    <span class="text-[10px] text-slate-400">Marque o que pegar na gôndola e informe o valor</span>
+                  </div>
+                </div>
+                <span class="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Total: R$ 38,40
+                </span>
+              </div>
+
+              <!-- Itens da Gôndola com Checkbox, Quantidade e Valor Unitário -->
+              <div class="space-y-2 mt-2.5 text-xs">
+                
+                <!-- Item 1: Leite Desnatado (Já pego na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 line-through text-slate-500">2x Leite Desnatado 1L</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[11px]">
+                    <span class="text-slate-400">R$ 5,20 un</span>
+                    <span class="font-black text-emerald-700">R$ 10,40</span>
+                  </div>
+                </div>
+
+                <!-- Item 2: Sabão em pó (Pego na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-800 line-through text-slate-500">1x Sabão em Pó Omo 1kg</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[11px]">
+                    <span class="text-slate-400">R$ 18,90 un</span>
+                    <span class="font-black text-emerald-700">R$ 18,90</span>
+                  </div>
+                </div>
+
+                <!-- Item 3: Café Torrado (Pendente na gôndola) -->
+                <div class="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200/80">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
+                    <span class="font-bold text-slate-900">1x Café Torrado 500g</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 text-[11px]">
+                    <input type="text" placeholder="R$ valor" value="R$ 9,10" class="w-16 px-1.5 py-0.5 rounded-lg border border-slate-200 text-right font-bold text-slate-800 text-[10px]">
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Rodapé da lista de compras -->
+              <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-slate-500 flex items-center gap-1">
+                  <span>✓ 2 de 3 pegos</span>
+                </span>
+                <button type="button" class="font-extrabold text-blue-600 hover:underline">
+                  + Adicionar Item à Lista
+                </button>
+              </div>
+            </div>
+
+            <!-- Mensagem do Rodrigo (Direita) -->
+            <div class="flex justify-end">
+              <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-xs shadow-xs text-xs max-w-[80%]">
+                <p>Já estou no mercado pegando os itens da lista acima! 🛒</p>
+                <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-blue-200">
+                  <span>10:30</span>
+                  <span>✓✓</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mensagem da Márcia: Pedido em texto que entrou na lista -->
+            <div class="flex items-start gap-2 max-w-[85%]">
+              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center text-xs flex-shrink-0">👩</div>
+              <div>
+                <span class="text-[10px] font-bold text-rose-600 block mb-0.5">Marcia</span>
+                <div class="bg-white border border-slate-200/80 p-3 rounded-2xl rounded-tl-xs shadow-xs text-xs text-slate-800">
+                  <p>Amor, compra também 1 bandeja de iogurte natural se achar! 🙏</p>
+                  <span class="text-[9px] text-emerald-600 font-bold block mt-1">✨ Item adicionado automaticamente à lista de compras</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- BARRA INFERIOR DE ENVIO COM INDICAÇÃO DE COMPRAS INTUITIVA -->
+          <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-2 flex-shrink-0">
+            <button type="button" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 text-lg font-bold transition-all active:scale-95 cursor-pointer" title="Adicionar item à lista ou anexar">
+              +
+            </button>
+            <input type="text" placeholder="Escreva uma mensagem ou peça um item para a lista..." class="flex-1 bg-slate-100 text-slate-900 px-4 py-2 rounded-full text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
+            <button type="button" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer" title="Áudio ou Enviar">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DOCK INFERIOR FIXO COM 4 ABAS FINTECH                        -->
+    <!-- ============================================================ -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-grid">
+        
+        <!-- 1. Início -->
+        <button id="navTab_dashboard" onclick="switchScreen('dashboard')" class="bottom-nav-item active">
+          <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
+          <span>Início</span>
+        </button>
+
+        <!-- 2. Transações -->
+        <button id="navTab_transacoes" onclick="switchScreen('transacoes')" class="bottom-nav-item">
+          <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
+          <span>Transações</span>
+        </button>
+
+        <!-- 3. Família & Vida -->
+        <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
+          <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
+          <span>Família &amp; Vida</span>
+        </button>
+
+        <!-- 4. Chat -->
+        <button id="navTab_chat" onclick="switchScreen('chat')" class="bottom-nav-item relative">
+          <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
+          <span>Chat</span>
+          <span class="absolute top-1 right-6 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </button>
+
+      </div>
+    </nav>
+<div id="previewMascotOverlay" class="mascot-overlay-backdrop hidden">
+      <div class="relative z-10 max-w-xs w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Balão Neon com Dica Contextual -->
+        <div class="mascot-speech-bubble">
+          <div id="overlayBadge" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-emerald-500/20 text-emerald-300 border-emerald-400/40">
+            🩺 Dica do Piggy Médico
+          </div>
+          <h3 id="overlayHeader" class="font-extrabold text-base text-white mb-2 tracking-tight">
+            Minha Saúde &amp; Remédios
+          </h3>
+          <div id="overlayText" class="text-xs text-slate-200 leading-relaxed font-medium mb-3.5 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 text-left">
+            “Aqui você cadastra medicamentos contínuos e ativa alarmes para não esquecer os horários, além de controlar despesas com farmácia e consultas.”
+          </div>
+
+          <!-- Botão de Ação Direta -->
+          <button type="button" onclick="toggleMascotOverlay(false)" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span id="overlayBtnLabel">Acessar Minha Saúde</span>
+            <span>→</span>
+          </button>
+
+          <label class="flex items-center justify-center gap-2 mt-3 cursor-pointer text-[10px] text-slate-400 hover:text-slate-200">
+            <input type="checkbox" class="rounded border-slate-700 bg-slate-800 text-sky-500 cursor-pointer" />
+            <span>Não exibir novamente este mês</span>
+          </label>
+        </div>
+
+        <!-- Mascote Oficial Caracterizado -->
+        <div class="relative mt-2">
+          <img id="overlayMascotImg" src="images/mascote_oficial_saude.png" onerror="this.src=\'assets/images/mascote_oficial_saude.png\'" alt="Mascote Oficial" class="mascot-official-img">
+        </div>
+
+      </div>
+    </div>
+
+  
+  </div>
+
+
 
   <!-- ========================================== -->
   
@@ -34135,5 +35630,378 @@ window.confirmEnterSectionFromPitaco = function() {
     setTimeout(window.syncHeaderGreeting, 300);
   });
 </script>
+
+
+<script id="scriptApprovedDesignSystem">
+
+    // Inicialização do Lucide Icons
+    lucide.createIcons();
+
+    // Dicas do Balão do Piggy
+    const piggyTips = [
+      {
+        icon: "💡",
+        category: "Dica do Piggy",
+        text: "“Tudo certo por aqui! Seu saldo está saudável e a meta de supermercado está sob controle este mês.”"
+      },
+      {
+        icon: "🛒",
+        category: "Mercado Inteligente",
+        text: "“Economize na feira: os legumes estão 15% mais baratos às quartas no Extra!”"
+      },
+      {
+        icon: "💳",
+        category: "Atenção a Cartões",
+        text: "“Fatura do cartão Nubank fecha em 4 dias. Saldo atual cobre todas as parcelas!”"
+      }
+    ];
+    let currentTipIndex = 0;
+
+    function stepPiggyTip(delta) {
+      currentTipIndex = (currentTipIndex + delta + piggyTips.length) % piggyTips.length;
+      const tip = piggyTips[currentTipIndex];
+      document.getElementById('previewTipBadgeIcon').innerText = tip.icon;
+      document.getElementById('previewTipCategory').innerText = tip.category;
+      document.getElementById('previewTipIndex').innerText = `${currentTipIndex + 1}/${piggyTips.length}`;
+      document.getElementById('previewTipText').innerText = tip.text;
+
+      // Atualiza dots
+      const dots = document.getElementById('previewTipDots').children;
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = (i === currentTipIndex) ? 'w-2 h-1 rounded-full bg-amber-400' : 'w-1 h-1 rounded-full bg-white/40';
+      }
+    }
+
+    // Alternar Telas
+    function switchScreen(screenKey) {
+      const screens = ['dashboard', 'transacoes', 'familia', 'chat'];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen_${s}`);
+        const btn = document.getElementById(`btnTab_${s}`);
+        const nav = document.getElementById(`navTab_${s}`);
+
+        if (s === screenKey) {
+          if (el) el.classList.remove('hidden');
+          if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-xs';
+          if (nav) nav.classList.add('active');
+        } else {
+          if (el) el.classList.add('hidden');
+          if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
+          if (nav) nav.classList.remove('active');
+        }
+      });
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    }
+
+    // Alternar Frames de Dispositivos
+    function setDeviceFrame(frameKey) {
+      const frame = document.getElementById('phoneFrame');
+      const btns = ['m62', 'a13', 'landscape'];
+      
+      frame.className = `device-viewport-frame frame-${frameKey}`;
+
+      btns.forEach(b => {
+        const btn = document.getElementById(`btnDev_${b}`);
+        if (b === frameKey) {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white';
+        }
+      });
+    }
+
+    // Privacidade de Saldo
+    // Suporte a perfil Solteiro / Familiar dinâmico
+    let isSingleUser = false;
+    function toggleUserProfileType() {
+      isSingleUser = !isSingleUser;
+      const elTitle = document.getElementById('heroGreetingTitle');
+      const elRole = document.getElementById('headerUserRoleBadge');
+      if (isSingleUser) {
+        if (elTitle) elTitle.innerText = 'Olá, Rodrigo!';
+        if (elRole) elRole.innerText = 'CONTA INDIVIDUAL';
+      } else {
+        if (elTitle) elTitle.innerText = 'Olá, Família!';
+        if (elRole) elRole.innerText = 'GESTOR FAMILIAR';
+      }
+    }
+
+    function openAdminCustomTextModal() {
+      const current = document.getElementById('heroGreetingSubtitle')?.innerText || '';
+      const newText = prompt('Editar Subtítulo do Cabeçalho (Limite: 50 caracteres):', current);
+      if (newText !== null) {
+        const trimmed = newText.trim().slice(0, 50);
+        const el = document.getElementById('heroGreetingSubtitle');
+        if (el && trimmed) el.innerText = trimmed;
+      }
+    }
+
+    let privacyHidden = false;
+    function togglePrivacy() {
+      privacyHidden = !privacyHidden;
+      const elSaldo = document.getElementById('heroSaldoText');
+      const elReceitas = document.getElementById('heroReceitasVal');
+      const elDespesas = document.getElementById('heroDespesasVal');
+      const icon = document.getElementById('iconHeroPrivacy');
+
+      if (privacyHidden) {
+        if (elSaldo) elSaldo.innerText = 'R$ •••••';
+        if (elReceitas) elReceitas.innerText = '+ R$ •••••';
+        if (elDespesas) elDespesas.innerText = '- R$ •••••';
+      } else {
+        if (elSaldo) elSaldo.innerText = 'R$ 4.850,00';
+        if (elReceitas) elReceitas.innerText = '+ R$ 8.500,00';
+        if (elDespesas) elDespesas.innerText = '- R$ 3.650,00';
+      }
+    }
+
+    // Micro-reação ao tocar no mascote
+    function triggerMascotAnim() {
+      const mascot = document.getElementById('previewHeroMascot');
+      mascot.classList.add('scale-125');
+      setTimeout(() => mascot.classList.remove('scale-125'), 200);
+    }
+
+    // Mascotes Oficiais e Pitaco Inteligente
+    const mascotConfig = {
+      saude: {
+        header: "Minha Saúde & Remédios",
+        badge: "🩺 Alerta do Piggy Médico",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40",
+        text: "“Aqui você cadastra medicamentos contínuos e ativa alarmes para não esquecer os horários, além de controlar consultas e exames.”",
+        img: "images/mascote_oficial_saude.png",
+        btn: "Acessar Minha Saúde"
+      },
+      compras: {
+        header: "Lista de Compras Inteligente",
+        badge: "🛒 Pitaco do Piggy Compras",
+        badgeColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+        text: "“Monte sua lista por gôndola e compare preços entre estabelecimentos para economizar em cada ida ao supermercado!”",
+        img: "images/mascote_oficial_compras.png",
+        btn: "Acessar Compras"
+      },
+      pet: {
+        header: "Mundo Pet & Saúde",
+        badge: "🐾 Pitaco do Piggy Pet",
+        badgeColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+        text: "“Au au! Acompanhe ração, vacinas e consultas veterinárias do seu amigão sem misturar com as contas gerais da casa!”",
+        img: "images/mascote_oficial_pet.png",
+        btn: "Acessar Mundo Pet"
+      },
+      automoveis: {
+        header: "Garagem & Automóveis",
+        badge: "🚗 Pitaco do Piggy Garagem",
+        badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-400/40",
+        text: "“Controle manutenções preventivas, troca de óleo, IPVA e abastecimento de cada veículo da família em um só lugar!”",
+        img: "images/mascote_oficial_automoveis.png",
+        btn: "Acessar Veículos"
+      },
+      prestadores: {
+        header: "Prestadores de Serviço",
+        badge: "🔧 Pitaco do Piggy Obras",
+        badgeColor: "bg-teal-500/20 text-teal-300 border-teal-400/40",
+        text: "“Organize diárias de faxina, eletricistas, encanadores e manutenções do lar com controle de contatos e valores pagos.”",
+        img: "images/mascote_oficial_prestadores.png",
+        btn: "Acessar Prestadores"
+      },
+      cofrinhos: {
+        header: "Cofrinhos & Metas",
+        badge: "🐷 Pitaco do Piggy Cofrinho",
+        badgeColor: "bg-pink-500/20 text-pink-300 border-pink-400/40",
+        text: "“Junte dinheiro com objetivos claros: Reserva de emergência, viagem dos sonhos ou reforma da casa com progresso visual!”",
+        img: "images/mascote_oficial_cofrinhos.png",
+        btn: "Acessar Cofrinhos"
+      },
+      educacao: {
+        header: "Educação & Cursos",
+        badge: "🎓 Pitaco do Piggy Professor",
+        badgeColor: "bg-purple-500/20 text-purple-300 border-purple-400/40",
+        text: "“Acompanhe mensalidades escolares, cursos extracurriculares e material didático sem surpresas no início do mês!”",
+        img: "images/mascote_oficial_educacao.png",
+        btn: "Acessar Educação"
+      },
+      cartoes: {
+        header: "Cartões & Faturas",
+        badge: "💳 Pitaco do Piggy Cartões",
+        badgeColor: "bg-sky-500/20 text-sky-300 border-sky-400/40",
+        text: "“Monitore fechamentos, melhores datas de compra e limite disponível de cada cartão da família sem juros rotativos!”",
+        img: "images/mascote_oficial_cartoes.png",
+        btn: "Acessar Cartões"
+      }
+    };
+
+    function triggerSectionMascot(key) {
+      const cfg = mascotConfig[key] || mascotConfig.saude;
+      document.getElementById('overlayHeader').innerText = cfg.header;
+      document.getElementById('overlayBadge').innerText = cfg.badge;
+      document.getElementById('overlayBadge').className = `inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ${cfg.badgeColor}`;
+      document.getElementById('overlayText').innerText = cfg.text;
+      document.getElementById('overlayMascotImg').src = cfg.img;
+      document.getElementById('overlayBtnLabel').innerText = cfg.btn;
+      toggleMascotOverlay(true);
+    }
+
+    function toggleMascotOverlay(show) {
+      const overlay = document.getElementById('previewMascotOverlay');
+      if (show) overlay.classList.remove('hidden');
+      else overlay.classList.add('hidden');
+    }
+
+    function showTxDetail(name, val, cat) {
+      alert(`Detalhes da Transação:\n${name}\nValor: ${val}\nCategoria: ${cat}`);
+    }
+
+    // Inicialização do Donut Chart via Chart.js
+    window.addEventListener('load', () => {
+      const ctx = document.getElementById('previewDonutChart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Moradia', 'Alimentação', 'Educação', 'Saúde', 'Outros'],
+            datasets: [{
+              data: [42, 28, 18, 7, 5],
+              backgroundColor: ['#2563EB', '#F59E0B', '#0EA5E9', '#A855F7', '#94A3B8'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF',
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            cutout: '72%',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            }
+          }
+        });
+      }
+    });
+  
+
+  // ============================================================================
+  // PONTE DE DADOS REAIS: INTEGRAÇÃO DO DESIGN SYSTEM APROVADO COM O APP
+  // ============================================================================
+  window.syncApprovedDesignWithAppData = function() {
+    try {
+      let txs = [];
+      if (typeof getTransactionsForActiveCycle === 'function') {
+        txs = getTransactionsForActiveCycle() || [];
+      } else if (Array.isArray(window.transactions)) {
+        txs = window.transactions;
+      }
+      
+      const receitas = txs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const totalGastos = txs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const saldoLivre = receitas - totalGastos;
+      const percentGasto = receitas > 0 ? Math.min(100, Math.round((totalGastos / receitas) * 100)) : (totalGastos > 0 ? 100 : 0);
+
+      // Card Branco de Saldo Oficial
+      const elSaldo = document.getElementById('heroSaldoText');
+      const elReceitas = document.getElementById('heroReceitasVal');
+      const elDespesas = document.getElementById('heroDespesasVal');
+      const elComp = document.getElementById('valComprometido');
+      const elCycle = document.getElementById('heroCycleTag');
+      const elBadge = document.getElementById('heroSaldoBadge');
+
+      const isHidden = window.privacyHidden === true;
+      if (elSaldo) elSaldo.textContent = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+      if (elReceitas) elReceitas.textContent = isHidden ? '+ R$ •••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
+      if (elDespesas) elDespesas.textContent = isHidden ? '- R$ •••••' : (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
+      if (elComp) elComp.textContent = `${percentGasto}%`;
+      
+      if (typeof currentCycle !== 'undefined' && elCycle) {
+        elCycle.textContent = currentCycle;
+      }
+
+      if (elBadge) {
+        if (saldoLivre >= 0) {
+          elBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+          elBadge.innerHTML = '<span>↑ Saldo Saudável</span> no ciclo vigente';
+        } else {
+          elBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200';
+          elBadge.innerHTML = '<span>⚠️ Atenção</span> saldo comprometido';
+        }
+      }
+
+      // Mascote Reativo
+      const imgMascote = document.getElementById('mascotImage');
+      if (imgMascote) {
+        if (saldoLivre < 0) {
+          imgMascote.src = 'images/mascote_saldo_negativo.png';
+        } else if (saldoLivre < 100) {
+          imgMascote.src = 'images/mascote_saldo_alerta.png';
+        } else {
+          imgMascote.src = 'images/mascote_saldo_positivo.png';
+        }
+      }
+
+      // Sincronizar Saudação e Subtítulo
+      if (typeof window.syncHeaderGreeting === 'function') {
+        window.syncHeaderGreeting();
+      }
+
+      // Atualizar Lançamentos Recentes no Dashboard
+      const recentListContainer = document.getElementById('previewRecentTxsList');
+      if (recentListContainer && txs.length > 0) {
+        const sorted = [...txs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
+        recentListContainer.innerHTML = sorted.map(t => {
+          const isRec = t.tipo === 'Receita';
+          const icon = isRec ? 'arrow-down-left' : 'shopping-bag';
+          const iconBg = isRec ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700';
+          const valClass = isRec ? 'text-emerald-700' : 'text-slate-900';
+          const prefix = isRec ? '+ ' : '- ';
+          const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? prefix + formatBRL(parseFloat(t.valor)||0, 'despesa') : prefix + 'R$ ' + (parseFloat(t.valor)||0).toFixed(2));
+          return `
+            <div class="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0 cursor-pointer" onclick="if (typeof openEditTransactionModal === 'function') openEditTransactionModal('${t.id}')">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center font-bold text-sm">
+                  <i data-lucide="${icon}" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 leading-tight">${t.descricao || t.categoria || 'Lançamento'}</h4>
+                  <span class="text-[10px] text-slate-500 font-semibold">${t.data || ''} • ${t.categoria || 'Geral'}</span>
+                </div>
+              </div>
+              <span class="text-xs font-black ${valClass}">${valFormatted}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    } catch(err) {
+      console.warn('Aviso ao sincronizar interface do design aprovado:', err);
+    }
+  };
+
+  const _origUpdateMetrics = window.updateMetrics;
+  window.updateMetrics = function() {
+    if (typeof _origUpdateMetrics === 'function') {
+      try { _origUpdateMetrics.apply(this, arguments); } catch(e) {}
+    }
+    window.syncApprovedDesignWithAppData();
+  };
+
+  const _origRenderAll = window.renderAll;
+  window.renderAll = function() {
+    if (typeof _origRenderAll === 'function') {
+      try { _origRenderAll.apply(this, arguments); } catch(e) {}
+    }
+    window.syncApprovedDesignWithAppData();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(window.syncApprovedDesignWithAppData, 300);
+  });
+
+</script>
+
 </body>
 </html>
