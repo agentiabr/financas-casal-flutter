@@ -75,3 +75,6 @@ art_*.zip
 
 apks_v16/
 art_v16.zip
+
+apks_*/
+

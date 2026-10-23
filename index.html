@@ -186,7 +186,103 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+  
+  /* ========================================================================== */
+  /* DESIGN SYSTEM OFICIAL: TELAS INTEIRAS COM TOPO AURORA E CAIXA #DFEAF7      */
+  /* ========================================================================== */
+  .full-screen-page {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background-color: #071933 !important; /* Topo aurora escuro fintech */
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .full-screen-page.hidden {
+    display: none !important;
+  }
+
+  /* Cabeçalho Aurora das Telas Internas */
+  .page-header-back,
+  .full-screen-page > .page-header-back,
+  .full-screen-page > div:first-child:has(button[onclick*="close"]) {
+    background-color: #071933 !important;
+    color: #FFFFFF !important;
+    padding: 0.85rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
+  .full-screen-page > div.bg-\[\#DFEAF7\],
+  .full-screen-page > div[class*="bg-[#DFEAF7]"],
+  .full-screen-page > div:not(.page-header-back):not([class*="bg-[#071933]"]):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    overflow-y: auto !important;
+    padding: 1.25rem 1rem 6.5rem 1rem !important; /* Margem e respiro generoso */
+    margin: 0 !important;
+    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* Cartões brancos limpos com cantos arredondados dentro das telas */
+  .full-screen-page div.bg-white,
+  .full-screen-page form.bg-white,
+  .full-screen-page form[class*="bg-slate-50"],
+  .full-screen-page div[class*="rounded-3xl"] {
+    background-color: #FFFFFF !important;
+    border-radius: 1.5rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    padding: 1.15rem 1.25rem !important;
+    color: #1E293B !important;
+  }
+
+  /* Botão circular de voltar com toque suave */
+  .btn-back-circle {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: 9999px !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #FFFFFF !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+  }
+  .btn-back-circle:active {
+    transform: scale(0.92) !important;
+    background-color: rgba(255, 255, 255, 0.25) !important;
+  }
+
+</style>
 
   <title>CtrlPig • Controle Financeiro Inteligente</title>
   <!-- Tailwind CSS -->
@@ -3236,7 +3332,9 @@ html, body {
     color: #FFFFFF !important;
   }
 
-  /* REGRAS MANDATÓRIAS PARA TELAS INTEIRAS (FULL SCREEN PAGES) */
+  /* ========================================================================== */
+  /* NOVO DESIGN SYSTEM: REGRAS VISUAIS DE TELAS INTEIRAS COM RESPIRO AMPLO     */
+  /* ========================================================================== */
   .full-screen-page {
     position: fixed !important;
     inset: 0 !important;
@@ -3246,56 +3344,69 @@ html, body {
     min-height: 100vh !important;
     max-width: 100vw !important;
     max-height: 100vh !important;
-    background-color: #F8FAFC !important;
-    overflow-y: auto !important;
+    background-color: #071933 !important; /* Topo aurora escuro do design aprovado */
     display: flex !important;
     flex-direction: column !important;
     margin: 0 !important;
     padding: 0 !important;
-    border-radius: 0 !important;
+    overflow: hidden !important;
     border: none !important;
     box-shadow: none !important;
   }
   .full-screen-page.hidden {
     display: none !important;
   }
-  html.dark .full-screen-page,
-  body.theme-dark .full-screen-page {
-    background-color: #0B1120 !important;
-  }
-  .full-screen-page > .full-screen-inner,
-  .full-screen-page > div[class*="max-w-"],
-  .full-screen-page > div[class*="rounded-"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    max-height: 100% !important;
-    min-height: 100% !important;
-    border-radius: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-  }
 
-  /* CABEÇALHO PADRÃO DE PÁGINA INTEIRA COM VOLTAR */
-  .page-header-back {
-    background: linear-gradient(135deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
+  /* Cabeçalho das páginas inteiras: Topo Aurora com setinha e título brancos */
+  .page-header-back,
+  .full-screen-page .page-header-back {
+    background-color: #071933 !important;
     color: #FFFFFF !important;
-    padding: 0.85rem 1rem !important;
+    padding: 0.85rem 1.25rem !important;
     padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 50 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 4px 12px rgba(7, 25, 51, 0.25) !important;
     flex-shrink: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
+  .full-screen-page > .full-screen-inner,
+  .full-screen-page > div[class*="max-w-"],
+  .full-screen-page > div[class*="rounded-"],
+  .full-screen-page > div:not(.page-header-back):not([class*="bg-[#071933]"]):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    overflow-y: auto !important;
+    padding: 1.25rem 1rem 6.5rem 1rem !important; /* Margem e respiro generoso */
+    margin: 0 !important;
+    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* Cartões brancos limpos com cantos arredondados dentro das telas */
+  .full-screen-page div.bg-white,
+  .full-screen-page form.bg-white,
+  .full-screen-page form[class*="bg-slate-50"],
+  .full-screen-page div[class*="rounded-3xl"] {
+    background-color: #FFFFFF !important;
+    border-radius: 1.5rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    padding: 1.15rem 1.25rem !important;
+    color: #1E293B !important;
   }
 
   /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO */
@@ -3950,17 +4061,15 @@ html, body {
             <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
           </div>
 
-          <div id="heroCardBanner" class="bg-gradient-to-b from-white via-[#F8FAFC] to-[#EEF5FB] rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
+          <div id="heroCardBanner" style="background: linear-gradient(135deg, #FFFFFF 0%, #EEF4FA 100%) !important;" class="rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
             
             <div class="flex items-center justify-between pr-2">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
-              <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-200/80 hover:bg-slate-300/80 flex items-center justify-center text-slate-700 transition-all cursor-pointer relative z-40 shadow-2xs" title="Ocultar ou mostrar todos os valores">
-                <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-slate-700"></i>
-              </button>
+              <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-200/90 hover:bg-slate-300 flex items-center justify-center text-slate-700 transition-all cursor-pointer relative z-40 shadow-xs" title="Ocultar ou mostrar todos os valores"><i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-slate-700" style="color: #334155 !important;"></i></button>
             </div>
             
             <div class="mt-1 flex items-baseline gap-2">
-              <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
                 R$ 4.850,00
               </h2>
             </div>
@@ -4062,21 +4171,21 @@ html, body {
                 <span class="text-[11px] font-bold text-slate-800">Chat</span>
               </div>
 
-              <div onclick="triggerSectionMascot('compras')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="openShoppingListModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-lg mb-1">
                   🛒
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Compras</span>
               </div>
 
-              <div onclick="triggerSectionMascot('saude')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="openHealthMedsModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-rose-100/70 text-rose-600 flex items-center justify-center text-lg mb-1">
                   💊
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Saúde</span>
               </div>
 
-              <div onclick="triggerSectionMascot('pet')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="openPetAreaModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-600 flex items-center justify-center text-lg mb-1">
                   🐾
                 </div>
@@ -4393,7 +4502,7 @@ html, body {
                   <p class="text-xs text-blue-100 mt-1 leading-snug">
                     Organize, planeje e viva com mais tranquilidade.
                   </p>
-                  <button type="button" onclick="triggerSectionMascot('saude')" class="mt-3 px-4 py-1.5 rounded-full bg-white text-blue-700 hover:bg-blue-50 text-xs font-black shadow-md transition-all inline-flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                  <button type="button" onclick="openHealthMedsModal()" class="mt-3 px-4 py-1.5 rounded-full bg-white text-blue-700 hover:bg-blue-50 text-xs font-black shadow-md transition-all inline-flex items-center gap-1.5 active:scale-95 cursor-pointer">
                     <span>Explorar módulos</span>
                     <span>→</span>
                   </button>
@@ -4420,7 +4529,7 @@ html, body {
             <div class="grid grid-cols-2 gap-3 pb-6">
               
               <!-- 1. Educação -->
-              <div onclick="triggerSectionMascot('educacao')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openEducacaoHub()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
                     🎓
@@ -4434,7 +4543,7 @@ html, body {
               </div>
 
               <!-- 2. Lista de Compras -->
-              <div onclick="triggerSectionMascot('compras')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openShoppingListModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
                     🛒
@@ -4448,7 +4557,7 @@ html, body {
               </div>
 
               <!-- 3. Pets e Vacinas -->
-              <div onclick="triggerSectionMascot('pet')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openPetAreaModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
                     🐾
@@ -4462,7 +4571,7 @@ html, body {
               </div>
 
               <!-- 4. Minha Saúde -->
-              <div onclick="triggerSectionMascot('saude')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openHealthMedsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
                     ❤️
@@ -4476,7 +4585,7 @@ html, body {
               </div>
 
               <!-- 5. Veículos -->
-              <div onclick="triggerSectionMascot('veiculos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openVeiculosHub()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
                     🚗
@@ -4490,7 +4599,7 @@ html, body {
               </div>
 
               <!-- 6. Prestadores de Serviço -->
-              <div onclick="triggerSectionMascot('prestadores')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openServiceProvidersModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                     🔧
@@ -4504,7 +4613,7 @@ html, body {
               </div>
 
               <!-- 7. Cofrinho e Metas -->
-              <div onclick="triggerSectionMascot('cofrinhos')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openCreatePiggyModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
                     🐷
@@ -4518,7 +4627,7 @@ html, body {
               </div>
 
               <!-- 8. Documentos & Faturas -->
-              <div onclick="triggerSectionMascot('cartoes')" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="openManageCardsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
                     📄
@@ -4932,7 +5041,7 @@ html, body {
              title="Piggy pisando no card de saldo!">
         <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
       </div>
-      <div id="heroCardBanner" class="card-saldo-white bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100 dark:border-slate-800 transition-all select-none">
+      <div id="heroCardBanner" style="background: linear-gradient(135deg, #FFFFFF 0%, #EEF4FA 100%) !important;" class="rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Saldo atual</span>
           <button type="button" onclick="toggleHeroCardPrivacy()" id="btnHeroPrivacyToggle" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition-all cursor-pointer" title="Ocultar ou mostrar o saldo">
@@ -5771,7 +5880,25 @@ html, body {
       </div>
     </div>
 
-    <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
+    <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🛒</span><span>Lista de Compras &amp; Preços</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Comparador inteligente, histórico e cupons fiscais</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
     <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative my-auto border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
@@ -6340,7 +6467,25 @@ html, body {
   </div>
 
   <!-- MODAL: CRIAR NOVO PORQUINHO 🐷 -->
-  <div id="modalCreatePiggy" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="modalCreatePiggy" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeCreatePiggyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🐷</span><span>Novo Porquinho / Meta</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Defina seu objetivo e valor programado para poupar</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
     <div class="bg-white rounded-none max-w-sm w-full p-6 shadow-2xl relative text-xs border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -6960,7 +7105,25 @@ html, body {
   </div>
 
   <!-- MODAL: GERENCIAR CARTÕES (Z-INDEX 80 ISOLADO) -->
-  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
+  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] flex items-center justify-center p-4">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>💳</span><span>Cartões de Crédito</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Gerenciar limites, vencimentos e faturas</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
     <div class="bg-white rounded-none max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -24012,7 +24175,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
+  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>💊</span><span>Minha Saúde &amp; Remédios</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Medicamentos, alarmes sonoros e rotina diária</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="btnToggleHealthAudioNotif" onclick="toggleHealthAudioNotification()" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center gap-1 cursor-pointer"><i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span id="healthAudioNotifLabel">Áudio</span></button>
+      </div>
+    </div>
+
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal de Saúde -->
@@ -25249,7 +25430,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
-  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
+  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🚗</span><span>Veículos &amp; Automóveis</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Combustível, seguro, manutenção preventiva e IPVA</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -25351,7 +25550,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
-  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
+  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🎓</span><span>Educação &amp; Formação</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Mensalidades escolares, cursos, livros e materiais</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -27325,7 +27542,7 @@ Retorne estritamente em JSON puro sem markdown no formato:
 
     // Inicialização ao carregar
     window.addEventListener('DOMContentLoaded', () => {
-      checkFirstAccessPermissions();
+      // checkFirstAccessPermissions(); /* Desativado para evitar bloqueio de cliques */
       renderTestadoresSalvosAdmin();
       renderPiggyTipsAdminList();
     });
@@ -29466,7 +29683,7 @@ Frase falada: "${spokenText}"`;
     if (btnEl) {
       const iconName = hidden ? 'eye-off' : 'eye';
       btnEl.title = hidden ? 'Mostrar Saldo Livre Disponível' : 'Ocultar Saldo Livre Disponível';
-      btnEl.innerHTML = `<i data-lucide="${iconName}" id="iconHeroPrivacy" class="w-4 h-4 text-white"></i>`;
+      btnEl.innerHTML = `<i data-lucide="${iconName}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-700" style="color: #334155 !important;"></i>`;
       if (window.lucide) lucide.createIcons();
     }
 
@@ -30242,7 +30459,25 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4">
+<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🛠️</span><span>Meus Prestadores</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Contatos de confiança prontos para chamar no WhatsApp</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        
+      </div>
+    </div>
+
   <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
 
     <!-- Cabeçalho do Modal -->
@@ -36327,27 +36562,402 @@ window.confirmEnterSectionFromPitaco = function() {
     }
   };
 
-  const _origUpdateMetrics = window.updateMetrics;
-  window.updateMetrics = function() {
-    if (typeof _origUpdateMetrics === 'function') {
-      try { _origUpdateMetrics.apply(this, arguments); } catch(e) {}
-    }
-    window.syncApprovedDesignWithAppData();
-  };
-
-  const _origRenderAll = window.renderAll;
-  window.renderAll = function() {
-    if (typeof _origRenderAll === 'function') {
-      try { _origRenderAll.apply(this, arguments); } catch(e) {}
-    }
-    window.syncApprovedDesignWithAppData();
-  };
-
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(window.syncApprovedDesignWithAppData, 300);
   });
 
 </script>
 
+
+<script>
+  // ============================================================================
+  // SISTEMA GLOBAL DE NAVEGAÇÃO E NUCLEO DE ABERTURA DIRETA DE SEÇÕES (V2.1.40)
+  // ============================================================================
+  window.ensureModalsOnBody = function() {
+    const modalIds = [
+      'modalShoppingListHistory', 'modalHealthMeds', 'modalPetArea',
+      'modalVeiculosHub', 'modalEducacaoHub', 'modalServiceProviders',
+      'modalManageCards', 'modalCreatePiggy', 'modalNewTx', 'modalEditTx',
+      'modalNotificationsCenter', 'modalAdminPanel', 'authOverlayContainer',
+      'modalExitFeedback'
+    ];
+    modalIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.parentElement !== document.body) {
+        document.body.appendChild(el);
+      }
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.ensureModalsOnBody);
+  } else {
+    window.ensureModalsOnBody();
+  }
+
+  // Alternar Telas Principais (Dashboard, Transações, Família, Chat)
+  window.switchScreen = function(screenKey) {
+    const screens = ['dashboard', 'transacoes', 'familia', 'chat'];
+    screens.forEach(s => {
+      const el = document.getElementById(`screen_${s}`);
+      const btn = document.getElementById(`btnTab_${s}`);
+      const nav = document.getElementById(`navTab_${s}`);
+
+      if (s === screenKey) {
+        if (el) {
+          el.classList.remove('hidden');
+          el.style.display = (s === 'dashboard') ? 'block' : 'flex';
+        }
+        if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-xs';
+        if (nav) nav.classList.add('active');
+      } else {
+        if (el) {
+          el.classList.add('hidden');
+          el.style.display = 'none';
+        }
+        if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white';
+        if (nav) nav.classList.remove('active');
+      }
+    });
+
+    if (screenKey === 'transacoes') {
+      if (typeof window.renderApprovedTransactionsList === 'function') {
+        setTimeout(window.renderApprovedTransactionsList, 50);
+      }
+    }
+
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
+  };
+
+  // Funções de Abertura e Fechamento de Telas Internas
+  window.openShoppingListModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalShoppingListHistory') || document.getElementById('modalShoppingList');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof updateSendListButtonLabel === 'function') setTimeout(updateSendListButtonLabel, 100);
+    if (typeof switchShoppingModalTab === 'function') switchShoppingModalTab('builder');
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeShoppingListModal = function() {
+    const m = document.getElementById('modalShoppingListHistory') || document.getElementById('modalShoppingList');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openHealthMedsModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalHealthMeds');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof switchHealthMainTab === 'function') switchHealthMainTab('meds');
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeHealthMedsModal = function() {
+    const m = document.getElementById('modalHealthMeds');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openPetAreaModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalPetArea');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderPetAreaProfiles === 'function') renderPetAreaProfiles();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closePetAreaModal = function() {
+    const m = document.getElementById('modalPetArea');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openVeiculosHub = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalVeiculosHub');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderVeiculosHubData === 'function') renderVeiculosHubData();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeVeiculosHub = function() {
+    const m = document.getElementById('modalVeiculosHub');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openServiceProvidersModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalServiceProviders');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderServiceProvidersList === 'function') renderServiceProvidersList();
+    if (typeof updateQuickHubProvidersBadge === 'function') updateQuickHubProvidersBadge();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeServiceProvidersModal = function() {
+    const m = document.getElementById('modalServiceProviders');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openEducacaoHub = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalEducacaoHub');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderEducacaoHubData === 'function') renderEducacaoHubData();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeEducacaoHub = function() {
+    const m = document.getElementById('modalEducacaoHub');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openManageCardsModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalManageCards');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderManageCardsList === 'function') renderManageCardsList();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeManageCardsModal = function() {
+    const m = document.getElementById('modalManageCards');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openCreatePiggyModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalCreatePiggy');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    const inp = document.getElementById('inputNewPiggyName');
+    if (inp) inp.value = '';
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeCreatePiggyModal = function() {
+    const m = document.getElementById('modalCreatePiggy');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  // 5. NOVA TRANSAÇÃO E EDIÇÃO
+  window.openNewTxModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalNewTx');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (window.lucide) lucide.createIcons();
+  };
+  window.openAddTransactionModal = window.openNewTxModal;
+  window.openTransactionModal = window.openNewTxModal;
+
+  window.closeNewTxModal = function() {
+    const m = document.getElementById('modalNewTx');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  window.openEditTxModal = function(id) {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalEditTx');
+    if (!m) return;
+    if (m.parentElement !== document.body) document.body.appendChild(m);
+
+    let tx = null;
+    if (Array.isArray(window.transactions)) {
+      tx = window.transactions.find(t => String(t.id) === String(id));
+    }
+    if (!tx && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+      tx = transactions.find(t => String(t.id) === String(id));
+    }
+    if (tx) {
+      const idField = document.getElementById('editTxId');
+      const descField = document.getElementById('editTxDescricao');
+      const valField = document.getElementById('editTxValor');
+      const catField = document.getElementById('editTxCategoria');
+      const respField = document.getElementById('editTxResponsavel');
+      const dataField = document.getElementById('editTxData');
+      if (idField) idField.value = tx.id;
+      if (descField) descField.value = tx.descricao || '';
+      if (valField) valField.value = tx.valor || '';
+      if (catField) catField.value = tx.categoria || 'Outros';
+      if (respField) respField.value = tx.responsavel || 'Rodrigo';
+      if (dataField) dataField.value = tx.data || '';
+    }
+    m.classList.remove('hidden');
+    m.style.display = 'flex';
+    if (window.lucide) lucide.createIcons();
+  };
+  window.openEditTransactionModal = window.openEditTxModal;
+
+  window.closeEditTxModal = function() {
+    const m = document.getElementById('modalEditTx');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  // 6. QUITAR CONTA FIXA
+  window.toggleQuitarFixa = function(id) {
+    let tx = null;
+    if (Array.isArray(window.transactions)) {
+      tx = window.transactions.find(t => String(t.id) === String(id));
+    }
+    if (!tx && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+      tx = transactions.find(t => String(t.id) === String(id));
+    }
+    if (tx) {
+      tx.status = (tx.status === 'Pago' || tx.status === 'Recebido') ? 'Pendente' : 'Pago';
+      if (typeof syncTransactionToFlutter === 'function') syncTransactionToFlutter(tx, 'update');
+      if (typeof updateMetrics === 'function') updateMetrics();
+      if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(tx.status === 'Pago' ? 'Conta marcada como PAGA! ✓' : 'Conta marcada como PENDENTE!', false);
+      }
+    }
+  };
+
+  // 7. NOTIFICAÇÕES E ADMIN
+  window.openNotificationsModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalNotificationsCenter');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderNotificationsCenterList === 'function') renderNotificationsCenterList();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.openNotificationsCenterModal = window.openNotificationsModal;
+  window.closeNotificationsCenterModal = function() {
+    const m = document.getElementById('modalNotificationsCenter');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+  window.closeNotificationsModal = window.closeNotificationsCenterModal;
+
+  window.openAdminModal = function() {
+    window.ensureModalsOnBody();
+    const m = document.getElementById('modalAdminPanel');
+    if (m) {
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
+    if (typeof renderPiggyTipsAdminList === 'function') renderPiggyTipsAdminList();
+    if (window.lucide) lucide.createIcons();
+  };
+  window.closeAdminModal = function() {
+    const m = document.getElementById('modalAdminPanel');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.display = 'none';
+    }
+  };
+
+  // 8. LOGOUT SEGURO
+  window.logoutUser = function() {
+    currentUserSession = null;
+    localStorage.removeItem('financas_auth_user');
+    localStorage.setItem('financas_auth_logged_out', 'true');
+    sessionStorage.removeItem('pigctrl_session_authenticated');
+    document.documentElement.classList.add('require-auth');
+    const authEl = document.getElementById('authOverlayContainer');
+    if (authEl) {
+      if (authEl.parentElement !== document.body) document.body.appendChild(authEl);
+      authEl.classList.remove('hidden');
+      authEl.style.display = 'flex';
+    }
+    if (typeof showToastUndo === 'function') showToastUndo('Sessão encerrada com sucesso.', false);
+  };
+
+  // 9. DICAS DO PIGGY REATIVAS E SEM ENTRADAS DUPLICADAS
+  window.piggyTips = [
+    { icon: "💡", category: "Dica do Piggy", text: "“Tudo certo por aqui! Seu saldo está saudável e a meta de supermercado está sob controle este mês.”" },
+    { icon: "⚡", category: "Dica de Economia", text: "“Você economizou 15% em mercado essa semana! Parabéns pela disciplina financeira da família.”" },
+    { icon: "🎯", category: "Meta de Poupança", text: "“Seu cofrinho de Viagem de Férias atingiu 65% da meta! Falta pouco para realizarem esse sonho.”" }
+  ];
+  window.currentTipIndex = 0;
+  window.stepPiggyTip = function(delta) {
+    if (!window.piggyTips || window.piggyTips.length === 0) return;
+    window.currentTipIndex = (window.currentTipIndex + delta + window.piggyTips.length) % window.piggyTips.length;
+    const tip = window.piggyTips[window.currentTipIndex];
+    const elIcon = document.getElementById('previewTipBadgeIcon');
+    const elCat = document.getElementById('previewTipCategory');
+    const elIdx = document.getElementById('previewTipIndex');
+    const elTxt = document.getElementById('previewTipText');
+    const elDots = document.getElementById('previewTipDots');
+
+    if (elIcon) elIcon.textContent = tip.icon || '💡';
+    if (elCat) elCat.textContent = tip.category || 'Dica do Piggy';
+    if (elIdx) elIdx.textContent = `${window.currentTipIndex + 1}/${window.piggyTips.length}`;
+    if (elTxt) elTxt.textContent = tip.text || '';
+
+    if (elDots && elDots.children) {
+      for (let i = 0; i < elDots.children.length; i++) {
+        elDots.children[i].className = (i === window.currentTipIndex) ? 'w-4 h-1.5 rounded-full bg-blue-600' : 'w-1.5 h-1.5 rounded-full bg-blue-200';
+      }
+    }
+  };
+</script>
+
+<!-- DIRECT OPENERS NOVO DESIGN -->
 </body>
 </html>
