@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ControlPig — Galeria de Versões Anteriores Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #0B132B;
+      color: #F8FAFC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-mockup {
+      width: 412px;
+      height: 870px;
+      background: #000;
+      border-radius: 44px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 10px #1E293B, 0 0 0 12px #334155;
+      overflow: hidden;
+      position: relative;
+      margin: 1.5rem auto 3rem auto;
+      flex-shrink: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #FFF;
+    }
+  </style>
+</head>
+<body class="p-4 sm:p-6">
+  
+  <header class="max-w-6xl mx-auto w-full mb-6 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 mb-2">
+      <span>📱</span><span>Visualizador Mobile Oficial para Google Chrome</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Galeria de Versões do CtrlPig</h1>
+    <p class="text-xs sm:text-sm text-slate-400 mt-1">Selecione uma versão abaixo para visualizar imediatamente no simulador mobile (412x870):</p>
+    
+    <!-- Barra de Seletor de Versões -->
+    <div class="flex items-center justify-center gap-2 flex-wrap mt-4">
+      <button type="button" onclick="loadVersion('v2.1.33.html', this, 'v2.1.33 - Suporte a NFC-e SEFAZ SP e Nome Fantasia')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.33
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.34.html', this, 'v2.1.34 - Acordeons Limpos e Header sem divisória')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.34
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.35.html', this, 'v2.1.35 - Etapa 1 do Novo Design com Topo Aurora')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.35
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.36.html', this, 'v2.1.36 - Topo Aurora Desafogado e Card Saldo Branco')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.36
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.37.html', this, 'v2.1.37 - Design System Aprovado com Piggy Pisando no Saldo')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.37
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.38.html', this, 'v2.1.38 - Backend Conectado ao Supabase sem Rodapé')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700">
+        v2.1.38
+      </button>
+      <button type="button" onclick="loadVersion('v2.1.38_atual_completa.html', this, 'v2.1.38 Atual - Todas as correções aplicadas')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-blue-600 text-white shadow-md border-blue-500">
+        v2.1.38_atual
+      </button>
+    </div>
+    <p id="versionDesc" class="text-xs text-blue-300 font-semibold mt-3">v2.1.38 Atual - Todas as correções aplicadas</p>
+  </header>
+
+  <!-- MOLDURA MOBILE COM IFRAME -->
+  <div class="phone-mockup">
+    <iframe id="mobileFrame" src="v2.1.38_atual_completa.html"></iframe>
+  </div>
+
+  <script>
+    function loadVersion(file, btn, desc) {
+      document.getElementById('mobileFrame').src = file;
+      document.getElementById('versionDesc').textContent = desc;
+      const allBtns = document.querySelectorAll('header button');
+      allBtns.forEach(b => {
+        b.className = 'px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-slate-800 text-slate-300 hover:text-white border-slate-700';
+      });
+      btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer active:scale-95 bg-blue-600 text-white shadow-md border-blue-500';
+    }
+  </script>
+</body>
+</html>
