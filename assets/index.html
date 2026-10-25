@@ -19889,10 +19889,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 <span class="text-2xl">${p.emoji || (p.especie === 'Gato' ? '🐱' : '🐶')}</span>
               `}
               
-              <!-- Botão sobreposto para colocar/trocar foto do pet -->
-              <button type="button" onclick="event.stopPropagation(); selectPetPhoto('gallery', '${p.id}');" class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-90 text-white flex items-center justify-center text-[10px] shadow-sm border border-white dark:border-slate-900 cursor-pointer" title="Colocar foto de ${escapeHtml(p.nome)}">
-                📷
-              </button>
+<!-- Avatar clicável exclusivamente para selecionar o pet ativo -->
 
               ${hasExpired ? '<span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-600 ring-2 ring-white animate-pulse" title="Vacina vencida!"></span>' : ''}
             </div>
@@ -19921,41 +19918,44 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function renderPetProfileUI() {
       const pet = getActivePet();
-      const imgEl = document.getElementById('petProfileImg');
-      const emojiEl = document.getElementById('petProfileEmoji');
-      const nameEl = document.getElementById('petProfileName');
-      const speciesBadge = document.getElementById('petProfileSpeciesBadge');
-      const detailsEl = document.getElementById('petProfileDetails');
+      const heroPhotoImg = document.getElementById('heroPetPhotoImg');
+      const heroPhotoEmoji = document.getElementById('heroPetPhotoEmoji');
+      const heroName = document.getElementById('heroPetName');
+      const heroSpeciesBadge = document.getElementById('heroPetSpeciesBadge');
+      const heroBreedAge = document.getElementById('heroPetBreedAge');
+      const heroWeight = document.getElementById('heroPetWeight');
+      const heroMicrochip = document.getElementById('heroPetMicrochip');
       const expensesTitle = document.getElementById('petExpensesSectionTitle');
 
-      if (nameEl) nameEl.textContent = pet.nome;
-      if (speciesBadge) speciesBadge.textContent = `🐾 ${pet.especie || 'Pet'}`;
+      if (heroName) heroName.textContent = pet.nome;
+      if (heroSpeciesBadge) heroSpeciesBadge.textContent = pet.especie || 'Pet';
+      if (heroBreedAge) {
+        const parts = [];
+        if (pet.raca) parts.push(pet.raca);
+        if (pet.idade) parts.push(pet.idade);
+        heroBreedAge.textContent = parts.length > 0 ? parts.join(' • ') : 'Perfil do pet';
+      }
+      if (heroWeight) heroWeight.textContent = pet.peso ? `⚖️ ${pet.peso}` : '⚖️ Peso n/i';
+      if (heroMicrochip) heroMicrochip.textContent = pet.plano ? `🏥 ${pet.plano}` : '🏷️ Sem plano';
       if (expensesTitle) expensesTitle.textContent = `Despesas com ${pet.nome} no Ciclo`;
 
-      if (detailsEl) {
-        detailsEl.innerHTML = `${pet.especie || 'Pet'} • ${pet.raca || 'Sem raça'} • ${pet.idade || 'Idade n/i'} • ${pet.peso || 'Peso n/i'} • <strong>${pet.plano || 'Sem plano'}</strong>`;
-      }
-
-      if (imgEl && emojiEl) {
+      if (heroPhotoImg && heroPhotoEmoji) {
         if (pet.foto) {
-          imgEl.src = pet.foto;
-          imgEl.classList.remove('hidden');
-          emojiEl.classList.add('hidden');
+          heroPhotoImg.src = pet.foto;
+          heroPhotoImg.classList.remove('hidden');
+          heroPhotoEmoji.classList.add('hidden');
         } else {
-          imgEl.classList.add('hidden');
-          emojiEl.classList.remove('hidden');
-          emojiEl.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
+          heroPhotoImg.classList.add('hidden');
+          heroPhotoEmoji.classList.remove('hidden');
+          heroPhotoEmoji.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
         }
       }
     }
 
-    function selectPetPhoto(source, targetPetId) {
-      if (targetPetId) {
-        window._pendingPetPhotoId = targetPetId;
-        setActivePetId(targetPetId);
-      } else {
-        window._pendingPetPhotoId = getActivePetId();
-      }
+    // Variável para armazenar a foto selecionada no modal de adicionar/editar pet
+    window._petFormPhotoData = '';
+
+    function selectPetPhotoForForm(source) {
       if (window.isNativeApp && window.FlutterBridge) {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
@@ -19971,31 +19971,64 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (input) input.click();
     }
 
+    function removePetPhotoFromForm() {
+      window._petFormPhotoData = '';
+      updatePetFormPhotoUI();
+    }
+
+    function updatePetFormPhotoUI() {
+      const img = document.getElementById('formPetPhotoImg');
+      const emoji = document.getElementById('formPetPhotoEmoji');
+      const removeBtn = document.getElementById('formPetPhotoRemoveBtn');
+      const btnText = document.getElementById('formPetPhotoBtnText');
+      const especie = document.getElementById('inputPetEspecie')?.value || 'Cachorro';
+      const defaultEmoji = especie === 'Gato' ? '🐱' : (especie === 'Pássaro' ? '🦜' : (especie === 'Outro' ? '🐰' : '🐶'));
+
+      if (window._petFormPhotoData) {
+        if (img) {
+          img.src = window._petFormPhotoData;
+          img.classList.remove('hidden');
+        }
+        if (emoji) emoji.classList.add('hidden');
+        if (removeBtn) removeBtn.classList.remove('hidden');
+        if (btnText) btnText.textContent = 'Alterar Foto';
+      } else {
+        if (img) {
+          img.src = '';
+          img.classList.add('hidden');
+        }
+        if (emoji) {
+          emoji.textContent = defaultEmoji;
+          emoji.classList.remove('hidden');
+        }
+        if (removeBtn) removeBtn.classList.add('hidden');
+        if (btnText) btnText.textContent = 'Escolher Foto';
+      }
+    }
+
     function handlePetPhotoFileInput(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
-        savePetPhoto(e.target.result, window._pendingPetPhotoId);
+        window._petFormPhotoData = e.target.result;
+        updatePetFormPhotoUI();
       };
       reader.readAsDataURL(file);
-    }
-
-    function savePetPhoto(dataUrl, specificPetId) {
-      if (!dataUrl) return;
-      const pets = getRegisteredPets();
-      const targetId = specificPetId || window._pendingPetPhotoId || getActivePetId();
-      const pet = pets.find(p => p.id === targetId);
-      if (pet) {
-        pet.foto = dataUrl;
-        saveRegisteredPets(pets);
-        showToastUndo(`Foto de ${pet.nome} atualizada com sucesso! 🐾`, false);
-      }
+      event.target.value = '';
     }
 
     window.onNativePetPhotoResult = function(dataUrl) {
-      savePetPhoto(dataUrl);
+      if (dataUrl) {
+        window._petFormPhotoData = dataUrl;
+        updatePetFormPhotoUI();
+      }
     };
+
+    function selectPetPhoto(source, targetPetId) {
+      // Abre a edição do pet em vez de abrir galeria direto
+      editCurrentPet();
+    }
 
     function renderPetExpensesSummary() {
       const pet = getActivePet();
@@ -20198,9 +20231,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const idadeInput = document.getElementById('inputPetIdade');
       const pesoInput = document.getElementById('inputPetPeso');
       const planoInput = document.getElementById('inputPetPlano');
+      const deleteBtn = document.getElementById('btnDeletePetFromModal');
+      const pets = getRegisteredPets();
 
       if (petToEdit) {
-        if (title) title.textContent = 'Editar Dados do Pet';
+        if (title) title.textContent = `Editar Pet: ${petToEdit.nome}`;
         if (idInput) idInput.value = petToEdit.id;
         if (nomeInput) nomeInput.value = petToEdit.nome || '';
         if (especieSelect) especieSelect.value = petToEdit.especie || 'Cachorro';
@@ -20208,16 +20243,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         if (idadeInput) idadeInput.value = petToEdit.idade || '';
         if (pesoInput) pesoInput.value = petToEdit.peso || '';
         if (planoInput) planoInput.value = petToEdit.plano || '';
+        window._petFormPhotoData = petToEdit.foto || '';
+        if (deleteBtn) {
+          deleteBtn.classList.toggle('hidden', pets.length <= 1);
+        }
       } else {
         if (title) title.textContent = 'Cadastrar Novo Pet da Família';
         if (idInput) idInput.value = '';
         if (nomeInput) nomeInput.value = '';
-        if (especieSelect) especieSelect.value = 'Gato';
+        if (especieSelect) especieSelect.value = 'Cachorro';
         if (racaInput) racaInput.value = '';
         if (idadeInput) idadeInput.value = '';
         if (pesoInput) pesoInput.value = '';
         if (planoInput) planoInput.value = '';
+        window._petFormPhotoData = '';
+        if (deleteBtn) deleteBtn.classList.add('hidden');
       }
+
+      updatePetFormPhotoUI();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeAddPetModal() {
@@ -20234,6 +20278,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const idade = document.getElementById('inputPetIdade')?.value.trim() || '';
       const peso = document.getElementById('inputPetPeso')?.value.trim() || '';
       const plano = document.getElementById('inputPetPlano')?.value.trim() || '';
+      const foto = window._petFormPhotoData || '';
 
       if (!nome) return;
 
@@ -20249,7 +20294,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (id) {
         pets = pets.map(p => {
           if (p.id === id) {
-            return { ...p, nome, especie, emoji, raca, idade, peso, plano };
+            return { ...p, nome, especie, emoji, raca, idade, peso, plano, foto };
           }
           return p;
         });
@@ -20264,7 +20309,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           idade,
           peso,
           plano,
-          foto: ''
+          foto
         };
         pets.push(newPet);
         setActivePetId(newPet.id);
@@ -20272,6 +20317,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
 
       saveRegisteredPets(pets);
+      renderPetCarouselTabs();
+      renderPetProfileUI();
       closeAddPetModal();
     }
 
@@ -20279,6 +20326,28 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const pet = getActivePet();
       if (pet) openAddPetModal(pet);
     }
+    window.editCurrentPet = editCurrentPet;
+    window.openEditCurrentPetModal = editCurrentPet;
+
+    function confirmDeletePetFromModal() {
+      const id = document.getElementById('inputPetId')?.value;
+      if (!id) return;
+      const pets = getRegisteredPets();
+      if (pets.length <= 1) {
+        showToastUndo('Você deve manter pelo menos um pet cadastrado.');
+        return;
+      }
+      const pet = pets.find(p => p.id === id);
+      if (!pet) return;
+      if (confirm(`Deseja realmente remover o pet ${pet.nome}?`)) {
+        const updated = pets.filter(p => p.id !== id);
+        saveRegisteredPets(updated);
+        setActivePetId(updated[0].id);
+        closeAddPetModal();
+        showToastUndo(`Pet ${pet.nome} removido com sucesso.`);
+      }
+    }
+    window.confirmDeletePetFromModal = confirmDeletePetFromModal;
 
     function deleteCurrentPet() {
       const pets = getRegisteredPets();
@@ -24132,25 +24201,30 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- HERO CARD DO PET ATIVO (FOTO, NOME E DADOS LIMPOS) -->
-    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
       <div class="flex items-center gap-3.5">
-        <div class="relative flex-shrink-0 cursor-pointer group" onclick="selectPetPhoto('gallery')" title="Alterar foto">
-          <div class="w-16 h-16 rounded-2xl bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-3xl overflow-hidden shadow-xs">
+        <div class="relative flex-shrink-0 cursor-pointer group" onclick="editCurrentPet()" title="Clique para editar pet e foto">
+          <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-3xl overflow-hidden shadow-xs">
             <span id="heroPetPhotoEmoji">🐕</span>
             <img id="heroPetPhotoImg" src="" alt="Pet" class="hidden w-full h-full object-cover">
           </div>
-          <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shadow-xs">📷</span>
+          <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-xs border border-white dark:border-slate-900" title="Editar Pet">✏️</span>
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-1">
-            <h3 id="heroPetName" class="text-base font-black text-slate-900 leading-tight truncate">Thor</h3>
-            <span id="heroPetSpeciesBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">Cachorro</span>
+            <h3 id="heroPetName" class="text-base font-black text-slate-900 dark:text-white leading-tight truncate">Pantone</h3>
+            <div class="flex items-center gap-1.5">
+              <span id="heroPetSpeciesBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">Cachorro</span>
+              <button type="button" onclick="editCurrentPet()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
+                <span>✏️</span> Editar
+              </button>
+            </div>
           </div>
-          <p id="heroPetBreedAge" class="text-xs text-slate-500 mt-0.5 truncate">Golden Retriever • 3 anos</p>
-          <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-600 font-semibold">
-            <span id="heroPetWeight">⚖️ 28 kg</span>
+          <p id="heroPetBreedAge" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">Frajola • 4 anos</p>
+          <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
+            <span id="heroPetWeight">⚖️ 4.8 kg</span>
             <span>•</span>
-            <span id="heroPetMicrochip">🏷️ Microchip ativo</span>
+            <span id="heroPetMicrochip">🏥 Sem plano</span>
           </div>
         </div>
       </div>
@@ -24727,6 +24801,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <form onsubmit="handleSavePetForm(event)" class="space-y-3">
         <input type="hidden" id="inputPetId" value="">
 
+        <!-- SELEÇÃO DE FOTO DO PET -->
+        <div class="flex flex-col items-center justify-center p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+          <div class="relative w-20 h-20 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-4xl overflow-hidden shadow-xs">
+            <span id="formPetPhotoEmoji">🐕</span>
+            <img id="formPetPhotoImg" src="" alt="Foto do Pet" class="hidden w-full h-full object-cover">
+          </div>
+          <div class="flex items-center gap-2 mt-2.5">
+            <button type="button" onclick="selectPetPhotoForForm('gallery')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition-all active:scale-95 cursor-pointer shadow-xs">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+              <span id="formPetPhotoBtnText">Escolher Foto</span>
+            </button>
+            <button type="button" id="formPetPhotoRemoveBtn" onclick="removePetPhotoFromForm()" class="hidden px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-200 dark:border-rose-900 transition-all cursor-pointer">
+              Remover Foto
+            </button>
+          </div>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Foto opcional do pet (da galeria)</span>
+        </div>
+
         <div>
           <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Nome do Pet *</label>
           <input type="text" id="inputPetNome" required placeholder="Ex: Pantone, Mingau, Luna, Thor..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-bold">
@@ -24735,7 +24827,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Espécie *</label>
-            <select id="inputPetEspecie" class="w-full px-2.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+            <select id="inputPetEspecie" onchange="updatePetFormPhotoUI()" class="w-full px-2.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
               <option value="Cachorro">🐶 Cachorro</option>
               <option value="Gato">🐱 Gato</option>
               <option value="Pássaro">🦜 Pássaro</option>
@@ -24767,6 +24859,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="pt-2 flex items-center gap-2">
           <button type="submit" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer">
             Salvar Pet
+          </button>
+          <button type="button" id="btnDeletePetFromModal" onclick="confirmDeletePetFromModal()" class="hidden px-3 py-2.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-xl border border-rose-200 dark:border-rose-900 cursor-pointer" title="Excluir este pet">
+            Excluir
           </button>
           <button type="button" onclick="closeAddPetModal()" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-xl cursor-pointer">
             Cancelar
