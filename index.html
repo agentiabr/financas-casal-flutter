@@ -3389,6 +3389,13 @@ html, body {
       border-radius: 0 !important;
       box-shadow: none !important;
     }
+    #modalFamilyChat #chatShoppingListFeed {
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
     #modalFamilyChat #chatInputFooter {
       flex-shrink: 0 !important;
       border-radius: 0 !important;
@@ -16242,7 +16249,43 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (badgeCount) badgeCount.textContent = summary.count;
     }
 
-    function openFamilyChatModal() {
+    window.currentChatTab = 'conversa';
+
+    window.switchChatViewTab = function(tab) {
+      window.currentChatTab = tab;
+      const feedMessages = document.getElementById('chatMessagesFeed');
+      const feedShopping = document.getElementById('chatShoppingListFeed');
+      const btnConversa = document.getElementById('btnChatTabConversa');
+      const btnLista = document.getElementById('btnChatTabLista');
+      const unreadBadge = document.getElementById('chatTabConversaUnreadBadge');
+
+      if (tab === 'conversa') {
+        if (feedMessages) feedMessages.classList.remove('hidden');
+        if (feedShopping) feedShopping.classList.add('hidden');
+        if (btnConversa) {
+          btnConversa.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-blue-600 text-white shadow-xs relative cursor-pointer active:scale-98';
+        }
+        if (btnLista) {
+          btnLista.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer active:scale-98';
+        }
+        if (unreadBadge) unreadBadge.classList.add('hidden');
+        setTimeout(() => {
+          if (feedMessages) feedMessages.scrollTop = feedMessages.scrollHeight;
+        }, 50);
+      } else {
+        if (feedMessages) feedMessages.classList.add('hidden');
+        if (feedShopping) feedShopping.classList.remove('hidden');
+        if (btnConversa) {
+          btnConversa.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer active:scale-98';
+        }
+        if (btnLista) {
+          btnLista.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-emerald-600 text-white shadow-xs relative cursor-pointer active:scale-98';
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+    };
+
+    function openFamilyChatModal(defaultTab) {
       const modal = document.getElementById('modalFamilyChat');
       if (modal) modal.classList.remove('hidden');
 
@@ -16251,16 +16294,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const bF = document.getElementById('chatFloatingBadge');
       if (bF) bF.classList.add('hidden');
 
+      if (typeof window.switchChatViewTab === 'function') {
+        window.switchChatViewTab(defaultTab === 'lista' ? 'lista' : 'conversa');
+      }
+
       renderCleanChatStream();
       updateCartSummaryUI();
       if (typeof window.updateChatStoreStatusHeader === 'function') {
         window.updateChatStoreStatusHeader();
       }
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
 
       setTimeout(() => {
         const feed = document.getElementById('chatMessagesFeed');
-        if (feed) feed.scrollTop = feed.scrollHeight;
+        if (feed && window.currentChatTab === 'conversa') feed.scrollTop = feed.scrollHeight;
       }, 50);
     }
 
@@ -16780,6 +16827,126 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (typeof playChatDing === 'function') playChatDing();
     }
 
+    // Renderiza o card compacto e limpo diretamente na conversa do chat
+    function renderCompactShoppingCardInChat() {
+      const items = getActiveShoppingItems();
+      if (!items || items.length === 0) return '';
+      const summary = calculateCartTotal();
+      const myName = (typeof currentUserSession !== 'undefined' && currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      let notif = {};
+      try {
+        notif = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
+      } catch(e) {}
+
+      const sender = notif.sender || (myName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia');
+      const senderDisplayName = getShoppingSenderDisplayName(sender);
+      const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || 'pending';
+
+      const previewNames = items.slice(0, 4).map(it => it.nome).join(', ') + (items.length > 4 ? ` e mais ${items.length - 4}...` : '');
+
+      let actionHtml = '';
+
+      if (stage === 'confirmed_accepted') {
+        actionHtml = `
+          <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80 dark:border-emerald-800/80 flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+              <span>✓ Confirmado: Vai fazer as compras!</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="switchChatViewTab('lista')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs cursor-pointer active:scale-95 flex items-center gap-1">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Abrir Lista</span>
+              </button>
+              <button type="button" onclick="resetShoppingListReceiptStage()" class="px-2 py-1 text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline cursor-pointer">
+                Alterar
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (stage === 'confirmed_declined') {
+        actionHtml = `
+          <div class="mt-2.5 pt-2.5 border-t border-rose-200/80 dark:border-rose-800/80 flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
+              <i data-lucide="x-circle" class="w-4 h-4"></i>
+              <span>✕ Informou que hoje não consegue fazer as compras.</span>
+            </div>
+            <button type="button" onclick="resetShoppingListReceiptStage()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer">
+              🔄 Alterar resposta
+            </button>
+          </div>
+        `;
+      } else {
+        // PENDING OU RECEIVED: Mostra a pergunta e as duas opções diretamente na conversa!
+        actionHtml = `
+          <div class="mt-2.5 pt-2.5 border-t border-slate-200/70 dark:border-slate-700">
+            <p class="text-xs font-black text-slate-800 dark:text-slate-200 mb-2">
+              Vai conseguir fazer as compras?
+            </p>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="handleChatConfirmShoppingAvailability(true)" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                <span>1 - Consegue comprar?</span>
+              </button>
+              <button type="button" onclick="handleChatConfirmShoppingAvailability(false)" class="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                <span>2 - Não consigo</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="my-3 p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-850 border-2 border-emerald-400 dark:border-emerald-600/80 shadow-md">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-xs">
+                🛒
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
+                  Lista de Compras da Família
+                </h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                  Compartilhada por <strong class="text-emerald-700 dark:text-emerald-400">${senderDisplayName}</strong>
+                </p>
+              </div>
+            </div>
+
+            <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold font-mono text-[11px] whitespace-nowrap">
+              ${items.length} itens • R$ ${summary.total.toFixed(2).replace('.', ',')}
+            </span>
+          </div>
+
+          <!-- Preview dos itens em texto simples -->
+          <div class="bg-slate-50 dark:bg-slate-900/60 rounded-xl p-2.5 border border-slate-200/60 dark:border-slate-800 text-[11px] text-slate-700 dark:text-slate-300 mb-2">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider">Itens solicitados:</span>
+              <button type="button" onclick="switchChatViewTab('lista')" class="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer flex items-center gap-1">
+                <span>Ver todos</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+            <p class="font-medium line-clamp-2 leading-relaxed">
+              ${escapeHtml(previewNames)}
+            </p>
+          </div>
+
+          <!-- Botão de Abertura da Lista Detalhada na Gôndola -->
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <button type="button" onclick="switchChatViewTab('lista')" class="w-full py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all">
+              <i data-lucide="list" class="w-3.5 h-3.5"></i>
+              <span>📋 Ver Lista Completa na Gôndola (${items.length} itens)</span>
+            </button>
+          </div>
+
+          <!-- 2 Opções de Decisão Direta solicitadas -->
+          ${actionHtml}
+        </div>
+      `;
+    }
+
     function renderCleanChatStream() {
       const container = document.getElementById('chatMessagesList');
       if (!container) return;
@@ -16792,9 +16959,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         window.updateChatStoreStatusHeader();
       }
 
-      // 1. Mensagens normais da conversa da família com cores distintas e alinhamento por membro
+      // Atualiza o contador de itens na aba [Lista de Mercado]
+      const tabBadge = document.getElementById('chatTabListaCountBadge');
+      if (tabBadge) tabBadge.textContent = items.length;
+
+      // 1. Mensagens normais da conversa da família
       const regularMsgs = msgs.filter(m => m.type !== 'shopping_list_card');
       const activeUser = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Rodrigo';
+
+      // Atualiza a barra com a última mensagem na aba Lista de Compras para que nunca se perca o que foi dito
+      const lastMsg = regularMsgs.length > 0 ? regularMsgs[regularMsgs.length - 1] : null;
+      const lastSenderEl = document.getElementById('chatShoppingLastSender');
+      const lastMsgEl = document.getElementById('chatShoppingLastMessage');
+      if (lastSenderEl && lastMsgEl) {
+        if (lastMsg) {
+          lastSenderEl.textContent = `Última mensagem de ${escapeHtml(lastMsg.sender || 'Família')} (${lastMsg.time || ''}):`;
+          lastMsgEl.textContent = `"${escapeHtml(lastMsg.text || '')}"`;
+        } else {
+          lastSenderEl.textContent = 'Conversa da Família:';
+          lastMsgEl.textContent = 'Nenhuma mensagem recente. Fique à vontade para conversar!';
+        }
+      }
 
       const chatHtml = regularMsgs.map(m => {
         let senderName = (m.sender || '').trim();
@@ -16805,26 +16990,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const isMarcia = /m[aá]rcia/i.test(senderName);
         const isRodrigo = /rodrigo/i.test(senderName);
 
-        // Alinhamento e cores personalizadas por membro:
-        // - Rodrigo: DIREITA (Azul Marcante)
-        // - Márcia: ESQUERDA (Rosa Vibrante)
-        // - Outros Membros: ESQUERDA (Verde Esmeralda)
         let alignCls = 'justify-start';
         let bubbleBg = '';
         let badgeHtml = '';
 
         if (isRodrigo) {
-          // Rodrigo (Direita): Balão Branco elegante e clean
           alignCls = 'justify-end';
           bubbleBg = 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl rounded-tr-xs shadow-xs border border-slate-200 dark:border-slate-700';
           badgeHtml = '<span class="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">👨 Rodrigo</span>';
         } else if (isMarcia) {
-          // Márcia (Esquerda): Balão Cinza suave e harmonioso
           alignCls = 'justify-start';
           bubbleBg = 'bg-slate-100 dark:bg-slate-850 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-xs shadow-2xs border border-slate-200/80 dark:border-slate-700/80';
           badgeHtml = '<span class="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">👩 Márcia</span>';
         } else {
-          // Sistema / Demais membros: Cinza neutro
           alignCls = 'justify-start';
           bubbleBg = 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs';
           const avatarIcon = m.avatar || '👤';
@@ -16857,11 +17035,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         `;
       }).join('');
 
-      // 2. Card da Lista de Compras posicionado SEMPRE EMBAIXO, POR ÚLTIMO APÓS A CONVERSA
-      let shoppingCardHtml = '';
+      // 2. Renderização da GÔNDOLA COMPLETA na aba dedicada [Lista de Mercado]
       const hasShoppingCard = msgs.some(m => m.type === 'shopping_list_card') || items.length > 0;
-      if (hasShoppingCard) {
-        // Agrupa itens por estabelecimento se houver divisão
+      let gondolaHtml = '';
+
+      if (hasShoppingCard && items.length > 0) {
         const groups = {};
         items.forEach(it => {
           const loc = it.estabelecimento || storeLocation || '🛒 Supermercado';
@@ -16871,9 +17049,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const groupKeys = Object.keys(groups);
         const hasMultipleGroups = groupKeys.length > 1;
 
-        shoppingCardHtml = `
-          <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-3 sm:p-4 shadow-sm my-2 mt-4">
-            
+        gondolaHtml = `
+          <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-3 sm:p-4 shadow-sm my-2">
             <!-- Cabeçalho Limpo da Lista de Compras -->
             <div class="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-200 dark:border-slate-750">
               <div class="flex items-center gap-2">
@@ -16886,7 +17063,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </div>
               
               <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end">
-
                 ${getDeletedShoppingItems().length > 0 ? `
                   <button type="button" onclick="restoreLastDeletedShoppingItem()" class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-extrabold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap" title="Voltar com o último produto excluído">
                     <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
@@ -16904,7 +17080,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </div>
             </div>
 
-            <!-- Indicador em Destaque de Estabelecimento Geral / Onde Comprar -->
+            <!-- Indicador de Estabelecimento Geral -->
             <div class="flex items-center justify-between text-xs px-3.5 py-2.5 mb-3 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-200 dark:border-blue-800/80 shadow-xs">
               <div class="flex items-center gap-2.5 text-slate-800 dark:text-slate-100 min-w-0">
                 <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
@@ -16917,82 +17093,78 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                   </span>
                 </div>
               </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0">
-                <button type="button" onclick="openStoreLocationModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black flex items-center gap-1 shadow-sm transition-all cursor-pointer active:scale-95">
-                  <i data-lucide="edit-3" class="w-3 h-3"></i>
-                  <span>${storeLocation ? 'Alterar' : 'Definir'}</span>
-                </button>
-              </div>
+              <button type="button" onclick="openStoreLocationModal()" class="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700 hover:bg-blue-50 text-[11px] font-bold shadow-2xs cursor-pointer flex-shrink-0 active:scale-95 transition-all">
+                ${storeLocation ? 'Alterar' : 'Definir'}
+              </button>
             </div>
 
-            <!-- Lista de Produtos Agrupados por Estabelecimento -->
+            <!-- Chips de Filtro por Estabelecimento -->
+            ${hasMultipleGroups ? `
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Loja:</span>
+                <button type="button" onclick="filterShoppingByStore('Todos')" class="px-2.5 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer active:scale-95 ${activeChatStoreFilter === 'Todos' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+                  Todas (${items.length})
+                </button>
+                ${groupKeys.map(storeName => `
+                  <button type="button" onclick="filterShoppingByStore('${escapeHtml(storeName)}')" class="px-2.5 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer active:scale-95 ${activeChatStoreFilter === storeName ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+                    ${escapeHtml(storeName)} (${groups[storeName].length})
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <!-- Itens da Gôndola -->
             <div class="space-y-3">
-              ${items.length === 0 ? `
-                <div class="p-4 text-center text-slate-400 text-xs">
-                  Nenhum produto na lista. Fale no microfone ou clique em "+ Item".
-                </div>
-              ` : groupKeys.map(storeName => {
-                const storeItems = groups[storeName];
+              ${groupKeys.map(loc => {
+                if (activeChatStoreFilter !== 'Todos' && activeChatStoreFilter !== loc) return '';
+                const locItems = groups[loc];
                 return `
-                  <div class="space-y-1.5">
-                    ${hasMultipleGroups ? `
-                      <div class="flex items-center gap-2 pt-2 pb-1 px-1 border-b border-slate-200/70 dark:border-slate-700/60">
-                        <span class="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wide flex items-center gap-1">
-                          ${escapeHtml(storeName)}
-                        </span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                          ${storeItems.length} ${storeItems.length === 1 ? 'item' : 'itens'}
-                        </span>
-                      </div>
-                    ` : ''}
-
-                    ${storeItems.map((it, idx) => {
-                      const isCart = it.status === 'no_carrinho';
-                      const isOut = it.status === 'nao_tinha';
-                      const prevPurch = typeof getPreviousPurchaseInfo === 'function' ? getPreviousPurchaseInfo(it.nome) : null;
-                      
-                      let rowBg = 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750';
-                      if (isCart) {
-                        rowBg = 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300/60 dark:border-emerald-800/60';
-                      } else if (isOut) {
-                        rowBg = 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-300/90 dark:border-amber-700/70 shadow-xs';
-                      } else if (idx % 2 !== 0) {
-                        rowBg = 'bg-slate-50/80 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-750';
-                      }
-
-                      // Comparação de preço com compra anterior:
-                      let priceArrowHtml = '';
+                  ${hasMultipleGroups ? `
+                    <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 pt-1 pb-0.5 flex items-center gap-1.5">
+                      <span>🏪</span> <span>${escapeHtml(loc)}</span>
+                    </div>
+                  ` : ''}
+                  <div class="space-y-2">
+                    ${locItems.map(it => {
+                      const isDone = it.status === 'comprado';
+                      const isOut = it.status === 'falta';
+                      const itemQtd = parseInt(it.qtdComprada || it.qtdDesejada || 1, 10);
                       const curPrice = parseFloat(it.precoUnitario) || 0;
-                      const oldPrice = prevPurch ? (parseFloat(prevPurch.preco) || 0) : 0;
-                      if (curPrice > 0 && oldPrice > 0) {
-                        if (curPrice > oldPrice) {
-                          const diff = (curPrice - oldPrice).toFixed(2).replace('.', ',');
-                          priceArrowHtml = `<span class="text-rose-500 font-black text-xs px-0.5 cursor-help" title="Mais caro que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • +R$ ${diff}">▲</span>`;
-                        } else if (curPrice < oldPrice) {
-                          const diff = (oldPrice - curPrice).toFixed(2).replace('.', ',');
-                          priceArrowHtml = `<span class="text-blue-500 dark:text-sky-400 font-black text-xs px-0.5 cursor-help" title="Mais barato que a última compra (R$ ${oldPrice.toFixed(2).replace('.', ',')}) • Economia de R$ ${diff}!">▼</span>`;
+                      const refPrice = parseFloat(it.menorPreco || it.ultimoPreco || 0);
+                      const itemSubtotal = (curPrice > 0 ? curPrice : refPrice) * itemQtd;
+
+                      let priceArrowHtml = '';
+                      if (curPrice > 0 && refPrice > 0) {
+                        const diff = curPrice - refPrice;
+                        if (Math.abs(diff) >= 0.05) {
+                          if (diff > 0) {
+                            priceArrowHtml = `<span class="text-rose-500 dark:text-rose-400 font-bold text-[10px] ml-1" title="Mais caro que o histórico (+R$ ${diff.toFixed(2).replace('.', ',')})">▲</span>`;
+                          } else {
+                            priceArrowHtml = `<span class="text-emerald-500 dark:text-emerald-400 font-bold text-[10px] ml-1" title="Mais barato que o histórico (-R$ ${Math.abs(diff).toFixed(2).replace('.', ',')})">▼</span>`;
+                          }
                         }
                       }
 
-                      const itemQtd = parseFloat(it.qtdComprada) || parseFloat(it.qtdDesejada) || 1;
-                      const itemSubtotal = curPrice * itemQtd;
-
                       return `
-                        <div class="p-3 rounded-2xl border ${rowBg} transition-all flex flex-col gap-2 shadow-2xs w-full overflow-hidden box-border">
-                          <!-- LINHA 1: Checkbox Quadrado (V) + Nome do Produto + Botão (i) + Subtotal + Lixeira -->
-                          <div class="flex items-center justify-between gap-2 w-full">
-                            <div class="flex items-center gap-2 min-w-0 flex-1">
-                              <button type="button" onclick="toggleItemInCart('${it.id}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${isCart ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs' : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent hover:border-emerald-500'} cursor-pointer flex-shrink-0" title="${isCart ? 'Desmarcar' : 'Marcar como pego'}">
-                                ${isCart ? '✓' : ''}
+                        <div class="p-3 rounded-2xl border transition-all ${isDone ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60' : (isOut ? 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/60 opacity-80' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-750')} shadow-2xs space-y-2">
+                          <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                              <button type="button" onclick="toggleItemPurchased('${it.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer flex-shrink-0 active:scale-90 ${isDone ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs' : 'border-slate-300 dark:border-slate-600 hover:border-emerald-500 bg-white dark:bg-slate-850'}" title="${isDone ? 'Desmarcar compra' : 'Marcar como pego'}">
+                                ${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
                               </button>
+                              
+                              <div class="min-w-0">
+                                <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block ${isDone ? 'line-through text-slate-400 dark:text-slate-500' : ''}">
+                                  ${escapeHtml(it.nome)}
+                                </span>
+                                <div class="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                  <span>Melhor: <strong>${escapeHtml(it.lojaNome || 'Livre')}</strong></span>
+                                  ${refPrice > 0 ? `<span>• Ref: <strong>R$ ${refPrice.toFixed(2).replace('.', ',')}</strong></span>` : ''}
+                                </div>
+                              </div>
 
-                              <span class="text-xs sm:text-sm font-black leading-snug break-words ${isCart ? 'line-through text-slate-400 dark:text-slate-500' : (isOut ? 'line-through text-rose-700 dark:text-rose-300' : 'text-slate-900 dark:text-white')}">
-                                ${escapeHtml(it.nome)}
-                              </span>
-
-                              <!-- Botão (i) de Informações de Compra Anterior -->
-                              <button type="button" onclick="showStoreInfoToast('${escapeHtml(it.nome)}', ${prevPurch ? (prevPurch.preco || 0) : (it.ultimoPreco || it.menorPreco || 0)}, '${escapeHtml(prevPurch ? (prevPurch.estabelecimento || '') : (it.lojaUltimoPreco || it.lojaNome || it.estabelecimento || ''))}', '${it.id}')" class="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center font-serif italic font-black text-[11px] hover:bg-blue-100 transition-colors cursor-pointer flex-shrink-0" title="Ver histórico de compra anterior">
-                                i
+                              <button type="button" onclick="toggleItemHistoryInfo('${it.id}', '${escapeHtml(it.nome)}')" class="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer flex-shrink-0 text-[11px] font-bold" title="Ver histórico de preços">
+                                ℹ
                               </button>
                             </div>
                             
@@ -17008,7 +17180,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                             </div>
                           </div>
 
-                          <!-- Faixa de Histórico Inline ao clicar no (i) -->
                           <div id="chatItemInfoBox_${it.id}" class="hidden text-[11px] font-semibold px-2.5 py-1.5 rounded-xl bg-blue-50/90 dark:bg-slate-800 text-blue-800 dark:text-sky-300 border border-blue-200/70 dark:border-slate-700"></div>
 
                           <!-- LINHA 2: Quantidade + Valor Unitário + Botão Não Tem -->
@@ -17039,12 +17210,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
             <!-- Confirmação Dinâmica de Recebimento da Lista no Chat -->
             ${renderShoppingListConfirmationSection()}
-
+          </div>
+        `;
+      } else {
+        gondolaHtml = `
+          <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-6 text-center my-4 shadow-sm">
+            <span class="text-4xl block mb-2">🛒</span>
+            <h4 class="text-sm font-black text-slate-800 dark:text-white mb-1">Nenhuma lista de compras ativa</h4>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Monte uma nova lista de compras ou envie pelo chat para acompanhar os preços na gôndola.</p>
+            <button type="button" onclick="openShoppingListModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs cursor-pointer active:scale-95 inline-flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Montar Lista de Compras</span>
+            </button>
           </div>
         `;
       }
 
-      container.innerHTML = chatHtml + shoppingCardHtml;
+      // Injeta a gôndola completa no container da aba [Lista de Mercado]
+      const gondolaContainer = document.getElementById('chatShoppingGondolaList');
+      if (gondolaContainer) {
+        gondolaContainer.innerHTML = gondolaHtml;
+      }
+
+      // No FEED DA CONVERSA: Apenas as mensagens normais + o card compacto de convite/decisão!
+      // Chat 100% LIMPO sem poluição visual!
+      const compactCardHtml = hasShoppingCard ? renderCompactShoppingCardInChat() : '';
+      container.innerHTML = chatHtml + compactCardHtml;
 
       if (window.lucide) lucide.createIcons();
     }
@@ -18000,6 +18191,17 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         text: text,
         time: timeStr
       });
+
+      // Se a pessoa estiver na aba [Lista de Mercado], sinaliza que novas mensagens chegaram!
+      if (window.currentChatTab === 'lista') {
+        const unreadB = document.getElementById('chatTabConversaUnreadBadge');
+        if (unreadB) unreadB.classList.remove('hidden');
+        const floatingBar = document.getElementById('chatShoppingFloatingMsgBar');
+        if (floatingBar) {
+          floatingBar.classList.add('ring-2', 'ring-blue-500', 'animate-pulse');
+          setTimeout(() => floatingBar.classList.remove('ring-2', 'ring-blue-500', 'animate-pulse'), 3000);
+        }
+      }
 
       // ==============================================================
       // INTELIGÊNCIA CONVERSACIONAL NO CHAT DE MERCADO
@@ -23468,11 +23670,48 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
     </div>
 
-    <!-- Área de Mensagens Rolável Ocupando Toda a Tela -->
+    <!-- Barra Dinâmica de Abas: [ 💬 Conversa ] vs [ 🛒 Lista de Mercado ] -->
+    <div id="chatViewModeTabs" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-1.5 flex items-center gap-2 flex-shrink-0 select-none">
+      <button type="button" id="btnChatTabConversa" onclick="switchChatViewTab('conversa')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-blue-600 text-white shadow-xs relative cursor-pointer active:scale-98">
+        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+        <span>Conversa</span>
+        <span id="chatTabConversaUnreadBadge" class="hidden w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+      </button>
+      <button type="button" id="btnChatTabLista" onclick="switchChatViewTab('lista')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer active:scale-98">
+        <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+        <span>Lista de Mercado</span>
+        <span id="chatTabListaCountBadge" class="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold">0</span>
+      </button>
+    </div>
+
+    <!-- 1. FEED DA CONVERSA (MENSAGENS LIMPAS + CARD COMPACTO COM OPÇÕES) -->
     <div id="chatMessagesFeed" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
       <div id="chatMessagesList" class="space-y-2">
         <!-- Renderizado dinamicamente por renderCleanChatStream() -->
       </div>
+    </div>
+
+    <!-- 2. FEED DA LISTA DE MERCADO (GÔNDOLA COMPLETA COM CONEXÃO DA CONVERSA) -->
+    <div id="chatShoppingListFeed" class="hidden flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+      <!-- Faixa de Conexão Rápida com a Conversa (para não perder o que a família fala) -->
+      <div id="chatShoppingFloatingMsgBar" class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-xs mb-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs flex-shrink-0 shadow-2xs">
+            💬
+          </div>
+          <div class="min-w-0">
+            <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 block leading-tight" id="chatShoppingLastSender">Última mensagem na conversa:</span>
+            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium truncate mt-0.5" id="chatShoppingLastMessage">Nenhuma mensagem recente.</p>
+          </div>
+        </div>
+        <button type="button" onclick="switchChatViewTab('conversa')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1">
+          <span>Ver Conversa</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Gôndola Completa de Produtos -->
+      <div id="chatShoppingGondolaList"></div>
     </div>
 
     <!-- Barra Inferior de Envio Fixa -->
