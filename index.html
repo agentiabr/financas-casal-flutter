@@ -3333,7 +3333,61 @@ html, body {
   }
 
   /* ========================================================================== */
-  /* NOVO DESIGN SYSTEM: REGRAS VISUAIS DE TELAS INTEIRAS COM RESPIRO AMPLO     */
+  
+    /* ========================================================================== */
+    /* CHAT DA FAMÍLIA BLINDADO (ESTILO WHATSAPP NATIVO)                          */
+    /* ========================================================================== */
+    #modalFamilyChat {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 120 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background-color: #071933 !important;
+      overflow: hidden !important;
+    }
+    #modalFamilyChat.hidden {
+      display: none !important;
+    }
+    #modalFamilyChat .page-header-back {
+      flex-shrink: 0 !important;
+      background-color: #071933 !important;
+      color: #FFFFFF !important;
+      padding: 0.85rem 1.25rem !important;
+      padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    #modalFamilyChat #chatRecipientBar {
+      flex-shrink: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    #modalFamilyChat #chatMessagesFeed {
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+    #modalFamilyChat #chatInputFooter {
+      flex-shrink: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.75rem) !important;
+    }
+    #modalFamilyChat #chatMessageForm {
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      background: transparent !important;
+    }
+    /* NOVO DESIGN SYSTEM: REGRAS VISUAIS DE TELAS INTEIRAS COM RESPIRO AMPLO     */
   /* ========================================================================== */
   .full-screen-page {
     position: fixed !important;
@@ -5762,24 +5816,6 @@ html, body {
     </div>
 
     <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🛒</span><span>Lista de Compras &amp; Preços</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Comparador inteligente, histórico e cupons fiscais</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
     <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative my-auto border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
@@ -6350,25 +6386,7 @@ html, body {
   </div>
 
   <!-- MODAL: CRIAR NOVO PORQUINHO 🐷 -->
-  <div id="modalCreatePiggy" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeCreatePiggyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🐷</span><span>Novo Porquinho / Meta</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Defina seu objetivo e valor programado para poupar</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
+  <div id="modalCreatePiggy" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-sm w-full p-6 shadow-2xl relative text-xs border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -7009,25 +7027,7 @@ html, body {
   </div>
 
   <!-- MODAL: GERENCIAR CARTÕES (Z-INDEX 80 ISOLADO) -->
-  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] flex items-center justify-center p-4">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>💳</span><span>Cartões de Crédito</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Gerenciar limites, vencimentos e faturas</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
+  <div id="modalManageCards" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -23151,7 +23151,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, FOCADO EM COMPRAS)      -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="full-screen-page hidden">
+  <div id="modalFamilyChat" class="fixed inset-0 z-[120] hidden flex flex-col bg-slate-900 w-full h-full overflow-hidden">
     <!-- Cabeçalho Nativo de Página Inteira com Botão Voltar -->
     <div class="page-header-back">
       <div class="flex items-center gap-3">
@@ -23185,7 +23185,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- Barra Dinâmica: Avatar do Usuário Ativo (À Esquerda) e Seletor de Destinatário (À Direita) -->
-    <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto flex-shrink-0 select-none">
+    <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto flex-shrink-0 select-none">
       <!-- Usuário Ativo (À Esquerda) -->
       <div class="flex items-center gap-2 flex-shrink-0 pr-2 border-r border-slate-200 dark:border-slate-750">
         <div id="chatActiveUserAvatar" class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-sm shadow-2xs">
@@ -23220,7 +23220,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- Barra Inferior de Envio Fixa -->
-    <div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 sm:p-4 flex-shrink-0">
+    <div id="chatInputFooter" class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 sm:p-4 flex-shrink-0 pb-safe">
       <form id="chatMessageForm" onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2 max-w-4xl mx-auto">
         <input type="text" id="chatMessageInput" placeholder="Escreva uma mensagem para a família..." 
                class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
@@ -25470,24 +25470,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
   <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🚗</span><span>Veículos &amp; Automóveis</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Combustível, seguro, manutenção preventiva e IPVA</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -25590,24 +25572,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
   <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🎓</span><span>Educação &amp; Formação</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Mensalidades escolares, cursos, livros e materiais</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Topo -->
@@ -30325,26 +30289,8 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🛠️</span><span>Meus Prestadores</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Contatos de confiança prontos para chamar no WhatsApp</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
-  <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
+<div id="modalServiceProviders" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
 
     <!-- Cabeçalho do Modal -->
     <div class="p-4 sm:p-5 bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white flex items-center justify-between flex-shrink-0">
@@ -35073,150 +35019,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ============================================================================
-  // INTERCEPTAÇÃO GLOBAL: Dica com fundo embaçado é disparada em QUALQUER clique
-  // ============================================================================
-  (function() {
-    // Preservar referências originais das funções
-    const _origOpenPet = window.openPetAreaModal;
-    const _origOpenHealth = window.openHealthMedsModal;
-    const _origOpenShopping = window.openShoppingListModal;
-    const _origOpenProviders = window.openServiceProvidersModal;
-    const _origOpenVeiculos = window.openVeiculosHub;
-    const _origOpenEducacao = window.openEducacaoHub;
-    const _origOpenCofrinhos = window.openCreatePiggyModal;
-
-    window.openPetAreaModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('pet', function() {
-          if (typeof _origOpenPet === 'function') _origOpenPet();
-          else {
-            const m = document.getElementById('modalPetArea');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenPet === 'function') {
-        _origOpenPet();
-      }
-    };
-
-    window.openHealthMedsModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('saude', function() {
-          if (typeof _origOpenHealth === 'function') _origOpenHealth();
-          else {
-            const m = document.getElementById('modalHealthMeds');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenHealth === 'function') {
-        _origOpenHealth();
-      }
-    };
-
-    window.openShoppingListModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('compras', function() {
-          if (typeof _origOpenShopping === 'function') _origOpenShopping();
-          else {
-            const m = document.getElementById('modalShoppingList');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenShopping === 'function') {
-        _origOpenShopping();
-      }
-    };
-
-    window.openServiceProvidersModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('prestadores', function() {
-          if (typeof _origOpenProviders === 'function') _origOpenProviders();
-          else {
-            const m = document.getElementById('modalServiceProviders');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenProviders === 'function') {
-        _origOpenProviders();
-      }
-    };
-
-    window.openVeiculosHub = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('automoveis', function() {
-          if (typeof _origOpenVeiculos === 'function') _origOpenVeiculos();
-          else {
-            const m = document.getElementById('modalVeiculosHub');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenVeiculos === 'function') {
-        _origOpenVeiculos();
-      }
-    };
-
-    window.openEducacaoHub = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('educacao', function() {
-          if (typeof _origOpenEducacao === 'function') _origOpenEducacao();
-          else {
-            const m = document.getElementById('modalEducacaoHub');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenEducacao === 'function') {
-        _origOpenEducacao();
-      }
-    };
-
-    window.openCreatePiggyModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('cofrinhos', function() {
-          if (typeof _origOpenCofrinhos === 'function') _origOpenCofrinhos();
-          else {
-            const m = document.getElementById('modalCreatePiggy');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenCofrinhos === 'function') {
-        _origOpenCofrinhos();
-      }
-    };
-
-    // Chat da Família: Mascote Oficial Piggy Chat
-    const _origOpenFamilyChat = window.openFamilyChatModal;
-    window.openFamilyChatModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('chat', function() {
-          const modal = document.getElementById('modalFamilyChat');
-          if (modal) modal.classList.remove('hidden');
-          if (typeof _origOpenFamilyChat === 'function' && _origOpenFamilyChat !== window.openFamilyChatModal) {
-            _origOpenFamilyChat();
-          }
-        });
-      } else {
-        const modal = document.getElementById('modalFamilyChat');
-        if (modal) modal.classList.remove('hidden');
-      }
-    };
-
-    // Cartões & Faturas: Mascote Oficial Piggy Cartões
-    const _origOpenManageCards = window.openManageCardsModal;
-    window.openManageCardsModal = function() {
-      if (window.triggerSectionWithIntelligentMascot) {
-        window.triggerSectionWithIntelligentMascot('cartoes', function() {
-          if (typeof _origOpenManageCards === 'function' && _origOpenManageCards !== window.openManageCardsModal) {
-            _origOpenManageCards();
-          } else {
-            const m = document.getElementById('modalManageCards');
-            if (m) m.classList.remove('hidden');
-          }
-        });
-      } else if (typeof _origOpenManageCards === 'function') {
-        _origOpenManageCards();
-      }
-    };
-  })();
+    // ROTINAS DE ABERTURA DIRETA: Modais abrem instantaneamente sem sobreposição
+    // ============================================================================
+    // (As dicas do Mascote estão disponíveis via botão 💡 em cada tela)
 
 /* ==============================================================================
  * SPRINT V2.1.26 - ROTINAS OFICIAIS DE NAVEGAÇÃO, MASCOTES, NFC-E & MEMBROS
@@ -35761,7 +35566,7 @@ window.confirmEnterSectionFromPitaco = function() {
         const nav = document.getElementById(`navTab_${s}`);
 
         if (s === screenKey) {
-          if (el) { el.classList.remove('hidden'); document.body.classList.add('auth-locked'); }
+          if (el) el.classList.remove('hidden');
           if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white shadow-xs';
           if (nav) nav.classList.add('active');
         } else {

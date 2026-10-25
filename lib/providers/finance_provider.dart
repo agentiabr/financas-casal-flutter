@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/transaction_model.dart';
 import '../models/credit_card_model.dart';
@@ -214,6 +215,8 @@ class FinanceProvider extends ChangeNotifier {
     }
   }
 
+  Timer? _realtimeDebounceTimer;
+
   void _subscribeRealtime() {
     if (!SupabaseConfig.isConfigured) return;
     try {
@@ -225,12 +228,21 @@ class FinanceProvider extends ChangeNotifier {
             table: 'transactions',
             callback: (payload) {
               debugPrint('Supabase Realtime alteração detectada: ${payload.eventType}');
-              _fetchFromSupabase();
+              _realtimeDebounceTimer?.cancel();
+              _realtimeDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+                _fetchFromSupabase();
+              });
             },
           )
           .subscribe();
     } catch (e) {
       debugPrint('Aviso ao registrar Realtime no Supabase: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _realtimeDebounceTimer?.cancel();
+    super.dispose();
   }
 }
