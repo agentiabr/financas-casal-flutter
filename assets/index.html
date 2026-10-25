@@ -5846,76 +5846,86 @@ html, body {
       </div>
     </div>
 
-    <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 overflow-y-auto p-3 sm:p-5 flex items-start justify-center" onclick="if(event.target===this) closeShoppingListModal()">
-    <div class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative my-auto border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
-      
-      <!-- Cabeçalho do Modal com Botão de Fechar Proeminente -->
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg border border-blue-200/80 dark:border-blue-800/80 shadow-xs">
-            🛒
-          </div>
-          <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-black text-base text-slate-900 dark:text-white">Lista de Compras</h3>
-              <span class="text-[10px] px-2 py-0.5 bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold rounded-full">Histórico de Preços</span>
-            </div>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Monte e envie lista de preços para o chat da família.</p>
-          </div>
-        </div>
-        
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="openTrashShoppingItemsModal()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl flex items-center justify-center border border-slate-300 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Lixeira / Histórico de excluídos">
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-          </button>
-          <!-- BOTÃO DE FECHAR PROEMINENTE [ ✕ ] -->
-          <button type="button" onclick="closeShoppingListModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 flex items-center justify-center transition-all shadow-xs border border-slate-200 dark:border-slate-700" title="Fechar Lista de Compras">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
+    <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🛒</span><span>Lista de Compras</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Comparador de preços e compras em família</p>
         </div>
       </div>
-
-      <!-- Abas Principais: Montar Lista para Mercado vs Histórico e Comparador de Preços -->
-      <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mt-3 flex-shrink-0">
-        <button type="button" onclick="switchShoppingModalTab('builder')" id="tabBtnShoppingBuilder" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xs flex items-center gap-1.5 transition-all">
-          <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-          <span>🛒 Montar Lista</span>
-          <span id="badgeBuilderSelectedCount" class="px-1.5 py-0.2 rounded-full bg-blue-900 text-blue-200 font-bold border border-blue-700 text-[10px]">0</span>
+      
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="openTrashShoppingItemsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shadow-2xs" title="Lixeira / Histórico de excluídos">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
         </button>
-
-        <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all">
-          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
-          <span>📊 Histórico</span>
+        <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer" title="Fechar Lista de Compras">
+          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
+      </div>
+    </div>
 
-        <button type="button" onclick="openComparativoMercadosModal()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs" title="Ver gráfico e ranking comparativo entre mercados">
-          <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
-          <span>📈 Comparativo</span>
-        </button>
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl">
+      
+      <!-- CARD 1: ABAS PRINCIPAIS -->
+      <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-200/80">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="switchShoppingModalTab('builder')" id="tabBtnShoppingBuilder" class="flex-1 py-2 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+            <span>🛒 Montar Lista</span>
+            <span id="badgeBuilderSelectedCount" class="px-1.5 py-0.2 rounded-full bg-blue-900 text-blue-200 font-bold border border-blue-700 text-[10px]">0</span>
+          </button>
+
+          <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="flex-1 py-2 rounded-2xl text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+            <span>📊 Histórico</span>
+          </button>
+
+          <button type="button" onclick="openComparativoMercadosModal()" class="py-2 px-3 rounded-2xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs" title="Ver ranking comparativo entre mercados">
+            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Comparativo</span>
+          </button>
+        </div>
       </div>
 
       <!-- CONTAINER 1: TABELA CLEAN E INTUITIVA DE LISTA DE COMPRAS -->
-      <div id="shoppingListBuilderContainer" class="flex flex-col flex-1 min-h-0 pt-3">
+      <div id="shoppingListBuilderContainer" class="space-y-3.5">
         
-        <!-- Barra Rápida de Adição de Item (Clean e Direta) -->
-        <div class="p-3 bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl mb-3 shadow-2xs">
-          <div class="flex flex-col gap-2">
-            <!-- Linha 1: Input do Produto 100% largura com design clean -->
-            <div class="w-full">
-              <input type="text" id="inputNewBuilderProductName" placeholder="+ Digite o produto para comprar (ex: Arroz 5kg, Café, Sabonete, Frutas)..." class="w-full px-3.5 py-2.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+        <!-- CARD 2: ADIÇÃO RÁPIDA DE PRODUTO (RESPONSIVO E CONFORTÁVEL) -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Adicionar Produto</span>
+            <span class="text-[10px] text-slate-400 font-medium">Preço sugerido automático</span>
+          </div>
+          
+          <div class="space-y-2.5">
+            <!-- Linha 1: Nome do Produto -->
+            <div>
+              <input type="text" id="inputNewBuilderProductName" placeholder="Ex: Arroz 5kg, Café torrado, Leite integral, Sabonete..." class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
             </div>
-            <!-- Linha 2: Quantidade, Preço Unitário, Loja e Botão Adicionar perfeitamente alinhados -->
+
+            <!-- Linha 2: Qtd + Preço + Loja -->
             <div class="grid grid-cols-12 gap-2 items-center">
-              <div class="col-span-3 sm:col-span-2 flex items-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2">
-                <span class="text-[10px] text-slate-400 mr-1 font-semibold">Qtd:</span>
-                <input type="number" id="inputNewBuilderProductQtd" min="1" value="1" class="w-full text-xs font-bold text-center bg-transparent text-slate-900 dark:text-white focus:outline-none">
+              <div class="col-span-4 sm:col-span-3 flex items-center bg-slate-50 border border-slate-300 rounded-2xl px-3 py-2">
+                <span class="text-[11px] text-slate-400 mr-1.5 font-bold">Qtd:</span>
+                <input type="number" id="inputNewBuilderProductQtd" min="1" value="1" class="w-full text-xs font-bold text-center bg-transparent text-slate-900 focus:outline-none">
               </div>
-              <div class="col-span-4 sm:col-span-3 flex items-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2">
-                <span class="text-[10px] text-slate-400 mr-1 font-semibold">R$:</span>
-                <input type="text" inputmode="numeric" id="inputNewBuilderProductPrice" placeholder="0,00" oninput="formatCurrencyInput(this)" class="w-full text-xs font-mono font-bold text-right bg-transparent text-slate-900 dark:text-white focus:outline-none">
+              
+              <div class="col-span-4 sm:col-span-4 flex items-center bg-slate-50 border border-slate-300 rounded-2xl px-3 py-2">
+                <span class="text-[11px] text-slate-400 mr-1 font-bold">R$:</span>
+                <input type="text" inputmode="numeric" id="inputNewBuilderProductPrice" placeholder="0,00" oninput="formatCurrencyInput(this)" class="w-full text-xs font-mono font-bold text-right bg-transparent text-slate-900 focus:outline-none">
               </div>
-              <div class="col-span-5 sm:col-span-4">
-                <select id="selectNewBuilderProductStore" class="w-full px-2.5 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none font-medium">
+
+              <div class="col-span-4 sm:col-span-5">
+                <select id="selectNewBuilderProductStore" class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-2xl text-slate-800 focus:outline-none font-semibold truncate">
                   <option value="Supermercados Roldão">Roldão</option>
                   <option value="Assaí Atacadista">Assaí</option>
                   <option value="Carrefour">Carrefour</option>
@@ -5926,108 +5936,114 @@ html, body {
                   <option value="Mercado">Geral</option>
                 </select>
               </div>
-              <div class="col-span-12 sm:col-span-3">
-                <button type="button" onclick="addCustomItemToBuilder()" class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                  <i data-lucide="plus" class="w-4 h-4"></i>
-                  <span>Adicionar</span>
-                </button>
-              </div>
+            </div>
+
+            <!-- Linha 3: Botão de Adição -->
+            <button type="button" onclick="addCustomItemToBuilder()" class="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white rounded-2xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Adicionar Produto à Lista</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 3: BUSCA E FILTRO DE LOJAS (CARROSSEL) -->
+        <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/80 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+              <input type="text" id="filterBuilderSearch" oninput="renderShoppingListBuilder()" placeholder="Filtrar produtos cadastrados..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium">
+            </div>
+            <div class="flex items-center gap-1 text-[11px] flex-shrink-0">
+              <button type="button" onclick="selectAllBuilderItems(true)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer transition-all">
+                Todos
+              </button>
+              <button type="button" onclick="selectAllBuilderItems(false)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold cursor-pointer transition-all">
+                Nenhum
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Barra de Busca Rápida e Filtros -->
-        <div class="flex items-center justify-between gap-2 pb-2">
-          <div class="relative flex-1 max-w-sm">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="filterBuilderSearch" oninput="renderShoppingListBuilder()" placeholder="Filtrar produtos..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500">
-          </div>
-          <div class="flex items-center gap-1.5 text-[11px]">
-            <button type="button" onclick="selectAllBuilderItems(true)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold cursor-pointer">
-              Marcar Todos
+          <!-- Carrossel de Lojas -->
+          <div class="relative w-full flex items-center gap-1.5 pt-1 border-t border-slate-100">
+            <button type="button" onclick="scrollStoreCarousel('left')" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center justify-center shadow-2xs flex-shrink-0 transition-all cursor-pointer">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             </button>
-            <button type="button" onclick="selectAllBuilderItems(false)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 font-semibold cursor-pointer">
-              Desmarcar
+            <div id="storeCarouselTrack" class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-0.5">
+              <!-- Chips Injetados Dinamicamente via renderStoreCarousel() -->
+            </div>
+            <button type="button" onclick="scrollStoreCarousel('right')" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center justify-center shadow-2xs flex-shrink-0 transition-all cursor-pointer">
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         </div>
 
-        <!-- CARROSSEL HORIZONTAL DE MERCADOS COM SETAS (< e >) -->
-        <div class="relative w-full my-2 flex items-center gap-1.5">
-          <button type="button" onclick="scrollStoreCarousel('left')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 flex items-center justify-center shadow-xs flex-shrink-0 transition-all cursor-pointer" title="Ver lojas anteriores">
-            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-          </button>
-          <div id="storeCarouselTrack" class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth flex-1 py-1">
-            <!-- Chips de Mercado Injetados Dinamicamente via renderStoreCarousel() -->
+        <!-- CARD 4: LISTA DE PRODUTOS -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-2.5">
+          <div class="flex items-center justify-between px-1 mb-1">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Itens para Comprar</span>
+            <span class="text-[11px] font-bold text-slate-400">Toque no círculo para marcar</span>
           </div>
-          <button type="button" onclick="scrollStoreCarousel('right')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 flex items-center justify-center shadow-xs flex-shrink-0 transition-all cursor-pointer" title="Ver mais lojas">
-            <i data-lucide="chevron-right" class="w-4 h-4"></i>
-          </button>
+          
+          <div id="builderProductsListContainer" class="space-y-2 pt-0.5 pb-1 w-full">
+            <!-- Injetado dinamicamente via renderShoppingListBuilder() -->
+          </div>
         </div>
 
-        <!-- LISTA CLEAN DE PRODUTOS ESTILO CARDS DO CHAT (SEM SCROLL INTERNO TRAVADO, DESCE A TELA NORMAL) -->
-        <div id="builderProductsListContainer" class="space-y-2.5 pt-1 pb-4 w-full">
-          <!-- Injetado dinamicamente via renderShoppingListBuilder() -->
-        </div>
-
-        <!-- RODAPÉ CLEAN: BOTÕES EM 1 COLUNA VERTICAL ÚNICA + FOTO DE CUPOM NO RODAPÉ -->
-        <div class="mt-4 pt-3.5 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2.5 w-full">
-          <!-- Resumo de Totais -->
+        <!-- CARD 5: TOTAIS E BOTÕES DE AÇÃO -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
           <div class="flex items-center justify-between text-xs px-1">
-            <span class="font-extrabold text-slate-800 dark:text-slate-200">
-              Total da Lista: <strong class="text-slate-900 dark:text-white font-mono text-sm" id="builderTotalGeralDisplay">R$ 0,00</strong>
+            <span class="font-extrabold text-slate-800">
+              Total Estimado: <strong class="text-slate-900 font-mono text-sm font-black" id="builderTotalGeralDisplay">R$ 0,00</strong>
             </span>
-            <span class="font-bold text-emerald-600 dark:text-emerald-400">
-              No Carrinho: <strong class="font-mono text-sm" id="builderTotalCarrinhoDisplay">R$ 0,00</strong>
+            <span class="font-bold text-emerald-600">
+              No Carrinho: <strong class="font-mono text-sm font-black" id="builderTotalCarrinhoDisplay">R$ 0,00</strong>
             </span>
           </div>
 
-          <!-- Botão Primário: Enviar Lista e Notificar Membro da Família -->
-          <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-xs active:scale-98 transition-all cursor-pointer" title="Compartilhar lista completa e enviar notificação sonora no celular">
+          <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer">
             <i data-lucide="bell-ring" class="w-4 h-4 text-amber-300"></i>
-            <span id="btnSendShoppingListLabel">💬 Enviar Lista e Notificar Márcia</span>
+            <span id="btnSendShoppingListLabel">💬 Enviar Lista para o Chat da Família</span>
           </button>
 
-          <!-- Botão Secundário: Escanear QR-Code NFC-e Contínuo com Câmera -->
-          <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer" title="Escanear QR-Code da Nota Fiscal via Câmera">
+          <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer">
             <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-            <span>Escanear QR-Code Nota Fiscal</span>
+            <span>Escanear QR-Code da Nota Fiscal (NFC-e)</span>
           </button>
-        </div></div>
-
-      <!-- CONTAINER 2: COMPARADOR DE PREÇOS POR LOJA (HISTÓRICO ORIGINAL) -->
-      <div id="shoppingListComparatorContainer" class="hidden flex flex-col flex-1 min-h-0 pt-3">
-        <!-- Barra de Ações & Busca com Alto Contraste -->
-        <div class="pb-3 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer">
-              <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-              <span>Escanear QR Nota Fiscal</span>
-            </button>
-            <button type="button" onclick="openManageStoresModal()"  class="px-3 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-1.5 transition-colors">
-              <i data-lucide="store" class="w-3.5 h-3.5 text-blue-600"></i>
-              <span>Gerenciar Lojas</span>
-            </button>
-          </div>
-
-          <div class="relative flex-1 max-w-xs">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar no comparador (ex: Leite, Arroz, Café)..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500">
-          </div>
         </div>
 
-        <!-- Filtro de Lojas (Chips de Estabelecimentos) -->
-        <div class="py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
-          <!-- Injetado dinamicamente via JS -->
-        </div>
-
-        <!-- Grade de Cards Responsivos de Histórico de Preços (100% Ajustado ao Celular, Sem Scroll Horizontal) -->
-        <div id="priceHistoryCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-3">
-          <!-- Injetado dinamicamente via JS (renderPriceHistoryTable) -->
-        </div>
       </div>
 
+      <!-- CONTAINER 2: COMPARADOR DE PREÇOS POR LOJA (HISTÓRICO) -->
+      <div id="shoppingListComparatorContainer" class="hidden space-y-3.5">
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" onclick="triggerScanQrWithNativeCamera()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer">
+                <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+                <span>Escanear QR Nota</span>
+              </button>
+              <button type="button" onclick="openManageStoresModal()" class="px-3 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="store" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>Gerenciar Lojas</span>
+              </button>
+            </div>
+            <div class="relative flex-1 max-w-xs">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+              <input type="text" id="filterPriceItemSearch" oninput="renderPriceHistoryTable()" placeholder="Buscar no histórico..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium">
+            </div>
+          </div>
 
+          <div class="py-2 border-t border-slate-100 flex items-center gap-1.5 flex-wrap" id="establishmentPillFilters">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+          <div id="priceHistoryCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -11238,48 +11254,55 @@ html, body {
           : 'bg-slate-100/90 dark:bg-slate-800/75 border-slate-200 dark:border-slate-700';
 
         return `
-          <div class="min-h-[62px] p-2.5 rounded-xl border transition-all flex flex-col justify-between ${
+          <div class="p-3 rounded-2xl border transition-all flex flex-col justify-between ${
             isChecked 
-              ? 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 shadow-2xs' 
-              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+              ? 'bg-emerald-50/90 border-emerald-300 shadow-2xs' 
+              : 'bg-slate-50 border-slate-200 hover:border-slate-300'
           }">
-            <!-- LINHA 1: Checkbox + Nome do Produto (Sem cortar!) + Stepper + Subtotal + Ações -->
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-start gap-2 min-w-0 flex-1">
-                <button type="button" onclick="toggleBuilderItem('${safeName}')" class="w-4 h-4 mt-0.5 rounded-full flex items-center justify-center transition-all ${
+            <!-- LINHA 1: Checkbox + Nome do Produto + Stepper + Subtotal + Ações -->
+            <div class="flex items-center justify-between gap-2 w-full">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                <button type="button" onclick="toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-lg flex items-center justify-center transition-all ${
                   isChecked 
                     ? 'bg-emerald-600 text-white shadow-2xs' 
-                    : 'border-2 border-slate-300 dark:border-slate-600 text-transparent hover:border-emerald-500 bg-white'
+                    : 'border-2 border-slate-300 text-transparent hover:border-emerald-500 bg-white'
                 } cursor-pointer flex-shrink-0" title="${isChecked ? 'Desmarcar' : 'Marcar para comprar'}">
-                  <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>
+                  <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
                 </button>
-                <span class="font-bold text-xs leading-snug break-words flex-1 ${isChecked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'}">
+                <span class="font-extrabold text-xs sm:text-sm leading-snug break-words flex-1 ${isChecked ? 'line-through text-slate-400' : 'text-slate-900'}">
                   ${escapeHtml(name)}
                 </span>
               </div>
 
-              <!-- Stepper Compacto, Subtotal e Botões Editar / Excluir -->
-              <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
-                <div class="inline-flex items-center rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-1 py-0.5 text-[11px] shadow-2xs">
-                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', -1)" class="w-4 h-4 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold cursor-pointer leading-none" title="Diminuir">−</button>
-                  <span class="px-1.5 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200">${itemState.qtd || 1}</span>
-                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', 1)" class="w-4 h-4 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold cursor-pointer leading-none" title="Aumentar">+</button>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <!-- Stepper -->
+                <div class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-1 py-0.5 text-xs shadow-2xs">
+                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', -1)" class="w-5 h-5 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 font-black cursor-pointer leading-none">−</button>
+                  <span class="px-1.5 font-bold font-mono text-xs text-slate-800">${itemState.qtd || 1}</span>
+                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', 1)" class="w-5 h-5 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 font-black cursor-pointer leading-none">+</button>
                 </div>
-                <div class="font-mono font-black text-xs text-slate-900 dark:text-white min-w-[54px] text-right">
+                
+                <!-- Subtotal -->
+                <div class="font-mono font-black text-xs text-slate-900 min-w-[56px] text-right">
                   ${formatBRL(subtotal)}
                 </div>
-                <button type="button" onclick="editBuilderProductItem('${safeName}')" class="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors cursor-pointer" title="Editar produto ou preço">
+
+                <!-- Botão Editar -->
+                <button type="button" onclick="editBuilderProductItem('${safeName}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer" title="Editar produto ou preço">
                   <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                 </button>
-                <button type="button" onclick="deleteBuilderProductItem('${safeName}')" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors cursor-pointer" title="Excluir produto da lista">
+
+                <!-- Botão Excluir -->
+                <button type="button" onclick="deleteBuilderProductItem('${safeName}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir produto da lista">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
-            <!-- LINHA 2: Estabelecimento e Preço Unitário Padronizados -->
-            <div class="pl-6 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 leading-tight pt-1 border-t border-slate-100 dark:border-slate-800/60 mt-1.5">
-              <span class="truncate">Última Loja: <strong class="text-slate-700 dark:text-slate-300 font-semibold">${escapeHtml(suggestedStore)}</strong></span>
-              ${unitPrice > 0 ? `<span class="font-mono font-bold text-slate-800 dark:text-slate-200 flex-shrink-0 ml-2">Unit: ${formatBRL(unitPrice)}</span>` : '<span class="text-slate-400">Preço a definir</span>'}
+
+            <!-- LINHA 2: Estabelecimento e Preço Unitário -->
+            <div class="pl-7.5 flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-200/60 mt-2">
+              <span class="truncate">Melhor loja: <strong class="text-slate-700 font-bold">${escapeHtml(suggestedStore)}</strong></span>
+              ${unitPrice > 0 ? `<span class="font-mono font-bold text-slate-700 flex-shrink-0 ml-2">Unit: ${formatBRL(unitPrice)}</span>` : '<span class="text-slate-400 italic">Preço a definir</span>'}
             </div>
           </div>
         `;
