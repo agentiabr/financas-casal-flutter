@@ -19954,35 +19954,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function renderPetExpensesSummary() {
       const pet = getActivePet();
-      const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+      const activeTxs = (typeof transactions !== 'undefined' ? transactions : []).filter(t => t.ciclo === currentCycle && t.tipo !== 'Receita' && !t.isExcluded);
       
-      const petRegex = new RegExp(`wevets|petz|cobasi|veterin|ração|petisco|fralda|${pet.nome}`, 'i');
-      const petTxs = activeTxs.filter(t => (t.tipo !== 'Receita') && (t.categoria === 'Pet' || (t.descricao && petRegex.test(t.descricao))));
+      // Filtra por petId específico ou por nome do pet para calcular o gasto exato de CADA pet!
+      const petTxs = activeTxs.filter(t => {
+        if (t.petId) {
+          return t.petId === pet.id || t.petId === 'todos';
+        }
+        if (t.categoria === 'Pet' || (t.subcategoria && t.subcategoria.includes('Pet'))) {
+          // Se tiver o nome de outro pet na descrição, não conta para este
+          const otherPets = getRegisteredPets().filter(other => other.id !== pet.id);
+          const hasOtherPet = otherPets.some(other => t.descricao && t.descricao.toLowerCase().includes(other.nome.toLowerCase()));
+          if (hasOtherPet) return false;
+          return true;
+        }
+        const petRegex = new RegExp(`wevets|petz|cobasi|veterin|ração|petisco|fralda|${pet.nome}`, 'i');
+        return petRegex.test(t.descricao || '');
+      });
 
       const total = petTxs.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
 
       const valEl = document.getElementById('petTotalExpensesVal');
-      const badgeEl = document.getElementById('petExpensesCountBadge');
+      const badgeEl = document.getElementById('petTotalExpensesBadge');
+      const expensesTitle = document.getElementById('petExpensesSectionTitle');
       const feedEl = document.getElementById('petExpensesListFeed');
 
       if (valEl) valEl.textContent = formatBRL(total, 'gastos');
-      if (badgeEl) badgeEl.textContent = `${petTxs.length} ${petTxs.length === 1 ? 'lançamento' : 'lançamentos'}`;
+      if (badgeEl) badgeEl.textContent = formatBRL(total, 'gastos');
+      if (expensesTitle) expensesTitle.textContent = `Gastos com ${pet.nome} no Ciclo`;
 
       if (feedEl) {
         if (petTxs.length === 0) {
-          feedEl.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhuma despesa de pet registrada neste ciclo.</div>`;
+          feedEl.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhum gasto registrado para <strong>${escapeHtml(pet.nome)}</strong> neste ciclo.</div>`;
         } else {
-          feedEl.innerHTML = petTxs.slice(0, 5).map(t => `
-            <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 text-xs">
+          feedEl.innerHTML = petTxs.slice(0, 10).map(t => `
+            <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 text-xs">
               <div class="min-w-0 flex-1">
                 <span class="font-bold text-slate-900 dark:text-white truncate block">${escapeHtml(t.descricao)}</span>
-                <span class="text-[10px] text-slate-400">${formatDateBR(t.data)} • ${t.forma_pagamento || 'Cartão'}</span>
+                <span class="text-[10px] text-slate-400">${formatDateBR(t.data)} • ${t.forma_pagamento || 'Cartão'} • <strong>${t.subcategoria || 'Pet'}</strong></span>
               </div>
-              <span class="font-black font-mono text-slate-900 dark:text-white">${formatBRL(t.valor, 'gastos')}</span>
+              <span class="font-black font-mono text-rose-600 dark:text-rose-400 ml-2">- ${formatBRL(t.valor)}</span>
             </div>
           `).join('');
         }
       }
+    }
     }
 
     function renderPetVaccinesList() {
@@ -24105,7 +24121,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <span class="text-base">💊</span>
           <span class="text-[10px]">Remédio</span>
         </button>
-        <button type="button" onclick="openNewTxModalWithCat('Pets')" class="py-2 px-1 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs flex flex-col items-center gap-0.5 transition-all cursor-pointer">
+        <button type="button" onclick="openPetExpenseQuickModal()" class="py-2 px-1 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs flex flex-col items-center gap-0.5 transition-all cursor-pointer">
           <span class="text-base">💰</span>
           <span class="text-[10px]">Lançar Gasto</span>
         </button>
@@ -24312,24 +24328,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
   <div id="modalHealthMeds" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>💊</span><span>Minha Saúde &amp; Remédios</span>
-          </h2>
-          <p class="text-[11px] text-blue-200">Medicamentos, alarmes sonoros e rotina diária</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        
-      </div>
-    </div>
-
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho do Modal de Saúde -->
@@ -24383,7 +24381,22 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </label>
       </div>
 
-<div id="containerHealthMedsTab">
+<!-- BOTÃO RÁPIDO: LANÇAR GASTO COM SAÚDE / FARMÁCIA -->
+      <div class="mb-3 flex items-center justify-between p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">💰</span>
+          <div>
+            <div class="font-black text-xs text-slate-900 dark:text-white">Despesas de Saúde & Farmácia</div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400">Registre remédios comprados, consultas e exames</div>
+          </div>
+        </div>
+        <button type="button" onclick="openHealthExpenseQuickModal()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Lançar Gasto</span>
+        </button>
+      </div>
+
+      <div id="containerHealthMedsTab">
 <div class="my-2 p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-700 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
@@ -38298,6 +38311,201 @@ window.confirmEnterSectionFromPitaco = function() {
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(applyQuickHubCardOrder, 100);
   });
+
+  // =========================================================================
+  // GESTÃO RÁPIDA DE GASTOS PET (DIRECIONADO POR PET) & SAÚDE
+  // =========================================================================
+  window.openPetExpenseQuickModal = function(defaultPetId) {
+    const modal = document.getElementById('modalPetExpenseQuick');
+    if (!modal) return;
+
+    const pets = getRegisteredPets();
+    const activeId = defaultPetId || getActivePetId();
+    document.getElementById('quickPetSelectedId').value = activeId;
+
+    // Renderiza seletor de pets com avatares/nomes
+    const selectorContainer = document.getElementById('quickPetExpenseSelectorList');
+    if (selectorContainer) {
+      selectorContainer.innerHTML = pets.map(p => {
+        const isSel = p.id === activeId;
+        const selCls = isSel 
+          ? 'bg-amber-500 text-slate-950 font-black shadow-xs ring-2 ring-amber-400' 
+          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold';
+        return `
+          <button type="button" onclick="setQuickPetExpenseTarget('${p.id}')" class="px-3 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${selCls}">
+            <span>${p.emoji || (p.especie === 'Gato' ? '🐱' : '🐶')}</span>
+            <span>${escapeHtml(p.nome)}</span>
+          </button>
+        `;
+      }).join('') + `
+        <button type="button" onclick="setQuickPetExpenseTarget('todos')" class="px-3 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${activeId === 'todos' ? 'bg-amber-500 text-slate-950 font-black shadow-xs ring-2 ring-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-bold'}">
+          <span>🐾</span>
+          <span>Todos os Pets</span>
+        </button>
+      `;
+    }
+
+    const curPet = pets.find(p => p.id === activeId);
+    const descInput = document.getElementById('quickPetDescricao');
+    if (descInput) {
+      descInput.value = '';
+      descInput.placeholder = curPet ? `Ex: Ração para ${curPet.nome}, Consulta, Petz...` : 'Ex: Ração, Consulta Veterinária...';
+    }
+
+    const valorInput = document.getElementById('quickPetValor');
+    if (valorInput) valorInput.value = '';
+
+    const dataInput = document.getElementById('quickPetData');
+    if (dataInput) dataInput.value = (typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0];
+
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.setQuickPetExpenseTarget = function(petId) {
+    document.getElementById('quickPetSelectedId').value = petId;
+    window.openPetExpenseQuickModal(petId);
+  };
+
+  window.closePetExpenseQuickModal = function() {
+    const modal = document.getElementById('modalPetExpenseQuick');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.handleSavePetExpenseQuick = function(event) {
+    event.preventDefault();
+    const petId = document.getElementById('quickPetSelectedId')?.value || getActivePetId();
+    const subcategoria = document.getElementById('quickPetSubcategoria')?.value || 'Ração & Alimentação';
+    const rawDesc = document.getElementById('quickPetDescricao')?.value.trim();
+    const valorInput = document.getElementById('quickPetValor');
+    const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
+    const data = document.getElementById('quickPetData')?.value || getLocalDateString();
+    const responsavel = document.getElementById('quickPetResponsavel')?.value || 'Comum';
+    const forma_pagamento = document.getElementById('quickPetPagamento')?.value || 'Cartão de Crédito';
+
+    if (!rawDesc || valor <= 0) return;
+
+    const pets = getRegisteredPets();
+    const targetPet = pets.find(p => p.id === petId);
+    const petNome = targetPet ? targetPet.nome : (petId === 'todos' ? 'Todos os Pets' : 'Pet');
+
+    // Monta descrição limpa com o nome do pet para identificação universal
+    const descFinal = rawDesc.toLowerCase().includes(petNome.toLowerCase()) ? rawDesc : `${rawDesc} (${petNome})`;
+
+    let cartao_nome = null;
+    if (forma_pagamento === 'Cartão de Crédito') {
+      if (responsavel === 'Márcia') cartao_nome = 'XP Márcia';
+      else if (responsavel === 'Comum') cartao_nome = 'Itaú Click';
+      else cartao_nome = 'Nubank Rodrigo';
+    }
+
+    const maxId = (transactions && transactions.length > 0) ? Math.max(...transactions.map(t => t.id || 0)) + 1 : Date.now();
+    const newTx = {
+      id: maxId,
+      data,
+      ciclo: currentCycle,
+      tipo: 'Despesa Variável',
+      categoria: 'Pet',
+      subcategoria: subcategoria,
+      petId: petId,
+      petNome: petNome,
+      descricao: descFinal,
+      valor: valor,
+      responsavel,
+      forma_pagamento,
+      cartao_nome,
+      origem_comprovante: 'manual',
+      status: 'Pago',
+      parcelado: false,
+      total_parcelas: 1,
+      parcela_atual: 1
+    };
+
+    transactions.unshift(newTx);
+    if (typeof saveTransactionsToStorage === 'function') saveTransactionsToStorage();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof renderPetExpensesSummary === 'function') renderPetExpensesSummary();
+
+    closePetExpenseQuickModal();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Gasto de R$ ${valor.toFixed(2).replace('.', ',')} para ${petNome} registrado! 🐾`, false);
+    }
+  };
+
+  // -------------------------------------------------------------------------
+  // GASTOS DE SAÚDE
+  // -------------------------------------------------------------------------
+  window.openHealthExpenseQuickModal = function() {
+    const modal = document.getElementById('modalHealthExpenseQuick');
+    if (!modal) return;
+
+    const descInput = document.getElementById('quickHealthDescricao');
+    if (descInput) descInput.value = '';
+
+    const valorInput = document.getElementById('quickHealthValor');
+    if (valorInput) valorInput.value = '';
+
+    const dataInput = document.getElementById('quickHealthData');
+    if (dataInput) dataInput.value = (typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0];
+
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closeHealthExpenseQuickModal = function() {
+    const modal = document.getElementById('modalHealthExpenseQuick');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  window.handleSaveHealthExpenseQuick = function(event) {
+    event.preventDefault();
+    const subcategoria = document.getElementById('quickHealthSubcategoria')?.value || 'Medicamentos & Farmácia';
+    const rawDesc = document.getElementById('quickHealthDescricao')?.value.trim();
+    const valorInput = document.getElementById('quickHealthValor');
+    const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
+    const data = document.getElementById('quickHealthData')?.value || getLocalDateString();
+    const responsavel = document.getElementById('quickHealthResponsavel')?.value || 'Rodrigo';
+    const forma_pagamento = document.getElementById('quickHealthPagamento')?.value || 'Cartão de Crédito';
+
+    if (!rawDesc || valor <= 0) return;
+
+    let cartao_nome = null;
+    if (forma_pagamento === 'Cartão de Crédito') {
+      if (responsavel === 'Márcia') cartao_nome = 'XP Márcia';
+      else if (responsavel === 'Comum') cartao_nome = 'Itaú Click';
+      else cartao_nome = 'Nubank Rodrigo';
+    }
+
+    const maxId = (transactions && transactions.length > 0) ? Math.max(...transactions.map(t => t.id || 0)) + 1 : Date.now();
+    const newTx = {
+      id: maxId,
+      data,
+      ciclo: currentCycle,
+      tipo: 'Despesa Variável',
+      categoria: 'Saúde',
+      subcategoria: subcategoria,
+      descricao: rawDesc,
+      valor: valor,
+      responsavel,
+      forma_pagamento,
+      cartao_nome,
+      origem_comprovante: 'manual',
+      status: 'Pago',
+      parcelado: false,
+      total_parcelas: 1,
+      parcela_atual: 1
+    };
+
+    transactions.unshift(newTx);
+    if (typeof saveTransactionsToStorage === 'function') saveTransactionsToStorage();
+    if (typeof updateDashboard === 'function') updateDashboard();
+
+    closeHealthExpenseQuickModal();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Gasto de saúde de R$ ${valor.toFixed(2).replace('.', ',')} registrado! 💊`, false);
+    }
+  };
+
 </script>
 
   <!-- ============================================================== -->
@@ -38388,6 +38596,200 @@ window.confirmEnterSectionFromPitaco = function() {
           <span class="flex-1 text-left">Limpar Conversa Deste Chat</span>
         </button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LANÇAR GASTO RÁPIDO COM PET (DIRECIONADO POR PET, SEM POLUIÇÃO)     -->
+  <!-- ========================================================================= -->
+  <div id="modalPetExpenseQuick" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1100] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-amber-300/40 dark:border-amber-700/40 text-xs flex flex-col space-y-4">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center text-xl font-bold shadow-xs">
+            🐾
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Lançar Despesa com Pet</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Ração, veterinário, remédios e cuidados do pet</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePetExpenseQuickModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário Rápido e Focado -->
+      <form onsubmit="handleSavePetExpenseQuick(event)" class="space-y-3.5">
+        <!-- 1. Qual é o Pet? -->
+        <div>
+          <label class="block font-black text-slate-700 dark:text-slate-200 mb-1.5 text-[11px]">Para qual Pet é este gasto?</label>
+          <div id="quickPetExpenseSelectorList" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            <!-- Injetado dinamicamente: pills com avatar e nome de cada pet -->
+          </div>
+          <input type="hidden" id="quickPetSelectedId" value="">
+        </div>
+
+        <!-- 2. Subcategoria do Pet (APENAS pertinentes a Pet!) -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Tipo de Gasto Pet</label>
+          <select id="quickPetSubcategoria" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+            <option value="Ração & Alimentação">🥣 Ração & Alimentação Pet</option>
+            <option value="Veterinário & Consultas">🩺 Veterinário & Consultas</option>
+            <option value="Vacinas & Imunização">💉 Vacinas & Imunização</option>
+            <option value="Medicamentos & Farmácia Pet">💊 Medicamentos & Farmácia Pet</option>
+            <option value="Banho & Tosa">✂️ Banho, Tosa & Estética</option>
+            <option value="Plano de Saúde Pet">🏥 Plano de Saúde Pet</option>
+            <option value="Brinquedos & Acessórios">🧸 Brinquedos, Coleiras & Acessórios</option>
+            <option value="Hotel & Creche">🏨 Hotel, Creche & Pet Sitter</option>
+            <option value="Outros Cuidados Pet">🐾 Outros Gastos Pet</option>
+          </select>
+        </div>
+
+        <!-- 3. Descrição / Estabelecimento -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Estabelecimento</label>
+          <input type="text" id="quickPetDescricao" required placeholder="Ex.: Ração Golden 15kg, Consulta Wevets, Petz..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+        </div>
+
+        <!-- 4. Valor e Data -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
+            <input type="text" inputmode="numeric" id="quickPetValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-amber-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
+            <input type="date" id="quickPetData" required class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- 5. Responsável e Pagamento -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Quem Pagou?</label>
+            <select id="quickPetResponsavel" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+              <option value="Comum">👥 Comum (Casal)</option>
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Forma de Pagamento</label>
+            <select id="quickPetPagamento" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+              <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+              <option value="Pix">⚡ Pix</option>
+              <option value="Débito">🏧 Débito</option>
+              <option value="Dinheiro">💵 Dinheiro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="closePetExpenseQuickModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold transition-all cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+            <span>✓ Salvar Gasto Pet</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LANÇAR GASTO RÁPIDO DE SAÚDE (FARMÁCIA / CONSULTAS, SEM POLUIÇÃO)  -->
+  <!-- ========================================================================= -->
+  <div id="modalHealthExpenseQuick" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1100] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-sky-300/40 dark:border-sky-700/40 text-xs flex flex-col space-y-4">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-300 flex items-center justify-center text-xl font-bold shadow-xs">
+            💊
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Lançar Despesa de Saúde</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Farmácia, remédios, consultas e exames médicos</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeHealthExpenseQuickModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário Rápido e Focado -->
+      <form onsubmit="handleSaveHealthExpenseQuick(event)" class="space-y-3.5">
+        <!-- 1. Tipo de Gasto Saúde (APENAS pertinentes a Saúde!) -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Tipo de Gasto Saúde</label>
+          <select id="quickHealthSubcategoria" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="Medicamentos & Farmácia">💊 Medicamentos & Farmácia</option>
+            <option value="Consultas Médicas">🩺 Consultas Médicas & Especialistas</option>
+            <option value="Exames & Diagnósticos">🧪 Exames & Diagnósticos Laboratoriais</option>
+            <option value="Plano de Saúde & Hospital">🏥 Plano de Saúde & Hospital</option>
+            <option value="Odontologia">🦷 Odontologia & Dentista</option>
+            <option value="Terapia & Psicologia">🧠 Terapia, Psicologia & Psiquiatria</option>
+            <option value="Oftalmologia">👓 Oftalmologia, Óculos & Lentes</option>
+            <option value="Fisioterapia">🩹 Fisioterapia & Reabilitação</option>
+            <option value="Outros Cuidados Saúde">🩺 Outros Cuidados de Saúde</option>
+          </select>
+        </div>
+
+        <!-- 2. Descrição / Estabelecimento -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Farmácia / Clínica</label>
+          <input type="text" id="quickHealthDescricao" required placeholder="Ex.: Droga Raia (Losartana), Consulta Dr. Silva, Exames..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <!-- 3. Valor e Data -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
+            <input type="text" inputmode="numeric" id="quickHealthValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
+            <input type="date" id="quickHealthData" required class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- 4. Responsável e Pagamento -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Paciente / Responsável</label>
+            <select id="quickHealthResponsavel" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+              <option value="Comum">👥 Comum (Família)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Forma de Pagamento</label>
+            <select id="quickHealthPagamento" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+              <option value="Pix">⚡ Pix</option>
+              <option value="Débito">🏧 Débito</option>
+              <option value="Dinheiro">💵 Dinheiro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="closeHealthExpenseQuickModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold transition-all cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+            <span>✓ Salvar Gasto Saúde</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
