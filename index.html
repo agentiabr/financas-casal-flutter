@@ -2606,7 +2606,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 28rem; /* 448px */
   margin: 0 auto;
   align-items: center;
@@ -3118,7 +3118,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 28rem; /* 448px */
   margin: 0 auto;
   align-items: center;
@@ -3753,7 +3753,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 28rem; /* 448px */
   margin: 0 auto;
   align-items: center;
@@ -4701,23 +4701,30 @@ html, body {
           <span>Início</span>
         </button>
 
-        <!-- 2. Transações -->
-        <button id="navTab_transacoes" onclick="switchScreen('transacoes')" class="bottom-nav-item">
-          <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
-          <span>Transações</span>
+        <!-- 2. Lista de Compras -->
+        <button id="navTab_compras" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bottom-nav-item">
+          <i data-lucide="shopping-cart" class="w-5 h-5 mb-0.5"></i>
+          <span>Lista</span>
         </button>
 
-        <!-- 3. Família & Vida -->
+        <!-- 3. Botão Central (+) Flutuante em Círculo (Nova Transação) -->
+        <div class="flex items-center justify-center -mt-4 px-1 select-none">
+          <button type="button" onclick="if(typeof openNewTxModal === 'function') openNewTxModal(); else if(typeof openAddTransactionModal === 'function') openAddTransactionModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Nova Transação">
+            <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
+          </button>
+        </div>
+
+        <!-- 4. Família & Vida -->
         <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
           <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
           <span>Família &amp; Vida</span>
         </button>
 
-        <!-- 4. Chat -->
+        <!-- 5. Chat -->
         <button id="navTab_chat" onclick="openFamilyChatModal()" class="bottom-nav-item relative">
           <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
           <span>Chat</span>
-          <span class="absolute top-1 right-6 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="absolute top-1 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         </button>
 
       </div>
@@ -35196,17 +35203,23 @@ window.confirmEnterSectionFromPitaco = function() {
       <i data-lucide="home" class="w-5 h-5"></i>
       <span>Início</span>
     </button>
-    <!-- Aba 2: Transações -->
-    <button type="button" onclick="switchMainTab('transacoes')" id="btnNav_transacoes" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
-      <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-      <span>Transações</span>
+    <!-- Aba 2: Lista de Compras -->
+    <button type="button" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" id="btnNav_compras" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
+      <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+      <span>Lista</span>
     </button>
-    <!-- Aba 3: Família & Vida -->
+    <!-- Aba 3: Botão Central (+) Flutuante em Círculo (Nova Transação) -->
+    <div class="flex items-center justify-center -mt-4 px-1 select-none">
+      <button type="button" onclick="if(typeof openNewTxModal === 'function') openNewTxModal(); else if(typeof openAddTransactionModal === 'function') openAddTransactionModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Nova Transação">
+        <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
+      </button>
+    </div>
+    <!-- Aba 4: Família & Vida -->
     <button type="button" onclick="switchMainTab('familia')" id="btnNav_familia" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
       <i data-lucide="users" class="w-5 h-5"></i>
       <span>Família & Vida</span>
     </button>
-    <!-- Aba 4: Chat -->
+    <!-- Aba 5: Chat -->
     <button type="button" onclick="switchMainTab('chat')" id="btnNav_chat" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer relative">
       <i data-lucide="message-circle" class="w-5 h-5"></i>
       <span>Chat</span>
