@@ -64,14 +64,29 @@
     })();
   </script>
   <style>
-    html.require-auth footer, #main-content,
+    html.require-auth footer,
+    html.require-auth #main-content,
     html.require-auth #app-navbar-container,
     html.require-auth nav,
     html.require-auth #btnFloatingFamilyChat {
       display: none !important;
     }
+    html.require-auth, html.require-auth body {
+      overflow: hidden !important;
+      height: 100% !important;
+      position: fixed !important;
+      width: 100% !important;
+      overscroll-behavior: none !important;
+    }
     html.require-auth #authOverlayContainer {
       display: flex !important;
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior: contain !important;
     }
 
     /* MASCOTE DESTRUÍDO / PIFADO (QUANDO SALDO ESTÁ NO VERMELHO) */
@@ -14748,17 +14763,31 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     function togglePasswordVisibility(inputId, iconId) {
       const inp = document.getElementById(inputId);
-      const icon = document.getElementById(iconId);
       if (!inp) return;
-      if (inp.type === 'password') {
-        inp.type = 'text';
-        if (icon) icon.setAttribute('data-lucide', 'eye-off');
-      } else {
-        inp.type = 'password';
-        if (icon) icon.setAttribute('data-lucide', 'eye');
+      const isPass = inp.type === 'password';
+      inp.type = isPass ? 'text' : 'password';
+      let icon = document.getElementById(iconId);
+      if (!icon && inp.parentElement) {
+        const btn = inp.parentElement.querySelector('button');
+        if (btn) icon = btn.querySelector('[data-lucide]') || btn.querySelector('svg');
       }
-      lucide.createIcons();
+      if (icon) {
+        icon.outerHTML = isPass
+          ? `<i data-lucide="eye-off" id="${iconId}" class="w-4 h-4"></i>`
+          : `<i data-lucide="eye" id="${iconId}" class="w-4 h-4"></i>`;
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          try { lucide.createIcons(); } catch(e) {}
+        }
+      }
     }
+    window.togglePasswordVisibility = togglePasswordVisibility;
+    window.switchAuthTab = switchAuthTab;
+    window.handleAuthLogin = handleAuthLogin;
+    window.handleAuthRegister = handleAuthRegister;
+    window.handleAuthForgot = handleAuthForgot;
+    window.sendWhatsAppRecoveryCode = sendWhatsAppRecoveryCode;
+    window.triggerBiometricLogin = triggerBiometricLogin;
+    window.forceUnlockAuthOverlay = forceUnlockAuthOverlay;
 
     function maskCpf(input) {
       let v = input.value.replace(/\D/g, '');
@@ -19998,7 +20027,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           `).join('');
         }
       }
-    }
     }
 
     function renderPetVaccinesList() {
