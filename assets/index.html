@@ -4171,17 +4171,26 @@ html, body {
 
           <div id="heroCardBanner" style="background: linear-gradient(135deg, #FFFFFF 0%, #EEF4FA 100%) !important;" class="rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
             
-            <div class="flex items-center justify-between pr-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
-              <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo">
-  <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
-</button>
-            </div>
-            
-            <div class="mt-1 flex items-baseline gap-2">
-              <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                R$ 4.850,00
-              </h2>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
+                <div class="mt-1 flex items-baseline gap-2">
+                  <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+                    R$ 4.850,00
+                  </h2>
+                </div>
+              </div>
+
+              <!-- Lado Direito: Olhinho no topo e Botão Discreto de Lançar Valores logo abaixo -->
+              <div class="flex flex-col items-end gap-1.5 -mr-1">
+                <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
+                  <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
+                </button>
+                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-[11px] border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar valores (por voz, foto de cupom ou digitação)">
+                  <span class="text-blue-600 font-black text-xs leading-none">+</span>
+                  <span>Lançar Valores</span>
+                </button>
+              </div>
             </div>
 
             <div class="mt-1">
@@ -37704,27 +37713,68 @@ window.confirmEnterSectionFromPitaco = function() {
     window.setActiveCycle(key);
   };
 
-  // 3. Olhinho: Alternância de Ícones Eye / Eye-Off
+  // 3. Olhinho: Alternância de Ícones Eye / Eye-Off e Ocultação Global de Saldo, Receitas e Despesas
   const _origTogglePrivacy = window.togglePrivacy;
   window.togglePrivacy = function() {
     window.privacyHidden = !window.privacyHidden;
     const isHidden = window.privacyHidden;
 
-    const eyeIcon = document.getElementById('iconHeroPrivacy');
-    if (eyeIcon) {
+    // Atualiza todos os ícones de olhinho na interface
+    const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
+    eyeIcons.forEach(eyeIcon => {
       eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
       eyeIcon.className = 'w-4 h-4 text-slate-600';
       eyeIcon.style.color = '#475569';
-    }
+    });
 
+    // 1. Oculta / Restaura Saldo Atual
     const saldoText = document.getElementById('heroSaldoText');
     if (saldoText) {
       if (isHidden) {
-        saldoText.dataset.real = saldoText.textContent;
+        if (!saldoText.dataset.real) saldoText.dataset.real = saldoText.textContent;
         saldoText.textContent = 'R$ •••••';
       } else {
         saldoText.textContent = saldoText.dataset.real || 'R$ 4.850,00';
       }
+    }
+
+    // 2. Oculta / Restaura Card de Receitas
+    const receitasVal = document.getElementById('heroReceitasVal');
+    if (receitasVal) {
+      if (isHidden) {
+        if (!receitasVal.dataset.real) receitasVal.dataset.real = receitasVal.textContent;
+        receitasVal.textContent = '+ R$ •••••';
+      } else {
+        receitasVal.textContent = receitasVal.dataset.real || '+ R$ 0,00';
+      }
+    }
+
+    // 3. Oculta / Restaura Card de Despesas
+    const despesasVal = document.getElementById('heroDespesasVal');
+    if (despesasVal) {
+      if (isHidden) {
+        if (!despesasVal.dataset.real) despesasVal.dataset.real = despesasVal.textContent;
+        despesasVal.textContent = '- R$ •••••';
+      } else {
+        despesasVal.textContent = despesasVal.dataset.real || '- R$ 0,00';
+      }
+    }
+
+    // 4. Oculta / Restaura Indicadores complementares
+    const badgeComp = document.getElementById('valComprometido');
+    if (badgeComp) {
+      if (isHidden) {
+        if (!badgeComp.dataset.real) badgeComp.dataset.real = badgeComp.textContent;
+        badgeComp.textContent = '••%';
+      } else {
+        badgeComp.textContent = badgeComp.dataset.real || '0%';
+      }
+    }
+
+    // Se o usuário reativou a visão, recalcula os valores reais do ciclo vigente
+    if (!isHidden) {
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData();
     }
 
     if (typeof window.renderApprovedTransactionsList === 'function') {
