@@ -4033,26 +4033,42 @@ html, body {
     }
   </style>
 <style>
-    /* Garante que todos os modais de diálogo e formulários fiquem SEMPRE no topo absoluto */
+    /* Seções principais e hubs em tela cheia */
     div[id^="modal"]:not(.full-screen-page),
-    #modalAddNewContinuousMed,
-    #modalAddPetVaccine,
-    #modalAddEditPet,
-    #modalAddEditPetCare,
-    #modalMedTakeConfirmation,
-    #modalEditMedication,
-    #modalPetQrCode,
     #modalHealthMeds,
+    #modalPetArea,
+    #modalShoppingListHistory,
+    #modalShoppingList,
+    #modalVeiculosHub,
+    #modalEducacaoHub,
+    #modalServiceProviders,
+    #modalManageCards,
+    #modalCreatePiggy,
     #modalInstallmentsDetail,
-    #modalItemInfoBalloon,
     #modalTilePicker,
     #modalSoberTilePicker,
     #modalAddUser,
     #modalFamilyChat,
-    #modalShoppingList,
-    #modalPhotoGuidance,
     #modalReorderQuickHub {
       z-index: 1050 !important;
+    }
+
+    /* SUB-MODAIS E FORMULÁRIOS DE CADASTRO/EDIÇÃO (Ficam SEMPRE sobrepostos acima das seções e rotinas) */
+    #modalAddNewContinuousMed,
+    #modalEditMedication,
+    #modalMedTakeConfirmation,
+    #modalHealthExpenseQuick,
+    #modalAddExerciseForm,
+    #modalAddPetVaccine,
+    #modalAddEditPet,
+    #modalAddEditPetCare,
+    #modalPetQrCode,
+    #modalPetExpenseQuick,
+    #modalItemInfoBalloon,
+    #modalPhotoGuidance,
+    #modalNewTx,
+    #modalEditTx {
+      z-index: 2500 !important;
     }
     </style>
 </head>
@@ -23906,7 +23922,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL CADASTRAR NOVO REMÉDIO CONTÍNUO (MINHA SAÚDE)            -->
   <!-- ============================================================== -->
-  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
+  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[2500] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-xs flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
         <div class="flex items-center gap-2.5">
@@ -24644,7 +24660,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL 3: POPUP DE CONFIRMAÇÃO COM REGRA DE HORÁRIO FLEXÍVEL    -->
   <!-- ============================================================== -->
-  <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[2500] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl text-center">
       
       <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
@@ -27602,7 +27618,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: EDITAR MEDICAMENTO (NOME, DOSAGEM, HORÁRIO, ESTOQUE)   -->
   <!-- ============================================================== -->
-  <div id="modalEditMedication" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1050] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeEditMedicationModal()">
+  <div id="modalEditMedication" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2500] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeEditMedicationModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
@@ -37720,7 +37736,7 @@ window.confirmEnterSectionFromPitaco = function() {
 
 
   <!-- MODAL: ADICIONAR EXERCÍCIO DE ACADEMIA (SEM PROMPT, 100% NATIVO MOBILE) -->
-  <div id="modalAddExerciseForm" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] hidden flex items-center justify-center p-4">
+  <div id="modalAddExerciseForm" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[2500] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-slate-200 space-y-4">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
         <div class="flex items-center gap-2">
@@ -37818,15 +37834,18 @@ window.confirmEnterSectionFromPitaco = function() {
     }, 1000);
   };
 
-  // Abrir modal de remédios garantindo anexo ao body
-  const _origOpenMed = window.openAddNewContinuousMedModal;
+  // Abrir modal de remédios garantindo anexo ao body com prioridade absoluta no topo
   window.openAddNewContinuousMedModal = function() {
     window.ensureModalsOnBody();
     const m = document.getElementById('modalAddNewContinuousMed');
     if (m) {
-      if (m.parentElement !== document.body) document.body.appendChild(m);
+      document.body.appendChild(m);
+      m.style.zIndex = '2500';
       m.classList.remove('hidden');
       m.style.display = 'flex';
+    }
+    if (typeof window.renderDynamicMedTimeInputs === 'function') {
+      window.renderDynamicMedTimeInputs('new', ['06:50', '20:00']);
     }
     if (window.lucide) lucide.createIcons();
   };
