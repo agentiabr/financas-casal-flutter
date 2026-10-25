@@ -15605,9 +15605,15 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       }, 400);
     }
     function sendMemberInviteWhatsApp(nome, pin) {
-      const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v2.1.17/CtrlPig-v2.1.17-Universal.apk';
-      const msg = `Olá ${nome}! 👋\n\nVocê foi adicionado(a) ao Plano Família do aplicativo ControlPig (finanças, mercado e chat integrados).\n\n📱 Baixe o aplicativo oficial (Android):\n${urlApp}\n\n🔑 Como acessar no seu celular:\n1. Abra o app e toque no botão com o seu nome "${nome}"\n2. Digite sua senha pessoal de acesso: *${pin}*\n\nNossa lista de compras de mercado e o chat da família já estão prontos para você! 🐷`;
-      openExternalUrl(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+      const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v2.1.50/ControlPig_v2.1.50_Universal.apk';
+      const msg = `Olá ${nome}!\n\nVocê foi adicionado(a) ao Plano Família do aplicativo ControlPig (finanças, mercado e chat integrados).\n\nBaixe o aplicativo oficial (Android):\n${urlApp}\n\nComo acessar no celular:\n1. Abra o app e toque no botão com seu nome "${nome}"\n2. Digite seu PIN de acesso: *${pin}*\n\nA lista de compras e o chat da família já estão sincronizados!`;
+      if (typeof window.shareTextToWhatsApp === 'function') {
+        window.shareTextToWhatsApp(msg);
+      } else if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'share_whatsapp', text: msg }));
+      } else {
+        openExternalUrl(`whatsapp://send?text=${encodeURIComponent(msg)}`);
+      }
     }
 
     function renderFamilyMembersListInModal() {
@@ -16311,9 +16317,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     function sendWhatsAppShoppingReminder() {
       const storeLoc = localStorage.getItem('ctrlpig_compra_local') || '';
       const localStr = storeLoc ? ` no ${storeLoc}` : '';
-      const reminderMsg = `Oi! Atualizei a nossa Lista de Compras do CtrlPig${localStr}. Dá uma olhadinha no app quando puder! 🛒✨`;
-      const url = 'https://wa.me/?text=' + encodeURIComponent(reminderMsg);
-      openExternalUrl(url);
+      const reminderMsg = `Oi! Atualizei a nossa Lista de Compras do CtrlPig${localStr}. Dá uma olhadinha no app quando puder!`;
+      if (typeof window.shareTextToWhatsApp === 'function') {
+        window.shareTextToWhatsApp(reminderMsg);
+      } else if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'share_whatsapp', text: reminderMsg }));
+      } else {
+        openExternalUrl('whatsapp://send?text=' + encodeURIComponent(reminderMsg));
+      }
       showToastUndo('Lembrete do WhatsApp aberto! 📱', false);
     }
 

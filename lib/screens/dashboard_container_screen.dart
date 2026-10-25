@@ -264,6 +264,23 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       _isPickingExternalMedia = false;
     });
     try {
+      final parsedUri = Uri.tryParse(url);
+      if (parsedUri != null &&
+          (parsedUri.host.contains('wa.me') ||
+           parsedUri.host.contains('whatsapp.com') ||
+           parsedUri.scheme == 'whatsapp')) {
+        String text = parsedUri.queryParameters['text'] ?? '';
+        String phone = parsedUri.queryParameters['phone'] ?? '';
+        if (phone.isEmpty && parsedUri.pathSegments.isNotEmpty) {
+          final first = parsedUri.pathSegments.first;
+          if (RegExp(r'^\d+$').hasMatch(first)) {
+            phone = first;
+          }
+        }
+        await _shareWhatsAppText(text, phone: phone);
+        return;
+      }
+
       final uri = Uri.parse(url);
       bool ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!ok) {
@@ -286,42 +303,34 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       _isPickingExternalMedia = false;
     });
     try {
-      final encoded = Uri.encodeComponent(text);
       String cleanPhone = (phone ?? '').replaceAll(RegExp(r'\D'), '');
       if (cleanPhone.isNotEmpty && !cleanPhone.startsWith('55') && cleanPhone.length >= 10 && cleanPhone.length <= 11) {
         cleanPhone = '55$cleanPhone';
       }
 
-      final Uri waUri;
+      final Map<String, String> queryParams = {'text': text};
       if (cleanPhone.isNotEmpty) {
-        waUri = Uri.parse("whatsapp://send?phone=$cleanPhone&text=$encoded");
-      } else {
-        waUri = Uri.parse("whatsapp://send?text=$encoded");
+        queryParams['phone'] = cleanPhone;
       }
+
+      // Constrói URI nativa whatsapp://send diretamente com UTF-8 limpo
+      final Uri waUri = Uri(
+        scheme: 'whatsapp',
+        host: 'send',
+        queryParameters: queryParams,
+      );
 
       bool ok = await launchUrl(waUri, mode: LaunchMode.externalApplication);
       if (!ok) {
-        final Uri webUri;
-        if (cleanPhone.isNotEmpty) {
-          webUri = Uri.parse("https://api.whatsapp.com/send?phone=$cleanPhone&text=$encoded");
-        } else {
-          webUri = Uri.parse("https://api.whatsapp.com/send?text=$encoded");
-        }
+        final Uri webUri = Uri.https(
+          'api.whatsapp.com',
+          '/send',
+          queryParams,
+        );
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
       debugPrint("Erro ao compartilhar no WhatsApp: $e");
-      try {
-        final encoded = Uri.encodeComponent(text);
-        String cleanPhone = (phone ?? '').replaceAll(RegExp(r'\D'), '');
-        if (cleanPhone.isNotEmpty && !cleanPhone.startsWith('55') && cleanPhone.length >= 10 && cleanPhone.length <= 11) {
-          cleanPhone = '55$cleanPhone';
-        }
-        final url = cleanPhone.isNotEmpty
-            ? "https://wa.me/$cleanPhone?text=$encoded"
-            : "https://wa.me/?text=$encoded";
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      } catch (_) {}
     }
   }
 
