@@ -3963,6 +3963,26 @@ html, body {
       background: #F8FAFC;
     }
   </style>
+<style>
+    /* Garante que todos os modais de diálogo e formulários fiquem SEMPRE no topo absoluto */
+    div[id^="modal"]:not(.full-screen-page),
+    #modalAddNewContinuousMed,
+    #modalAddPetVaccine,
+    #modalAddEditPet,
+    #modalAddEditPetCare,
+    #modalMedTakeConfirmation,
+    #modalEditMedication,
+    #modalPetQrCode,
+    #modalHealthMeds,
+    #modalInstallmentsDetail,
+    #modalItemInfoBalloon,
+    #modalTilePicker,
+    #modalSoberTilePicker,
+    #modalPhotoGuidance,
+    #modalReorderQuickHub {
+      z-index: 1050 !important;
+    }
+    </style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -4959,12 +4979,25 @@ html, body {
       </div>
     </div>
 <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-3 w-full" id="fintechQuickHub">
+      <!-- Cabeçalho do Módulo da Família com Botão 3 Pontinhos de Organização -->
+      <div class="flex items-center justify-between mb-2 px-1">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-black text-slate-800 dark:text-slate-100 uppercase tracking-wider flex items-center gap-1">
+            <span>⚡</span> Acesso Rápido da Família
+          </span>
+          <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">• Arraste para o lado</span>
+        </div>
+        <button type="button" onclick="openReorderQuickHubModal()" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-2xs" title="Personalizar ordem das rotinas">
+          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+          <span class="text-[11px]">Organizar</span>
+        </button>
+      </div>
       
       <!-- Carrossel Sobreposto ao Card Azul com Rolagem com o Dedo (Estilo Mockup) -->
 <div class="carousel-rotinas-track" id="quickHubCarouselTrack" onscroll="if(window.updateQuickHubDots) updateQuickHubDots()">
 
         <!-- 1. LISTA DE COMPRAS -->
-        <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="compras" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Sacola de Supermercado & Itens -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -4990,7 +5023,7 @@ html, body {
         </div>
 
         <!-- 2. CHAT DA FAMÍLIA -->
-        <div onclick="triggerSectionWithIntelligentMascot('chat', function(){ openFamilyChatModal(); if(typeof isChatListExpanded !== 'undefined' && isChatListExpanded) toggleChatListExpanded(); });" class="rotina-carousel-card group">
+        <div data-quickhub-id="chat" onclick="triggerSectionWithIntelligentMascot('chat', function(){ openFamilyChatModal(); if(typeof isChatListExpanded !== 'undefined' && isChatListExpanded) toggleChatListExpanded(); });" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Diálogo e Chat Familiar -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5019,7 +5052,7 @@ html, body {
         </div>
 
         <!-- 3. PETS & VACINAS -->
-        <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="pet" onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Pet Cachorrinho & Cuidados -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5048,7 +5081,7 @@ html, body {
         </div>
 
         <!-- 4. MINHA SAÚDE -->
-        <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="saude" onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Medicamentos, Cartela & Cuidados -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5077,7 +5110,7 @@ html, body {
         </div>
 
         <!-- 5. PRESTADORES DE SERVIÇOS (ELETRICISTA, MONTADOR, GÁS, PEDREIRO...) -->
-        <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="prestadores" onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Ferramentas e Prestadores de Serviços -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5104,7 +5137,7 @@ html, body {
         </div>
 
         <!-- 6. CARTÕES & FATURAS -->
-        <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="cartoes" onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Cartão de Crédito e Faturas -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5130,7 +5163,7 @@ html, body {
         </div>
 
         <!-- 6. COFRINHOS & METAS -->
-        <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="rotina-carousel-card group">
+        <div data-quickhub-id="cofrinhos" onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Cofrinho Piggy & Moedas -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5159,7 +5192,7 @@ html, body {
         </div>
 
         <!-- 7. VEÍCULOS & GARAGEM -->
-        <div onclick="triggerSectionWithIntelligentMascot('automoveis', openVeiculosHub);" class="rotina-carousel-card group">
+        <div data-quickhub-id="veiculos" onclick="triggerSectionWithIntelligentMascot('automoveis', openVeiculosHub);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Veículo Carro & Garagem -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5188,7 +5221,7 @@ html, body {
         </div>
 
         <!-- 8. EDUCAÇÃO & ESTUDOS -->
-        <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="rotina-carousel-card group">
+        <div data-quickhub-id="educacao" onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="rotina-carousel-card group">
           <div class="rotina-illustration-halo">
             <!-- Ilustração Flat: Capelo de Formatura e Livros -->
             <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -7136,7 +7169,7 @@ html, body {
   </div>
 
   <!-- MODAL: DETALHES DE COMPRAS PARCELADAS -->
-  <div id="modalInstallmentsDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div id="modalInstallmentsDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1050] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar text-xs border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -9881,26 +9914,38 @@ html, body {
           : `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300">${p.parcela_atual}/${p.total_parcelas}x (${p.percent_pago}%)</span>`;
 
         return `
-          <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 shadow-xs flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-extrabold text-xs text-slate-800 dark:text-slate-100 truncate">${p.descricaoClean}</span>
-              ${statusBadge}
+          <div class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-850 shadow-xs flex flex-col justify-between space-y-2 hover:border-indigo-400 transition-all">
+            <!-- LINHA 1: Local / Estabelecimento em destaque com Badge de Parcela -->
+            <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100 dark:border-slate-750">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-base flex-shrink-0">🏪</span>
+                <span class="font-black text-xs sm:text-sm text-slate-900 dark:text-white truncate" title="${escapeHtml(p.descricaoClean)}">
+                  ${escapeHtml(p.descricaoClean)}
+                </span>
+              </div>
+              <div class="flex-shrink-0">
+                ${statusBadge}
+              </div>
             </div>
 
-            <!-- Barra de Progresso Visual Individual -->
-            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+            <!-- Barra de Progresso Visual Individual Suave -->
+            <div class="w-full bg-slate-100 dark:bg-slate-750 rounded-full h-1.5 overflow-hidden">
               <div class="bg-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: ${p.percent_pago}%;"></div>
             </div>
 
-            <div class="flex items-baseline justify-between text-xs pt-0.5">
-              <span class="text-slate-500 dark:text-slate-400">Parcela: <strong class="text-slate-800 dark:text-slate-100 font-bold">${formatBRL(p.valor_parcela)}</strong></span>
-              <span class="text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
-                ${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}
-              </span>
-            </div>
-            <div class="text-[10px] text-slate-400 flex items-center justify-between">
-              <span>💳 ${p.cartao_nome}</span>
-              <span>👤 ${p.responsavel}</span>
+            <!-- LINHA 2: Informações Restantes (Cartão, Responsável, Valor da Parcela e Saldo Restante) -->
+            <div class="flex items-center justify-between text-[11px] sm:text-xs pt-0.5 text-slate-500 dark:text-slate-400 flex-wrap gap-y-1">
+              <div class="flex items-center gap-1.5 font-medium">
+                <span>💳 ${escapeHtml(p.cartao_nome)}</span>
+                <span class="text-slate-300 dark:text-slate-600">•</span>
+                <span>👤 ${escapeHtml(p.responsavel)}</span>
+              </div>
+              <div class="flex items-center gap-2 font-bold ml-auto">
+                <span class="text-slate-800 dark:text-slate-200">Parcela: <strong>${formatBRL(p.valor_parcela)}</strong></span>
+                <span class="text-indigo-600 dark:text-indigo-300">
+                  ${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}
+                </span>
+              </div>
             </div>
           </div>
         `;
@@ -9964,26 +10009,38 @@ html, body {
           : `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300">${p.parcela_atual}/${p.total_parcelas}x (${p.percent_pago}%)</span>`;
 
         return `
-          <div class="app-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 shadow-xs flex flex-col justify-between space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-extrabold text-xs text-slate-800 dark:text-slate-100 truncate">${p.descricaoClean}</span>
-              ${statusBadge}
+          <div class="app-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-850 shadow-xs flex flex-col justify-between space-y-2 hover:border-indigo-400 transition-all">
+            <!-- LINHA 1: Local / Estabelecimento em destaque com Badge de Parcela -->
+            <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100 dark:border-slate-750">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-base flex-shrink-0">🏪</span>
+                <span class="font-black text-xs sm:text-sm text-slate-900 dark:text-white truncate" title="${escapeHtml(p.descricaoClean)}">
+                  ${escapeHtml(p.descricaoClean)}
+                </span>
+              </div>
+              <div class="flex-shrink-0">
+                ${statusBadge}
+              </div>
             </div>
 
             <!-- Barra de Progresso Visual da Parcela -->
-            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+            <div class="w-full bg-slate-100 dark:bg-slate-750 rounded-full h-1.5 overflow-hidden">
               <div class="bg-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: ${p.percent_pago}%;"></div>
             </div>
 
-            <div class="flex items-baseline justify-between text-xs pt-1">
-              <span class="text-slate-500 dark:text-slate-400">Parcela: <strong class="text-slate-800 dark:text-slate-100 font-bold">${formatBRL(p.valor_parcela)}</strong></span>
-              <span class="text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
-                ${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}
-              </span>
-            </div>
-            <div class="text-[10px] text-slate-400 flex items-center justify-between">
-              <span>💳 ${p.cartao_nome}</span>
-              <span>👤 ${p.responsavel}</span>
+            <!-- LINHA 2: Informações Restantes (Cartão, Responsável, Valor da Parcela e Saldo Restante) -->
+            <div class="flex items-center justify-between text-[11px] sm:text-xs pt-0.5 text-slate-500 dark:text-slate-400 flex-wrap gap-y-1">
+              <div class="flex items-center gap-1.5 font-medium">
+                <span>💳 ${escapeHtml(p.cartao_nome)}</span>
+                <span class="text-slate-300 dark:text-slate-600">•</span>
+                <span>👤 ${escapeHtml(p.responsavel)}</span>
+              </div>
+              <div class="flex items-center gap-2 font-bold ml-auto">
+                <span class="text-slate-800 dark:text-slate-200">Parcela: <strong>${formatBRL(p.valor_parcela)}</strong></span>
+                <span class="text-indigo-600 dark:text-indigo-300">
+                  ${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}
+                </span>
+              </div>
             </div>
           </div>
         `;
@@ -23375,7 +23432,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL CADASTRAR NOVO REMÉDIO CONTÍNUO (MINHA SAÚDE)            -->
   <!-- ============================================================== -->
-  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[95] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
+  <div id="modalAddNewContinuousMed" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddNewContinuousMedModal()">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-xs flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
         <div class="flex items-center gap-2.5">
@@ -23671,7 +23728,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   </div>
 </div>
-  <div id="modalPetQrCode" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetQrCodeModal()">
+  <div id="modalPetQrCode" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closePetQrCodeModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
       
       <!-- Cabeçalho -->
@@ -23821,7 +23878,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
+  <div id="modalHealthMeds" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
     <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
       <div class="flex items-center gap-2.5">
@@ -24113,7 +24170,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL 3: POPUP DE CONFIRMAÇÃO COM REGRA DE HORÁRIO FLEXÍVEL    -->
   <!-- ============================================================== -->
-  <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl text-center">
       
       <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
@@ -24165,7 +24222,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CADASTRAR / EDITAR PET DA FAMÍLIA (MULTI-PET)           -->
   <!-- ============================================================== -->
-  <div id="modalAddEditPet" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeAddPetModal()">
+  <div id="modalAddEditPet" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeAddPetModal()">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl relative">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3.5">
         <div class="flex items-center gap-2">
@@ -24230,7 +24287,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   </div>
 
   <!-- ============================================================== -->
-  <div id="modalAddPetVaccine" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="modalAddPetVaccine" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl">
       <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
         <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
@@ -24282,7 +24339,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: AGENDAR CUIDADO PET (REMÉDIOS, BANHO, TOSA, ETC.)      -->
   <!-- ============================================================== -->
-  <div id="modalAddEditPetCare" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddPetCareModal()">
+  <div id="modalAddEditPetCare" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeAddPetCareModal()">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-5 text-slate-900 dark:text-white shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 dark:border-slate-800">
         <h4 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5" id="modalPetCareTitle">
@@ -27107,7 +27164,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: EDITAR MEDICAMENTO (NOME, DOSAGEM, HORÁRIO, ESTOQUE)   -->
   <!-- ============================================================== -->
-  <div id="modalEditMedication" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[92] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeEditMedicationModal()">
+  <div id="modalEditMedication" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1050] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeEditMedicationModal()">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2.5">
@@ -37778,5 +37835,187 @@ window.confirmEnterSectionFromPitaco = function() {
 
 </script>
 
+
+  <!-- ============================================================== -->
+  <!-- MODAL: PERSONALIZAR ORDEM DO ACESSO RÁPIDO / MÓDULO DA FAMÍLIA  -->
+  <!-- ============================================================== -->
+  <div id="modalReorderQuickHub" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl w-full max-w-md shadow-2xl p-5 border border-slate-200 dark:border-slate-800 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold text-base shadow-xs">
+            ⚡
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Ordem do Acesso Rápido</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Os 4 primeiros ficam em destaque na tela principal.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeReorderQuickHubModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="my-3 p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-2xl text-[11px] text-blue-900 dark:text-blue-200 flex items-center gap-2 flex-shrink-0">
+        <span>💡</span>
+        <span>Use as setas para subir ou descer a prioridade dos cards da sua família.</span>
+      </div>
+
+      <div id="reorderQuickHubList" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar my-1">
+        <!-- Renderizado dinamicamente por renderReorderQuickHubList() -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 flex-shrink-0 mt-2">
+        <button type="button" onclick="resetQuickHubCardOrder()" class="px-3 py-2 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-bold transition-all cursor-pointer">
+          Restaurar Padrão
+        </button>
+        <button type="button" onclick="saveQuickHubCardOrder()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Salvar Ordem</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ==========================================================================
+  // GESTÃO DE PRIORIDADE & ORDEM PERSONALIZADA DOS CARDS DO ACESSO RÁPIDO
+  // ==========================================================================
+  const DEFAULT_QUICKHUB_ORDER = [
+    'compras', 'chat', 'pet', 'saude', 'prestadores', 'cartoes', 'cofrinhos', 'veiculos', 'educacao'
+  ];
+
+  const QUICKHUB_METADATA = {
+    compras: { label: 'Lista de Compras', icon: '🛒', desc: 'Itens e gôndola' },
+    chat: { label: 'Chat da Família', icon: '💬', desc: 'Voz e pedidos' },
+    pet: { label: 'Pets & Vacinas', icon: '🐾', desc: 'Vacinas e carteirinha' },
+    saude: { label: 'Minha Saúde', icon: '💊', desc: 'Remédios e cartelas' },
+    prestadores: { label: 'Prestadores de Serviços', icon: '🛠️', desc: 'Eletricista, gás, móveis' },
+    cartoes: { label: 'Cartões & Faturas', icon: '💳', desc: 'Faturas e compras' },
+    cofrinhos: { label: 'Cofrinhos & Metas', icon: '🐷', desc: 'Guardar e render' },
+    veiculos: { label: 'Veículos & Garagem', icon: '🚗', desc: 'Gasolina e manutenção' },
+    educacao: { label: 'Educação & Estudos', icon: '🎓', desc: 'Cursos e faculdade' }
+  };
+
+  let currentQuickHubOrder = [...DEFAULT_QUICKHUB_ORDER];
+
+  function getSavedQuickHubOrder() {
+    try {
+      const raw = localStorage.getItem('financas_quickhub_card_order');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Garante que todas as chaves válidas existam
+          const valid = parsed.filter(k => QUICKHUB_METADATA[k]);
+          DEFAULT_QUICKHUB_ORDER.forEach(k => {
+            if (!valid.includes(k)) valid.push(k);
+          });
+          return valid;
+        }
+      }
+    } catch (e) {
+      console.warn('Erro ao ler ordem do quickhub:', e);
+    }
+    return [...DEFAULT_QUICKHUB_ORDER];
+  }
+
+  window.applyQuickHubCardOrder = function() {
+    const order = getSavedQuickHubOrder();
+    currentQuickHubOrder = [...order];
+    const track = document.getElementById('quickHubCarouselTrack');
+    if (!track) return;
+
+    order.forEach(id => {
+      const card = track.querySelector(`[data-quickhub-id="${id}"]`);
+      if (card) {
+        track.appendChild(card);
+      }
+    });
+
+    if (window.updateQuickHubDots) {
+      window.updateQuickHubDots();
+    }
+  };
+
+  window.openReorderQuickHubModal = function() {
+    currentQuickHubOrder = getSavedQuickHubOrder();
+    renderReorderQuickHubList();
+    const modal = document.getElementById('modalReorderQuickHub');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closeReorderQuickHubModal = function() {
+    const modal = document.getElementById('modalReorderQuickHub');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  };
+
+  window.renderReorderQuickHubList = function() {
+    const container = document.getElementById('reorderQuickHubList');
+    if (!container) return;
+
+    container.innerHTML = currentQuickHubOrder.map((key, idx) => {
+      const meta = QUICKHUB_METADATA[key] || { label: key, icon: '⚡', desc: '' };
+      const isTop4 = idx < 4;
+      const badgeHtml = isTop4
+        ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-black text-[9px] uppercase tracking-wider">#${idx + 1} Principal</span>`
+        : `<span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold text-[9px]">#${idx + 1}</span>`;
+
+      return `
+        <div class="flex items-center justify-between p-2.5 rounded-2xl border ${isTop4 ? 'border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-850'} shadow-2xs transition-all">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="text-xl flex-shrink-0">${meta.icon}</span>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-extrabold text-xs text-slate-800 dark:text-slate-100 leading-tight">${meta.label}</span>
+                ${badgeHtml}
+              </div>
+              <span class="text-[10px] text-slate-400 block truncate">${meta.desc}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" onclick="moveQuickHubCard(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs transition-all active:scale-95 cursor-pointer" title="Subir prioridade">
+              ▲
+            </button>
+            <button type="button" onclick="moveQuickHubCard(${idx}, 1)" ${idx === currentQuickHubOrder.length - 1 ? 'disabled' : ''} class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs transition-all active:scale-95 cursor-pointer" title="Descer prioridade">
+              ▼
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  window.moveQuickHubCard = function(idx, direction) {
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= currentQuickHubOrder.length) return;
+    const item = currentQuickHubOrder.splice(idx, 1)[0];
+    currentQuickHubOrder.splice(targetIdx, 0, item);
+    renderReorderQuickHubList();
+  };
+
+  window.saveQuickHubCardOrder = function() {
+    localStorage.setItem('financas_quickhub_card_order', JSON.stringify(currentQuickHubOrder));
+    applyQuickHubCardOrder();
+    closeReorderQuickHubModal();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('✨ Ordem do Acesso Rápido atualizada com sucesso!', false);
+    }
+  };
+
+  window.resetQuickHubCardOrder = function() {
+    currentQuickHubOrder = [...DEFAULT_QUICKHUB_ORDER];
+    renderReorderQuickHubList();
+  };
+
+  // Aplica ordem salva assim que o DOM carregar
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(applyQuickHubCardOrder, 100);
+  });
+</script>
 </body>
 </html>
