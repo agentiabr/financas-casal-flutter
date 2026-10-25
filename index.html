@@ -19351,6 +19351,28 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         peso: '8.4 kg',
         plano: 'Wevets Plano de Saúde',
         foto: ''
+      },
+      {
+        id: 'pet_thor',
+        nome: 'Thor',
+        especie: 'Cachorro',
+        emoji: '🐕',
+        raca: 'Golden Retriever',
+        idade: '3 anos',
+        peso: '28 kg',
+        plano: 'Porto Pet Saúde',
+        foto: ''
+      },
+      {
+        id: 'pet_luna',
+        nome: 'Luna',
+        especie: 'Gato',
+        emoji: '🐱',
+        raca: 'Siamês',
+        idade: '2 anos',
+        peso: '4.2 kg',
+        plano: 'Nofaro Pet',
+        foto: ''
       }
     ];
 
@@ -19401,8 +19423,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       try {
         const stored = localStorage.getItem('ctrlpig_registered_pets');
         if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          let parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            if (parsed.length < 3) {
+              const existingIds = new Set(parsed.map(p => p.id));
+              DEFAULT_PETS_LIST.forEach(defPet => {
+                if (!existingIds.has(defPet.id) && parsed.length < 3) {
+                  parsed.push(defPet);
+                }
+              });
+              localStorage.setItem('ctrlpig_registered_pets', JSON.stringify(parsed));
+            }
+            return parsed;
+          }
         }
       } catch (e) {}
       const oldPhoto = localStorage.getItem('ctrlpig_pet_pantone_photo');
@@ -19761,16 +19794,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     function renderPetCarouselTabs() {
       const container = document.getElementById('petsCarouselList');
       const badge = document.getElementById('petCountBadge');
+      const addBtnContainer = document.getElementById('petHeaderAddBtnContainer');
       if (!container) return;
 
       const pets = getRegisteredPets();
       const activeId = getActivePetId();
-      if (badge) badge.textContent = `${pets.length} ${pets.length === 1 ? 'pet' : 'pets'}`;
+      if (badge) badge.textContent = `${pets.length}/10 ${pets.length === 1 ? 'Pet' : 'Pets'}`;
+
+      if (addBtnContainer) {
+        if (pets.length < 10) {
+          addBtnContainer.innerHTML = `
+            <button type="button" onclick="openAddPetModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200/80 dark:border-slate-700/80 transition-all active:scale-95 cursor-pointer shadow-2xs" title="Adicionar novo pet (limite de 10)">
+              <i data-lucide="plus" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"></i>
+              <span>Adicionar Pet</span>
+            </button>
+          `;
+        } else {
+          addBtnContainer.innerHTML = `
+            <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">10/10 Pets</span>
+          `;
+        }
+      }
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      container.innerHTML = pets.map(p => {
+      let itemsHtml = pets.map(p => {
         const isActive = p.id === activeId;
         const vaxes = getPetVaccines(p.id);
         const hasExpired = vaxes.some(v => {
@@ -19778,17 +19827,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           return (prox - today) < 0;
         });
 
-        const activeCls = 'bg-amber-500 text-slate-950 font-black shadow-xs ring-2 ring-amber-400';
-        const inactiveCls = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold';
+        const ringCls = isActive 
+          ? 'ring-3 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 border-2 border-amber-500 shadow-md scale-105 bg-amber-100/90 dark:bg-amber-950/50' 
+          : 'border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:border-amber-300 hover:scale-102 opacity-85 hover:opacity-100 shadow-2xs';
+
+        const nameCls = isActive
+          ? 'text-amber-700 dark:text-amber-400 font-black'
+          : 'text-slate-700 dark:text-slate-300 font-bold';
 
         return `
-          <button type="button" onclick="setActivePetId('${p.id}')" class="px-3.5 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${isActive ? activeCls : inactiveCls}">
-            <span>${p.emoji || (p.especie === 'Gato' ? '🐱' : '🐶')}</span>
-            <span>${escapeHtml(p.nome)}</span>
-            ${hasExpired ? '<span class="w-2 h-2 rounded-full bg-red-600 animate-pulse ml-0.5" title="Vacina vencida!"></span>' : ''}
-          </button>
+          <div onclick="setActivePetId('${p.id}')" class="flex flex-col items-center flex-shrink-0 cursor-pointer group select-none py-1 px-1 transition-all">
+            <div class="relative w-15 h-15 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${ringCls}">
+              ${p.foto ? `
+                <img src="${escapeHtml(p.foto)}" alt="${escapeHtml(p.nome)}" class="w-full h-full object-cover rounded-full">
+              ` : `
+                <span class="text-2xl">${p.emoji || (p.especie === 'Gato' ? '🐱' : '🐶')}</span>
+              `}
+              
+              <!-- Botão sobreposto para colocar/trocar foto do pet -->
+              <button type="button" onclick="event.stopPropagation(); selectPetPhoto('gallery', '${p.id}');" class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-90 text-white flex items-center justify-center text-[10px] shadow-sm border border-white dark:border-slate-900 cursor-pointer" title="Colocar foto de ${escapeHtml(p.nome)}">
+                📷
+              </button>
+
+              ${hasExpired ? '<span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-600 ring-2 ring-white animate-pulse" title="Vacina vencida!"></span>' : ''}
+            </div>
+            <span class="text-[11px] truncate max-w-[68px] text-center mt-1.5 leading-tight ${nameCls}">${escapeHtml(p.nome)}</span>
+            <span class="text-[9px] text-slate-400 dark:text-slate-500 leading-none mt-0.5">${escapeHtml(p.especie || 'Pet')}</span>
+          </div>
         `;
       }).join('');
+
+      // Se tiver menos de 10 pets, exibe o avatar circular de adicionar novo pet
+      if (pets.length < 10) {
+        itemsHtml += `
+          <div onclick="openAddPetModal()" class="flex flex-col items-center flex-shrink-0 cursor-pointer group select-none py-1 px-1 transition-all ml-1" title="Adicionar Pet (até 10)">
+            <div class="w-15 h-15 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 group-hover:border-amber-400 bg-slate-50 dark:bg-slate-850 group-hover:bg-amber-50/50 dark:group-hover:bg-amber-950/20 text-slate-400 group-hover:text-amber-500 flex flex-col items-center justify-center transition-all shadow-2xs group-active:scale-95">
+              <span class="text-xl font-bold leading-none">+</span>
+            </div>
+            <span class="text-[11px] font-bold text-slate-500 group-hover:text-amber-500 truncate max-w-[68px] text-center mt-1.5 leading-tight">+ Novo</span>
+            <span class="text-[9px] text-slate-400 leading-none mt-0.5">${pets.length}/10</span>
+          </div>
+        `;
+      }
+
+      container.innerHTML = itemsHtml;
+      if (window.lucide) lucide.createIcons();
     }
 
     function renderPetProfileUI() {
@@ -19821,7 +19904,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     }
 
-    function selectPetPhoto(source) {
+    function selectPetPhoto(source, targetPetId) {
+      if (targetPetId) {
+        window._pendingPetPhotoId = targetPetId;
+        setActivePetId(targetPetId);
+      } else {
+        window._pendingPetPhotoId = getActivePetId();
+      }
       if (window.isNativeApp && window.FlutterBridge) {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
@@ -19842,20 +19931,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
-        savePetPhoto(e.target.result);
+        savePetPhoto(e.target.result, window._pendingPetPhotoId);
       };
       reader.readAsDataURL(file);
     }
 
-    function savePetPhoto(dataUrl) {
+    function savePetPhoto(dataUrl, specificPetId) {
       if (!dataUrl) return;
       const pets = getRegisteredPets();
-      const activeId = getActivePetId();
-      const pet = pets.find(p => p.id === activeId);
+      const targetId = specificPetId || window._pendingPetPhotoId || getActivePetId();
+      const pet = pets.find(p => p.id === targetId);
       if (pet) {
         pet.foto = dataUrl;
         saveRegisteredPets(pets);
-        showToastUndo(`Foto de ${pet.nome} atualizada com sucesso! 🐾`);
+        showToastUndo(`Foto de ${pet.nome} atualizada com sucesso! 🐾`, false);
       }
     }
 
@@ -23959,24 +24048,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <p class="text-[11px] text-blue-200">Carteirinha digital, vacinas e gastos</p>
       </div>
     </div>
-    <button type="button" onclick="openAddPetModal()" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl flex items-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer">
-      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-      <span>+ Adicionar Pet</span>
-    </button>
+
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
   <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
     
-    <!-- SELETOR DE PETS DA FAMÍLIA -->
-    <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/80">
-      <div class="flex items-center justify-between mb-2 px-1">
-        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Pets da Família</span>
-        <span id="petCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">1 Pet</span>
+    <!-- SELETOR DE PETS DA FAMÍLIA (AVATARES COM FOTO E NOME, ATÉ 10 PETS) -->
+    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black uppercase tracking-wider text-slate-500">Pets da Família</span>
+          <span id="petCountBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">3/10 Pets</span>
+        </div>
+        <div id="petHeaderAddBtnContainer">
+          <!-- Botão discreto de Adicionar Pet (se < 10) -->
+        </div>
       </div>
-      <div id="petsCarouselList" class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-0.5">
+      <div id="petsCarouselList" class="flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth py-1 px-0.5">
         <!-- Injetado dinamicamente via renderPetCarouselTabs() -->
       </div>
+      <input type="file" id="petPhotoFileInput" accept="image/*" class="hidden" onchange="handlePetPhotoFileInput(event)">
     </div>
 
     <!-- HERO CARD DO PET ATIVO (FOTO, NOME E DADOS LIMPOS) -->
@@ -36407,7 +36499,11 @@ window.confirmEnterSectionFromPitaco = function() {
       m.classList.remove('hidden');
       m.style.display = 'flex';
     }
-    if (typeof renderPetAreaProfiles === 'function') renderPetAreaProfiles();
+    if (typeof renderPetCarouselTabs === 'function') renderPetCarouselTabs();
+    if (typeof renderPetProfileUI === 'function') renderPetProfileUI();
+    if (typeof renderPetExpensesSummary === 'function') renderPetExpensesSummary();
+    if (typeof renderPetVaccinesList === 'function') renderPetVaccinesList();
+    if (typeof renderPetCareList === 'function') renderPetCareList();
     if (window.lucide) lucide.createIcons();
   };
   window.closePetAreaModal = function() {
