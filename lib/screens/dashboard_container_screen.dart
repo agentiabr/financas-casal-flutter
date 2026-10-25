@@ -1074,7 +1074,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           window.onNativeInvoiceQrResult('$safeJson');
         } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
           window.applyOcrResultToInvoiceModal($jsonResult);
-        } else if (typeof window.handleDetectedQrCode === 'function') {
+        }
+        if (typeof window.fillNewTxFromReceiptOcr === 'function') {
+          window.fillNewTxFromReceiptOcr($jsonResult);
+        }
+        if (typeof window.handleDetectedQrCode === 'function') {
           window.handleDetectedQrCode('$safeUrl');
         }
       """);

@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'models/nfce_invoice.dart';
 import 'nfce_fetcher.dart';
 import 'nfce_number_parser.dart';
+import '../ocr_service.dart';
 
 /// Tela Flutter de Scanner de QR Code de Nota Fiscal (NFC-e) em tela cheia com Motor Híbrido.
 /// 1. Leitura contínua ultrarrápida via mobile_scanner nativo.
@@ -45,10 +46,12 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
+      autoStart: false,
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
       torchEnabled: false,
       returnImage: false,
+      formats: const [BarcodeFormat.qrCode],
     );
 
     _animController = AnimationController(
@@ -90,7 +93,9 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
         }
         return;
       }
-      await _scannerController.start();
+      if (!_scannerController.value.isRunning) {
+        await _scannerController.start();
+      }
       if (mounted) setState(() {});
     } catch (e) {
       debugPrint('Aviso ao iniciar câmera do MobileScanner: $e');
@@ -134,31 +139,71 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   Future<void> _analyzeImageFile(String filePath) async {
     setState(() {
       _isProcessing = true;
-      _statusMessage = '⚡ Decodificando QR Code da imagem...';
+      _statusMessage = '⚡ Decodificando nota fiscal da imagem...';
     });
+
+    // 1. Tenta identificar QR Code da imagem via MobileScanner
     try {
       final BarcodeCapture? capture = await _scannerController.analyzeImage(filePath);
       if (capture != null && capture.barcodes.isNotEmpty) {
         for (final b in capture.barcodes) {
           final val = b.rawValue?.trim();
-          if (val != null && (val.startsWith('http') || RegExp(r'\d{44}').hasMatch(val))) {
+          if (val != null && val.isNotEmpty) {
             await _handleBarcodeDetected(capture);
             return;
           }
         }
       }
     } catch (e) {
-      debugPrint('Erro no analyzeImage: $e');
+      debugPrint('Aviso ao analisar QR Code da foto: $e');
+    }
+
+    // 2. Fallback Inteligente Local: Se não encontrou QR Code na foto, extrai dados diretamente via Google ML Kit Text Recognition
+    try {
+      final ocrRes = await OcrService().processReceiptImage(filePath);
+      if ((ocrRes.totalAmount != null && ocrRes.totalAmount! > 0) || ocrRes.items.isNotEmpty) {
+        final items = ocrRes.items.map((it) => NfceItem(
+          name: it.produto,
+          quantity: it.qtd,
+          unit: it.unidade,
+          unitPrice: it.preco,
+          totalPrice: it.total,
+        )).toList();
+
+        final dateStr = ocrRes.date != null
+            ? '${ocrRes.date!.year}-${ocrRes.date!.month.toString().padLeft(2, '0')}-${ocrRes.date!.day.toString().padLeft(2, '0')}'
+            : DateTime.now().toIso8601String().split('T')[0];
+
+        final invoice = NfceInvoice(
+          storeName: ocrRes.storeName ?? 'Nota Fiscal',
+          date: dateStr,
+          total: ocrRes.totalAmount ?? 0.0,
+          paymentMethod: ocrRes.paymentMethod ?? 'Cartão de Débito',
+          accessKey: ocrRes.nfceKey,
+          rawUrl: ocrRes.nfceUrl,
+          items: items,
+          isFallback: false,
+          errorMessage: null,
+        );
+
+        if (mounted) {
+          HapticFeedback.heavyImpact();
+          Navigator.of(context).pop(invoice);
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('Aviso ao processar imagem com Google ML Kit: $e');
     }
 
     if (mounted) {
       setState(() {
         _isProcessing = false;
-        _statusMessage = 'Não conseguimos ler o QR Code nesta foto. Tente aproximar mais da nota.';
+        _statusMessage = 'Não conseguimos ler a nota nesta foto. Tente aproximar mais com boa iluminação.';
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não identificamos o QR Code na foto. Aponte mais de perto com foco nítido.'),
+          content: Text('Não identificamos o cupom na foto. Aponte mais de perto com foco nítido.'),
           duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
         ),
@@ -181,27 +226,22 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       final rawValue = barcode.rawValue;
       if (rawValue != null && rawValue.trim().isNotEmpty) {
         final val = rawValue.trim();
-        final isHttpUrl = val.startsWith('http://') || val.startsWith('https://');
-        final hasAccessKey = RegExp(r'\d{44}').hasMatch(val);
-
-        if (isHttpUrl || hasAccessKey) {
-          _handleBarcodeValue(val);
-          return;
-        }
+        _isProcessing = true;
+        HapticFeedback.heavyImpact();
+        _handleBarcodeValue(val);
+        return;
       }
     }
   }
 
   Future<void> _handleBarcodeValue(String val) async {
-    if (_isProcessing) return;
-
     _lastScannedValue = val;
     setState(() {
       _isProcessing = true;
-      _statusMessage = '⚡ QR Code lido! Buscando dados na SEFAZ...';
+      _statusMessage = '⚡ QR Code lido com sucesso!';
     });
 
-    HapticFeedback.mediumImpact();
+    HapticFeedback.heavyImpact();
 
     // Normaliza a URL de consulta direta
     String targetUrl = val.trim();
@@ -215,25 +255,60 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       targetUrl = NfceFetcher.normalizeUrl(targetUrl);
     }
 
+    // Extrai dados diretamente do parâmetro p da NFC-e
+    double qrTotal = 0.0;
+    String qrDate = DateTime.now().toIso8601String().split('T')[0];
+    final accessKey = NfceNumberParser.extractAccessKey(targetUrl);
+
     try {
-      final invoice = await NfceFetcher().fetchAndParse(targetUrl);
+      final uri = Uri.tryParse(targetUrl);
+      final pParam = uri?.queryParameters['p'] ?? (targetUrl.contains('p=') ? targetUrl.split('p=')[1].split('&')[0] : null);
+      if (pParam != null) {
+        final parts = pParam.split('|');
+        for (int i = 0; i < parts.length; i++) {
+          final clean = parts[i].replaceAll(',', '.').trim();
+          final parsed = double.tryParse(clean);
+          if (parsed != null && parsed > 0 && clean.contains('.')) {
+            qrTotal = parsed;
+            break;
+          }
+        }
+      }
+      if (accessKey != null && accessKey.length == 44) {
+        final yy = accessKey.substring(2, 4);
+        final mm = accessKey.substring(4, 6);
+        final year = '20$yy';
+        qrDate = '$year-$mm-01';
+      }
+    } catch (_) {}
+
+    try {
+      final invoice = await NfceFetcher().fetchAndParse(targetUrl).timeout(
+        const Duration(seconds: 4),
+      );
       if (mounted) {
         HapticFeedback.heavyImpact();
         Navigator.of(context).pop(invoice);
         return;
       }
     } catch (e) {
-      debugPrint('Aviso: Consulta direta SEFAZ retornou erro: $e');
+      debugPrint('Aviso: Consulta direta SEFAZ retornou erro ou timeout: $e');
     }
 
-    // Se a consulta online não retornou itens ou demorou, retorna com fallback da chave
+    // Se a consulta online não retornou itens ou demorou, retorna com dados extraídos do QR code
     if (mounted) {
-      final accessKey = NfceNumberParser.extractAccessKey(targetUrl);
+      HapticFeedback.heavyImpact();
       Navigator.of(context).pop(
-        NfceInvoice.fallback(
+        NfceInvoice(
+          storeName: 'NFC-e (' + (accessKey != null ? accessKey.substring(0, 4) : 'Cupom') + ')',
+          date: qrDate,
+          total: qrTotal,
+          paymentMethod: 'Cartão de Débito',
           accessKey: accessKey,
           rawUrl: targetUrl,
-          errorMessage: 'QR Code identificado. Chave de acesso capturada.',
+          items: const [],
+          isFallback: false,
+          errorMessage: null,
         ),
       );
     }

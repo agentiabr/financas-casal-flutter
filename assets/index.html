@@ -4651,184 +4651,20 @@ html, body {
       </section>
 
       <!-- ============================================================ -->
-      <!-- TELA 4: CHAT DA FAMÍLIA (TELA INTEIRA)                       -->
+      <!-- TELA 4: CHAT DA FAMÍLIA (DELEGADA AO CHAT NATIVO DINÂMICO) -->
       <!-- ============================================================ -->
-      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
-        
-        <!-- Topo Integrado sem faixa cortada -->
-        <div class="px-5 pt-3 pb-2.5 flex items-center justify-between text-white flex-shrink-0">
-          <div class="flex items-center gap-2.5">
-            <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer">
-              <i data-lucide="chevron-left" class="w-5 h-5"></i>
-            </button>
-            <h3 class="font-black text-lg text-white leading-tight">Chat da Família</h3>
+      <section id="screen_chat" class="w-full flex-1 hidden flex flex-col items-center justify-center p-6 text-center">
+        <div class="p-6 rounded-3xl bg-white dark:bg-slate-850 shadow-sm border border-slate-200/80 max-w-sm flex flex-col items-center">
+          <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400 flex items-center justify-center text-2xl mb-3">
+            💬
           </div>
-          <div class="flex items-center gap-2">
-            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
-              <i data-lucide="phone" class="w-4 h-4"></i>
-            </button>
-            <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
-              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-            </button>
-          </div>
+          <h3 class="font-extrabold text-base text-slate-900 dark:text-white mb-1">Chat da Família</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Converse com seu parceiro(a) e organize a lista de compras em tempo real.</p>
+          <button type="button" onclick="openFamilyChatModal()" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
+            <span>Abrir Chat Dinâmico</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
         </div>
-
-        <!-- Carrossel de Membros no Topo -->
-        <div class="px-5 pb-3 flex items-center gap-3 overflow-x-auto flex-shrink-0 select-none">
-          <div class="flex flex-col items-center gap-1 cursor-pointer">
-            <div class="w-12 h-12 rounded-full border-2 border-blue-400 bg-blue-600 flex items-center justify-center text-white shadow-md">
-              <i data-lucide="users" class="w-5 h-5"></i>
-            </div>
-            <span class="text-[10px] font-bold text-white">Todos</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-1 cursor-pointer">
-            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
-              <span>👨</span>
-              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
-            </div>
-            <span class="text-[10px] font-medium text-blue-200">Eu</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-1 cursor-pointer">
-            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
-              <span>👩</span>
-              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
-            </div>
-            <span class="text-[10px] font-medium text-blue-200">Marcia</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-1 cursor-pointer">
-            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
-              <span>👦</span>
-            </div>
-            <span class="text-[10px] font-medium text-blue-200">Lucas</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-1 cursor-pointer">
-            <div class="relative w-12 h-12 rounded-full border-2 border-slate-400 bg-slate-800 flex items-center justify-center text-xl overflow-hidden shadow-xs">
-              <span>👧</span>
-            </div>
-            <span class="text-[10px] font-medium text-blue-200">Sofia</span>
-          </div>
-        </div>
-
-        <!-- CORPO DO CHAT COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) -->
-        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-hidden shadow-2xl">
-          
-          <!-- Área rolável de mensagens -->
-          <div class="flex-1 p-4 overflow-y-auto space-y-3">
-            
-            <div class="text-center my-0.5">
-              <span class="text-[10px] font-bold px-3 py-0.5 rounded-full bg-slate-200/80 text-slate-600">Hoje</span>
-            </div>
-
-            <!-- CARD INTERATIVO DA LISTA DE COMPRAS DA GÔNDOLA (COLABORATIVA NO CHAT) -->
-            <div class="bg-white rounded-3xl p-3.5 shadow-sm border border-blue-200/90 max-w-[92%] mx-auto">
-              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base">
-                    🛒
-                  </div>
-                  <div>
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras • Supermercado</h4>
-                    <span class="text-[10px] text-slate-400">Marque o que pegar na gôndola e informe o valor</span>
-                  </div>
-                </div>
-                <span class="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  Total: R$ 38,40
-                </span>
-              </div>
-
-              <!-- Itens da Gôndola com Checkbox, Quantidade e Valor Unitário -->
-              <div class="space-y-2 mt-2.5 text-xs">
-                
-                <!-- Item 1: Leite Desnatado (Já pego na gôndola) -->
-                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
-                  <div class="flex items-center gap-2">
-                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 line-through text-slate-500">2x Leite Desnatado 1L</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-[11px]">
-                    <span class="text-slate-400">R$ 5,20 un</span>
-                    <span class="font-black text-emerald-700">R$ 10,40</span>
-                  </div>
-                </div>
-
-                <!-- Item 2: Sabão em pó (Pego na gôndola) -->
-                <div class="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
-                  <div class="flex items-center gap-2">
-                    <input type="checkbox" checked class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
-                    <span class="font-bold text-slate-800 line-through text-slate-500">1x Sabão em Pó Omo 1kg</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-[11px]">
-                    <span class="text-slate-400">R$ 18,90 un</span>
-                    <span class="font-black text-emerald-700">R$ 18,90</span>
-                  </div>
-                </div>
-
-                <!-- Item 3: Café Torrado (Pendente na gôndola) -->
-                <div class="flex items-center justify-between p-2 rounded-2xl bg-white border border-slate-200/80">
-                  <div class="flex items-center gap-2">
-                    <input type="checkbox" class="w-4 h-4 rounded text-emerald-600 cursor-pointer">
-                    <span class="font-bold text-slate-900">1x Café Torrado 500g</span>
-                  </div>
-                  <div class="flex items-center gap-1.5 text-[11px]">
-                    <input type="text" placeholder="R$ valor" value="R$ 9,10" class="w-16 px-1.5 py-0.5 rounded-lg border border-slate-200 text-right font-bold text-slate-800 text-[10px]">
-                  </div>
-                </div>
-
-              </div>
-
-              <!-- Rodapé da lista de compras -->
-              <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-slate-500 flex items-center gap-1">
-                  <span>✓ 2 de 3 pegos</span>
-                </span>
-                <button type="button" class="font-extrabold text-blue-600 hover:underline">
-                  + Adicionar Item à Lista
-                </button>
-              </div>
-            </div>
-
-            <!-- Mensagem do Rodrigo (Direita) -->
-            <div class="flex justify-end">
-              <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-xs shadow-xs text-xs max-w-[80%]">
-                <p>Já estou no mercado pegando os itens da lista acima! 🛒</p>
-                <div class="flex items-center justify-end gap-1 mt-1 text-[9px] text-blue-200">
-                  <span>10:30</span>
-                  <span>✓✓</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mensagem da Márcia: Pedido em texto que entrou na lista -->
-            <div class="flex items-start gap-2 max-w-[85%]">
-              <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center text-xs flex-shrink-0">👩</div>
-              <div>
-                <span class="text-[10px] font-bold text-rose-600 block mb-0.5">Marcia</span>
-                <div class="bg-white border border-slate-200/80 p-3 rounded-2xl rounded-tl-xs shadow-xs text-xs text-slate-800">
-                  <p>Amor, compra também 1 bandeja de iogurte natural se achar! 🙏</p>
-                  <span class="text-[9px] text-emerald-600 font-bold block mt-1">✨ Item adicionado automaticamente à lista de compras</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- BARRA INFERIOR DE ENVIO COM RESPIRO ACIMA DA BOTTOM NAV -->
-          <div class="bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-2 flex-shrink-0 mb-16">
-            <button type="button" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 text-lg font-bold transition-all active:scale-95 cursor-pointer" title="Adicionar item à lista ou anexar">
-              +
-            </button>
-            <input type="text" placeholder="Escreva uma mensagem ou peça um item para a lista..." class="flex-1 bg-slate-100 text-slate-900 px-4 py-2 rounded-full text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
-            <button type="button" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer" title="Áudio ou Enviar">
-              <i data-lucide="send" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-        </div>
-
       </section>
 
     </div>
@@ -4858,7 +4694,7 @@ html, body {
         </button>
 
         <!-- 4. Chat -->
-        <button id="navTab_chat" onclick="switchScreen('chat')" class="bottom-nav-item relative">
+        <button id="navTab_chat" onclick="openFamilyChatModal()" class="bottom-nav-item relative">
           <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
           <span>Chat</span>
           <span class="absolute top-1 right-6 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -16558,28 +16394,31 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         let badgeHtml = '';
 
         if (isRodrigo) {
+          // Rodrigo (Direita): Balão Branco elegante e clean
           alignCls = 'justify-end';
-          bubbleBg = 'bg-blue-600 text-white rounded-2xl rounded-tr-xs shadow-md border border-blue-400/30';
-          badgeHtml = '<span class="inline-flex items-center gap-1 font-black text-blue-100">👨 Rodrigo</span>';
+          bubbleBg = 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl rounded-tr-xs shadow-xs border border-slate-200 dark:border-slate-700';
+          badgeHtml = '<span class="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">👨 Rodrigo</span>';
         } else if (isMarcia) {
+          // Márcia (Esquerda): Balão Cinza suave e harmonioso
           alignCls = 'justify-start';
-          bubbleBg = 'bg-gradient-to-br from-rose-500 to-pink-600 text-white rounded-2xl rounded-tl-xs shadow-md border border-rose-300/30';
-          badgeHtml = '<span class="inline-flex items-center gap-1 font-black text-rose-100">👩 Márcia</span>';
+          bubbleBg = 'bg-slate-100 dark:bg-slate-850 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-xs shadow-2xs border border-slate-200/80 dark:border-slate-700/80';
+          badgeHtml = '<span class="inline-flex items-center gap-1 font-bold text-slate-700 dark:text-slate-300">👩 Márcia</span>';
         } else {
+          // Sistema / Demais membros: Cinza neutro
           alignCls = 'justify-start';
-          bubbleBg = 'bg-emerald-600 text-white rounded-2xl rounded-tl-xs shadow-md border border-emerald-400/30';
+          bubbleBg = 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs';
           const avatarIcon = m.avatar || '👤';
-          badgeHtml = `<span class="inline-flex items-center gap-1 font-black text-emerald-100">${avatarIcon} ${escapeHtml(senderName)}</span>`;
+          badgeHtml = `<span class="inline-flex items-center gap-1 font-bold text-slate-600 dark:text-slate-400">${avatarIcon} ${escapeHtml(senderName)}</span>`;
         }
 
         return `
           <div class="flex ${alignCls} mb-3 group">
             <div class="max-w-[85%] sm:max-w-[75%] p-3.5 ${bubbleBg} relative shadow-sm">
-              <div class="flex items-center justify-between gap-3 text-[11px] mb-1.5 pb-1 border-b border-white/20">
+              <div class="flex items-center justify-between gap-3 text-[11px] mb-1.5 pb-1 border-b border-slate-200/60 dark:border-slate-700/60">
                 ${badgeHtml}
-                <div class="flex items-center gap-1.5 text-white/80">
+                <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500">
                   <span class="text-[10px] font-medium">${m.time || ''}</span>
-                  <button type="button" onclick="deleteChatMessage('${m.id}')" class="opacity-60 hover:opacity-100 p-0.5 text-inherit hover:text-white transition-opacity cursor-pointer" title="Excluir mensagem">
+                  <button type="button" onclick="deleteChatMessage('${m.id}')" class="opacity-60 hover:opacity-100 p-0.5 text-slate-400 hover:text-rose-500 transition-opacity cursor-pointer" title="Excluir mensagem">
                     <i data-lucide="trash-2" class="w-3 h-3"></i>
                   </button>
                 </div>
@@ -16627,10 +16466,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </div>
               
               <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end">
-                <button type="button" onclick="confirmShoppingListReceipt()" id="btnConfirmReceiptShopping" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black flex items-center gap-1 transition-all shadow-xs cursor-pointer whitespace-nowrap active:scale-95" title="Avisar que você recebeu e aceitou a lista de compras">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  <span>✓ Recebi a lista</span>
-                </button>
+
                 ${getDeletedShoppingItems().length > 0 ? `
                   <button type="button" onclick="restoreLastDeletedShoppingItem()" class="px-2 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-extrabold flex items-center gap-1 transition-all cursor-pointer whitespace-nowrap" title="Voltar com o último produto excluído">
                     <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
@@ -16819,28 +16655,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || 'pending';
 
       if (stage === 'pending') {
+        // Sem botão duplicado fora da conversa: apenas indicador de status sutil
         return `
-          <div id="shoppingReceiptBox" class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750">
-            <div class="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/90 border-2 border-blue-400 dark:border-blue-600 p-3 sm:p-3.5 shadow-sm">
-              <div class="flex items-start gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
-                  🛒
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
-                    ${myFirstName}, ${senderDisplayName} enviou essa lista de compras, confirme o recebimento
-                  </h4>
-                  <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">
-                    Toque no botão abaixo para avisar que a lista foi recebida com sucesso:
-                  </p>
-                </div>
-              </div>
-              <div class="mt-3 pt-2 border-t border-blue-200/60 dark:border-slate-700 flex justify-end">
-                <button type="button" onclick="handleChatAcknowledgeShoppingList()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer">
-                  <i data-lucide="check" class="w-4 h-4"></i>
-                  <span>Recebi a lista</span>
-                </button>
-              </div>
+          <div id="shoppingReceiptBox" class="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+            <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 px-1">
+              <span class="flex items-center gap-1.5 font-medium">
+                <span>🛒</span> Lista compartilhada por ${senderDisplayName}
+              </span>
+              <span class="text-[10px] text-slate-400">Aguardando compras</span>
             </div>
           </div>
         `;
@@ -35524,6 +35346,10 @@ window.confirmEnterSectionFromPitaco = function() {
 
     // Alternar Telas
     window.switchScreen = function(screenKey) {
+      if (screenKey === 'chat') {
+        if (typeof openFamilyChatModal === 'function') openFamilyChatModal();
+        return;
+      }
       const screens = ['dashboard', 'transacoes', 'familia', 'chat'];
       screens.forEach(s => {
         const el = document.getElementById(`screen_${s}`);
@@ -36255,6 +36081,10 @@ window.confirmEnterSectionFromPitaco = function() {
 
   // Alternar Telas Principais (Dashboard, Transações, Família, Chat)
   window.switchScreen = function(screenKey) {
+    if (screenKey === 'chat') {
+      if (typeof openFamilyChatModal === 'function') openFamilyChatModal();
+      return;
+    }
     const screens = ['dashboard', 'transacoes', 'familia', 'chat'];
     screens.forEach(s => {
       const el = document.getElementById(`screen_${s}`);
@@ -37731,36 +37561,9 @@ window.confirmEnterSectionFromPitaco = function() {
   };
 
   function prepareChat() {
-    const screen = document.getElementById('screen_chat');
-    if (!screen) return;
-    const memberLabels = [...screen.querySelectorAll('span')].filter(el => ['Lucas', 'Sofia'].includes(el.textContent.trim()));
-    memberLabels.forEach(el => el.closest('.flex.flex-col')?.remove());
-    const messages = [...screen.querySelectorAll('div')].find(el => el.classList.contains('flex-1') && el.classList.contains('p-4') && el.classList.contains('overflow-y-auto'));
-    if (messages) messages.id = 'screenChatMessagesList';
-    const input = screen.querySelector('input[placeholder^="Escreva uma mensagem"]');
-    if (input) {
-      input.id = 'inputChatMessageClean';
-      input.setAttribute('enterkeyhint', 'send');
-      const bar = input.parentElement;
-      if (bar && bar.tagName !== 'FORM') {
-        const form = document.createElement('form');
-        form.id = 'screenChatMessageForm';
-        form.className = bar.className.replace(/\bmb-16\b/g, '').trim() + ' pb-[env(safe-area-inset-bottom)]';
-        form.onsubmit = window.handleSendCleanChatMessage;
-        bar.parentNode.insertBefore(form, bar);
-        while (bar.firstChild) form.appendChild(bar.firstChild);
-        bar.remove();
-        const send = form.querySelector('button:last-child');
-        if (send) { send.type = 'submit'; send.title = 'Enviar mensagem'; }
-      }
+    if (typeof window.renderCleanChatStream === 'function') {
+      window.renderCleanChatStream();
     }
-    const form = document.getElementById('screenChatMessageForm');
-    if (form) {
-      form.style.position = 'sticky';
-      form.style.bottom = '0';
-      form.style.zIndex = '5';
-    }
-    if (typeof window.renderCleanChatStream === 'function') window.renderCleanChatStream();
   }
 
   function unifyDashboardCards() {
@@ -37961,8 +37764,14 @@ window.confirmEnterSectionFromPitaco = function() {
         if (typeof updateTxTipoExplanation === 'function') updateTxTipoExplanation('new');
       }
 
+      if (typeof openNewTxModal === 'function') {
+        openNewTxModal();
+      } else if (typeof openAddTransactionModal === 'function') {
+        openAddTransactionModal();
+      }
+
       if (typeof showToastUndo === 'function') {
-        const valFormatted = d.valor_total ? formatBRL(d.valor_total) : 'R$ 0,00';
+        const valFormatted = d.valor_total ? (typeof formatBRL === 'function' ? formatBRL(d.valor_total) : ('R$ ' + d.valor_total)) : 'R$ 0,00';
         showToastUndo(`⚡ Despesa preenchida via Google ML Kit: ${d.estabelecimento || 'Nota Fiscal'} (${valFormatted})`, false);
       }
     };
