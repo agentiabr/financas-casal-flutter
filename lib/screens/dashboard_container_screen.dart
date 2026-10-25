@@ -1106,9 +1106,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         if (typeof window.fillNewTxFromReceiptOcr === 'function') {
           window.fillNewTxFromReceiptOcr($jsonResult);
         }
-        if (typeof window.handleDetectedQrCode === 'function') {
-          window.handleDetectedQrCode('$safeUrl');
-        }
       """);
     } catch (e) {
       debugPrint('Erro ao escanear QR Code da nota: $e');

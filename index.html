@@ -33567,72 +33567,109 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   window.simulateQrReceiptDetection = function() {
     const sampleUrl = 'https://satsp.fazenda.sp.gov.br/COMSAT/Public/ConsultaPublica/ConsultaPublicaCfe.aspx?chveCfe=35261012345678000199590001234567891234567890';
-    window.handleDetectedQrCode(sampleUrl);
+    window.processNfceQrCodeUrl(sampleUrl, true);
   };
 
-  window.processNfceQrCodeUrl = function(qrUrl) {
-    // Banco demonstrativo de itens reais de supermercado catalogados via NFC-e
-    const parsedData = {
-      store: 'Supermercado Dia • Loja Vila Prudente',
-      date: new Date().toISOString().split('T')[0],
-      payment: 'Cartão de Crédito',
-      total: 20.09,
-      items: [
-        { nome: 'Sacola Verde Biodegradável', qtd: 2, unidade: 'un', precoUnitario: 0.15, subtotal: 0.30 },
-        { nome: 'Água Mineral Com Gás Dia 1,5L', qtd: 1, unidade: 'un', precoUnitario: 2.39, subtotal: 2.39 },
-        { nome: 'Lava Louças Cristal Dia 1L', qtd: 1, unidade: 'un', precoUnitario: 3.99, subtotal: 3.99 },
-        { nome: 'Mexerica Murcote KG', qtd: 1.05, unidade: 'kg', precoUnitario: 6.99, subtotal: 7.34 },
-        { nome: 'Limão Taiti KG', qtd: 0.19, unidade: 'kg', precoUnitario: 10.99, subtotal: 2.09 },
-        { nome: 'Banana Nanica KG', qtd: 0.57, unidade: 'kg', precoUnitario: 6.99, subtotal: 3.98 }
-      ]
-    };
-
-    // Preenche os campos do modal com os dados exatos da SEFAZ
+  window._applyParsedReceiptData = function(parsedData) {
+    if (!parsedData) return;
     const storeEl = document.getElementById('invoiceExtractedStore');
     const totalEl = document.getElementById('invoiceExtractedTotal');
     const dateEl = document.getElementById('invoiceExtractedDate');
     const payEl = document.getElementById('invoiceExtractedPayment');
-    if (storeEl) storeEl.value = parsedData.store;
-    if (totalEl) totalEl.value = parsedData.total.toFixed(2).replace('.', ',');
-    if (dateEl) dateEl.value = parsedData.date;
-    if (payEl) payEl.value = parsedData.payment;
+    if (storeEl) storeEl.value = parsedData.store || 'Nota Fiscal';
+    if (totalEl && typeof parsedData.total === 'number') totalEl.value = parsedData.total.toFixed(2).replace('.', ',');
+    if (dateEl) dateEl.value = parsedData.date || new Date().toISOString().split('T')[0];
+    if (payEl && parsedData.payment) payEl.value = parsedData.payment;
 
-    // Renderiza a lista de itens discriminados com valores unitários
     const listEl = document.getElementById('invoiceExtractedItemsList');
     const badgeEl = document.getElementById('invoiceItemsCountBadge');
-    if (badgeEl) badgeEl.textContent = `${parsedData.items.length} itens oficiais`;
+    const items = parsedData.items || [];
+    if (badgeEl) badgeEl.textContent = `${items.length} itens`;
     if (listEl) {
-      listEl.innerHTML = parsedData.items.map((it, idx) => `
+      listEl.innerHTML = items.map((it, idx) => `
         <div class="p-2 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 flex items-center justify-between text-xs">
           <div class="min-w-0 pr-2">
-            <div class="font-black text-slate-800 dark:text-white truncate">${it.nome}</div>
-            <div class="text-[10px] text-slate-500">${it.qtd} ${it.unidade} × R$ ${it.precoUnitario.toFixed(2).replace('.', ',')}</div>
+            <div class="font-black text-slate-800 dark:text-white truncate">${it.nome || it.produto || 'Item'}</div>
+            <div class="text-[10px] text-slate-500">${it.qtd || 1} ${it.unidade || 'UN'} × R$ ${(it.precoUnitario || it.preco || 0).toFixed(2).replace('.', ',')}</div>
           </div>
-          <span class="font-mono font-black text-emerald-700 dark:text-emerald-400">R$ ${it.subtotal.toFixed(2).replace('.', ',')}</span>
+          <span class="font-mono font-black text-emerald-700 dark:text-emerald-400">R$ ${(it.subtotal || it.total || 0).toFixed(2).replace('.', ',')}</span>
         </div>
       `).join('');
     }
 
-    // Salva na memória global para confirmar no ciclo e alimentar o comparador de preços
     window._lastExtractedReceiptData = parsedData;
-
-    // Converte e injeta em extractedReceiptItems para inclusão na tabela principal com todos os atributos
-    window.extractedReceiptItems = parsedData.items.map((it, idx) => ({
+    window.extractedReceiptItems = items.map((it, idx) => ({
       id: Date.now() + idx,
-      produto: it.nome,
-      qtd: it.qtd,
-      unidade: it.unidade || 'un',
-      preco: it.precoUnitario,
-      total: it.subtotal,
-      desconto: 0,
+      produto: it.nome || it.produto || 'Item',
+      qtd: it.qtd || 1,
+      unidade: it.unidade || 'UN',
+      preco: it.precoUnitario || it.preco || 0,
+      total: it.subtotal || it.total || 0,
+      desconto: it.desconto || 0,
       validated: true
     }));
     if (typeof renderExtractedItemsPreview === 'function') {
       renderExtractedItemsPreview();
     }
+  };
 
-    // Dispara a inteligência preventiva do Prof. Piggy (Saúde x Dieta)
-    window.checkProfPiggyHealthDietInsights(parsedData.items);
+  window.processNfceQrCodeUrl = function(qrUrl, isSimulated = false) {
+    if (!qrUrl) return;
+
+    // Se estiver rodando dentro do Flutter nativo e NÃO for simulação:
+    if (window.FlutterBridge && !isSimulated) {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('⚡ Consultando SEFAZ oficial em tempo real...', false);
+      }
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'fetch_nfce_url', url: qrUrl }));
+        return;
+      } catch (e) {
+        console.warn('Erro ao disparar fetch_nfce_url no Flutter:', e);
+      }
+    }
+
+    // Se for simulação explícita de teste no navegador web:
+    if (isSimulated) {
+      const demoData = {
+        store: 'Supermercado Modelo (Demonstração)',
+        date: new Date().toISOString().split('T')[0],
+        payment: 'Cartão de Débito',
+        total: 20.09,
+        items: [
+          { nome: 'Item de Exemplo 1', qtd: 2, unidade: 'UN', precoUnitario: 3.50, subtotal: 7.00 },
+          { nome: 'Item de Exemplo 2', qtd: 1, unidade: 'UN', precoUnitario: 13.09, subtotal: 13.09 }
+        ]
+      };
+      window._applyParsedReceiptData(demoData);
+      return;
+    }
+
+    // Leitura real: Abre o modal e disponibiliza o link oficial da SEFAZ para conferência sem inventar itens falsos
+    const modal = document.getElementById('modalInvoiceScan');
+    if (modal) modal.classList.remove('hidden');
+
+    const ocrStatus = document.getElementById('invoiceOcrStatus');
+    if (ocrStatus) {
+      ocrStatus.innerHTML = `
+        <div class="p-3.5 bg-sky-50 dark:bg-sky-950/40 border-2 border-sky-300 dark:border-sky-700 rounded-xl text-xs text-sky-900 dark:text-sky-200 space-y-2">
+          <div class="font-bold flex items-center gap-1.5 text-sky-800 dark:text-sky-200">
+            <span>🌐</span> <span>QR Code Oficial Reconhecido!</span>
+          </div>
+          <p class="text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+            O link oficial da nota fiscal na SEFAZ foi capturado com sucesso. Toque no botão abaixo para abrir a página oficial da nota fiscal diretamente no navegador:
+          </p>
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <button type="button" onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${qrUrl}'})); else window.open('${qrUrl}', '_blank');" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+              <span>🌐</span> <span>Abrir Nota Fiscal Oficial na SEFAZ</span>
+            </button>
+            <button type="button" onclick="triggerInvoiceCameraCapture()" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-medium text-xs flex items-center gap-1.5 active:scale-95 cursor-pointer">
+              <span>📸</span> <span>Fotografar Cupom com IA Vision</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
   };
 
   // --------------------------------------------------------------------------

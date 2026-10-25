@@ -284,7 +284,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
 
     try {
       final invoice = await NfceFetcher().fetchAndParse(targetUrl).timeout(
-        const Duration(seconds: 4),
+        const Duration(seconds: 10),
       );
       if (mounted) {
         HapticFeedback.heavyImpact();
