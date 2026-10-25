@@ -22850,23 +22850,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <div class="flex items-center gap-1.5">
-        <button type="button" onclick="triggerSectionWithIntelligentMascot('chat', function(){});" class="px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 text-xs font-bold flex items-center gap-1 transition-all" title="Dica do Mascote">
-          <span>💡</span><span class="hidden sm:inline">Dica</span>
+        <!-- 1. Botão de Telefone / Ligação / WhatsApp Ativo -->
+        <button type="button" onclick="handleChatPhoneCallAction()" class="w-8 h-8 rounded-full bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-200 hover:text-white border border-emerald-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xs" title="Ligar ou conversar no WhatsApp">
+          <i data-lucide="phone" class="w-4 h-4 text-emerald-300"></i>
         </button>
-        <button type="button" onclick="openTrashChatMessagesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer" title="Mensagens apagadas">
-          <i data-lucide="trash-2" class="w-4 h-4 text-rose-300"></i>
+        <!-- 2. Botão Dica do Mascote -->
+        <button type="button" onclick="triggerSectionWithIntelligentMascot('chat', function(){});" class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Dica do Mascote">
+          <span>💡</span>
         </button>
-        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all cursor-pointer" title="Fechar">
+        <!-- 3. Botão 3 Pontinhos (Mais Opções da Conversa) -->
+        <button type="button" onclick="openChatMoreOptionsModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Mais opções da conversa">
+          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+        </button>
+        <!-- 4. Botão Fechar -->
+        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Fechar">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
 
-    <!-- Barra Horizontal de Filtro de Membros da Família -->
-    <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center gap-2 overflow-x-auto flex-shrink-0 select-none">
-      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs">Todos</button>
-      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors">👨 Rodrigo</button>
-      <button type="button" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors">👩 Márcia</button>
+    <!-- Barra Dinâmica: Avatar do Usuário Ativo (À Esquerda) e Seletor de Destinatário (À Direita) -->
+    <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto flex-shrink-0 select-none">
+      <!-- Usuário Ativo (À Esquerda) -->
+      <div class="flex items-center gap-2 flex-shrink-0 pr-2 border-r border-slate-200 dark:border-slate-750">
+        <div id="chatActiveUserAvatar" class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-sm shadow-2xs">
+          👨
+        </div>
+        <div class="flex flex-col">
+          <span id="chatActiveUserName" class="text-[11px] font-black text-slate-900 dark:text-white leading-none">Rodrigo</span>
+          <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">Você</span>
+        </div>
+      </div>
+
+      <!-- Seletor de Destinatário da Mensagem (Centro / Direita) -->
+      <div class="flex items-center gap-1.5 flex-shrink-0" id="chatRecipientSelector">
+        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-0.5">Para:</span>
+        <button type="button" onclick="setChatRecipient('marcia')" id="btnRecipient_marcia" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
+          <span>👩</span> <span>Márcia</span>
+        </button>
+        <button type="button" onclick="setChatRecipient('rodrigo')" id="btnRecipient_rodrigo" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
+          <span>👨</span> <span>Rodrigo</span>
+        </button>
+        <button type="button" onclick="setChatRecipient('todos')" id="btnRecipient_todos" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
+          <span>👥</span> <span>Todos</span>
+        </button>
+      </div>
     </div>
 
     <!-- Área de Mensagens Rolável Ocupando Toda a Tela -->
@@ -38044,6 +38072,70 @@ window.confirmEnterSectionFromPitaco = function() {
         </button>
         <button type="button" onclick="confirmAuthorizeBiometrics(false)" class="w-full py-2.5 px-4 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold text-xs transition-all cursor-pointer">
           Agora Não, usar apenas senha
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================== -->
+  <!-- MODAL: LIGAR OU ENVIAR WHATSAPP DIRETO NO CHAT DA FAMÍLIA       -->
+  <!-- ============================================================== -->
+  <div id="modalChatPhoneAction" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1060] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl w-full max-w-sm shadow-2xl p-5 border border-slate-200 dark:border-slate-800 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-2xl mx-auto mb-3 shadow-xs">
+        📞
+      </div>
+      <h3 class="font-black text-base text-slate-900 dark:text-white" id="modalChatPhoneTitle">Contato com a Família</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4" id="modalChatPhoneDesc">Escolha como deseja falar agora:</p>
+
+      <div class="space-y-2.5">
+        <button type="button" onclick="executeChatPhoneAction('call')" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="phone-call" class="w-4 h-4"></i>
+          <span id="btnChatPhoneCallText">Ligar para Márcia</span>
+        </button>
+        <button type="button" onclick="executeChatPhoneAction('whatsapp')" class="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <span>💬</span>
+          <span id="btnChatPhoneWhatsAppText">Conversar no WhatsApp</span>
+        </button>
+        <button type="button" onclick="closeChatPhoneActionModal()" class="w-full py-2 px-4 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold text-xs cursor-pointer">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: MAIS OPÇÕES DO CHAT DA FAMÍLIA (3 PONTINHOS)             -->
+  <!-- ============================================================== -->
+  <div id="modalChatMoreOptions" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1060] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl w-full max-w-sm shadow-2xl p-5 border border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">⚙️</span>
+          <h3 class="font-black text-sm text-slate-900 dark:text-white">Opções do Chat Familiar</h3>
+        </div>
+        <button type="button" onclick="closeChatMoreOptionsModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-1.5 text-xs">
+        <button type="button" onclick="closeChatMoreOptionsModal(); sendWhatsAppShoppingReminder();" class="w-full p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 font-bold transition-colors">
+          <span>🛒</span>
+          <span class="flex-1 text-left">Enviar Lista de Compras no WhatsApp</span>
+        </button>
+        <button type="button" onclick="closeChatMoreOptionsModal(); openTrashChatMessagesModal();" class="w-full p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 font-bold transition-colors">
+          <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+          <span class="flex-1 text-left">Mensagens Apagadas (Lixeira)</span>
+        </button>
+        <button type="button" onclick="closeChatMoreOptionsModal(); triggerSectionWithIntelligentMascot('chat', function(){});" class="w-full p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 font-bold transition-colors">
+          <span>💡</span>
+          <span class="flex-1 text-left">Ver Dicas do Piggy para Compras</span>
+        </button>
+        <button type="button" onclick="closeChatMoreOptionsModal(); clearChatHistoryConfirm();" class="w-full p-2.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center gap-2.5 font-bold transition-colors">
+          <i data-lucide="trash" class="w-4 h-4 text-rose-500"></i>
+          <span class="flex-1 text-left">Limpar Conversa Deste Chat</span>
         </button>
       </div>
     </div>
