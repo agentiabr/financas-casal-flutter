@@ -10,7 +10,7 @@ void main() {
       expect(NfceNumberParser.parseCurrency('5,29'), equals(5.29));
       expect(NfceNumberParser.parseCurrency('7,34'), equals(7.34));
       expect(NfceNumberParser.parseCurrency('20,09'), equals(20.09));
-      expect(NfceNumberParser.parseCurrency('R$ 20,09'), equals(20.09));
+      expect(NfceNumberParser.parseCurrency('R\$ 20,09'), equals(20.09));
       expect(NfceNumberParser.parseCurrency('Vl. Total: 1.250,50'), equals(1250.50));
       expect(NfceNumberParser.parseCurrency(''), equals(0.0));
       expect(NfceNumberParser.parseCurrency(null), equals(0.0));
@@ -36,6 +36,7 @@ void main() {
       expect(NfceNumberParser.normalizeUnit('KG'), equals('KG'));
       expect(NfceNumberParser.normalizeUnit('kg'), equals('KG'));
       expect(NfceNumberParser.normalizeUnit('UN: KG'), equals('KG'));
+      expect(NfceNumberParser.normalizeUnit('UNKG'), equals('KG'));
       expect(NfceNumberParser.normalizeUnit('L'), equals('L'));
       expect(NfceNumberParser.normalizeUnit('LT'), equals('L'));
       expect(NfceNumberParser.normalizeUnit('CX'), equals('CX'));

@@ -7,7 +7,6 @@ class ReceiptItem {
   final double preco; // Preço Unitário
   final double total;
   final String unidade;
-
   final bool validated;
 
   ReceiptItem({
@@ -33,6 +32,7 @@ class ReceiptOcrResult {
   final String? storeName;
   final double? totalAmount;
   final DateTime? date;
+  final String? paymentMethod;
   final String? nfceKey;
   final String? nfceUrl;
   final List<ReceiptItem> items;
@@ -43,6 +43,7 @@ class ReceiptOcrResult {
     this.storeName,
     this.totalAmount,
     this.date,
+    this.paymentMethod,
     this.nfceKey,
     this.nfceUrl,
     required this.items,
@@ -60,11 +61,14 @@ class ReceiptOcrResult {
       'data': dateStr,
       'data_reconhecida': date != null,
       'valor_total': totalAmount ?? 0.0,
+      'forma_pagamento': paymentMethod ?? 'Cartão de Crédito',
       'chave_nfce': nfceKey ?? '',
       'url_nfce': nfceUrl ?? '',
       'itens': items.map((e) => e.toJson()).toList(),
       'linhas': lines,
       'raw_text': rawText,
+      'sucesso': true,
+      'motor_ocr': 'google_mlkit_text_recognition',
     };
   }
 }
@@ -87,7 +91,7 @@ class OcrService {
       }
     }
 
-    // 1. Detectar Data da Compra
+    // 1. Detectar Data da Compra (DD/MM/AAAA, DD-MM-AAAA, AAAA-MM-DD)
     DateTime? detectedDate;
     final dateRegex = RegExp(
       r'(?:EMISS[ÃA]O|DATA|EMITIDO|DT|CUPOM)?[\s:\.]*([0-3]?\d)[\/\.\-]([0-1]?\d)[\/\.\-](20\d\d|\d\d)',
@@ -105,19 +109,45 @@ class OcrService {
       }
     }
 
+    // Fallback: Formato ISO YYYY-MM-DD
+    if (detectedDate == null) {
+      final isoRegex = RegExp(r'\b(20\d\d)[\/\.\-]([0-1]?\d)[\/\.\-]([0-3]?\d)\b');
+      final isoMatch = isoRegex.firstMatch(rawText);
+      if (isoMatch != null) {
+        final y = int.tryParse(isoMatch.group(1) ?? '');
+        final m = int.tryParse(isoMatch.group(2) ?? '');
+        final d = int.tryParse(isoMatch.group(3) ?? '');
+        if (d != null && m != null && y != null && d >= 1 && d <= 31 && m >= 1 && m <= 12) {
+          detectedDate = DateTime(y, m, d);
+        }
+      }
+    }
+
     // 2. Detectar Valor Total da NF
     double? detectedTotal;
     final totalRegex = RegExp(
       r'(?:VALOR\s+TOTAL(?:\s+DA\s+NOTA|\s+A\s+PAGAR|\s+PAGO|\s+L[ÍI]QUIDO)?|TOTAL\s+A\s+PAGAR|TOTAL\s+L[ÍI]QUIDO|TOTAL\s+PAGO|VALOR\s+A\s+PAGAR|VLR\s+TOTAL|TOTAL)\s*(?:R\$|RS|B\$)?[\s:]*([0-9]{1,4}(?:\.[0-9]{3})*(?:,[0-9]{2})|[0-9]+[.,\s][0-9]{2})',
       caseSensitive: false,
     );
+
+    // Varredura de baixo para cima nas linhas
     for (int i = lines.length - 1; i >= 0; i--) {
       final match = totalRegex.firstMatch(lines[i]);
       if (match != null) {
         detectedTotal = _parseMoney(match.group(1)!);
         if (detectedTotal != null && detectedTotal > 0) break;
       }
+      // Detecção em duas linhas: linha N tem "TOTAL", linha N+1 tem "137,17" ou "R$ 137,17"
+      if (i + 1 < lines.length && RegExp(r'^(?:VALOR\s+TOTAL|TOTAL\s+A\s+PAGAR|TOTAL\s+L[ÍI]QUIDO|TOTAL)$', caseSensitive: false).hasMatch(lines[i].trim())) {
+        final nextLine = lines[i + 1].trim();
+        final moneyMatch = RegExp(r'(?:R\$|RS)?\s*([0-9]+[.,][0-9]{2})').firstMatch(nextLine);
+        if (moneyMatch != null) {
+          detectedTotal = _parseMoney(moneyMatch.group(1)!);
+          if (detectedTotal != null && detectedTotal > 0) break;
+        }
+      }
     }
+
     if (detectedTotal == null || detectedTotal <= 0) {
       final match = totalRegex.firstMatch(rawText);
       if (match != null) {
@@ -137,7 +167,9 @@ class OcrService {
       'supermercado', 'supermercados', 'mercado', 'hipermercado', 'atacado', 'atacadão', 'atacadao',
       'comercio', 'comércio', 'varejo', 'distribuidora', 'padaria', 'panificadora',
       'drogaria', 'farmacia', 'farmácia', 'posto', 'restaurante', 'lanchonete',
-      'lojas', 'loja', 'ltda', 's.a.', 'sa', 'eireli', 'me', 'epp', 'açougue', 'hortifruti'
+      'lojas', 'loja', 'ltda', 's.a.', 'sa', 'eireli', 'me', 'epp', 'açougue', 'hortifruti',
+      'dia', 'extra', 'carrefour', 'assai', 'assaí', 'roldao', 'roldão', 'sonda', 'hirota',
+      'pão de açúcar', 'pao de acucar', 'rede plus', 'nobreza', 'habib', 'mcdonald', 'burger king'
     ];
 
     // Prioridade 1: Linha do topo que contenha indicador comercial explícito
@@ -164,7 +196,27 @@ class OcrService {
       }
     }
 
-    // 4. Detectar Itens Comprados (com quantidade e preço unitário)
+    // 4. Detectar Forma de Pagamento
+    String? detectedPayment;
+    final paymentRegex = RegExp(
+      r'(?:FORMA\s+PAGTO|PAGAMENTO|PAGO\s+COM|PAGTO|PAGAMENTO)?[\s:]*(CART[ÃA]O\s+DE\s+CR[ÉE]DITO|CR[ÉE]DITO|CART[ÃA]O\s+DE\s+D[ÉE]BITO|D[ÉE]BITO|PIX|DINHEIRO|ALIMENTA[ÇC][ÃA]O|REFEI[ÇC][ÃA]O)',
+      caseSensitive: false,
+    );
+    final paymentMatch = paymentRegex.firstMatch(rawText);
+    if (paymentMatch != null) {
+      final pStr = paymentMatch.group(1)?.toLowerCase() ?? '';
+      if (pStr.contains('crédito') || pStr.contains('credito')) {
+        detectedPayment = 'Cartão de Crédito';
+      } else if (pStr.contains('débito') || pStr.contains('debito')) {
+        detectedPayment = 'Cartão de Débito';
+      } else if (pStr.contains('pix')) {
+        detectedPayment = 'PIX';
+      } else if (pStr.contains('dinheiro')) {
+        detectedPayment = 'Dinheiro';
+      }
+    }
+
+    // 5. Detectar Itens Comprados (com quantidade e preço unitário)
     final items = <ReceiptItem>[];
     final twoLineQty = RegExp(
       r'^(?:QTD[\s:]*)?(\d+(?:[.,]\d+)?)\s*(UN|KG|LT|L|PC|CX|G|PCT|UND|PÇ)?\s*[Xx*]\s*([0-9]+[.,][0-9]{2})(?:\s+([0-9]+[.,][0-9]{2}))?',
@@ -238,7 +290,7 @@ class OcrService {
       detectedTotal = items.fold<double>(0.0, (double acc, item) => acc + item.total);
     }
 
-    // 5. Detectar Chave de Acesso de 44 dígitos ou URL de NFC-e / SAT / SEFAZ
+    // 6. Detectar Chave de Acesso de 44 dígitos ou URL de NFC-e / SAT / SEFAZ
     String? detectedNfceKey;
     String? detectedNfceUrl;
     final nfceUrlRegex = RegExp(
@@ -258,7 +310,8 @@ class OcrService {
     return ReceiptOcrResult(
       storeName: detectedStore,
       totalAmount: detectedTotal,
-      date: detectedDate,
+      date: detectedDate ?? DateTime.now(),
+      paymentMethod: detectedPayment,
       nfceKey: detectedNfceKey,
       nfceUrl: detectedNfceUrl,
       items: items,
@@ -271,7 +324,6 @@ class OcrService {
     try {
       var s = valStr.trim();
       s = s.replaceAll(RegExp(r'^(?:R\$|RS|B\$|\$)\s*'), '');
-      // Corrige caso de espaço entre inteiros e centavos (ex: "15 90" -> "15.90")
       s = s.replaceAllMapped(RegExp(r'(\d+)\s+(\d{2})$'), (m) => '${m[1]}.${m[2]}');
       if (s.contains(',') && s.contains('.')) {
         s = s.replaceAll('.', '').replaceAll(',', '.');
@@ -297,7 +349,7 @@ class OcrService {
     const blacklist = [
       'total', 'subtotal', 'troco', 'cartao', 'cartão', 'dinheiro', 'imposto', 'tributos',
       'cnpj', 'valor', 'forma pagto', 'debito', 'débito', 'credito', 'crédito', 'procon',
-      'chave de acesso', 'protocolo', 'danfe', 'sat', 'nfc-e', 'cupom'
+      'chave de acesso', 'protocolo', 'danfe', 'sat', 'nfc-e', 'cupom', 'via consumidor'
     ];
     return !blacklist.any((k) => lower.contains(k));
   }

@@ -6622,7 +6622,7 @@ html, body {
           </div>
           <div>
             <h3 class="font-bold text-sm sm:text-base text-slate-800">Fotografar Nota Fiscal / Cupom</h3>
-            <p class="text-[11px] text-slate-500">Tire fotos do cupom e lance automaticamente no ciclo vigente.</p>
+            <p class="text-[11px] text-slate-500">Extração de dados 100% local no aparelho com Google ML Kit. Sem limites de requisições e sem custos de API.</p>
           </div>
         </div>
         <button onclick="closeInvoiceScanModal()" class="p-1 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400">
@@ -6662,8 +6662,8 @@ html, body {
           <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-2 shadow-sm">
             <i data-lucide="camera" class="w-6 h-6"></i>
           </div>
-          <p class="font-black text-slate-800 text-sm">Fotografar Nota Fiscal / Cupom com IA</p>
-          <p class="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">Tire uma ou múltiplas fotos (topo, meio e total da nota). A IA identifica automaticamente o mercado, data, valor e produtos!</p>
+          <p class="font-black text-slate-800 text-sm">Fotografar Nota Fiscal / Cupom (Google ML Kit)</p>
+          <p class="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">Tire uma ou mais fotos. O Google ML Kit extrai na hora loja, data, valor total e produtos diretamente no seu celular!</p>
           
           <div class="mt-3.5 flex flex-wrap items-center justify-center gap-2">
             <!-- 0. BOTÃO PRIORITÁRIO: ESCANEAR QR CODE DA NOTA (NFC-E / SAT) -->
@@ -6797,7 +6797,28 @@ html, body {
         </button>
       </div>
 
-      <form onsubmit="handleSaveNewTx(event)" class="space-y-3 mt-4 text-xs">
+      <!-- Atalho: Preenchimento Automático por Foto (Google ML Kit Local) -->
+        <div class="p-2.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-slate-800 dark:to-slate-850 border border-emerald-200 dark:border-slate-700 mt-3 mb-1 shadow-2xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[11px] font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>🧾</span><span>Preencher por Foto da Nota (ML Kit)</span>
+            </span>
+            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">100% Local</span>
+          </div>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mb-2">Tire a foto ou selecione da galeria para preencher loja, valor, data e categoria sem digitar.</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="triggerInvoiceCameraCapture()" class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+              <span>📸 Tirar Foto</span>
+            </button>
+            <button type="button" onclick="triggerInvoiceGalleryCapture()" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer">
+              <i data-lucide="image" class="w-3.5 h-3.5"></i>
+              <span>🖼️ Da Galeria</span>
+            </button>
+          </div>
+        </div>
+
+        <form onsubmit="handleSaveNewTx(event)" class="space-y-3 mt-3 text-xs">
         <div>
           <label class="block font-bold text-slate-700 mb-1">Tipo de Lançamento</label>
           <div class="grid grid-cols-3 gap-2">
@@ -12365,7 +12386,8 @@ html, body {
     // ==============================================================
     // 28. MULTIFOTO DE CUPOM LONGO COM IA E DESDUPLICAÇÃO AUTOMÁTICA
     // ==============================================================
-    let capturedInvoicePhotos = [];
+    window.capturedInvoicePhotos = window.capturedInvoicePhotos || [];
+    var capturedInvoicePhotos = window.capturedInvoicePhotos;
     let extractedReceiptItems = [];
     window.isInvoiceVoiceListening = false;
 
@@ -12452,7 +12474,10 @@ html, body {
     };
 
     // Callback Nativo Flutter: Resultado Completo de OCR da Câmera (Foto Única)
-    window.onNativeInvoiceOcrResult = function(ocrJsonStr, dataUrl) {
+    window.capturedInvoicePhotos = window.capturedInvoicePhotos || [];
+  var capturedInvoicePhotos = window.capturedInvoicePhotos;
+
+  window.onNativeInvoiceOcrResult = function(ocrJsonStr, dataUrl) {
       if (dataUrl) {
         capturedInvoicePhotos = [{
           id: Date.now() + Math.random(),
@@ -12521,7 +12546,7 @@ html, body {
     };
 
     // Aplicação Unificada dos Dados Extraídos no Modal da Nota Fiscal
-    function applyOcrResultToInvoiceModal(ocrData) {
+    window.applyOcrResultToInvoiceModal = function applyOcrResultToInvoiceModal(ocrData) {
       const storeInput = document.getElementById('invoiceExtractedStore');
       const totalInput = document.getElementById('invoiceExtractedTotal');
       const dateInput = document.getElementById('invoiceExtractedDate');
@@ -12583,6 +12608,17 @@ html, body {
         if (sum > 0) {
           totalInput.value = formatBRL(sum).replace('R$', '').trim();
         }
+      }
+
+      // 5. Forma de Pagamento
+      const payInput = document.getElementById('invoiceExtractedPayment');
+      if (payInput && ocrData.forma_pagamento) {
+        payInput.value = ocrData.forma_pagamento;
+      }
+
+      // 6. Preenche automaticamente campos da despesa em aberto (modalNewTx)
+      if (typeof window.fillNewTxFromReceiptOcr === 'function') {
+        window.fillNewTxFromReceiptOcr(ocrData);
       }
 
       if (typeof renderExtractedItemsPreview === 'function') {
@@ -12997,69 +13033,9 @@ html, body {
     }
 
     // Processamento com IA Multimodal (Gemini Vision) ou Leitor Inteligente Local
-    async function processInvoicePhotosWithAI() {
-      if (capturedInvoicePhotos.length === 0) return;
-
-      const ocrStatus = document.getElementById('invoiceOcrStatus');
-      const storeInput = document.getElementById('invoiceExtractedStore');
-      const totalInput = document.getElementById('invoiceExtractedTotal');
-      const dateInput = document.getElementById('invoiceExtractedDate');
-      const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
-
-      if (dateInput && !dateInput.value) dateInput.value = getLocalDateString();
-
-      // 1. Envio Multimodal para o Google Gemini Vision se API Key estiver configurada
-      if (apiKey) {
-        if (ocrStatus) ocrStatus.innerHTML = '<span class="text-purple-600 font-bold animate-pulse">🤖 Lendo partes do cupom com Google Gemini Multimodal AI...</span>';
-        try {
-          const partsPayload = [
-            { text: "Você é um especialista em ler notas fiscais e cupons fiscais brasileiros (NFC-e / SAT) longos divididos em fotos consecutivas. Junte todas as fotos, elimine repetições de produtos nas emendas das fotos e retorne estritamente em JSON puro sem markdown: {\"estabelecimento\": \"Nome da Loja\", \"data\": \"YYYY-MM-DD\", \"valor_total\": 0.00, \"itens\": [{\"produto\": \"Nome do Produto\", \"preco\": 0.00, \"qtd\": 1, \"unidade\": \"un\"}]}. O valor_total deve ser um float positivo com o valor total final pago." }
-          ];
-
-          capturedInvoicePhotos.forEach(p => {
-            const base64Data = (p.dataUrl || '').split(',')[1];
-            if (base64Data) {
-              partsPayload.push({
-                inline_data: { mime_type: "image/jpeg", data: base64Data }
-              });
-            }
-          });
-
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: partsPayload }],
-              generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
-            })
-          });
-
-          if (response.ok) {
-            const resData = await response.json();
-            const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-            const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(cleanJson);
-
-            if (parsed.estabelecimento && storeInput) storeInput.value = parsed.estabelecimento;
-            if (parsed.data && dateInput) dateInput.value = parsed.data;
-            if (parsed.valor_total && totalInput) {
-              totalInput.value = formatBRL(parsed.valor_total).replace('R$', '').trim();
-            }
-            extractedReceiptItems = Array.isArray(parsed.itens) ? parsed.itens : [];
-            renderExtractedItemsPreview();
-
-            if (ocrStatus) ocrStatus.innerHTML = '<span class="text-purple-700 font-bold">✓ Gemini AI: Nota fiscal e produtos lidos com sucesso!</span>';
-            showToastUndo(`IA identificou "${parsed.estabelecimento || 'Loja'}" e ${extractedReceiptItems.length} produtos!`, false);
-            return;
-          }
-        } catch (geminiErr) {
-          console.warn('Fallback para leitor inteligente de cupom:', geminiErr);
-        }
-      }
-
-      // Sem resposta valida da API, nao inventa produtos nem valores de demonstracao.
-      if (ocrStatus) {
-        ocrStatus.innerHTML = '<span class="text-amber-700 font-bold">Nao foi possivel ler a nota automaticamente. Confira a configuracao da IA ou preencha os dados manualmente.</span>';
+    function processInvoicePhotosWithAI() {
+      if (typeof window.processInvoicePhotosWithAI === 'function') {
+        window.processInvoicePhotosWithAI();
       }
     }
 
@@ -27257,99 +27233,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     window.renderCreditCardsUI = renderCreditCards;
 
     // 11. PROMPT E PARSER MULTIMODAL GEMINI FLASH VISION (TREINAMENTO ESPECIALISTA DIA)
-    window.processInvoicePhotosWithAI = async function() {
-      if (capturedInvoicePhotos.length === 0) return;
-
-      const ocrStatus = document.getElementById('invoiceOcrStatus');
-      const storeInput = document.getElementById('invoiceExtractedStore');
-      const totalInput = document.getElementById('invoiceExtractedTotal');
-      const dateInput = document.getElementById('invoiceExtractedDate');
-      const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
-
-      if (dateInput && !dateInput.value) dateInput.value = getLocalDateString();
-
-      if (apiKey) {
-        if (ocrStatus) ocrStatus.innerHTML = '<span class="text-purple-600 font-bold animate-pulse">🤖 Lendo cupom com Google Gemini Flash Vision...</span>';
-        try {
-          const systemInstruction = `Você é o Agente Especialista em Visão Computacional Fiscal do aplicativo ControlPig.
-Extraia dados de cupons fiscais brasileiros (NFC-e / SAT / DANFE) com 100% de precisão matemática.
-REGRAS:
-1. ESTABELECIMENTO: Nome fantasia limpo e amigável (Ex: "Dia" em vez de "Dia Brasil Sociedade Limitada", "Pão de Açúcar", "Carrefour").
-2. ITENS POR KG (Hortifrúti / Balança): Extraia quantidade fracionária (ex: 1.050 KG, 0.190 KG, 0.570 KG), preco_unitario do KG (ex: 6.99/kg) e unidade "KG".
-3. ITENS UNITÁRIOS: quantidade inteira (ex: 2 UN sacola a R$ 0,15 = R$ 0,30), unidade "UN".
-4. DESCONTOS: Em itens com desconto (ex: Lava Louças a R$ 5,29 com desconto de R$ 1,30), extraia preco_unitario 5.29, desconto_item 1.30 e subtotal_liquido 3.99.
-5. TOTAL DA NOTA: 'valor_liquido_pago' DEVE ser SEMPRE o "VALOR A PAGAR" líquido (já abatidos todos os descontos). Ex: R$ 20,09.
-6. EXPANDIR ABREVIAÇÕES: Converta abreviações fiscais em nomes comerciais limpos ("AGUA M.C/GAS DIA1.5L" -> "Água Mineral com Gás Dia 1.5L", "LAVA LOUC.CRI.DIA 1L" -> "Lava Louças Cristal Dia 1L").
-7. FOTOS CONSECUTIVAS: Se houver sobreposição entre fotos, não duplique nenhum item.
-Retorne estritamente em JSON puro sem markdown no formato:
-{
-  "estabelecimento": "Nome da Loja",
-  "data": "YYYY-MM-DD",
-  "valor_bruto": 0.00,
-  "desconto_total": 0.00,
-  "valor_liquido_pago": 0.00,
-  "categoria": "Mercado",
-  "itens": [
-    {
-      "item_num": 1,
-      "codigo": "código ou ean",
-      "produto": "Nome Comercial Limpo",
-      "quantidade": 1.0,
-      "unidade": "UN ou KG ou L",
-      "preco_unitario": 0.00,
-      "desconto_item": 0.00,
-      "subtotal_liquido": 0.00
-    }
-  ]
-}`;
-
-          const partsPayload = [{ text: systemInstruction }];
-          capturedInvoicePhotos.forEach(p => {
-            const base64Data = (p.dataUrl || '').split(',')[1];
-            if (base64Data) {
-              partsPayload.push({
-                inline_data: { mime_type: "image/jpeg", data: base64Data }
-              });
-            }
-          });
-
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.getActiveGeminiModel ? window.getActiveGeminiModel() : 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: partsPayload }],
-              generationConfig: { temperature: 0.1, response_mime_type: "application/json" }
-            })
-          });
-
-          if (response.ok) {
-            const resData = await response.json();
-            const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-            const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(cleanJson);
-
-            if (parsed.estabelecimento && storeInput) storeInput.value = parsed.estabelecimento;
-            if (parsed.data && dateInput) dateInput.value = parsed.data;
-            const finalVal = parsed.valor_liquido_pago || parsed.valor_total || 0;
-            if (finalVal && totalInput) {
-              totalInput.value = formatBRL(finalVal).replace('R$', '').trim();
-            }
-
-            // Deduplicação e normalização dos itens extraídos
-            let rawItens = Array.isArray(parsed.itens) ? parsed.itens : [];
-            extractedReceiptItems = deduplicateInvoiceItems(rawItens);
-            renderExtractedItemsPreview();
-
-            if (ocrStatus) ocrStatus.innerHTML = `<span class="text-emerald-600 font-bold">✨ ${extractedReceiptItems.length} itens extraídos e compilados com precisão!</span>`;
-            return;
-          }
-        } catch (geminiErr) {
-          console.warn('Erro ao chamar Gemini Flash Vision, utilizando fallback local:', geminiErr);
-        }
+    window.processInvoicePhotosWithAI = function() {
+      if (!Array.isArray(capturedInvoicePhotos) || capturedInvoicePhotos.length === 0) return;
+      const combinedOcr = typeof mergeAllCapturedPhotosOcr === 'function' ? mergeAllCapturedPhotosOcr() : null;
+      if (combinedOcr) {
+        if (typeof window.applyOcrResultToInvoiceModal === "function") window.applyOcrResultToInvoiceModal(combinedOcr);
+        if (typeof window.fillNewTxFromReceiptOcr === 'function') window.fillNewTxFromReceiptOcr(combinedOcr);
       }
-
-      // Fallback local caso não tenha API key configurada
-      fallbackLocalInvoiceOcr();
     };
 
     // Algoritmo de Deduplicação de Itens para Notas Extensas
@@ -27855,6 +27745,9 @@ Retorne estritamente em JSON puro sem markdown no formato:
     return result;
   };
 
+  window.capturedInvoicePhotos = window.capturedInvoicePhotos || [];
+  var capturedInvoicePhotos = window.capturedInvoicePhotos;
+
   window.onNativeInvoiceOcrResult = function(ocrJsonStr, dataUrl) {
     let ocrData = null;
     try {
@@ -27875,7 +27768,7 @@ Retorne estritamente em JSON puro sem markdown no formato:
     }
 
     const combinedOcr = mergeAllCapturedPhotosOcr(ocrData);
-    applyOcrResultToInvoiceModal(combinedOcr);
+    if (typeof window.applyOcrResultToInvoiceModal === "function") window.applyOcrResultToInvoiceModal(combinedOcr);
     window.processInvoicePhotosWithAI();
   };
 
@@ -27901,7 +27794,7 @@ Retorne estritamente em JSON puro sem markdown no formato:
     }
 
     const combinedOcr = mergeAllCapturedPhotosOcr(ocrData);
-    applyOcrResultToInvoiceModal(combinedOcr);
+    if (typeof window.applyOcrResultToInvoiceModal === "function") window.applyOcrResultToInvoiceModal(combinedOcr);
     window.processInvoicePhotosWithAI();
   };
 
@@ -28009,106 +27902,16 @@ Retorne estritamente em JSON puro sem markdown no formato:
     if (window.lucide) lucide.createIcons();
   };
 
-  window.processInvoicePhotosWithAI = async function() {
-    if (capturedInvoicePhotos.length === 0) return;
-
+  window.processInvoicePhotosWithAI = function() {
+    if (!Array.isArray(capturedInvoicePhotos) || capturedInvoicePhotos.length === 0) return;
     const ocrStatus = document.getElementById('invoiceOcrStatus');
-    const storeInput = document.getElementById('invoiceExtractedStore');
-    const totalInput = document.getElementById('invoiceExtractedTotal');
-    const dateInput = document.getElementById('invoiceExtractedDate');
-    const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
-
-    if (dateInput && !dateInput.value) dateInput.value = getLocalDateString();
-
-    const combinedRawText = capturedInvoicePhotos
-      .map((p, i) => p.ocrData?.raw_text ? `[Texto OCR Foto ${i + 1}]:\n${p.ocrData.raw_text}` : '')
-      .filter(Boolean)
-      .join('\n\n');
-
-    if (apiKey) {
+    const combinedOcr = typeof mergeAllCapturedPhotosOcr === 'function' ? mergeAllCapturedPhotosOcr() : null;
+    if (combinedOcr) {
+      if (typeof window.applyOcrResultToInvoiceModal === "function") window.applyOcrResultToInvoiceModal(combinedOcr);
+      if (typeof window.fillNewTxFromReceiptOcr === 'function') window.fillNewTxFromReceiptOcr(combinedOcr);
       if (ocrStatus) {
-        ocrStatus.innerHTML = `<span class="text-purple-600 font-bold animate-pulse">🤖 Compilando ${capturedInvoicePhotos.length} ${capturedInvoicePhotos.length === 1 ? 'foto' : 'fotos'} da nota com Google Gemini Flash Vision...</span>`;
-      }
-      try {
-        const systemInstruction = `Você é o Agente Especialista em Visão Computacional Fiscal do aplicativo ControlPig.
-Analise a(s) imagem(ns) do cupom fiscal brasileiro (NFC-e / SAT / DANFE) e o texto auxiliar do OCR para compilar SOMENTE o necessário com 100% de precisão:
-1. ESTABELECIMENTO: Nome fantasia limpo (Ex: "Dia" em vez de "Dia Brasil Sociedade Limitada", "Assaí Atacadista", "Carrefour").
-2. PRODUTO E UNIDADE DE MEDIDA:
-   - Expanda abreviações para nomes legíveis (Ex: "AGUA M.C/GAS DIA1.5L" -> "Água Mineral com Gás Dia 1,5L", "LAVA LOUC.CRI.DIA 1L" -> "Lava Louças Cristal Dia 1L", "SACOLA VERDE" -> "Sacola Verde", "MEXERICA MORCOTE KG" -> "Mexerica Morcote", "LIMAO TAITI KG" -> "Limão Taiti", "BANANA NANICA KG" -> "Banana Nanica").
-   - Identifique a unidade ("UN", "KG", "L") e a quantidade comprada (ex: 2 UN, 1.050 KG, 0.190 KG, 0.570 KG).
-3. PREÇO UNITÁRIO, DESCONTO NO ITEM E SUBTOTAL LÍQUIDO:
-   - Se houver desconto em algum item (ex: Lava Louças de R$ 5,29 com desconto de R$ 1,30), registre preco_unitario: 5.29, desconto_item: 1.30 e subtotal_liquido: 3.99.
-   - Em itens por KG (ex: 1,050 kg x 6,99/kg), preco_unitario é 6.99 e subtotal_liquido é 7.34.
-4. VALOR LÍQUIDO FINAL DA NOTA:
-   - 'valor_liquido_pago' DEVE SER SEMPRE o "VALOR A PAGAR" líquido final (já descontados todos os descontos, ex: 20.09).
-5. MÚLTIPLAS FOTOS:
-   - Se a nota foi dividida em 2 ou mais fotos com sobreposição, elimine qualquer repetição de item pelo número sequencial do item (001, 002...) ou código/descrição.
-
-${combinedRawText ? 'TEXTO BRUTO AUXILIAR DO OCR:\n' + combinedRawText : ''}
-
-Retorne ESTRITAMENTE um JSON válido puro (sem markdown):
-{
-  "estabelecimento": "Nome Limpo da Loja",
-  "data": "YYYY-MM-DD",
-  "valor_bruto": 0.00,
-  "desconto_total": 0.00,
-  "valor_liquido_pago": 0.00,
-  "itens": [
-    {
-      "item_num": 1,
-      "codigo": "",
-      "produto": "Nome do Produto",
-      "quantidade": 1.0,
-      "unidade": "UN | KG | L",
-      "preco_unitario": 0.00,
-      "desconto_item": 0.00,
-      "subtotal_liquido": 0.00
-    }
-  ]
-}`;
-
-        const partsPayload = [{ text: systemInstruction }];
-        capturedInvoicePhotos.forEach(p => {
-          const base64Data = (p.dataUrl || '').split(',')[1];
-          if (base64Data) {
-            partsPayload.push({
-              inline_data: { mime_type: "image/jpeg", data: base64Data }
-            });
-          }
-        });
-
-        const geminiRes = await window.callGeminiAPI(
-          partsPayload,
-          { temperature: 0.1, response_mime_type: "application/json" },
-          apiKey
-        );
-
-        if (geminiRes && geminiRes.text) {
-          const cleanJson = geminiRes.text.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(cleanJson);
-
-          if (parsed.estabelecimento && storeInput) storeInput.value = parsed.estabelecimento;
-          if (parsed.data && dateInput) dateInput.value = parsed.data;
-          const finalVal = Number(parsed.valor_liquido_pago || parsed.valor_total || 0);
-          if (finalVal > 0 && totalInput) {
-            totalInput.value = formatBRL(finalVal).replace('R$', '').trim();
-          }
-
-          const rawItens = Array.isArray(parsed.itens) ? parsed.itens : [];
-          extractedReceiptItems = window.deduplicateReceiptItemsList(rawItens);
-          if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
-
-          if (ocrStatus) {
-            ocrStatus.innerHTML = `<span class="text-emerald-600 font-bold">✨ Gemini Flash (${geminiRes.model}): ${extractedReceiptItems.length} itens compilados • Total líquido: ${formatBRL(finalVal)}!</span>`;
-          }
-          showToastUndo(`✨ Nota compilada pela IA: ${parsed.estabelecimento || 'Mercado'} (${extractedReceiptItems.length} itens - ${formatBRL(finalVal)})`, false);
-          return;
-        }
-      } catch (geminiErr) {
-        console.warn('Aviso ao usar Gemini Vision na nota fiscal:', geminiErr);
-        if (ocrStatus) {
-          ocrStatus.innerHTML = `<span class="text-amber-700 font-bold">⚠️ OCR Local aplicado (${extractedReceiptItems.length} itens). Aviso IA: ${geminiErr.message}</span>`;
-        }
+        const count = combinedOcr.itens ? combinedOcr.itens.length : 0;
+        ocrStatus.innerHTML = `<span class="text-emerald-700 dark:text-emerald-300 font-bold">⚡ Google ML Kit (On-Device): ${count} ${count === 1 ? 'item identificado' : 'itens identificados'} • Total: ${formatBRL(combinedOcr.valor_total || 0)}</span>`;
       }
     }
   };
@@ -37787,6 +37590,383 @@ window.confirmEnterSectionFromPitaco = function() {
       m.style.display = 'none';
     }
   };
+</script>
+
+<!-- Correções de fluxo e atualização das telas aprovadas -->
+<script id="ctrlpigRequestedFunctionalFixes">
+(function () {
+  const getCycleTransactions = () => {
+    try {
+      if (typeof getTransactionsForActiveCycle === 'function') return getTransactionsForActiveCycle() || [];
+      return Array.isArray(window.transactions) ? window.transactions : [];
+    } catch (_) { return []; }
+  };
+
+  function refreshBalanceMascot(txs) {
+    const income = txs.filter(t => t.tipo === 'Receita').reduce((sum, t) => sum + (Number(t.valor) || 0), 0);
+    const expenses = txs.filter(t => t.tipo !== 'Receita').reduce((sum, t) => sum + (Number(t.valor) || 0), 0);
+    const balance = income - expenses;
+    const committed = income > 0 ? expenses / income : (expenses > 0 ? 1 : 0);
+    const image = document.getElementById('mascotImage');
+    if (!image) return;
+    const state = balance < 0 ? 'negativo' : committed >= 0.8 ? 'alerta' : 'positivo';
+    image.src = `images/mascote_saldo_${state}.png`;
+    image.onerror = function () { this.onerror = null; this.src = `assets/images/mascote_saldo_${state}.png`; };
+    image.alt = state === 'negativo' ? 'Piggy triste: saldo negativo' : state === 'alerta' ? 'Piggy preocupado: saldo comprometido' : 'Piggy positivo';
+  }
+
+  function refreshHomeCategoryBreakdown(txs) {
+    const totals = new Map();
+    txs.filter(t => t.tipo !== 'Receita').forEach(t => {
+      const name = String(t.categoria || 'Outros');
+      totals.set(name, (totals.get(name) || 0) + (Number(t.valor) || 0));
+    });
+    const sorted = [...totals.entries()].sort((a, b) => b[1] - a[1]);
+    const totalExpenses = sorted.reduce((sum, item) => sum + item[1], 0);
+    const top = sorted.slice(0, 8);
+    if (sorted.length > 8) top.push(['Outras', sorted.slice(8).reduce((sum, item) => sum + item[1], 0)]);
+    const chartCanvas = document.getElementById('previewDonutChart');
+    const colors = ['#2563EB', '#F59E0B', '#0EA5E9', '#A855F7', '#10B981', '#F43F5E', '#6366F1', '#14B8A6', '#94A3B8'];
+    if (chartCanvas && window.Chart && window.Chart.getChart) {
+      const chart = window.Chart.getChart(chartCanvas);
+      if (chart) {
+        chart.data.labels = top.map(item => item[0]);
+        chart.data.datasets[0].data = top.map(item => item[1]);
+        chart.data.datasets[0].backgroundColor = colors.slice(0, top.length);
+        chart.update();
+      }
+    }
+    const dashboard = document.getElementById('screen_dashboard');
+    if (!dashboard) return;
+    const heading = [...dashboard.querySelectorAll('h3')].find(el => /despesas por categoria/i.test(el.textContent));
+    const card = heading && heading.closest('.p-4');
+    const totalLabel = card && card.querySelector('.text-base.font-black.text-slate-900');
+    if (totalLabel) totalLabel.textContent = typeof formatBRL === 'function' ? formatBRL(totalExpenses, 'despesa') : `R$ ${totalExpenses.toFixed(2)}`;
+    const row = card && card.querySelector('.flex.items-center.justify-around');
+    const legend = row && row.children[1];
+    if (legend) {
+      legend.className = 'space-y-1 text-xs w-full max-w-[190px] max-h-40 overflow-y-auto';
+      legend.replaceChildren(...top.map((item, index) => {
+        const line = document.createElement('div');
+        line.className = 'flex items-center justify-between gap-2';
+        const left = document.createElement('div');
+        left.className = 'flex items-center gap-1.5 min-w-0';
+        const dot = document.createElement('span');
+        dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0';
+        dot.style.backgroundColor = colors[index];
+        const label = document.createElement('span');
+        label.className = 'text-slate-700 font-medium text-[11px] truncate';
+        label.textContent = item[0];
+        const value = document.createElement('span');
+        value.className = 'font-bold text-slate-900 text-[11px] whitespace-nowrap';
+        value.textContent = totalExpenses > 0 ? `${Math.round(item[1] / totalExpenses * 100)}%` : '0%';
+        left.append(dot, label);
+        line.append(left, value);
+        return line;
+      }));
+    }
+  }
+
+  function refreshHomeRecentTransactions(txs) {
+    const dashboard = document.getElementById('screen_dashboard');
+    if (!dashboard) return;
+    const heading = [...dashboard.querySelectorAll('h3')].find(el => /lan[cç]amentos recentes/i.test(el.textContent));
+    const card = heading && heading.closest('.bg-white.rounded-3xl');
+    const list = card && [...card.querySelectorAll('div')].find(el => el.classList.contains('space-y-2.5'));
+    if (!list) return;
+    const latest = [...txs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
+    if (!latest.length) {
+      list.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
+      return;
+    }
+    list.replaceChildren(...latest.map(t => {
+      const isIncome = t.tipo === 'Receita';
+      const row = document.createElement('div');
+      row.className = 'flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-100';
+      row.innerHTML = `<div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-xl ${isIncome ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} flex items-center justify-center font-bold text-sm flex-shrink-0"><i data-lucide="${isIncome ? 'arrow-down-left' : 'shopping-bag'}" class="w-4 h-4"></i></div><div class="min-w-0"><span class="text-xs font-bold text-slate-900 block leading-tight truncate"></span><span class="text-[10px] text-slate-500"></span></div></div><span class="text-xs font-black whitespace-nowrap ${isIncome ? 'text-emerald-700' : 'text-rose-600'}"></span>`;
+      row.querySelector('.text-xs.font-bold').textContent = t.descricao || t.categoria || 'Lançamento';
+      const rowSpans = row.querySelectorAll('span');
+      if (rowSpans[1]) rowSpans[1].textContent = `${t.data || ''} · ${t.categoria || 'Geral'}`;
+      const value = rowSpans[2];
+      const amount = Number(t.valor) || 0;
+      value.textContent = `${isIncome ? '+' : '-'} ${typeof formatBRL === 'function' ? formatBRL(amount, isIncome ? 'receitas' : 'despesa') : `R$ ${amount.toFixed(2)}`}`;
+      row.onclick = () => { if (typeof window.openEditTxModal === 'function') window.openEditTxModal(t.id); };
+      row.classList.add('cursor-pointer');
+      return row;
+    }));
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function updateTipsFromAdmin() {
+    let custom = [];
+    try {
+      const stored = localStorage.getItem('financas_custom_piggy_tips');
+      if (stored) custom = JSON.parse(stored);
+    } catch (_) {}
+    const defaults = typeof DEFAULT_PIGGY_TIPS !== 'undefined' && Array.isArray(DEFAULT_PIGGY_TIPS)
+      ? DEFAULT_PIGGY_TIPS
+      : (typeof getActivePiggyTips === 'function' ? getActivePiggyTips() : []);
+    return [...defaults, ...(Array.isArray(custom) ? custom : [])].filter(Boolean);
+  }
+  window.stepPiggyTip = function (delta) {
+    const tips = updateTipsFromAdmin();
+    if (!tips.length) return;
+    window.piggyTips = tips;
+    window.currentTipIndex = ((Number(window.currentTipIndex) || 0) + delta + tips.length) % tips.length;
+    const tip = tips[window.currentTipIndex];
+    const icon = document.getElementById('previewTipBadgeIcon');
+    const category = document.getElementById('previewTipCategory');
+    const index = document.getElementById('previewTipIndex');
+    const text = document.getElementById('previewTipText');
+    const dots = document.getElementById('previewTipDots');
+    if (icon) icon.textContent = tip.icon || '💡';
+    if (category) category.textContent = tip.category || 'Dica do Piggy';
+    if (index) index.textContent = `${window.currentTipIndex + 1}/${tips.length}`;
+    if (text) text.textContent = tip.text || '';
+    if (dots) dots.replaceChildren(...tips.map((_, i) => {
+      const dot = document.createElement('span');
+      dot.className = i === window.currentTipIndex ? 'w-2 h-1 rounded-full bg-blue-600' : 'w-1 h-1 rounded-full bg-blue-300';
+      return dot;
+    }));
+  };
+
+  function prepareChat() {
+    const screen = document.getElementById('screen_chat');
+    if (!screen) return;
+    const memberLabels = [...screen.querySelectorAll('span')].filter(el => ['Lucas', 'Sofia'].includes(el.textContent.trim()));
+    memberLabels.forEach(el => el.closest('.flex.flex-col')?.remove());
+    const messages = [...screen.querySelectorAll('div')].find(el => el.classList.contains('flex-1') && el.classList.contains('p-4') && el.classList.contains('overflow-y-auto'));
+    if (messages) messages.id = 'screenChatMessagesList';
+    const input = screen.querySelector('input[placeholder^="Escreva uma mensagem"]');
+    if (input) {
+      input.id = 'inputChatMessageClean';
+      input.setAttribute('enterkeyhint', 'send');
+      const bar = input.parentElement;
+      if (bar && bar.tagName !== 'FORM') {
+        const form = document.createElement('form');
+        form.id = 'screenChatMessageForm';
+        form.className = bar.className.replace(/\bmb-16\b/g, '').trim() + ' pb-[env(safe-area-inset-bottom)]';
+        form.onsubmit = window.handleSendCleanChatMessage;
+        bar.parentNode.insertBefore(form, bar);
+        while (bar.firstChild) form.appendChild(bar.firstChild);
+        bar.remove();
+        const send = form.querySelector('button:last-child');
+        if (send) { send.type = 'submit'; send.title = 'Enviar mensagem'; }
+      }
+    }
+    const form = document.getElementById('screenChatMessageForm');
+    if (form) {
+      form.style.position = 'sticky';
+      form.style.bottom = '0';
+      form.style.zIndex = '5';
+    }
+    if (typeof window.renderCleanChatStream === 'function') window.renderCleanChatStream();
+  }
+
+  function unifyDashboardCards() {
+    const dashboard = document.getElementById('screen_dashboard');
+    if (!dashboard || dashboard.dataset.analysisUnified === 'true') return;
+    const headings = [...dashboard.querySelectorAll('h3')];
+    const categoryHeading = headings.find(el => /despesas por categoria/i.test(el.textContent));
+    const memberHeading = headings.find(el => /gastos por membro/i.test(el.textContent));
+    const categoryCard = categoryHeading && categoryHeading.closest('.bg-white.rounded-3xl');
+    const memberCard = memberHeading && memberHeading.closest('.bg-white.rounded-3xl');
+    if (!categoryCard || !memberCard || categoryCard.parentElement !== memberCard.parentElement) return;
+    const group = document.createElement('section');
+    group.className = 'bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden';
+    categoryCard.before(group);
+    categoryCard.className = 'p-4';
+    memberCard.className = 'p-4 border-t border-slate-100';
+    group.append(categoryCard, memberCard);
+    dashboard.dataset.analysisUnified = 'true';
+  }
+
+  function applyRequestedLayoutFixes() {
+    const dashboard = document.getElementById('screen_dashboard');
+    const transactionScreen = document.getElementById('screen_transacoes');
+    [dashboard, transactionScreen].filter(Boolean).forEach(screen => {
+      screen.querySelectorAll('[id*="ReceitasVal"], [id*="DespesasVal"]').forEach(el => {
+        el.style.whiteSpace = 'nowrap';
+        el.style.fontSize = 'clamp(0.78rem, 4vw, 1.25rem)';
+      });
+    });
+    const family = document.getElementById('screen_familia');
+    const explore = family && [...family.querySelectorAll('button')].find(el => /explorar m[oó]dulos/i.test(el.textContent));
+    if (explore) {
+      const tip = document.createElement('p');
+      tip.className = 'mt-3 text-xs font-semibold text-blue-100 leading-relaxed';
+      tip.textContent = 'Dica para a família: conversem sobre as metas do mês e combinem juntos como cuidar do orçamento e da rotina da casa.';
+      explore.replaceWith(tip);
+    }
+    [transactionScreen].filter(Boolean).forEach(screen => {
+      screen.querySelectorAll('.grid-cols-4').forEach(grid => {
+        const tile = [...grid.children].find(el => /categorias/i.test(el.textContent));
+        if (tile) tile.remove();
+        if (grid.children.length === 3) grid.classList.replace('grid-cols-4', 'grid-cols-3');
+      });
+    });
+    if (dashboard) {
+      const installmentsTitle = [...dashboard.querySelectorAll('h3')].find(el => /compras parceladas ativas/i.test(el.textContent));
+      const installmentsCard = installmentsTitle && installmentsTitle.closest('.bg-white.rounded-3xl');
+      const button = installmentsCard && installmentsCard.querySelector('button');
+      if (button) {
+        button.textContent = 'Ver parcelas ›';
+        button.onclick = function () {
+          if (typeof window.openInstallmentsDetailModal === 'function') window.openInstallmentsDetailModal();
+        };
+      }
+    }
+    const voiceLabel = [...document.querySelectorAll('div')].find(el => el.childElementCount === 0 && /privacidade de voz no alarme/i.test(el.textContent));
+    const voiceCard = voiceLabel && voiceLabel.parentElement?.parentElement?.parentElement;
+    if (voiceCard) {
+      voiceCard.className = voiceCard.className.replace('bg-slate-800/60', 'bg-sky-50 dark:bg-sky-950/40').replace('border-slate-700', 'border-sky-200 dark:border-sky-800');
+      voiceLabel.className = 'font-bold text-slate-800 dark:text-white';
+      const voiceDescription = voiceLabel.parentElement?.querySelector('.text-slate-400');
+      if (voiceDescription) voiceDescription.className = 'text-[10px] text-slate-600 dark:text-slate-400';
+    }
+    unifyDashboardCards();
+  }
+
+  const originalRenderChat = window.renderCleanChatStream;
+  if (typeof originalRenderChat === 'function') {
+    window.renderCleanChatStream = function (...args) {
+      const result = originalRenderChat.apply(this, args);
+      const source = document.getElementById('chatMessagesList');
+      const target = document.getElementById('screenChatMessagesList');
+      if (source && target) {
+        target.innerHTML = source.innerHTML;
+        requestAnimationFrame(() => { target.scrollTop = target.scrollHeight; });
+      }
+      return result;
+    };
+  }
+  const originalSendChat = window.handleSendCleanChatMessage;
+  if (typeof originalSendChat === 'function') {
+    window.handleSendCleanChatMessage = function (event) {
+      const input = event?.currentTarget?.querySelector('input');
+      if (!input) return originalSendChat.call(this, event);
+      const previousMainInput = document.getElementById('inputChatMessageClean');
+      const previousId = input.id;
+      const previousOtherId = previousMainInput && previousMainInput !== input ? previousMainInput.id : null;
+      if (previousMainInput && previousMainInput !== input) previousMainInput.removeAttribute('id');
+      input.id = 'inputChatMessageClean';
+      try { return originalSendChat.call(this, event); }
+      finally {
+        input.id = previousId;
+        if (previousMainInput && previousMainInput !== input) previousMainInput.id = previousOtherId || 'inputChatMessageClean';
+      }
+    };
+  }
+
+  const originalSync = window.syncApprovedDesignWithAppData;
+  if (typeof originalSync === 'function') {
+    window.syncApprovedDesignWithAppData = function (...args) {
+      const result = originalSync.apply(this, args);
+      const txs = getCycleTransactions();
+      refreshBalanceMascot(txs);
+      refreshHomeCategoryBreakdown(txs);
+      refreshHomeRecentTransactions(txs);
+      return result;
+    };
+  }
+  const originalSaveData = window.saveData;
+  if (typeof originalSaveData === 'function') {
+    window.saveData = function (...args) {
+      const result = originalSaveData.apply(this, args);
+      setTimeout(() => {
+        if (typeof window.updateDashboard === 'function') window.updateDashboard();
+        if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData();
+        if (typeof window.renderTransactionsTable === 'function') window.renderTransactionsTable();
+      }, 0);
+      return result;
+    };
+  }
+  const originalSwitchScreen = window.switchScreen;
+  if (typeof originalSwitchScreen === 'function') {
+    window.switchScreen = function (screenKey, ...args) {
+      const result = originalSwitchScreen.call(this, screenKey, ...args);
+      if (screenKey === 'chat' && typeof window.renderCleanChatStream === 'function') window.renderCleanChatStream();
+      return result;
+    };
+  }
+
+  const initialize = () => {
+    window.piggyTips = updateTipsFromAdmin();
+    if (window.piggyTips.length) window.stepPiggyTip(0);
+    prepareChat();
+    applyRequestedLayoutFixes();
+    refreshBalanceMascot(getCycleTransactions());
+    refreshHomeCategoryBreakdown(getCycleTransactions());
+    refreshHomeRecentTransactions(getCycleTransactions());
+    if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData();
+    if (window.lucide) window.lucide.createIcons();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
+  else initialize();
+  window.addEventListener('load', () => {
+    const txs = getCycleTransactions();
+    refreshHomeCategoryBreakdown(txs);
+    refreshHomeRecentTransactions(txs);
+  }, { once: true });
+  window.addEventListener('resize', () => {
+    const input = document.activeElement;
+    if (input && input.id === 'inputChatMessageClean') requestAnimationFrame(() => {
+      const list = document.getElementById('screenChatMessagesList');
+      if (list) list.scrollTop = list.scrollHeight;
+    });
+  });
+})();
+
+
+    // ==============================================================
+    // PREENCHIMENTO AUTOMÁTICO DE DESPESAS VIA GOOGLE ML KIT (LOCAL)
+    // ==============================================================
+    window.fillNewTxFromReceiptOcr = function(ocrJsonOrObj) {
+      let d = null;
+      try {
+        d = typeof ocrJsonOrObj === 'object' ? ocrJsonOrObj : JSON.parse(ocrJsonOrObj);
+      } catch (e) {
+        return;
+      }
+      if (!d) return;
+
+      const txDesc = document.getElementById('newTxDescricao');
+      const txVal = document.getElementById('newTxValor');
+      const txData = document.getElementById('newTxData');
+      const txCat = document.getElementById('newTxCategoria');
+      const txCatText = document.getElementById('btnPickerText_newTxCategoria');
+
+      if (txDesc && d.estabelecimento && d.estabelecimento !== 'Supermercado') {
+        txDesc.value = d.estabelecimento;
+      } else if (txDesc && !txDesc.value) {
+        txDesc.value = d.estabelecimento || 'Supermercado';
+      }
+
+      if (txVal && d.valor_total && Number(d.valor_total) > 0) {
+        txVal.value = formatBRL(d.valor_total).replace('R$', '').trim();
+      }
+
+      if (txData && d.data) {
+        txData.value = d.data;
+      }
+
+      if (txCat) {
+        txCat.value = 'Supermercado';
+        if (txCatText) txCatText.innerHTML = '🛒 Supermercado';
+      }
+
+      const radioVar = document.querySelector('input[name="newTxTipo"][value="Despesa Variável"]');
+      if (radioVar) {
+        radioVar.checked = true;
+        if (typeof updateTxTipoExplanation === 'function') updateTxTipoExplanation('new');
+      }
+
+      if (typeof showToastUndo === 'function') {
+        const valFormatted = d.valor_total ? formatBRL(d.valor_total) : 'R$ 0,00';
+        showToastUndo(`⚡ Despesa preenchida via Google ML Kit: ${d.estabelecimento || 'Nota Fiscal'} (${valFormatted})`, false);
+      }
+    };
+
 </script>
 
 </body>

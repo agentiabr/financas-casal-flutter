@@ -58,10 +58,18 @@ class NfceNumberParser {
   static String normalizeUnit(String? raw) {
     if (raw == null) return 'UN';
     var clean = raw
-        .replaceAll(RegExp(r'un(id(ade)?)?[:\s]*', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'^(?:UNIDADE|UNID|UND|UN)\s*:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'[^\wÀ-ÿ]'), '')
         .trim()
         .toUpperCase();
+
+    // Algumas páginas SP concatenam o rótulo "UN:" ao texto da unidade
+    // ao extrair o conteúdo do HTML (por exemplo, "UNKG").
+    if (clean.startsWith('UN') &&
+        const {'KG', 'KGS', 'KILO', 'QUILO', 'L', 'LT', 'LTS'}
+            .contains(clean.substring(2))) {
+      clean = clean.substring(2);
+    }
 
     if (clean.isEmpty) return 'UN';
 

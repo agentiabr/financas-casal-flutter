@@ -1021,6 +1021,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         } else if (typeof window.onNativeInvoicePhotoCaptured === 'function') {
           window.onNativeInvoicePhotoCaptured('$safeDataUrl');
         }
+        if (typeof window.fillNewTxFromReceiptOcr === 'function') {
+          window.fillNewTxFromReceiptOcr('$safeJson');
+        }
       """);
     } catch (e) {
       debugPrint('Erro ao capturar foto da nota com OCR: $e');
@@ -1173,6 +1176,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           window.onNativeInvoiceMultiOcrResult('$safeJson', $jsonArray);
         } else if (typeof window.onNativeInvoicePhotosCaptured === 'function') {
           window.onNativeInvoicePhotosCaptured($jsonArray);
+        }
+        if (typeof window.fillNewTxFromReceiptOcr === 'function') {
+          window.fillNewTxFromReceiptOcr('$safeJson');
         }
       """);
     } catch (e) {

@@ -429,6 +429,21 @@ class NfceParser {
       }
     }
 
+    // O layout nacional pode apresentar os totais em .totais-nota, sem #totalNota.
+    if (discount == 0.0) {
+      final discountRows = doc.querySelectorAll(
+        '.totais-nota .linha, #totalNota #linhaTotal, #totalNota .linhaTotal',
+      );
+      for (final row in discountRows) {
+        final text = row.text.toLowerCase();
+        if (text.contains('desconto') && !text.contains('sem desconto')) {
+          final value = row.querySelector('.totalNumb');
+          discount = NfceNumberParser.parseCurrency(value?.text ?? row.text);
+          if (discount > 0.0) break;
+        }
+      }
+    }
+
     // 2. Busca genérica por classes de destaque de total (.totalNumb.txtMax ou .txtMax)
     if (total == 0.0) {
       final txtMax = doc.querySelector('.totalNumb.txtMax') ?? doc.querySelector('.txtMax');
