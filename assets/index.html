@@ -3485,9 +3485,9 @@ html, body {
     color: #1E293B !important;
   }
 
-  /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO */
+  /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO - TOPO ABSOLUTO */
   #modalMascotSectionPitaco {
-    z-index: 150 !important;
+    z-index: 99999 !important;
   }
   .mascot-speech-bubble-v2 {
     background: #FFFFFF !important;
@@ -34900,13 +34900,14 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 <!-- ============================================================================== -->
 <!-- 1. MODAL DE PITACO INTELIGENTE COM FUNDO DA SEÇÃO EMBAÇADO (BACKDROP BLUR)    -->
 <!-- ============================================================================== -->
-<div id="modalMascotSectionPitaco" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
+<div id="modalMascotSectionPitaco" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4">
   <!-- Fundo Embaçado sobre a Seção com blur moderno -->
   <div class="absolute inset-0 bg-slate-950/75 backdrop-blur-md transition-all duration-300 pointer-events-auto" onclick="closeMascotPitaco()"></div>
 
   <!-- Card Balão com Mascote Oficial Caracterizado e Cores Oficiais -->
   <div class="relative z-10 max-w-sm w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
     <div class="mascot-speech-bubble-v2 p-5 text-center text-slate-900 dark:text-slate-100 mb-3 w-full relative bg-white dark:bg-slate-900 border-2 border-sky-400 rounded-3xl shadow-2xl">
+      <button type="button" onclick="confirmEnterSectionFromPitaco()" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer shadow-2xs active:scale-90" title="Pular dica e entrar na seção">✕</button>
       <div id="mascotPitacoBadge" class="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-300 border-sky-300">
         ⚡ Dica do Piggy
       </div>
@@ -35043,50 +35044,68 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   let currentPendingSectionCallback = null;
 
-  // Interceptar a abertura de cada seção para exibir a Dica com Fundo Embaçado
-  window.triggerSectionWithIntelligentMascot = function(sectionKey, callback) {
-    currentPendingSectionCallback = callback;
-    const skipKey = 'financas_skip_pitaco_' + sectionKey;
-    if (localStorage.getItem(skipKey) === 'true') {
-      if (typeof callback === 'function') callback();
-      return;
-    }
+  // Interceptar a abertura de cada seção para exibir a Dica com Fundo Embaçado ANTES de entrar
+  window._pendingSectionCallback = null;
+  window.currentActiveSectionKey = null;
 
-    const pitaco = generateContextualPitaco(sectionKey);
+  window.triggerSectionWithIntelligentMascot = function(sectionKey, callback) {
+    window._pendingSectionCallback = callback;
+    window.currentActiveSectionKey = sectionKey;
+
     const modal = document.getElementById('modalMascotSectionPitaco');
     if (!modal) {
       if (typeof callback === 'function') callback();
       return;
     }
 
-    document.getElementById('mascotPitacoHeader').innerText = pitaco.header;
-    document.getElementById('mascotPitacoBadge').innerHTML = pitaco.badge;
-    document.getElementById('mascotPitacoBadge').className = 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ' + pitaco.badgeColor;
-    document.getElementById('mascotPitacoText').innerHTML = pitaco.text;
-    document.getElementById('mascotPitacoImg').src = pitaco.img;
-    document.getElementById('btnEnterSectionLabel').innerText = 'Acessar ' + pitaco.header;
+    const pitaco = generateContextualPitaco(sectionKey);
+    const header = document.getElementById('mascotPitacoHeader');
+    const badge = document.getElementById('mascotPitacoBadge');
+    const text = document.getElementById('mascotPitacoText');
+    const img = document.getElementById('mascotPitacoImg');
+    const btnLabel = document.getElementById('btnEnterSectionLabel');
+    const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
 
+    if (header) header.innerText = pitaco.header;
+    if (badge) {
+      badge.innerHTML = pitaco.badge;
+      badge.className = 'inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ' + pitaco.badgeColor;
+    }
+    if (text) text.innerHTML = pitaco.text;
+    if (img && pitaco.img) img.src = pitaco.img;
+    if (btnLabel) btnLabel.innerText = 'Continuar para ' + pitaco.header;
+    if (checkSkip) checkSkip.checked = false;
+
+    // Garante que o modal fique com z-index máximo e visível antes de abrir a seção
+    modal.style.zIndex = '99999';
     modal.classList.remove('hidden');
+
+    if (window.lucide) lucide.createIcons();
   };
 
   window.confirmEnterSectionFromPitaco = function() {
     const modal = document.getElementById('modalMascotSectionPitaco');
     if (modal) modal.classList.add('hidden');
+
     const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
     if (checkSkip && checkSkip.checked && window.currentActiveSectionKey) {
       localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, 'true');
     }
-    if (typeof currentPendingSectionCallback === 'function') {
-      const cb = currentPendingSectionCallback;
-      currentPendingSectionCallback = null;
-      cb();
+
+    // Executa a abertura da seção alvo AGORA
+    const cb = window._pendingSectionCallback;
+    window._pendingSectionCallback = null;
+    if (typeof cb === 'function') {
+      try {
+        cb();
+      } catch(err) {
+        console.error('Erro ao abrir seção pós-pitaco:', err);
+      }
     }
   };
 
   window.closeMascotPitaco = function() {
-    const modal = document.getElementById('modalMascotSectionPitaco');
-    if (modal) modal.classList.add('hidden');
-    currentPendingSectionCallback = null;
+    window.confirmEnterSectionFromPitaco();
   };
 
   function generateContextualPitaco(sectionKey) {
@@ -35861,55 +35880,18 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   }
 };
 
-// 4. INTELLIGENT MASCOT PITACION OVER BLURRED SECTION BACKGROUND
-window.triggerSectionWithIntelligentMascot = function(sectionKey, callback) {
-  // Previne recursão
-  window._pendingSectionCallback = callback;
-  window.currentActiveSectionKey = sectionKey;
-
-  // Abre a seção alvo no fundo e aplica blur suave
-  if (typeof callback === 'function') {
-    window._isExecutingFromPitaco = true;
-    callback();
-    window._isExecutingFromPitaco = false;
-  }
-
-  // Se o usuário marcou para não exibir este mês
-  const skipKey = 'financas_skip_pitaco_' + sectionKey;
-  if (localStorage.getItem(skipKey) === 'true') {
-    return;
-  }
-
-  const pitaco = generateContextualPitaco(sectionKey);
-  const modal = document.getElementById('modalMascotSectionPitaco');
-  if (!modal) return;
-
-  const header = document.getElementById('mascotPitacoHeader');
-  const badge = document.getElementById('mascotPitacoBadge');
-  const text = document.getElementById('mascotPitacoText');
-  const img = document.getElementById('mascotPitacoImg');
-  const btnLabel = document.getElementById('btnEnterSectionLabel');
-
-  if (header) header.innerText = pitaco.header;
-  if (badge) {
-    badge.innerHTML = pitaco.badge;
-    badge.className = 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ' + pitaco.badgeColor;
-  }
-  if (text) text.innerHTML = pitaco.text;
-  if (img) img.src = pitaco.img;
-  if (btnLabel) btnLabel.innerText = 'Acessar ' + pitaco.header;
-
-  modal.classList.remove('hidden');
-};
-
-window.confirmEnterSectionFromPitaco = function() {
-  const modal = document.getElementById('modalMascotSectionPitaco');
-  if (modal) modal.classList.add('hidden');
-  const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
-  if (checkSkip && checkSkip.checked && window.currentActiveSectionKey) {
-    localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, 'true');
-  }
-};
+// 4. INTELLIGENT MASCOT PITACION - Gerenciado centralmente por triggerSectionWithIntelligentMascot
+// Limpeza de chaves de skip antigas para garantir que todas as dicas apareçam normalmente
+(function() {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('financas_skip_pitaco_')) {
+        localStorage.removeItem(k);
+      }
+    }
+  } catch(e) {}
+})();
 
 </script>
 
