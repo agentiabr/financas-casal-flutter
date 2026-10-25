@@ -11263,55 +11263,60 @@ html, body {
           : 'bg-slate-100/90 dark:bg-slate-800/75 border-slate-200 dark:border-slate-700';
 
         return `
-          <div class="p-3 rounded-2xl border transition-all flex flex-col justify-between ${
+          <div class="p-3 rounded-2xl border transition-all flex flex-col gap-2 shadow-2xs w-full overflow-hidden box-border ${
             isChecked 
-              ? 'bg-emerald-50/90 border-emerald-300 shadow-2xs' 
-              : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+              ? 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' 
+              : 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750'
           }">
-            <!-- LINHA 1: Checkbox + Nome do Produto + Stepper + Subtotal + Ações -->
+            <!-- LINHA 1: Checkbox + Nome do Produto | Valor Unitário + Lixeira -->
             <div class="flex items-center justify-between gap-2 w-full">
-              <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <button type="button" onclick="toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-lg flex items-center justify-center transition-all ${
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <button type="button" onclick="toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${
                   isChecked 
-                    ? 'bg-emerald-600 text-white shadow-2xs' 
-                    : 'border-2 border-slate-300 text-transparent hover:border-emerald-500 bg-white'
+                    ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs' 
+                    : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent hover:border-emerald-500'
                 } cursor-pointer flex-shrink-0" title="${isChecked ? 'Desmarcar' : 'Marcar para comprar'}">
-                  <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
+                  ${isChecked ? '✓' : ''}
                 </button>
-                <span class="font-extrabold text-xs sm:text-sm leading-snug break-words flex-1 ${isChecked ? 'line-through text-slate-400' : 'text-slate-900'}">
+
+                <span class="text-xs sm:text-sm font-black leading-snug break-words ${isChecked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'}">
                   ${escapeHtml(name)}
                 </span>
               </div>
 
-              <div class="flex items-center gap-1.5 flex-shrink-0">
-                <!-- Stepper -->
-                <div class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-1 py-0.5 text-xs shadow-2xs">
-                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', -1)" class="w-5 h-5 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 font-black cursor-pointer leading-none">−</button>
-                  <span class="px-1.5 font-bold font-mono text-xs text-slate-800">${itemState.qtd || 1}</span>
-                  <button type="button" onclick="updateBuilderItemQtd('${safeName}', 1)" class="w-5 h-5 flex items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 font-black cursor-pointer leading-none">+</button>
-                </div>
-                
-                <!-- Subtotal -->
-                <div class="font-mono font-black text-xs text-slate-900 min-w-[56px] text-right">
-                  ${formatBRL(subtotal)}
-                </div>
-
-                <!-- Botão Editar -->
-                <button type="button" onclick="editBuilderProductItem('${safeName}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer" title="Editar produto ou preço">
-                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                </button>
-
-                <!-- Botão Excluir -->
-                <button type="button" onclick="deleteBuilderProductItem('${safeName}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir produto da lista">
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="font-mono font-bold text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                  ${unitPrice > 0 ? formatBRL(unitPrice) : 'R$ 0,00'}
+                </span>
+                <button type="button" onclick="deleteBuilderProductItem('${safeName}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer flex-shrink-0" title="Excluir produto da lista">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
 
-            <!-- LINHA 2: Estabelecimento e Preço Unitário -->
-            <div class="pl-7.5 flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-200/60 mt-2">
-              <span class="truncate">Melhor loja: <strong class="text-slate-700 font-bold">${escapeHtml(suggestedStore)}</strong></span>
-              ${unitPrice > 0 ? `<span class="font-mono font-bold text-slate-700 flex-shrink-0 ml-2">Unit: ${formatBRL(unitPrice)}</span>` : '<span class="text-slate-400 italic">Preço a definir</span>'}
+            <!-- LINHA 2: Unidade / Quantidade (Stepper) | Valor Total -->
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-750/70 text-xs w-full">
+              <div class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 px-1 py-0.5 text-xs shadow-2xs flex-shrink-0 whitespace-nowrap">
+                <button type="button" onclick="updateBuilderItemQtd('${safeName}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
+                <span class="px-2 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200 whitespace-nowrap">${itemState.qtd || 1} ${itemState.unidade || 'un'}</span>
+                <button type="button" onclick="updateBuilderItemQtd('${safeName}', 1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar">+</button>
+              </div>
+
+              <div class="flex items-center gap-1 font-mono font-black text-xs text-slate-900 dark:text-white whitespace-nowrap">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans">Total:</span>
+                <span class="text-xs sm:text-sm font-mono font-black text-emerald-700 dark:text-emerald-400">${formatBRL(subtotal)}</span>
+              </div>
+            </div>
+
+            <!-- LINHA 3: Pequeno no rodapé com Estabelecimento Melhor Loja e Botão Editar -->
+            <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-750/50 w-full">
+              <span class="truncate">
+                Melhor loja: <strong class="text-slate-700 dark:text-slate-300 font-bold">${escapeHtml(suggestedStore)}</strong>
+              </span>
+              <button type="button" onclick="editBuilderProductItem('${safeName}')" class="text-blue-600 dark:text-sky-400 hover:underline font-bold flex-shrink-0 flex items-center gap-0.5 ml-2 cursor-pointer" title="Alterar loja ou preço">
+                <i data-lucide="pencil" class="w-3 h-3"></i>
+                <span>Editar</span>
+              </button>
             </div>
           </div>
         `;
