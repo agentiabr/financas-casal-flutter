@@ -33,19 +33,17 @@ class NfceFetcher {
 
   /// Converte strings de URL com caracteres especiais (como pipe '|') em URIs válidos
   static Uri parseSafeUri(String urlString) {
-    final clean = urlString.trim();
-    try {
-      return Uri.parse(clean);
-    } catch (_) {
-      final qIndex = clean.indexOf('?');
-      if (qIndex != -1) {
-        final base = clean.substring(0, qIndex);
-        final query = clean.substring(qIndex + 1);
-        final safeQuery = query.replaceAll('|', '%7C').replaceAll(' ', '%20');
-        return Uri.parse('$base?$safeQuery');
-      }
-      return Uri.parse(Uri.encodeFull(clean));
+    var clean = urlString.trim();
+    final qIndex = clean.indexOf('?');
+    if (qIndex != -1) {
+      final base = clean.substring(0, qIndex);
+      final query = clean.substring(qIndex + 1);
+      final safeQuery = query.replaceAll('|', '%7C').replaceAll(' ', '%20');
+      clean = '$base?$safeQuery';
+    } else {
+      clean = clean.replaceAll('|', '%7C').replaceAll(' ', '%20');
     }
+    return Uri.parse(clean);
   }
 
   /// Busca a página HTML da URL fornecida e retorna o modelo [NfceInvoice]

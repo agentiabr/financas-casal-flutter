@@ -57,7 +57,7 @@ class NfceNumberParser {
   /// Normaliza unidades de medida da NFC-e (UN, KG, L, CX, etc.)
   static String normalizeUnit(String? raw) {
     if (raw == null) return 'UN';
-    var clean = raw
+    var clean = raw.trim()
         .replaceFirst(RegExp(r'^(?:UNIDADE|UNID|UND|UN)\s*:\s*', caseSensitive: false), '')
         .replaceAll(RegExp(r'[^\wÀ-ÿ]'), '')
         .trim()

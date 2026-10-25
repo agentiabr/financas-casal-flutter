@@ -11791,6 +11791,7 @@ html, body {
       if (storeInput) storeInput.value = '';
       if (totalInput) totalInput.value = '';
       extractedReceiptItems = [];
+      window.extractedReceiptItems = [];
       const diagnostics = document.getElementById('invoiceOcrDiagnostics');
       const rawTextOutput = document.getElementById('invoiceOcrRawText');
       if (diagnostics) diagnostics.classList.add('hidden');
@@ -12403,7 +12404,12 @@ html, body {
     // ==============================================================
     window.capturedInvoicePhotos = window.capturedInvoicePhotos || [];
     var capturedInvoicePhotos = window.capturedInvoicePhotos;
-    let extractedReceiptItems = [];
+    window.extractedReceiptItems = window.extractedReceiptItems || [];
+    var extractedReceiptItems = window.extractedReceiptItems;
+    window.syncExtractedReceiptItems = function(items) {
+      window.extractedReceiptItems = items || [];
+      extractedReceiptItems = window.extractedReceiptItems;
+    };
     window.isInvoiceVoiceListening = false;
 
     // Disparar Câmera Nativa (Flutter) ou Input File (Web)
@@ -12739,10 +12745,8 @@ html, body {
 
     // Renderizar Lista Visual de Itens Extraídos com Edição e Exclusão
     function renderExtractedItemsPreview() {
-      if ((!extractedReceiptItems || extractedReceiptItems.length === 0) && window.extractedReceiptItems && window.extractedReceiptItems.length > 0) {
+      if (window.extractedReceiptItems) {
         extractedReceiptItems = window.extractedReceiptItems;
-      } else if (extractedReceiptItems && extractedReceiptItems.length > 0) {
-        window.extractedReceiptItems = extractedReceiptItems;
       }
       const listEl = document.getElementById('invoiceExtractedItemsList');
       const badgeEl = document.getElementById('invoiceItemsCountBadge');
@@ -35500,6 +35504,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   if (modal) modal.classList.remove('hidden');
 
   if (res.isFallback || !res.success) {
+    window.extractedReceiptItems = [];
+    if (typeof window.syncExtractedReceiptItems === 'function') {
+      window.syncExtractedReceiptItems([]);
+    }
+    if (typeof renderExtractedItemsPreview === 'function') {
+      renderExtractedItemsPreview();
+    }
     const ocrStatus = document.getElementById('invoiceOcrStatus');
     const storeInput = document.getElementById('invoiceExtractedStore');
     if (storeInput) storeInput.value = 'NFC-e (Chave Capturada)';
@@ -35543,7 +35554,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   }
 
   const incomingItems = Array.isArray(res.items) ? res.items : (Array.isArray(res.itens) ? res.itens : []);
-    window.extractedReceiptItems = incomingItems.map((it, idx) => ({
+  const normalizedIncoming = incomingItems.map((it, idx) => ({
     id: Date.now() + idx,
     produto: it.produto || it.nome || 'Produto',
     qtd: typeof it.qtd === 'number' ? it.qtd : parseFloat(String(it.qtd).replace(',', '.')) || 1,
@@ -35553,7 +35564,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     desconto: typeof it.desconto === 'number' ? it.desconto : 0,
     validated: true
   }));
-  extractedReceiptItems = window.extractedReceiptItems;
+  window.extractedReceiptItems = normalizedIncoming;
+  if (typeof window.syncExtractedReceiptItems === 'function') {
+    window.syncExtractedReceiptItems(normalizedIncoming);
+  }
+  if (typeof extractedReceiptItems !== 'undefined') {
+    extractedReceiptItems = normalizedIncoming;
+  }
 
   if (typeof renderExtractedItemsPreview === 'function') {
     renderExtractedItemsPreview();

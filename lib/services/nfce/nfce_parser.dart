@@ -167,6 +167,7 @@ class NfceParser {
 
     // Mapeamento de Razões Sociais clássicas brasileiras para seus Nomes Fantasia amigáveis
     final upper = s.toUpperCase();
+    if (upper.contains('BELLA PAULISTA')) return 'Bella Paulista';
     if (upper.contains('COMERCIAL OSWALDO CRUZ') || upper.contains('JOANIN')) return 'Supermercados Joanin';
     if (upper.contains('DIA BRASIL')) return 'Supermercado Dia';
     if (upper.contains('SENDAS DISTRIBUIDORA')) return 'Assaí Atacadista';

@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'models/nfce_invoice.dart';
 import 'nfce_fetcher.dart';
 import 'nfce_number_parser.dart';
+import 'nfce_parser.dart';
 import '../ocr_service.dart';
 
 /// Tela Flutter de Scanner de QR Code de Nota Fiscal (NFC-e) em tela cheia com Motor Híbrido.
@@ -284,15 +287,31 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
 
     try {
       final invoice = await NfceFetcher().fetchAndParse(targetUrl).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 8),
       );
-      if (mounted) {
-        HapticFeedback.heavyImpact();
-        Navigator.of(context).pop(invoice);
-        return;
+      if (invoice.items.isNotEmpty) {
+        if (mounted) {
+          HapticFeedback.heavyImpact();
+          Navigator.of(context).pop(invoice);
+          return;
+        }
       }
     } catch (e) {
       debugPrint('Aviso: Consulta direta SEFAZ retornou erro ou timeout: $e');
+    }
+
+    // Se a consulta HTTP direta não extraiu itens, utiliza Chromium WebView silenciosa (idêntico ao navegador do celular)
+    try {
+      final webViewInvoice = await _resolveViaWebView(targetUrl);
+      if (webViewInvoice != null && webViewInvoice.items.isNotEmpty) {
+        if (mounted) {
+          HapticFeedback.heavyImpact();
+          Navigator.of(context).pop(webViewInvoice);
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('Aviso: Resolução via WebView SEFAZ: $e');
     }
 
     // Se a consulta online não retornou itens ou demorou, retorna com dados extraídos do QR code
@@ -311,6 +330,39 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
           errorMessage: null,
         ),
       );
+    }
+  }
+
+  Future<NfceInvoice?> _resolveViaWebView(String url) async {
+    try {
+      final completer = Completer<NfceInvoice?>();
+      final controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setUserAgent(
+            'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36')
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (finishedUrl) async {
+              try {
+                await Future.delayed(const Duration(milliseconds: 700));
+                final htmlObj = await controller.runJavaScriptReturningResult('document.documentElement.outerHTML');
+                String html = htmlObj.toString();
+                if (html.startsWith('"') && html.endsWith('"')) {
+                  html = jsonDecode(html) as String;
+                }
+                final invoice = NfceParser().parse(html, rawUrl: finishedUrl);
+                if (invoice.items.isNotEmpty && !completer.isCompleted) {
+                  completer.complete(invoice);
+                }
+              } catch (_) {}
+            },
+          ),
+        );
+
+      await controller.loadRequest(NfceFetcher.parseSafeUri(url));
+      return await completer.future.timeout(const Duration(seconds: 6));
+    } catch (_) {
+      return null;
     }
   }
 

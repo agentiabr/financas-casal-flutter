@@ -1103,9 +1103,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
           window.applyOcrResultToInvoiceModal($jsonResult);
         }
-        if (typeof window.fillNewTxFromReceiptOcr === 'function') {
-          window.fillNewTxFromReceiptOcr($jsonResult);
-        }
       """);
     } catch (e) {
       debugPrint('Erro ao escanear QR Code da nota: $e');
