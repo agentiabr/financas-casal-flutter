@@ -3978,6 +3978,9 @@ html, body {
     #modalItemInfoBalloon,
     #modalTilePicker,
     #modalSoberTilePicker,
+    #modalAddUser,
+    #modalFamilyChat,
+    #modalShoppingList,
     #modalPhotoGuidance,
     #modalReorderQuickHub {
       z-index: 1050 !important;
@@ -10155,14 +10158,54 @@ html, body {
     let chartRespInstance = null;
 
     function updateDashboard() {
-      const activeTxs = transactions.filter(t => t.ciclo === currentCycle);
+      // Garantir sincronização entre transactions e window.transactions
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        window.transactions = transactions;
+      } else if (Array.isArray(window.transactions)) {
+        transactions = window.transactions;
+      }
+      
+      const activeTxs = transactions.filter(t => !currentCycle || t.ciclo === currentCycle);
 
-      const receitas = activeTxs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
+      const isReceita = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
+      const receitas = activeTxs.filter(isReceita).reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
       const fixas = activeTxs.filter(t => t.tipo === 'Despesa Fixa').reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
-      const variaveis = activeTxs.filter(t => t.tipo !== 'Receita' && t.tipo !== 'Despesa Fixa').reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
-      const totalGastos = activeTxs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
+      const variaveis = activeTxs.filter(t => t.tipo !== 'Despesa Fixa' && !isReceita(t)).reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
+      const totalGastos = activeTxs.filter(t => !isReceita(t)).reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
       const saldoLivre = receitas - totalGastos;
       const percentGasto = receitas > 0 ? Math.min(100, Math.round((totalGastos / receitas) * 100)) : (totalGastos > 0 ? 100 : 0);
+
+      // Card do Saldo Atual (Design System Oficial e Aprovado)
+      const elSaldoText = document.getElementById('heroSaldoText');
+      const elReceitasVal = document.getElementById('heroReceitasVal');
+      const elDespesasVal = document.getElementById('heroDespesasVal');
+      const elValComp = document.getElementById('valComprometido');
+      const elHeroBadge = document.getElementById('heroSaldoBadge');
+      const isHidden = window.privacyHidden === true;
+
+      if (elSaldoText) {
+        elSaldoText.textContent = isHidden ? 'R$ ••••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+      }
+      if (elReceitasVal) {
+        elReceitasVal.textContent = isHidden ? '+ R$ ••••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
+      }
+      if (elDespesasVal) {
+        elDespesasVal.textContent = isHidden ? '- R$ ••••••' : (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
+      }
+      if (elValComp) {
+        elValComp.textContent = isHidden ? '••%' : `${percentGasto}%`;
+      }
+      if (elHeroBadge) {
+        if (isHidden) {
+          elHeroBadge.innerHTML = '<span>••••••</span>';
+        } else if (saldoLivre >= 0) {
+          elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+          elHeroBadge.innerHTML = '<span>↑ Saldo Saudável</span> no ciclo vigente';
+        } else {
+          elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200';
+          elHeroBadge.innerHTML = '<span>⚠️ Atenção</span> Saldo negativo';
+        }
+      }
 
       document.getElementById('metricReceitasVal').textContent = formatBRL(receitas, 'receitas');
       document.getElementById('metricFixasVal').textContent = formatBRL(fixas, 'fixas');
@@ -10257,7 +10300,11 @@ html, body {
       const fixasDoCicloAll = transactions.filter(t => t.tipo === 'Despesa Fixa' && t.ciclo === currentCycle);
       const fixasPagasAll = fixasDoCicloAll.filter(t => t.status === 'Pago' || t.status === 'Recebido').length;
       const stFixas = document.getElementById('statusFixasTexto');
-      if (stFixas) stFixas.textContent = `Contas Fixas: ${fixasPagasAll}/${fixasDoCicloAll.length} quitadas`;
+      if (stFixas) stFixas.textContent = `Contas Fixas: ${fixasPagasAll
+      if (typeof window.syncApprovedDesignWithAppData === 'function') {
+        window.syncApprovedDesignWithAppData();
+      }
+}/${fixasDoCicloAll.length} quitadas`;
 
       // Atualiza mini Parcelados no Card-Herói (compras parceladas do mês que ainda não foram quitadas)
       const heroMiniFixasEl = document.getElementById('heroMiniFixas');
@@ -15188,54 +15235,248 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       }).join('');
     }
 
+    window.switchMemberModalTab = function(tab) {
+      const viewList = document.getElementById('viewMembersList');
+      const viewForm = document.getElementById('viewMembersForm');
+      const tabNavList = document.getElementById('tabNavMembersList');
+      const tabNavForm = document.getElementById('tabNavMembersForm');
+
+      if (!viewList || !viewForm) return;
+
+      if (tab === 'form') {
+        viewList.classList.add('hidden');
+        viewForm.classList.remove('hidden');
+
+        if (tabNavList) {
+          tabNavList.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+        }
+        if (tabNavForm) {
+          tabNavForm.className = 'flex-1 py-1.5 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs cursor-pointer';
+        }
+      } else {
+        viewForm.classList.add('hidden');
+        viewList.classList.remove('hidden');
+
+        if (tabNavList) {
+          tabNavList.className = 'flex-1 py-1.5 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs cursor-pointer';
+        }
+        if (tabNavForm) {
+          tabNavForm.className = 'flex-1 py-1.5 px-3 rounded-xl font-bold text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+        }
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    };
+
+    window.editFamilyMember = function(memberId) {
+      const editInput = document.getElementById('editMemberId');
+      const nameInput = document.getElementById('newUserName');
+      const avatarSelect = document.getElementById('newUserAvatarSelect');
+      const roleSelect = document.getElementById('newUserRole');
+      const pinInput = document.getElementById('newUserPin');
+      const formTitle = document.getElementById('memberFormTitle');
+      const formSubtitle = document.getElementById('memberFormSubtitle');
+      const btnSubmitLabel = document.getElementById('btnSubmitAddUserLabel');
+      const btnCancel = document.getElementById('btnCancelEditMember');
+      const formLimit = document.getElementById('formAddUserLimitReached');
+      const formFields = document.getElementById('formAddUserFields');
+
+      if (!editInput || !nameInput) return;
+
+      if (formLimit) formLimit.classList.add('hidden');
+      if (formFields) formFields.classList.remove('hidden');
+
+      editInput.value = memberId;
+
+      if (memberId === 'rodrigo') {
+        const customRodrigo = JSON.parse(localStorage.getItem('financas_profile_rodrigo') || '{}');
+        nameInput.value = customRodrigo.nome || 'Rodrigo';
+        if (avatarSelect) avatarSelect.value = customRodrigo.avatar || '👨';
+        if (roleSelect) roleSelect.value = 'Administrador';
+        if (pinInput) pinInput.value = customRodrigo.pin || '1234';
+      } else if (memberId === 'marcia') {
+        const customMarcia = JSON.parse(localStorage.getItem('financas_profile_marcia') || '{}');
+        nameInput.value = customMarcia.nome || 'Márcia';
+        if (avatarSelect) avatarSelect.value = customMarcia.avatar || '👩';
+        if (roleSelect) roleSelect.value = 'Administrador';
+        if (pinInput) pinInput.value = customMarcia.pin || '1234';
+      } else {
+        const din = getDynamicFamilyMembers();
+        const target = din.find(m => m.id === memberId);
+        if (target) {
+          nameInput.value = target.nome || '';
+          if (avatarSelect) avatarSelect.value = target.avatar || '👦';
+          if (roleSelect) roleSelect.value = target.papel || 'Membro';
+          if (pinInput) pinInput.value = target.pin || '1234';
+        }
+      }
+
+      if (formTitle) formTitle.textContent = `Editar Membro: ${nameInput.value}`;
+      if (formSubtitle) formSubtitle.textContent = 'Altere o nome, avatar, papel ou senha de acesso.';
+      if (btnSubmitLabel) btnSubmitLabel.textContent = '💾 Salvar Alterações';
+      if (btnCancel) btnCancel.classList.remove('hidden');
+
+      switchMemberModalTab('form');
+    };
+
+    window.cancelEditMember = function() {
+      const editInput = document.getElementById('editMemberId');
+      const nameInput = document.getElementById('newUserName');
+      const pinInput = document.getElementById('newUserPin');
+      const formTitle = document.getElementById('memberFormTitle');
+      const formSubtitle = document.getElementById('memberFormSubtitle');
+      const btnSubmitLabel = document.getElementById('btnSubmitAddUserLabel');
+      const btnCancel = document.getElementById('btnCancelEditMember');
+
+      if (editInput) editInput.value = '';
+      if (nameInput) nameInput.value = '';
+      if (pinInput) pinInput.value = '1234';
+      if (formTitle) formTitle.textContent = 'Novo Membro Familiar';
+      if (formSubtitle) formSubtitle.textContent = 'Preencha os dados para ativar a vaga no aplicativo.';
+      if (btnSubmitLabel) btnSubmitLabel.textContent = 'Ativar Vaga Gratuita & Convidar';
+      if (btnCancel) btnCancel.classList.add('hidden');
+
+      switchMemberModalTab('list');
+    };
+
     function renderFamilyMembersListInModal() {
       const listEl = document.getElementById('modalFamilyMembersList');
       const countEl = document.getElementById('modalFamilyMembersCount');
+      const countPill = document.getElementById('modalFamilyMembersCountPill');
+      const slotsGrid = document.getElementById('familySlotsGridContainer');
+      const badgeCount = document.getElementById('badgeFamilySlotsCount');
+      const formLimit = document.getElementById('formAddUserLimitReached');
+      const formFields = document.getElementById('formAddUserFields');
+
       if (!listEl) return;
 
       const din = getDynamicFamilyMembers();
-      if (countEl) countEl.textContent = `${2 + din.length} membros`;
+      const totalCount = 2 + din.length;
+
+      if (countEl) countEl.textContent = `${totalCount} membros`;
+      if (countPill) countPill.textContent = `${totalCount}`;
+      if (badgeCount) badgeCount.textContent = `${totalCount} de 5 preenchidas`;
+
+      if (formLimit && formFields) {
+        const editId = document.getElementById('editMemberId')?.value;
+        if (totalCount >= 5 && !editId) {
+          formLimit.classList.remove('hidden');
+          formFields.classList.add('hidden');
+        } else {
+          formLimit.classList.add('hidden');
+          formFields.classList.remove('hidden');
+        }
+      }
+
+      // Render slots grid
+      if (slotsGrid) {
+        let gridHtml = '';
+        const allSlots = [
+          { name: 'Rodrigo', icon: '👨', fill: true },
+          { name: 'Márcia', icon: '👩', fill: true }
+        ];
+        din.forEach(d => {
+          gridHtml += '';
+          allSlots.push({ name: d.nome, icon: d.avatar || '👤', fill: true });
+        });
+        while (allSlots.length < 5) {
+          allSlots.push({ name: 'Vaga Livre', icon: '+', fill: false });
+        }
+        allSlots.slice(0, 5).forEach((slot, idx) => {
+          if (slot.fill) {
+            gridHtml += `
+              <div class="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-200 flex flex-col items-center">
+                <span class="text-sm">${slot.icon}</span>
+                <span class="text-[9px] truncate max-w-full font-bold mt-0.5">${slot.name}</span>
+              </div>
+            `;
+          } else {
+            gridHtml += `
+              <div onclick="switchMemberModalTab('form')" class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 flex flex-col items-center cursor-pointer hover:border-indigo-400 hover:text-indigo-500 transition-all">
+                <span class="text-sm font-black">+</span>
+                <span class="text-[9px] truncate max-w-full font-medium mt-0.5">Livre</span>
+              </div>
+            `;
+          }
+        });
+        slotsGrid.innerHTML = gridHtml;
+      }
+
+      const customRodrigo = JSON.parse(localStorage.getItem('financas_profile_rodrigo') || '{}');
+      const nomeRodrigo = customRodrigo.nome || 'Rodrigo';
+      const avatarRodrigo = customRodrigo.avatar || '👨';
+
+      const customMarcia = JSON.parse(localStorage.getItem('financas_profile_marcia') || '{}');
+      const nomeMarcia = customMarcia.nome || 'Márcia';
+      const avatarMarcia = customMarcia.avatar || '👩';
 
       let html = `
-        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-extrabold">👨‍💼</div>
+        <!-- Rodrigo -->
+        <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-2xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-extrabold shadow-xs">
+              ${avatarRodrigo}
+            </div>
             <div>
-              <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Rodrigo</span>
-              <span class="block text-[9px] text-slate-400">Administrador Oficial</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-black text-slate-800 dark:text-slate-100">${nomeRodrigo}</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Principal</span>
+              </div>
+              <span class="block text-[10px] text-slate-400">Administrador Oficial • PIN: ****</span>
             </div>
           </div>
-          <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Principal</span>
+          <button type="button" onclick="editFamilyMember('rodrigo')" class="px-2.5 py-1 bg-white hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-300 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="Editar dados de Rodrigo">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>Editar</span>
+          </button>
         </div>
 
-        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-extrabold">👩‍💼</div>
+        <!-- Márcia -->
+        <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-2xs">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center text-sm font-extrabold shadow-xs">
+              ${avatarMarcia}
+            </div>
             <div>
-              <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Márcia</span>
-              <span class="block text-[9px] text-slate-400">Administradora</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-black text-slate-800 dark:text-slate-100">${nomeMarcia}</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/60 dark:text-pink-300 font-bold">Principal</span>
+              </div>
+              <span class="block text-[10px] text-slate-400">Administradora • PIN: ****</span>
             </div>
           </div>
-          <span class="text-[9px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/60 dark:text-pink-300 font-bold">Principal</span>
+          <button type="button" onclick="editFamilyMember('marcia')" class="px-2.5 py-1 bg-white hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-pink-600 dark:text-pink-300 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="Editar dados de Márcia">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>Editar</span>
+          </button>
         </div>
       `;
 
       din.forEach(m => {
+        const isImage = m.avatar && m.avatar.startsWith('data:image');
         html += `
-          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center text-xs font-extrabold overflow-hidden">
-                ${m.avatar && m.avatar.startsWith('data:image') ? `<img src="${m.avatar}" class="w-full h-full object-cover">` : `<span>${m.avatar || '👤'}</span>`}
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-2xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-extrabold overflow-hidden shadow-xs">
+                ${isImage ? `<img src="${m.avatar}" class="w-full h-full object-cover">` : `<span>${m.avatar || '👤'}</span>`}
               </div>
               <div>
-                <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">${m.nome}</span>
-                <span class="block text-[9px] text-slate-400">${m.papel || 'Membro'}</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-black text-slate-800 dark:text-slate-100">${m.nome}</span>
+                  <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 font-bold">${m.papel || 'Membro'}</span>
+                </div>
+                <span class="block text-[10px] text-slate-400">PIN: ${m.pin || '1234'}</span>
               </div>
             </div>
-            <button type="button" onclick="deleteFamilyMember('${m.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 rounded-lg text-[10px] font-bold border border-rose-200 dark:border-rose-900 transition-colors flex items-center gap-1" title="Excluir este participante da família">
-              <i data-lucide="trash-2" class="w-3 h-3"></i>
-              <span>Excluir</span>
-            </button>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="editFamilyMember('${m.id}')" class="px-2 py-1 bg-white hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-300 rounded-xl text-[11px] font-bold border border-slate-200 dark:border-slate-600 shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="Editar este membro">
+                <i data-lucide="edit-3" class="w-3 h-3"></i>
+                <span>Editar</span>
+              </button>
+              <button type="button" onclick="deleteFamilyMember('${m.id}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 rounded-xl text-[11px] font-bold border border-rose-200 dark:border-rose-900 shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="Excluir este participante">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+                <span>Excluir</span>
+              </button>
+            </div>
           </div>
         `;
       });
@@ -15267,8 +15508,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (modal) {
         modal.classList.remove('hidden');
         renderFamilyMembersListInModal();
+        switchMemberModalTab('list');
       }
-      lucide.createIcons();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
 
     function closeAddUserModal() {
@@ -15278,6 +15520,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     function handleAddUserSubmit(e) {
       e.preventDefault();
+      const editId = document.getElementById('editMemberId')?.value;
       const nomeInput = document.getElementById('newUserName');
       const nome = nomeInput ? nomeInput.value.trim() : '';
       const papelSel = document.getElementById('newUserRole');
@@ -15292,6 +15535,40 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         return;
       }
 
+      // CASO 1: EDIÇÃO DE MEMBRO EXISTENTE
+      if (editId) {
+        if (editId === 'rodrigo') {
+          const profile = { nome, avatar, pin };
+          localStorage.setItem('financas_profile_rodrigo', JSON.stringify(profile));
+          showToastUndo(`Perfil de "${nome}" atualizado com sucesso!`, false);
+        } else if (editId === 'marcia') {
+          const profile = { nome, avatar, pin };
+          localStorage.setItem('financas_profile_marcia', JSON.stringify(profile));
+          showToastUndo(`Perfil de "${nome}" atualizado com sucesso!`, false);
+        } else {
+          let membros = getDynamicFamilyMembers();
+          const target = membros.find(m => m.id === editId);
+          if (target) {
+            target.nome = nome;
+            target.papel = papel;
+            target.avatar = avatar;
+            target.pin = pin;
+            target.atualizadoEm = new Date().toISOString();
+            localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
+            showToastUndo(`Membro "${nome}" atualizado com sucesso!`, false);
+          }
+        }
+
+        cancelEditMember();
+        updateUserDropdowns(nome);
+        loadUserCustomAssets();
+        renderFamilyMembersListInModal();
+        renderDynamicFamilyMembers();
+        if (typeof renderAuthDynamicMembersLogin === 'function') renderAuthDynamicMembersLogin();
+        return;
+      }
+
+      // CASO 2: NOVO MEMBRO
       let membros = getDynamicFamilyMembers();
       if (membros.length >= 3) {
         showToastUndo('Limite do Plano Família atingido: 5 membros no total (2 do casal + 3 gratuitos)!', false);
@@ -15313,35 +15590,20 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       updateUserDropdowns(nome);
       loadUserCustomAssets();
       renderFamilyMembersListInModal();
+      renderDynamicFamilyMembers();
       renderAuthDynamicMembersLogin();
 
       if (nomeInput) nomeInput.value = '';
       if (pinInput) pinInput.value = '1234';
 
       showToastUndo(`Vaga gratuita ativada para "${nome}"! 🎉`, false);
+      switchMemberModalTab('list');
 
       // Dispara convite no WhatsApp
       setTimeout(() => {
         sendMemberInviteWhatsApp(nome, pin);
-      }, 300);
+      }, 400);
     }
-
-    function updateUserDropdowns(novoNome) {
-      const selects = ['txResponsavel', 'filterResponsavel'];
-      selects.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          const exists = Array.from(el.options).some(o => o.value === novoNome);
-          if (!exists) {
-            const opt = document.createElement('option');
-            opt.value = novoNome;
-            opt.textContent = novoNome;
-            el.appendChild(opt);
-          }
-        }
-      });
-    }
-
     function sendMemberInviteWhatsApp(nome, pin) {
       const urlApp = 'https://github.com/agentiabr/financas-casal-flutter/releases/download/v2.1.17/CtrlPig-v2.1.17-Universal.apk';
       const msg = `Olá ${nome}! 👋\n\nVocê foi adicionado(a) ao Plano Família do aplicativo ControlPig (finanças, mercado e chat integrados).\n\n📱 Baixe o aplicativo oficial (Android):\n${urlApp}\n\n🔑 Como acessar no seu celular:\n1. Abra o app e toque no botão com o seu nome "${nome}"\n2. Digite sua senha pessoal de acesso: *${pin}*\n\nNossa lista de compras de mercado e o chat da família já estão prontos para você! 🐷`;
@@ -21870,21 +22132,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
       <div id="adminMasterView" class="mt-4 space-y-3.5">
         
-        <!-- SEÇÃO: MODO DEMONSTRAÇÃO / TESTAR VISÃO DO USUÁRIO -->
-        <div class="p-3.5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800/90 dark:to-slate-850 rounded-2xl border border-amber-200/80 dark:border-amber-900/60 shadow-xs">
-          <div class="flex items-center justify-between mb-1.5">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>🧪</span><span>Testar Visão do Usuário (Modo Demonstração)</span>
-            </h4>
-            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">Ambiente Seguro</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2.5 leading-relaxed">
-            Alterne temporariamente para a visão de um novo usuário com <strong>dados fictícios de exemplo</strong> e o <strong>Painel Compacto do Usuário</strong>, mantendo seus dados reais intactos.
-          </p>
-          <button type="button" onclick="window.enterDemoUserMode()" class="w-full py-2.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
-            <span>👁️ Ativar Visão do Usuário Convidado (Dados Fictícios)</span>
-          </button>
-        </div>
+<!-- SEÇÃO: MODO DEMONSTRAÇÃO REMOVIDA -->
 
         <!-- SEÇÃO: SIMULAR / RESETAR 1º ACESSO & TUTORIAL (RODRIGO ADMIN) -->
         <div class="p-3.5 bg-gradient-to-br from-sky-50 to-blue-50 dark:from-slate-800/90 dark:to-slate-850 rounded-2xl border border-sky-200/80 dark:border-sky-900/60 shadow-xs">
@@ -22234,137 +22482,188 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- ============================================================== -->
     <!-- MODAL: CONVIDAR / NOVO USUÁRIO COMPARTILHADO                   -->
     <!-- ============================================================== -->
-    <div id="modalAddUser" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative border border-slate-200 dark:border-slate-800">
-        <button onclick="closeAddUserModal()" class="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+    <div id="modalAddUser" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[1050] hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative border border-slate-200 dark:border-slate-800 my-auto text-slate-800 dark:text-slate-100 flex flex-col max-h-[92vh]">
         
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center font-bold">
-            <i data-lucide="user-plus" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="text-base font-black text-slate-900 dark:text-white">Convidar Novo Participante</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Adicione um novo membro familiar ou parceiro para controle conjunto.</p>
-          </div>
-        </div>
-
-        <!-- Indicador Visual das 5 Vagas do Plano Família -->
-        <div class="mb-4 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-          <div class="flex items-center justify-between text-xs font-bold mb-2">
-            <span class="text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <span>👨‍👩‍👧‍👦</span> Plano Família: <strong>5 Vagas</strong>
-            </span>
-            <span id="badgeFamilySlotsCount" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-[10px]">
-              2 de 5 preenchidas
-            </span>
-          </div>
-
-          <!-- Grade dos 5 Slots -->
-          <div id="familySlotsGridContainer" class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-bold">
-            <!-- Renderizado dinamicamente por renderFamilyMembersListInModal() -->
-          </div>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 text-center">
-            2 vagas base do casal + até 3 vagas gratuitas adicionais inclusas.
-          </p>
-        </div>
-
-        <form id="formAddUser" onsubmit="handleAddUserSubmit(event)" class="space-y-3 mt-2">
-          <div id="formAddUserFields">
+        <!-- HEADER COM BOTÃO VOLTAR E FECHAR (NAVEGABILIDADE FLUIDA) -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3 flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeAddUserModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95" title="Voltar ao Painel">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </button>
             <div>
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nome Completo ou Apelido *</label>
-              <input type="text" id="newUserName" required placeholder="Ex: Lucas, Pedro, Filha, Mãe..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2.5 mt-2.5">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Ícone / Avatar</label>
-                <select id="newUserAvatarSelect" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
-                  <option value="👦">👦 Menino / Filho</option>
-                  <option value="👧">👧 Menina / Filha</option>
-                  <option value="👨">👨 Homem / Adulto</option>
-                  <option value="👩">👩 Mulher / Adulta</option>
-                  <option value="👵">👵 Avó / Mãe</option>
-                  <option value="👴">👴 Avô / Pai</option>
-                  <option value="👤">👤 Outro Membro</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Papel na Família</label>
-                <select id="newUserRole" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold">
-                  <option value="Filho(a)">Filho(a) / Dependente</option>
-                  <option value="Membro">Membro da Família</option>
-                  <option value="Administrador">Administrador(a)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="mt-2.5">
-              <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Senha / PIN Pessoal de Acesso *</label>
-              <input type="text" id="newUserPin" required value="1234" placeholder="Ex: 1234 ou senha secreta" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold tracking-widest text-center">
-              <p class="text-[10px] text-slate-400 mt-1">Essa será a senha pessoal para o membro acessar no celular dele.</p>
-            </div>
-
-            <div class="flex items-center justify-end gap-2 pt-3">
-              <button type="button" onclick="closeAddUserModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl cursor-pointer">Cancelar</button>
-              <button type="submit" id="btnSubmitAddUser" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer">
-                <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
-                <span>Ativar Vaga Gratuita & Convidar</span>
-              </button>
+              <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5 leading-tight">
+                <span>👥</span> <span>Gestão da Família &amp; Membros</span>
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Organize os membros e convide novos participantes</p>
             </div>
           </div>
-
-          <div id="formAddUserLimitReached" class="hidden p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-center">
-            <p class="text-xs font-bold text-amber-800 dark:text-amber-300">
-              ⚠️ Todas as 5 vagas da família estão preenchidas!
-            </p>
-            <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5">
-              Para adicionar um novo membro, exclua uma das vagas extras na lista abaixo.
-            </p>
-          </div>
-        </form>
-
-        <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Convidar via WhatsApp:</span>
-          </div>
-          <button onclick="shareInviteWhatsApp()" class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm">
-            <i data-lucide="share-2" class="w-4 h-4"></i>
-            <span>Enviar Convite com Link no WhatsApp</span>
+          <button type="button" onclick="closeAddUserModal()" class="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer" title="Fechar">
+            <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
 
-        <!-- SEÇÃO: AUTORIZAR NOTIFICAÇÕES (PARA USUÁRIO COMUM E ADMINISTRADOR) -->
-        <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
-          <div class="p-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>🔔</span> Notificações e Alertas do Celular
-              </span>
-              <span id="badgeNotifStatusUser" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Essencial</span>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2">
-              Ative as notificações para receber lembretes de remédios, contas a vencer e listas do chat.
-            </p>
-            <button type="button" onclick="requestAppNotificationPermission()" class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-xs cursor-pointer">
-              <i data-lucide="bell-ring" class="w-4 h-4"></i>
-              <span>Autorizar Notificações Necessárias</span>
-            </button>
-          </div>
+        <!-- ABAS DE NAVEGAÇÃO SEGMENTADA (LISTA DE MEMBROS vs. INCLUIR/EDITAR) -->
+        <div class="flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-3 flex-shrink-0">
+          <button type="button" id="tabNavMembersList" onclick="switchMemberModalTab('list')" class="flex-1 py-1.5 px-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs cursor-pointer">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+            <span>Membros Ativos (<span id="modalFamilyMembersCountPill">2</span>)</span>
+          </button>
+          <button type="button" id="tabNavMembersForm" onclick="switchMemberModalTab('form')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+            <span id="tabNavMembersFormLabel">+ Incluir Membro</span>
+          </button>
         </div>
 
-        <!-- SEÇÃO: MEMBROS ATIVOS DA FAMÍLIA COM OPÇÃO DE EXCLUIR -->
-        <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Participantes Ativos & Exclusão:</span>
-            <span class="text-[10px] text-slate-400 font-mono" id="modalFamilyMembersCount">2 membros</span>
+        <!-- CORPO SCROLLÁVEL -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-3">
+          
+          <!-- ======================================================== -->
+          <!-- ABA 1: LISTA DE MEMBROS ATIVOS (VISUALIZAÇÃO + EDIÇÃO)  -->
+          <!-- ======================================================== -->
+          <div id="viewMembersList" class="space-y-3">
+            
+            <!-- Card Resumo de Vagas do Plano Família -->
+            <div class="p-3 rounded-2xl bg-gradient-to-br from-indigo-50/90 to-blue-50/90 dark:from-slate-800/90 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
+              <div class="flex items-center justify-between text-xs font-bold mb-2">
+                <span class="text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <span>👨‍👩‍👧‍👦</span> Plano Família: <strong>5 Vagas</strong>
+                </span>
+                <span id="badgeFamilySlotsCount" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-[10px]">
+                  2 de 5 preenchidas
+                </span>
+              </div>
+              <!-- Grade dos 5 Slots -->
+              <div id="familySlotsGridContainer" class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-bold">
+                <!-- Renderizado dinamicamente por renderFamilyMembersListInModal() -->
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 text-center">
+                Toque no botão <strong>Editar</strong> de qualquer membro para alterar nome, avatar ou PIN.
+              </p>
+            </div>
+
+            <!-- Lista de Membros Ativos com Botões de Editar e Excluir -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5 px-1">
+                <span class="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide">Participantes Cadastrados:</span>
+                <span class="text-[10px] text-slate-400 font-mono" id="modalFamilyMembersCount">2 membros</span>
+              </div>
+              <div id="modalFamilyMembersList" class="space-y-2">
+                <!-- Renderizado dinamicamente via renderFamilyMembersListInModal() -->
+              </div>
+            </div>
+
+            <!-- Botão em Destaque para Convidar Novo Participante -->
+            <button type="button" onclick="switchMemberModalTab('form')" class="w-full py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>+ Convidar / Incluir Novo Membro na Família</span>
+            </button>
+
+            <!-- Convite via WhatsApp com Link Direto -->
+            <div class="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                  <span>📲</span> Convite Rápido via WhatsApp
+                </span>
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">1 Toque</span>
+              </div>
+              <p class="text-[11px] text-emerald-800 dark:text-emerald-300 mb-2 leading-relaxed">
+                Envie o link oficial do aplicativo e instruções de acesso direto no WhatsApp do seu familiar.
+              </p>
+              <button type="button" onclick="shareInviteWhatsApp()" class="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-98 transition-all">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
+                <span>Enviar Convite com Link no WhatsApp</span>
+              </button>
+            </div>
+
           </div>
-          <div id="modalFamilyMembersList" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
-            <!-- Renderizado dinamicamente via renderFamilyMembersListInModal() -->
+
+          <!-- ======================================================== -->
+          <!-- ABA 2: FORMULÁRIO DE CADASTRO OU EDIÇÃO DE MEMBRO       -->
+          <!-- ======================================================== -->
+          <div id="viewMembersForm" class="space-y-3 hidden">
+            
+            <!-- Banner Informativo de Modo Edição / Criação -->
+            <div id="memberFormModeBanner" class="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span id="memberFormModeIcon" class="text-base">✨</span>
+                <div>
+                  <h4 id="memberFormTitle" class="text-xs font-black text-blue-900 dark:text-blue-200">Novo Membro Familiar</h4>
+                  <p id="memberFormSubtitle" class="text-[10px] text-blue-700 dark:text-blue-300">Preencha os dados para ativar a vaga no aplicativo.</p>
+                </div>
+              </div>
+              <button type="button" id="btnCancelEditMember" onclick="cancelEditMember()" class="hidden px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-[10px] font-black cursor-pointer transition-all">
+                Cancelar Edição
+              </button>
+            </div>
+
+            <form id="formAddUser" onsubmit="handleAddUserSubmit(event)" class="space-y-3">
+              <input type="hidden" id="editMemberId" value="">
+
+              <div id="formAddUserFields" class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nome Completo ou Apelido *</label>
+                  <input type="text" id="newUserName" required placeholder="Ex: Lucas, Pedro, Filha, Mãe..." class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold shadow-2xs">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Ícone / Avatar</label>
+                    <select id="newUserAvatarSelect" class="w-full px-3 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-2xs">
+                      <option value="👦">👦 Menino / Filho</option>
+                      <option value="👧">👧 Menina / Filha</option>
+                      <option value="👨">👨 Homem / Adulto</option>
+                      <option value="👩">👩 Mulher / Adulta</option>
+                      <option value="👵">👵 Avó / Mãe</option>
+                      <option value="👴">👴 Avô / Pai</option>
+                      <option value="🧑">🧑 Jovem / Adolescente</option>
+                      <option value="👶">👶 Bebê / Criança</option>
+                      <option value="👤">👤 Outro Membro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Papel na Família</label>
+                    <select id="newUserRole" class="w-full px-3 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-2xs">
+                      <option value="Filho(a)">Filho(a) / Dependente</option>
+                      <option value="Membro">Membro da Família</option>
+                      <option value="Administrador">Administrador(a)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Senha / PIN Pessoal de Acesso *</label>
+                  <input type="text" id="newUserPin" required value="1234" placeholder="Ex: 1234 ou senha secreta" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold tracking-widest text-center shadow-2xs">
+                  <p class="text-[10px] text-slate-400 mt-1">Essa senha é usada pelo membro para entrar no aplicativo no celular dele.</p>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                  <button type="button" onclick="switchMemberModalTab('list')" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl cursor-pointer transition-all">
+                    ← Voltar para Lista
+                  </button>
+                  <button type="submit" id="btnSubmitAddUser" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span id="btnSubmitAddUserLabel">Ativar Vaga Gratuita &amp; Convidar</span>
+                  </button>
+                </div>
+              </div>
+
+              <div id="formAddUserLimitReached" class="hidden p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-center">
+                <p class="text-xs font-bold text-amber-800 dark:text-amber-300">
+                  ⚠️ Todas as 5 vagas da família estão preenchidas!
+                </p>
+                <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5">
+                  Para adicionar um novo membro, exclua ou edite uma das vagas extras na lista.
+                </p>
+              </div>
+            </form>
+
           </div>
+
         </div>
+
       </div>
+    </div>
 
       <!-- 2. PAINEL COMPACTO DO USUÁRIO (VISÃO CONVIDADO / DEMONSTRAÇÃO) -->
       <div id="adminUserCompactView" class="mt-4 space-y-3.5 hidden">
@@ -35507,30 +35806,45 @@ window.confirmEnterSectionFromPitaco = function() {
         window.privacyHidden = false;
     window.togglePrivacy = function() {
       window.privacyHidden = !window.privacyHidden;
+      
       const elSaldo = document.getElementById('heroSaldoText');
       const elSaldoDisp = document.getElementById('heroSaldoDisponivelVal');
       const elReceitas = document.getElementById('heroReceitasVal');
       const elDespesas = document.getElementById('heroDespesasVal');
-      const icons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon]');
+      const elComp = document.getElementById('valComprometido');
+      const elBadge = document.getElementById('heroSaldoBadge');
+      const elMiniStatus = document.getElementById('heroMiniComprometimentoText');
+      const elMetricSaldo = document.getElementById('metricSaldoVal');
+      const elMetricRec = document.getElementById('metricReceitasVal');
+      const elMetricGastos = document.getElementById('metricGastosVal');
+
+      const icons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
 
       if (window.privacyHidden) {
-        if (elSaldo) elSaldo.innerText = 'R$ ••••••';
-        if (elSaldoDisp) elSaldoDisp.innerText = 'R$ ••••••';
-        if (elReceitas) elReceitas.innerText = '+ R$ ••••••';
-        if (elDespesas) elDespesas.innerText = '- R$ ••••••';
+        if (elSaldo) elSaldo.textContent = 'R$ ••••••';
+        if (elSaldoDisp) elSaldoDisp.textContent = 'R$ ••••••';
+        if (elReceitas) elReceitas.textContent = '+ R$ ••••••';
+        if (elDespesas) elDespesas.textContent = '- R$ ••••••';
+        if (elComp) elComp.textContent = '••%';
+        if (elBadge) elBadge.innerHTML = '<span>••••••</span>';
+        if (elMiniStatus) elMiniStatus.textContent = '••••••••••••••••••';
+        if (elMetricSaldo) elMetricSaldo.textContent = 'R$ ••••••';
+        if (elMetricRec) elMetricRec.textContent = 'R$ ••••••';
+        if (elMetricGastos) elMetricGastos.textContent = 'R$ ••••••';
       } else {
-        if (typeof updateMetrics === 'function') {
-          updateMetrics();
-        } else {
-          if (elSaldo) elSaldo.innerText = 'R$ 4.850,00';
-          if (elSaldoDisp) elSaldoDisp.innerText = 'R$ 4.850,00';
+        if (typeof updateDashboard === 'function') {
+          updateDashboard();
+        }
+        if (typeof window.syncApprovedDesignWithAppData === 'function') {
+          window.syncApprovedDesignWithAppData();
         }
       }
+
       icons.forEach(ic => {
         ic.setAttribute('data-lucide', window.privacyHidden ? 'eye-off' : 'eye');
         ic.style.color = '#475569';
       });
-      if (window.lucide) lucide.createIcons();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     };
     window.toggleHeroCardPrivacy = window.togglePrivacy;
 
@@ -35666,14 +35980,22 @@ window.confirmEnterSectionFromPitaco = function() {
   window.syncApprovedDesignWithAppData = function() {
     try {
       let txs = [];
-      if (typeof getTransactionsForActiveCycle === 'function') {
-        txs = getTransactionsForActiveCycle() || [];
-      } else if (Array.isArray(window.transactions)) {
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0) {
+        txs = transactions;
+      } else if (Array.isArray(window.transactions) && window.transactions.length > 0) {
         txs = window.transactions;
+      } else if (typeof getTransactionsForActiveCycle === 'function') {
+        txs = getTransactionsForActiveCycle() || [];
       }
       
-      const receitas = txs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
-      const totalGastos = txs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      // Filtrar pelo ciclo ativo se definido
+      if (typeof currentCycle !== 'undefined' && currentCycle) {
+        txs = txs.filter(t => t.ciclo === currentCycle);
+      }
+
+      const isRec = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
+      const receitas = txs.filter(isRec).reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const totalGastos = txs.filter(t => !isRec(t)).reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
       const saldoLivre = receitas - totalGastos;
       const percentGasto = receitas > 0 ? Math.min(100, Math.round((totalGastos / receitas) * 100)) : (totalGastos > 0 ? 100 : 0);
 
@@ -35992,14 +36314,22 @@ window.confirmEnterSectionFromPitaco = function() {
   window.syncApprovedDesignWithAppData = function() {
     try {
       let txs = [];
-      if (typeof getTransactionsForActiveCycle === 'function') {
-        txs = getTransactionsForActiveCycle() || [];
-      } else if (Array.isArray(window.transactions)) {
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0) {
+        txs = transactions;
+      } else if (Array.isArray(window.transactions) && window.transactions.length > 0) {
         txs = window.transactions;
+      } else if (typeof getTransactionsForActiveCycle === 'function') {
+        txs = getTransactionsForActiveCycle() || [];
       }
       
-      const receitas = txs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
-      const totalGastos = txs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      // Filtrar pelo ciclo ativo se definido
+      if (typeof currentCycle !== 'undefined' && currentCycle) {
+        txs = txs.filter(t => t.ciclo === currentCycle);
+      }
+
+      const isRec = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
+      const receitas = txs.filter(isRec).reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const totalGastos = txs.filter(t => !isRec(t)).reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
       const saldoLivre = receitas - totalGastos;
       const percentGasto = receitas > 0 ? Math.min(100, Math.round((totalGastos / receitas) * 100)) : (totalGastos > 0 ? 100 : 0);
 

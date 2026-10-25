@@ -3,7 +3,11 @@ name: Build Android APK
 on:
   push:
     branches: [ main, master ]
+    tags: [ 'v*' ]
   workflow_dispatch: # Permite disparar a compilação manualmente com 1 clique no GitHub
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -35,10 +39,47 @@ jobs:
           flutter build apk --release --android-skip-build-dependency-validation
           flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
 
-      - name: Disponibilizar APKs para Download
+      - name: Organizar e Renomear APKs
+        run: |
+          mkdir -p apks_dist
+          TAG_VAL="${GITHUB_REF_NAME:-v2.1.49}"
+          if [ "$TAG_VAL" = "main" ] || [ "$TAG_VAL" = "master" ]; then
+            TAG_VAL="v2.1.49"
+          fi
+          echo "Utilizando prefixo de versao: $TAG_VAL"
+          cp build/app/outputs/flutter-apk/app-release.apk "apks_dist/ControlPig_${TAG_VAL}_Universal.apk"
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "apks_dist/ControlPig_${TAG_VAL}_32bit_armeabi.apk"
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "apks_dist/ControlPig_${TAG_VAL}_64bit_arm64.apk"
+          ls -la apks_dist/
+
+      - name: Disponibilizar APKs para Download (Artifacts)
         uses: actions/upload-artifact@v4
         with:
           name: financas-casal-apks
-          path: build/app/outputs/flutter-apk/*.apk
+          path: apks_dist/*.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publicar GitHub Release Oficial
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apks_dist/*.apk
+          name: ControlPig ${{ github.ref_name }} - APKs 32-bit, 64-bit e Universal
+          body: |
+            ## ControlPig ${{ github.ref_name }} 🐷
+            Novidades desta versão:
+            - Atualização dinâmica instantânea do Saldo Atual e métricas ao registrar receitas e despesas
+            - Olhinho de privacidade completo: oculta 100% dos valores e números do card Saldo Atual
+            - Gestão de Membros completa com navegação por abas e opção de Editar Membro
+            - Remoção da seção de teste de visão do usuário
+            - Downloads diretos para todas as arquiteturas (Universal, 32-bit e 64-bit)
+            
+            ### Downloads Diretos:
+            - **Universal**: [ControlPig_${{ github.ref_name }}_Universal.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_Universal.apk)
+            - **32-bit**: [ControlPig_${{ github.ref_name }}_32bit_armeabi.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_32bit_armeabi.apk)
+            - **64-bit**: [ControlPig_${{ github.ref_name }}_64bit_arm64.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_64bit_arm64.apk)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
