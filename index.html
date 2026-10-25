@@ -36704,15 +36704,18 @@ window.confirmEnterSectionFromPitaco = function() {
           <p class="text-[11px] text-blue-200">Histórico de meses e fechamentos do casal</p>
         </div>
       </div>
-      <button type="button" onclick="openCreateNewCycleModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer">
-        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-        <span>+ Novo Ciclo</span>
-      </button>
+
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
-        <span class="text-xs font-black uppercase tracking-wider text-slate-500 block mb-2 px-1">Selecione o Ciclo para Visualizar</span>
+        <div class="flex items-center justify-between mb-3 px-1">
+        <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
+        <button type="button" onclick="openCreateNewCycleModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] border border-slate-200/80 dark:border-slate-700/80 transition-all active:scale-95 cursor-pointer shadow-2xs" title="Iniciar novo ciclo mensal">
+          <i data-lucide="plus" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"></i>
+          <span>Novo Ciclo</span>
+        </button>
+      </div>
         <div id="cyclesListContainer" class="space-y-2">
           <!-- Injetado dinamicamente via renderCyclesList() -->
         </div>
