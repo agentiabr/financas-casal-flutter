@@ -17,6 +17,7 @@ import '../services/auth_service.dart';
 import '../services/nfce/nfce.dart';
 import '../models/transaction_model.dart';
 import '../providers/finance_provider.dart';
+import 'onboarding_survey_screen.dart';
 
 class DashboardContainerScreen extends StatefulWidget {
   const DashboardContainerScreen({super.key});
@@ -762,6 +763,24 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'auth_signout') {
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.signOut();
+      } else if (action == 'open_onboarding') {
+        _isPickingExternalMedia = true;
+        final profile = await Navigator.of(context).push<OnboardingProfileResult>(
+          MaterialPageRoute(
+            builder: (context) => const OnboardingSurveyScreen(),
+          ),
+        );
+        Future.delayed(const Duration(seconds: 1), () {
+          _isPickingExternalMedia = false;
+        });
+        if (profile != null) {
+          final profileJson = jsonEncode(profile.toJson());
+          _controller.runJavaScript("""
+            if (typeof window.applyOnboardingProfileResult === 'function') {
+              window.applyOnboardingProfileResult($profileJson);
+            }
+          """);
+        }
       } else if (action == 'exit_app') {
         SystemNavigator.pop();
       }

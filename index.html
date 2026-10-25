@@ -14010,20 +14010,11 @@ html, body {
       } catch(err) {}
 
       function fillInputs() {
+        // Ao reinstalar, os campos iniciam 100% vazios para o usuário digitar login e senha
         const idField = document.getElementById('loginIdentifier');
         const passField = document.getElementById('loginPassword');
-        if (idField && (!idField.value || idField.value.trim() === '')) {
-          idField.value = 'rodrigocardosocn@gmail.com';
-        }
-        if (passField && (!passField.value || passField.value.trim() === '')) {
-          passField.value = '__REMOVED_FOR_SECURITY__';
-        }
+        // Não preenche credenciais automaticamente por segurança
       }
-
-      // Preenchimento imediato e redundante
-      fillInputs();
-      setTimeout(fillInputs, 100);
-      setTimeout(fillInputs, 400);
 
       let isAuthenticated = false;
       try {
@@ -22640,7 +22631,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <form id="formAuthLogin" novalidate onsubmit="handleAuthLogin(event)" class="space-y-4">
         <div>
           <label class="block text-[11px] font-bold text-white/90 mb-1">E-mail ou CPF</label>
-          <input type="text" id="loginIdentifier" value="rodrigocardosocn@gmail.com" required placeholder="seu@email.com ou 000.000.000-00" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+          <input type="text" id="loginIdentifier" value="" autocomplete="username" required placeholder="seu@email.com ou 000.000.000-00" class="w-full px-3.5 py-2.5 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
         </div>
 
         <div>
@@ -22731,7 +22722,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label class="block text-[11px] font-bold text-white/90 mb-1">E-mail ou CPF</label>
-            <input type="text" id="forgotIdentifier" value="rodrigocardosocn@gmail.com" required placeholder="seu@email.com ou CPF" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+            <input type="text" id="forgotIdentifier" value="" required placeholder="seu@email.com ou CPF" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           </div>
           <div>
             <label class="block text-[11px] font-bold text-white/90 mb-1">WhatsApp p/ Código</label>
@@ -38017,5 +38008,33 @@ window.confirmEnterSectionFromPitaco = function() {
     setTimeout(applyQuickHubCardOrder, 100);
   });
 </script>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: AUTORIZAR FACE ID / BIOMETRIA APÓS LOGIN COM SUCESSO    -->
+  <!-- ============================================================== -->
+  <div id="modalPromptAuthorizeBiometrics" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1060] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl w-full max-w-sm shadow-2xl p-6 border border-slate-200 dark:border-slate-800 text-center flex flex-col items-center">
+      <div class="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 flex items-center justify-center text-3xl mb-3.5 shadow-xs">
+        🔐
+      </div>
+      <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white leading-tight mb-1">
+        Ativar Face ID / Biometria?
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
+        Deseja autorizar o desbloqueio por impressão digital ou reconhecimento facial nos próximos acessos neste dispositivo?
+      </p>
+
+      <div class="space-y-2 w-full">
+        <button type="button" onclick="confirmAuthorizeBiometrics(true)" class="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
+          <i data-lucide="fingerprint" class="w-4 h-4"></i>
+          <span>Sim, Autorizar Biometria</span>
+        </button>
+        <button type="button" onclick="confirmAuthorizeBiometrics(false)" class="w-full py-2.5 px-4 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-white font-bold text-xs transition-all cursor-pointer">
+          Agora Não, usar apenas senha
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
