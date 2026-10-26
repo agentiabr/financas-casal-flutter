@@ -6025,6 +6025,56 @@ html, body {
             <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
             <span>Escanear QR-Code da Nota Fiscal (NFC-e)</span>
           </button>
+
+          <!-- CONTAINER DE CONFERÊNCIA DE NOTA FISCAL ESCANEADA NA LISTA DE COMPRAS -->
+          <div id="shoppingListInvoicePreviewContainer" class="hidden mt-3 p-4 bg-white dark:bg-slate-900 rounded-3xl border-2 border-emerald-500 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-200">
+            <!-- Cabeçalho da Conferência -->
+            <div class="flex items-start justify-between gap-2 border-b border-emerald-100 dark:border-slate-800 pb-3">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-black">✓</span>
+                  <span class="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">Conferência da Nota Fiscal</span>
+                </div>
+                <h4 id="shoppingInvoiceStoreName" class="text-sm font-extrabold text-slate-900 dark:text-white leading-tight">Supermercado</h4>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <span id="shoppingInvoiceDate">Hoje</span>
+                  <span>•</span>
+                  <span id="shoppingInvoiceItemCount" class="font-bold text-emerald-600 dark:text-emerald-400">0 itens capturados</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total da Nota</span>
+                <div id="shoppingInvoiceTotalDisplay" class="text-base font-black font-mono text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
+              </div>
+            </div>
+
+            <!-- Chave de Acesso Resumida -->
+            <div id="shoppingInvoiceKeyContainer" class="hidden text-[10px] bg-slate-50 dark:bg-slate-950 p-2 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-slate-600 dark:text-slate-400 break-all select-all flex items-center justify-between gap-1">
+              <span class="truncate">Chave: <strong id="shoppingInvoiceKeyText" class="text-slate-800 dark:text-slate-200">...</strong></span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-sans font-bold text-[9px] shrink-0">NFC-e Oficial</span>
+            </div>
+
+            <!-- Lista com rolagem de produtos capturados -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between px-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                <span>Produtos Capturados</span>
+                <span>Valor Total</span>
+              </div>
+              <div id="shoppingInvoiceItemsList" class="max-h-64 overflow-y-auto space-y-1.5 pr-1 divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Injetado dinamicamente via renderShoppingInvoicePreview() -->
+              </div>
+            </div>
+
+            <!-- Botões de Ação: Confirmar Nota e Descartar -->
+            <div class="pt-2 flex items-center gap-2 border-t border-slate-100 dark:border-slate-800">
+              <button type="button" onclick="cancelShoppingInvoicePreview()" class="py-2.5 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer active:scale-95">
+                Descartar
+              </button>
+              <button type="button" onclick="confirmShoppingInvoicePreview()" class="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all cursor-pointer">
+                <span>✓ Confirmar Nota</span>
+              </button>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -6743,7 +6793,55 @@ html, body {
     </div>
   </div>
 
-<div id="modalNewTx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <!-- MODAL DE ALERTA: NOTA FISCAL JÁ LIDA / DUPLICADA -->
+  <div id="modalDuplicateInvoiceAlert" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="cancelDuplicateInvoiceAction()"></div>
+    <div class="relative z-10 max-w-sm w-full bg-white dark:bg-slate-900 border-2 border-amber-400 dark:border-amber-500 rounded-3xl shadow-2xl p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl shrink-0 font-bold">
+          ⚠️
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">Nota Fiscal Já Lida!</h3>
+          <p class="text-[11px] text-amber-600 dark:text-amber-400 font-bold">Cupom já registrado anteriormente</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        Este QR Code ou Chave de Acesso já foi escaneado e computado no app para evitar lançamentos em duplicidade.
+      </p>
+
+      <!-- Card de Detalhes da Nota Já Lida -->
+      <div class="bg-amber-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-amber-200 dark:border-amber-900/60 text-xs space-y-1 text-slate-700 dark:text-slate-300">
+        <div class="flex justify-between">
+          <span class="text-slate-500 text-[11px]">Estabelecimento:</span>
+          <strong id="dupInvoiceStore" class="text-slate-900 dark:text-white font-bold">Mercado</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500 text-[11px]">Valor Total:</span>
+          <strong id="dupInvoiceTotal" class="text-emerald-700 dark:text-emerald-400 font-mono font-bold">R$ 0,00</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500 text-[11px]">Lida em:</span>
+          <span id="dupInvoiceDate" class="font-medium text-[11px]">--/--/----</span>
+        </div>
+        <div id="dupInvoiceKeyRow" class="hidden pt-1 border-t border-amber-200/60 dark:border-slate-700 text-[10px] font-mono break-all text-slate-500">
+          Chave: <span id="dupInvoiceKey">...</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button type="button" onclick="cancelDuplicateInvoiceAction()" class="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer text-center">
+          Cancelar (Não Duplicar)
+        </button>
+        <button type="button" onclick="proceedDuplicateInvoiceAction()" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs active:scale-95 transition-colors cursor-pointer text-center whitespace-nowrap">
+          Conferir Mesmo Assim
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalNewTx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-none max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
@@ -35981,6 +36079,302 @@ window.triggerScanQrWithNativeCamera = function() {
   window.openInvoiceQrScanner();
 };
 
+// ============================================================================
+// GESTÃO DE CHAVES E PREVENÇÃO DE LEITURAS DUPLICADAS DE NFC-e
+// ============================================================================
+window.getScannedReceiptKeys = function() {
+  try {
+    const raw = localStorage.getItem('ctrlpig_scanned_receipt_keys');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+window.isReceiptAlreadyScanned = function(keyOrUrl) {
+  if (!keyOrUrl) return false;
+  const cleanKey = String(keyOrUrl).replace(/\D/g, '');
+  const history = window.getScannedReceiptKeys();
+  return history.some(item => {
+    if (typeof item === 'string') {
+      return item === keyOrUrl || (cleanKey.length === 44 && item.includes(cleanKey));
+    }
+    if (item && typeof item === 'object') {
+      if (item.key && (item.key === keyOrUrl || (cleanKey.length === 44 && String(item.key).replace(/\D/g, '') === cleanKey))) return true;
+      if (item.url && item.url === keyOrUrl) return true;
+    }
+    return false;
+  });
+};
+
+window.registerScannedReceiptKey = function(keyOrUrl, store, total) {
+  if (!keyOrUrl) return;
+  try {
+    const history = window.getScannedReceiptKeys();
+    const cleanKey = String(keyOrUrl).replace(/\D/g, '');
+    const entry = {
+      key: cleanKey.length === 44 ? cleanKey : keyOrUrl,
+      url: keyOrUrl,
+      store: store || 'Estabelecimento',
+      total: total || 0,
+      scannedAt: new Date().toISOString()
+    };
+    const filtered = history.filter(h => {
+      const k = typeof h === 'string' ? h : (h.key || h.url);
+      return k !== entry.key && k !== entry.url;
+    });
+    filtered.unshift(entry);
+    localStorage.setItem('ctrlpig_scanned_receipt_keys', JSON.stringify(filtered.slice(0, 300)));
+  } catch (e) {
+    console.error('Erro ao registrar chave da nota:', e);
+  }
+};
+
+window.pendingDuplicateReceiptCallback = null;
+window.openDuplicateInvoiceAlertModal = function(data, onProceed) {
+  window.pendingDuplicateReceiptCallback = onProceed;
+  const modal = document.getElementById('modalDuplicateInvoiceAlert');
+  if (!modal) {
+    if (confirm(`⚠️ Esta Nota Fiscal (${data.store} - ${data.total}) já foi lida em ${data.date}. Deseja conferir novamente?`)) {
+      if (onProceed) onProceed();
+    }
+    return;
+  }
+  const storeEl = document.getElementById('dupInvoiceStore');
+  const totalEl = document.getElementById('dupInvoiceTotal');
+  const dateEl = document.getElementById('dupInvoiceDate');
+  const keyRow = document.getElementById('dupInvoiceKeyRow');
+  const keyEl = document.getElementById('dupInvoiceKey');
+
+  if (storeEl) storeEl.textContent = data.store || 'Mercado';
+  if (totalEl) totalEl.textContent = data.total || 'R$ 0,00';
+  if (dateEl) dateEl.textContent = data.date || 'anteriormente';
+  if (data.accessKey && keyRow && keyEl) {
+    keyRow.classList.remove('hidden');
+    keyEl.textContent = data.accessKey;
+  } else if (keyRow) {
+    keyRow.classList.add('hidden');
+  }
+  modal.classList.remove('hidden');
+};
+
+window.cancelDuplicateInvoiceAction = function() {
+  const modal = document.getElementById('modalDuplicateInvoiceAlert');
+  if (modal) modal.classList.add('hidden');
+  window.pendingDuplicateReceiptCallback = null;
+  if (typeof showToastUndo === 'function') {
+    showToastUndo('Leitura cancelada. Nota duplicada descartada.', false);
+  }
+};
+
+window.proceedDuplicateInvoiceAction = function() {
+  const modal = document.getElementById('modalDuplicateInvoiceAlert');
+  if (modal) modal.classList.add('hidden');
+  const cb = window.pendingDuplicateReceiptCallback;
+  window.pendingDuplicateReceiptCallback = null;
+  if (typeof cb === 'function') cb();
+};
+
+// ============================================================================
+// CONFERÊNCIA DE NOTA FISCAL NA LISTA DE COMPRAS
+// ============================================================================
+window.pendingShoppingInvoiceData = null;
+
+window.renderShoppingInvoicePreview = function(res, items) {
+  const container = document.getElementById('shoppingListInvoicePreviewContainer');
+  if (!container) return;
+
+  window.pendingShoppingInvoiceData = { res, items: items || [] };
+
+  const storeNameEl = document.getElementById('shoppingInvoiceStoreName');
+  const dateEl = document.getElementById('shoppingInvoiceDate');
+  const countEl = document.getElementById('shoppingInvoiceItemCount');
+  const totalEl = document.getElementById('shoppingInvoiceTotalDisplay');
+  const keyContainer = document.getElementById('shoppingInvoiceKeyContainer');
+  const keyText = document.getElementById('shoppingInvoiceKeyText');
+  const listEl = document.getElementById('shoppingInvoiceItemsList');
+
+  const store = res.store || res.estabelecimento || 'Supermercado';
+  const date = res.date || res.data || (new Date().toLocaleDateString('pt-BR'));
+  const total = typeof res.total === 'number' ? res.total : (parseFloat(res.total) || 0);
+
+  if (storeNameEl) storeNameEl.textContent = store;
+  if (dateEl) dateEl.textContent = date;
+  if (countEl) countEl.textContent = `${items.length} ${items.length === 1 ? 'item capturado' : 'itens capturados'}`;
+  if (totalEl) totalEl.textContent = typeof formatBRL === 'function' ? formatBRL(total) : `R$ ${total.toFixed(2)}`;
+
+  if (res.accessKey && keyContainer && keyText) {
+    keyContainer.classList.remove('hidden');
+    keyText.textContent = res.accessKey;
+  } else if (keyContainer) {
+    keyContainer.classList.add('hidden');
+  }
+
+  if (listEl) {
+    if (!items || items.length === 0) {
+      listEl.innerHTML = `
+        <div class="py-4 text-center text-xs text-slate-500">
+          Nenhum item discriminado na nota. Você pode confirmar para registrar a compra de <strong>${typeof formatBRL === 'function' ? formatBRL(total) : 'R$ ' + total.toFixed(2)}</strong> no seu histórico.
+        </div>
+      `;
+    } else {
+      listEl.innerHTML = items.map((it, idx) => {
+        const pTotal = typeof it.total === 'number' ? it.total : (parseFloat(it.total) || 0);
+        const pUnit = typeof it.preco === 'number' ? it.preco : (parseFloat(it.preco) || 0);
+        const qtdStr = it.qtd ? `${it.qtd} ${it.unidade || 'UN'}` : `1 ${it.unidade || 'UN'}`;
+        return `
+          <div class="py-2 flex items-center justify-between gap-2 text-xs">
+            <div class="flex-1 min-w-0">
+              <div class="font-extrabold text-slate-800 dark:text-slate-100 truncate">${idx + 1}. ${it.produto}</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">
+                Qtd: <span class="font-bold text-slate-700 dark:text-slate-300">${qtdStr}</span>
+                ${pUnit > 0 ? ` • Unit: ${typeof formatBRL === 'function' ? formatBRL(pUnit) : 'R$ ' + pUnit.toFixed(2)}` : ''}
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="font-black font-mono text-emerald-600 dark:text-emerald-400">
+                ${typeof formatBRL === 'function' ? formatBRL(pTotal) : 'R$ ' + pTotal.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  container.classList.remove('hidden');
+  try {
+    container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {}
+};
+
+window.cancelShoppingInvoicePreview = function() {
+  const container = document.getElementById('shoppingListInvoicePreviewContainer');
+  if (container) container.classList.add('hidden');
+  const listEl = document.getElementById('shoppingInvoiceItemsList');
+  if (listEl) listEl.innerHTML = '';
+  window.pendingShoppingInvoiceData = null;
+  if (typeof showToastUndo === 'function') {
+    showToastUndo('Conferência cancelada. Nenhum produto foi adicionado.', false);
+  }
+};
+
+window.confirmShoppingInvoicePreview = function() {
+  const data = window.pendingShoppingInvoiceData;
+  if (!data || !data.res) {
+    if (typeof showToastUndo === 'function') showToastUndo('Nenhum dado de nota para confirmar.', true);
+    return;
+  }
+
+  const res = data.res;
+  const items = data.items || [];
+  const store = res.store || res.estabelecimento || 'Supermercado';
+  const date = res.date || res.data || (new Date().toISOString().split('T')[0]);
+  const total = typeof res.total === 'number' ? res.total : (parseFloat(res.total) || 0);
+  const key = res.accessKey || res.chave || res.rawUrl;
+
+  // 1. Registra a chave para evitar repetição futura
+  if (key) {
+    window.registerScannedReceiptKey(key, store, total);
+  }
+
+  // 2. Incorpora itens ao Histórico de Preços e Comparador por Loja
+  if (items.length > 0) {
+    if (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) {
+      items.forEach((it, idx) => {
+        const pUnit = typeof it.preco === 'number' ? it.preco : (parseFloat(it.preco) || 0);
+        priceHistory.unshift({
+          id: Date.now() + idx,
+          produto: it.produto || 'Item de Mercado',
+          estabelecimento: store,
+          data: date,
+          preco: pUnit > 0 ? pUnit : (it.total || 0),
+          precoAnterior: pUnit > 0 ? pUnit * 0.97 : (it.total || 0),
+          unidade: it.unidade || 'UN'
+        });
+      });
+      if (typeof savePriceHistory === 'function') savePriceHistory();
+      if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
+    }
+
+    // 3. Adiciona / Marca itens na Lista de Compras Ativa (financas_active_shopping_items)
+    try {
+      const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
+      items.forEach((it, idx) => {
+        const cleanName = (it.produto || '').toLowerCase().trim();
+        const existing = activeItems.find(a => (a.nome || '').toLowerCase().trim().includes(cleanName) || cleanName.includes((a.nome || '').toLowerCase().trim()));
+        if (existing) {
+          existing.status = 'no_carrinho';
+          existing.qtdComprada = it.qtd || existing.qtdDesejada || 1;
+          existing.precoUnitario = it.preco || existing.precoUnitario || 0;
+        } else {
+          activeItems.push({
+            id: 'item_nfce_' + Date.now() + '_' + idx,
+            nome: it.produto || 'Produto NFC-e',
+            qtdDesejada: it.qtd || 1,
+            unidade: it.unidade || 'UN',
+            marca: store,
+            status: 'no_carrinho',
+            qtdComprada: it.qtd || 1,
+            precoUnitario: it.preco || 0,
+            pedidoPor: 'NFC-e'
+          });
+        }
+      });
+      if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
+      if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
+      if (typeof updateBuilderSummaryUI === 'function') updateBuilderSummaryUI();
+    } catch (err) {
+      console.warn('Aviso ao sincronizar lista ativa de compras:', err);
+    }
+  }
+
+  // 4. Cria lançamento financeiro da compra
+  try {
+    if (typeof transactions !== 'undefined' && Array.isArray(transactions) && total > 0) {
+      const maxId = transactions.length > 0 ? Math.max(...transactions.map(t => t.id || 0)) + 1 : 1;
+      const newTx = {
+        id: maxId,
+        data: date,
+        ciclo: typeof currentCycle !== 'undefined' ? currentCycle : (new Date().toISOString().slice(0, 7)),
+        tipo: 'Despesa Variável',
+        categoria: 'Supermercado',
+        descricao: store,
+        valor: total,
+        responsavel: 'Comum',
+        forma_pagamento: res.payment || 'Cartão de Débito',
+        cartao_nome: null,
+        chave_nfce: key || null,
+        origem_comprovante: 'com_nota',
+        status: 'Pago',
+        parcelado: false,
+        total_parcelas: 1,
+        parcela_atual: 1
+      };
+      transactions.unshift(newTx);
+      if (typeof saveData === 'function') saveData();
+      if (typeof syncTransactionToFlutter === 'function') syncTransactionToFlutter(newTx);
+      if (typeof renderApprovedTransactionsList === 'function') renderApprovedTransactionsList();
+    }
+  } catch (txErr) {
+    console.warn('Aviso ao salvar transacao:', txErr);
+  }
+
+  // 5. A lista DESAPARECE dessa tela conforme solicitado!
+  const container = document.getElementById('shoppingListInvoicePreviewContainer');
+  if (container) {
+    container.classList.add('hidden');
+  }
+  const listEl = document.getElementById('shoppingInvoiceItemsList');
+  if (listEl) listEl.innerHTML = '';
+  window.pendingShoppingInvoiceData = null;
+
+  // 6. Feedback de sucesso
+  if (typeof showToastUndo === 'function') {
+    showToastUndo(`🎉 Nota Fiscal confirmada com sucesso! ${items.length} itens registrados.`, false);
+  }
+};
+
 window.onNativeInvoiceQrResult = function(rawPayload) {
   let res = null;
   try {
@@ -35992,129 +36386,135 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   }
   if (!res) return;
 
-  const modal = document.getElementById('modalInvoiceScan');
-  if (modal) modal.classList.remove('hidden');
+  const accessKey = res.accessKey || res.chave || (res.rawUrl ? (res.rawUrl.match(/(\d{44})/)?.[1] || null) : null);
+  const receiptIdentifier = accessKey || res.rawUrl;
 
-  if (res.isFallback || !res.success) {
-    window.extractedReceiptItems = [];
-    if (typeof window.syncExtractedReceiptItems === 'function') {
-      window.syncExtractedReceiptItems([]);
+  const executeInvoiceProcessing = function() {
+    const isShoppingModalOpen = document.getElementById('modalShoppingList') && !document.getElementById('modalShoppingList').classList.contains('hidden');
+    const modal = document.getElementById('modalInvoiceScan');
+
+    // Se estiver na Lista de Compras, nao abre modalInvoiceScan por cima da tela
+    if (isShoppingModalOpen) {
+      if (modal) modal.classList.add('hidden');
+    } else {
+      if (modal) modal.classList.remove('hidden');
     }
-    if (typeof renderExtractedItemsPreview === 'function') {
-      renderExtractedItemsPreview();
+
+    if (res.isFallback || !res.success) {
+      window.extractedReceiptItems = [];
+      if (typeof window.syncExtractedReceiptItems === 'function') window.syncExtractedReceiptItems([]);
+      if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
+
+      const ocrStatus = document.getElementById('invoiceOcrStatus');
+      const storeInput = document.getElementById('invoiceExtractedStore');
+      if (storeInput) storeInput.value = 'NFC-e (Chave Capturada)';
+      if (ocrStatus) {
+        ocrStatus.innerHTML = `
+          <div class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl text-xs text-amber-900 dark:text-amber-200">
+            <div class="font-bold flex items-center gap-1.5 mb-1">
+              <span>⚠️</span> <span>Aviso SEFAZ</span>
+            </div>
+            <p class="text-[11px] mb-2">${res.errorMessage || 'A consulta online demorou, mas a Chave de Acesso foi salva.'}</p>
+            <div class="font-mono text-[10px] bg-white dark:bg-slate-900 p-1.5 rounded border border-amber-200 dark:border-amber-800 break-all select-all mb-2.5">
+              Chave: <strong>${res.accessKey || 'Não identificada'}</strong>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'fetch_nfce_url', url: '${res.rawUrl || ''}'}));" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 shadow-sm">
+                <span>🔄</span> Consultar com Navegador Integrado
+              </button>
+              ${res.rawUrl ? `
+              <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${res.rawUrl}'}));" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-[10px] flex items-center gap-1">
+                <span>🌐</span> Abrir Navegador
+              </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+      return;
     }
-    const ocrStatus = document.getElementById('invoiceOcrStatus');
+
     const storeInput = document.getElementById('invoiceExtractedStore');
-    if (storeInput) storeInput.value = 'NFC-e (Chave Capturada)';
-    if (ocrStatus) {
-      ocrStatus.innerHTML = `
-        <div class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl text-xs text-amber-900 dark:text-amber-200">
-          <div class="font-bold flex items-center gap-1.5 mb-1">
-            <span>⚠️</span> <span>Aviso SEFAZ</span>
-          </div>
-          <p class="text-[11px] mb-2">${res.errorMessage || 'A consulta online demorou, mas a Chave de Acesso foi salva.'}</p>
-          <div class="font-mono text-[10px] bg-white dark:bg-slate-900 p-1.5 rounded border border-amber-200 dark:border-amber-800 break-all select-all mb-2.5">
-            Chave: <strong>${res.accessKey || 'Não identificada'}</strong>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'fetch_nfce_url', url: '${res.rawUrl || ''}'}));" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 shadow-sm">
-              <span>⚡</span> Consultar com Navegador Integrado
-            </button>
-            ${res.rawUrl ? `
-            <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${res.rawUrl}'}));" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-[10px] flex items-center gap-1">
-              <span>🌐</span> Abrir Navegador
-            </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
+    const dateInput = document.getElementById('invoiceExtractedDate');
+    const totalInput = document.getElementById('invoiceExtractedTotal');
+    const payInput = document.getElementById('invoiceExtractedPayment');
+    const ocrStatus = document.getElementById('invoiceOcrStatus');
+
+    if (storeInput) storeInput.value = res.store || res.estabelecimento || 'Mercado / Estabelecimento';
+    if (dateInput) dateInput.value = res.date || res.data || (new Date().toISOString().split('T')[0]);
+    if (payInput && res.payment) payInput.value = res.payment;
+    if (totalInput && typeof res.total === 'number') {
+      totalInput.value = res.total.toFixed(2).replace('.', ',');
     }
+
+    const incomingItems = Array.isArray(res.items) ? res.items : (Array.isArray(res.itens) ? res.itens : []);
+    const normalizedIncoming = incomingItems.map((it, idx) => ({
+      id: Date.now() + idx,
+      produto: it.produto || it.nome || 'Produto',
+      qtd: typeof it.qtd === 'number' ? it.qtd : parseFloat(String(it.qtd).replace(',', '.')) || 1,
+      unidade: (it.unidade || 'UN').toUpperCase(),
+      preco: typeof it.preco === 'number' ? it.preco : parseFloat(String(it.preco).replace(/\./g, '').replace(',', '.')) || 0,
+      total: typeof it.total === 'number' ? it.total : parseFloat(String(it.total).replace(/\./g, '').replace(',', '.')) || 0,
+      desconto: typeof it.desconto === 'number' ? it.desconto : 0,
+      validated: true
+    }));
+
+    window.extractedReceiptItems = normalizedIncoming;
+    if (typeof window.syncExtractedReceiptItems === 'function') window.syncExtractedReceiptItems(normalizedIncoming);
+    if (typeof extractedReceiptItems !== 'undefined') extractedReceiptItems = normalizedIncoming;
+    if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
+
+    // RENDERIZA CONFERÊNCIA DOS PRODUTOS DIRETAMENTE NA LISTA DE COMPRAS
+    window.renderShoppingInvoicePreview(res, normalizedIncoming);
+
+    const itemCount = normalizedIncoming.length;
+    const formattedTotal = (typeof res.total === 'number' && res.total > 0)
+      ? (typeof formatBRL === 'function' ? formatBRL(res.total) : `R$ ${res.total.toFixed(2)}`)
+      : '';
+
+    if (ocrStatus) {
+      if (itemCount > 0) {
+        ocrStatus.innerHTML = `
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
+            <div class="font-bold flex items-center gap-1.5">
+              <span>✓</span> <span>Cupom NFC-e Oficial Consultado com Sucesso:</span>
+            </div>
+            <div>${itemCount} itens discriminados carregados da SEFAZ.${formattedTotal ? ` Total líquido: <strong>${formattedTotal}</strong>` : ''}</div>
+          </div>
+        `;
+      }
+    }
+
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`🧾 Nota Fiscal lida: ${itemCount} produtos disponíveis para conferência!`, false);
+    }
+  };
+
+  // VERIFICA SE A NOTA FISCAL JÁ FOI LIDA ANTERIORMENTE
+  if (receiptIdentifier && window.isReceiptAlreadyScanned(receiptIdentifier)) {
+    const history = window.getScannedReceiptKeys();
+    const cleanKey = String(receiptIdentifier).replace(/\D/g, '');
+    const prev = history.find(h => {
+      const k = typeof h === 'string' ? h : (h.key || h.url);
+      return k === receiptIdentifier || (cleanKey.length === 44 && String(k).replace(/\D/g, '') === cleanKey);
+    });
+    const prevStore = (prev && prev.store) ? prev.store : (res.store || 'Supermercado');
+    const prevTotal = (prev && prev.total) ? (typeof formatBRL === 'function' ? formatBRL(prev.total) : `R$ ${prev.total}`) : (res.total ? `R$ ${res.total}` : 'R$ 0,00');
+    const prevDate = (prev && prev.scannedAt) ? new Date(prev.scannedAt).toLocaleDateString('pt-BR') : 'anteriormente';
+
+    window.openDuplicateInvoiceAlertModal({
+      store: prevStore,
+      total: prevTotal,
+      date: prevDate,
+      accessKey: accessKey
+    }, () => {
+      executeInvoiceProcessing();
+    });
     return;
   }
 
-  const storeInput = document.getElementById('invoiceExtractedStore');
-  const dateInput = document.getElementById('invoiceExtractedDate');
-  const totalInput = document.getElementById('invoiceExtractedTotal');
-  const payInput = document.getElementById('invoiceExtractedPayment');
-  const ocrStatus = document.getElementById('invoiceOcrStatus');
-
-  if (storeInput) storeInput.value = res.store || res.estabelecimento || 'Mercado / Estabelecimento';
-  if (dateInput) dateInput.value = res.date || res.data || (new Date().toISOString().split('T')[0]);
-  if (payInput && res.payment) payInput.value = res.payment;
-  if (totalInput && typeof res.total === 'number') {
-    totalInput.value = res.total.toFixed(2).replace('.', ',');
-  }
-
-  const incomingItems = Array.isArray(res.items) ? res.items : (Array.isArray(res.itens) ? res.itens : []);
-  const normalizedIncoming = incomingItems.map((it, idx) => ({
-    id: Date.now() + idx,
-    produto: it.produto || it.nome || 'Produto',
-    qtd: typeof it.qtd === 'number' ? it.qtd : parseFloat(String(it.qtd).replace(',', '.')) || 1,
-    unidade: (it.unidade || 'UN').toUpperCase(),
-    preco: typeof it.preco === 'number' ? it.preco : parseFloat(String(it.preco).replace(/\./g, '').replace(',', '.')) || 0,
-    total: typeof it.total === 'number' ? it.total : parseFloat(String(it.total).replace(/\./g, '').replace(',', '.')) || 0,
-    desconto: typeof it.desconto === 'number' ? it.desconto : 0,
-    validated: true
-  }));
-  window.extractedReceiptItems = normalizedIncoming;
-  if (typeof window.syncExtractedReceiptItems === 'function') {
-    window.syncExtractedReceiptItems(normalizedIncoming);
-  }
-  if (typeof extractedReceiptItems !== 'undefined') {
-    extractedReceiptItems = normalizedIncoming;
-  }
-
-  if (typeof renderExtractedItemsPreview === 'function') {
-    renderExtractedItemsPreview();
-  }
-
-  const itemCount = window.extractedReceiptItems.length;
-  const formattedTotal = (typeof res.total === 'number' && res.total > 0)
-    ? (typeof formatBRL === 'function' ? formatBRL(res.total) : `R$ ${res.total.toFixed(2)}`)
-    : '';
-
-  if (ocrStatus) {
-    if (itemCount > 0) {
-      ocrStatus.innerHTML = `
-        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
-          <div class="font-bold flex items-center gap-1.5">
-            <span>✓</span> <span>Cupom NFC-e Oficial Consultado com Sucesso:</span>
-          </div>
-          <div>${itemCount} itens discriminados carregados da SEFAZ.${formattedTotal ? ` Total líquido: <strong>${formattedTotal}</strong>` : ''}</div>
-        </div>
-      `;
-      if (typeof showToastUndo === 'function') {
-        showToastUndo(`⚡ NFC-e lida: ${itemCount} itens carregados da SEFAZ!`, false);
-      }
-    } else {
-      ocrStatus.innerHTML = `
-        <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 rounded-xl text-xs text-amber-900 dark:text-amber-200 space-y-2">
-          <div class="font-bold flex items-center gap-1.5 text-amber-800 dark:text-amber-200">
-            <span>📷</span> <span>QR Code Reconhecido com Sucesso!</span>
-          </div>
-          <p class="text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-            A Chave de Acesso foi capturada com sucesso${res.accessKey ? `: <strong class="font-mono text-[10px] bg-white dark:bg-slate-900 px-1 py-0.5 rounded border border-amber-300 select-all">${res.accessKey}</strong>` : ''}.<br/>
-            Como o portal da SEFAZ exige validação interativa para liberar a lista discriminada via robô, use nossa <strong>IA Vision</strong> para extrair todos os itens e preços em 2 segundos fotografando o cupom!
-          </p>
-          <div class="flex flex-wrap items-center gap-2 pt-1">
-            <button type="button" onclick="triggerInvoiceCameraCapture()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-              <span>📸 Tirar Foto da Nota com IA (Extrair Itens)</span>
-            </button>
-            ${res.rawUrl ? `
-            <button type="button" onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${res.rawUrl}'}));" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-xs flex items-center gap-1.5 active:scale-95 cursor-pointer">
-              <span>🌐</span> <span>Abrir no Navegador</span>
-            </button>
-            ` : ''}
-          </div>
-        </div>
-      `;
-      if (typeof showToastUndo === 'function') {
-        showToastUndo('QR Code lido! Fotografe o cupom para extrair todos os itens com IA.', false);
-      }
-      if (window.lucide) lucide.createIcons();
-    }
-  }
+  // Nota nova: processa normalmente
+  executeInvoiceProcessing();
 };
 
 // 4. INTELLIGENT MASCOT PITACION - Gerenciado centralmente por triggerSectionWithIntelligentMascot
