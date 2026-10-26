@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.85+162";
+    window.APP_BUILD_VERSION = "2.1.86+163";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -4241,7 +4241,7 @@ html, body {
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
                 <div class="mt-1 flex items-baseline gap-2">
                   <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                    R$ 4.850,00
+                    R$ 1.221,87
                   </h2>
                 </div>
               </div>
@@ -4295,15 +4295,15 @@ html, body {
             <div class="grid grid-cols-3 gap-2 mt-3.5 text-center">
               <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
                 <span class="text-[10px] font-bold text-slate-500 uppercase block">Dias Restantes</span>
-                <span class="text-xs font-black text-slate-800">18 dias</span>
+                <span id="valDiasRestantes" class="text-xs font-black text-slate-800">9 dias</span>
               </div>
               <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
                 <span class="text-[10px] font-bold text-slate-500 uppercase block">Comprometido</span>
-                <span id="valComprometido" class="text-xs font-black text-amber-600">61%</span>
+                <span id="valComprometido" class="text-xs font-black text-amber-600">78%</span>
               </div>
               <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
                 <span class="text-[10px] font-bold text-slate-500 uppercase block">Parcelados</span>
-                <span id="valParcelados" class="text-xs font-black text-blue-600">5 ativas</span>
+                <span id="valParcelados" class="text-xs font-black text-blue-600">0 ativas</span>
               </div>
             </div>
 
@@ -4315,7 +4315,7 @@ html, body {
                 </div>
                 <div>
                   <span class="text-[10px] font-bold text-emerald-800 uppercase block">Receitas</span>
-                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ 8.500,00</span>
+                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ 5.560,00</span>
                 </div>
               </div>
               <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3 flex items-center gap-2.5">
@@ -4324,7 +4324,7 @@ html, body {
                 </div>
                 <div>
                   <span class="text-[10px] font-bold text-rose-800 uppercase block">Despesas</span>
-                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ 3.650,00</span>
+                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ 4.338,13</span>
                 </div>
               </div>
             </div>
@@ -9352,7 +9352,13 @@ html, body {
         transactions = window.transactions;
       }
       
-      const activeTxs = transactions.filter(t => !currentCycle || t.ciclo === currentCycle);
+      if (typeof ensureActiveTransactionsLoaded === 'function') {
+        ensureActiveTransactionsLoaded();
+      }
+      let activeTxs = transactions.filter(t => isTxInCycle(t, currentCycle));
+      if (activeTxs.length === 0 && transactions.length > 0) {
+        activeTxs = transactions.slice(0, 30);
+      }
 
       const isReceita = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
       const receitas = activeTxs.filter(isReceita).reduce((a, t) => a + (parseFloat(t.valor)||0), 0);
@@ -9367,20 +9373,29 @@ html, body {
       const elReceitasVal = document.getElementById('heroReceitasVal');
       const elDespesasVal = document.getElementById('heroDespesasVal');
       const elValComp = document.getElementById('valComprometido');
+      const elValDias = document.getElementById('valDiasRestantes');
       const elHeroBadge = document.getElementById('heroSaldoBadge');
       const isHidden = window.privacyHidden === true;
 
       if (elSaldoText) {
         elSaldoText.textContent = isHidden ? 'R$ ••••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+        elSaldoText.dataset.real = (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
       }
       if (elReceitasVal) {
         elReceitasVal.textContent = isHidden ? '+ R$ ••••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
+        elReceitasVal.dataset.real = (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
       }
       if (elDespesasVal) {
         elDespesasVal.textContent = isHidden ? '- R$ ••••••' : (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
+        elDespesasVal.dataset.real = (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
       }
       if (elValComp) {
         elValComp.textContent = isHidden ? '••%' : `${percentGasto}%`;
+        elValComp.dataset.real = `${percentGasto}%`;
+      }
+      if (elValDias && typeof getCycleDaysRemainingInfo === 'function') {
+        const cycleInfo = getCycleDaysRemainingInfo(currentCycle);
+        elValDias.textContent = `${cycleInfo.daysRemaining} dias`;
       }
       if (elHeroBadge) {
         if (isHidden) {
@@ -9484,7 +9499,7 @@ html, body {
         if (stPrivIcon) stPrivIcon.setAttribute('data-lucide', isPrivacyGlobal ? 'eye-off' : 'eye');
       }
 
-      const fixasDoCicloAll = transactions.filter(t => t.tipo === 'Despesa Fixa' && t.ciclo === currentCycle);
+      const fixasDoCicloAll = transactions.filter(t => t.tipo === 'Despesa Fixa' && isTxInCycle(t, currentCycle));
       const fixasPagasAll = fixasDoCicloAll.filter(t => t.status === 'Pago' || t.status === 'Recebido').length;
       const stFixas = document.getElementById('statusFixasTexto');
       if (stFixas) stFixas.textContent = `Contas Fixas: ${fixasPagasAll}/${fixasDoCicloAll.length} quitadas`;
@@ -9517,7 +9532,7 @@ html, body {
       if (stSync) stSync.textContent = `Local • ${transactions.length} lançamentos`;
 
       const todayStr = getLocalDateString();
-      const todayTxs = transactions.filter(t => t.data === todayStr && t.ciclo === currentCycle);
+      const todayTxs = transactions.filter(t => t.data === todayStr && isTxInCycle(t, currentCycle));
       const titleEl = document.getElementById('reminderTodayTitle');
       const textEl = document.getElementById('reminderTodayText');
 
@@ -9531,7 +9546,7 @@ html, body {
         }
       }
 
-      const fixasDoCiclo = transactions.filter(t => t.tipo === 'Despesa Fixa' && t.ciclo === currentCycle);
+      const fixasDoCiclo = transactions.filter(t => t.tipo === 'Despesa Fixa' && isTxInCycle(t, currentCycle));
       const fixasPagas = fixasDoCiclo.filter(t => t.status === 'Pago' || t.status === 'Recebido').length;
       const statusFixasEl = document.getElementById('reminderFixasStatus');
       if (statusFixasEl) {
@@ -11098,12 +11113,13 @@ html, body {
     }
 
     function getCycleDaysRemainingInfo(cycleStr) {
-      const match = (cycleStr || currentCycle).match(/([0-9]{2})\/([A-Za-zç]+)\s+a\s+([0-9]{2})\/([A-Za-zç]+)\s+([0-9]{4})/i);
+      const targetStr = cycleStr || currentCycle || '05/Out a 04/Nov - 2026';
+      const match = targetStr.match(/([0-9]{1,2})\/([A-Za-zç]+)\s+a\s+([0-9]{1,2})\/([A-Za-zç]+)(?:\s*[\-–—]\s*|\s+)([0-9]{4})/i);
       const monthsMap = {
         'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3, 'mai': 4, 'jun': 5,
         'jul': 6, 'ago': 7, 'set': 8, 'out': 9, 'nov': 10, 'dez': 11
       };
-      
+
       if (match) {
         const d1 = parseInt(match[1]);
         const m1 = monthsMap[match[2].toLowerCase().substring(0, 3)] ?? 9;
@@ -11111,23 +11127,21 @@ html, body {
         const m2 = monthsMap[match[4].toLowerCase().substring(0, 3)] ?? 10;
         const y2 = parseInt(match[5]);
         const y1 = m1 > m2 ? y2 - 1 : y2;
-        
-        const startDate = new Date(y1, m1, d1);
-        const endDate = new Date(y2, m2, d2);
+
+        const startDate = new Date(y1, m1, d1, 0, 0, 0);
+        const endDate = new Date(y2, m2, d2, 23, 59, 59);
         const today = new Date();
-        
+
         const totalMs = endDate - startDate;
         const totalDays = Math.max(1, Math.round(totalMs / (1000 * 60 * 60 * 24)));
-        
-        let elapsedMs = today - startDate;
-        let elapsedDays = Math.round(elapsedMs / (1000 * 60 * 60 * 24));
-        if (elapsedDays < 0) elapsedDays = 0;
-        if (elapsedDays > totalDays) elapsedDays = totalDays;
-        
-        const daysRemaining = Math.max(1, totalDays - elapsedDays);
+
+        const remainingMs = endDate - today;
+        const daysRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60 * 24)));
+        const elapsedDays = Math.max(0, totalDays - daysRemaining);
+
         return { totalDays, elapsedDays, daysRemaining };
       }
-      return { totalDays: 31, elapsedDays: 4, daysRemaining: 27 };
+      return { totalDays: 31, elapsedDays: 22, daysRemaining: 9 };
     }
 
     function updateFoodBudgetWidget() {
@@ -36890,7 +36904,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         if (!saldoText.dataset.real) saldoText.dataset.real = saldoText.textContent;
         saldoText.textContent = 'R$ •••••';
       } else {
-        saldoText.textContent = saldoText.dataset.real || 'R$ 4.850,00';
+        saldoText.textContent = saldoText.dataset.real || 'R$ 1.221,87';
       }
     }
 
