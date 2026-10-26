@@ -314,20 +314,49 @@ class NfceParser {
     }
 
     // Valor Total do item
-    final valorEl = row.querySelector('.valor');
-    var totalPrice = NfceNumberParser.parseCurrency(valorEl?.text);
+    // Procura primeiro na c?lula de pre?o ou no ?ltimo elemento .valor da linha
+    double totalPrice = 0.0;
+    final precoCell = row.querySelector('.fixo-prod-serv-preco') ??
+                      row.querySelector('td.txtRight') ??
+                      row.querySelector('td:last-child');
+    if (precoCell != null) {
+      final cellValor = precoCell.querySelector('.valor');
+      totalPrice = NfceNumberParser.parseCurrency((cellValor ?? precoCell).text);
+    }
 
-    // Fallback de valor total se ausente ou zerado
-    if (totalPrice <= 0.0 && unitPrice > 0.0) {
-      totalPrice = (quantity * unitPrice) - discount;
-      if (totalPrice < 0) totalPrice = 0.0;
+    if (totalPrice <= 0.0) {
+      final allValores = row.querySelectorAll('.valor');
+      if (allValores.length > 1) {
+        // Se houver mais de um .valor na linha, o ?ltimo ? o total do item (o primeiro pode ser o unit?rio)
+        totalPrice = NfceNumberParser.parseCurrency(allValores.last.text);
+      } else if (allValores.length == 1) {
+        totalPrice = NfceNumberParser.parseCurrency(allValores.first.text);
+      }
+    }
+
+    // CORRE??O E PRECIS?O PARA PRODUTOS FRACIONADOS (ex: P?o Franc?s 0,090 kg x R$ 27,90/kg = R$ 2,51)
+    final expectedTotal = double.parse(((quantity * unitPrice) - discount).toStringAsFixed(2));
+
+    // Se o item tem quantidade fracionada / diferente de 1 (ex: 0,090 kg):
+    if (quantity > 0.0 && (quantity - 1.0).abs() > 0.001) {
+      // Se totalPrice n?o foi capturado OU se totalPrice veio igual ao unitPrice (ou seja, capturou o valor do kg no lugar do total pago):
+      if (totalPrice <= 0.0 || (totalPrice - unitPrice).abs() < 0.01) {
+        totalPrice = expectedTotal > 0 ? expectedTotal : totalPrice;
+      }
+    } else if (totalPrice <= 0.0 && unitPrice > 0.0) {
+      totalPrice = expectedTotal > 0 ? expectedTotal : unitPrice;
+    }
+
+    var finalUnitPrice = unitPrice;
+    if (finalUnitPrice <= 0.0 && quantity > 0.0 && totalPrice > 0.0) {
+      finalUnitPrice = double.parse((totalPrice / quantity).toStringAsFixed(2));
     }
 
     return NfceItem(
       name: cleanName,
       quantity: quantity,
       unit: unit,
-      unitPrice: unitPrice,
+      unitPrice: finalUnitPrice,
       totalPrice: totalPrice,
       discount: discount,
     );
@@ -350,15 +379,27 @@ class NfceParser {
     final quantity = NfceNumberParser.parseQuantity(cells[1].text);
     final unit = NfceNumberParser.normalizeUnit(cells[2].text);
     final unitPrice = NfceNumberParser.parseCurrency(cells[3].text);
-    final totalPrice = cells.length >= 5
+    var totalPrice = cells.length >= 5
         ? NfceNumberParser.parseCurrency(cells[4].text)
         : (quantity * unitPrice);
+
+    final expectedTotal = double.parse((quantity * unitPrice).toStringAsFixed(2));
+    if (quantity > 0.0 && (quantity - 1.0).abs() > 0.001) {
+      if (totalPrice <= 0.0 || (totalPrice - unitPrice).abs() < 0.01) {
+        totalPrice = expectedTotal > 0 ? expectedTotal : totalPrice;
+      }
+    }
+
+    var finalUnitPrice = unitPrice;
+    if (finalUnitPrice <= 0.0 && quantity > 0.0 && totalPrice > 0.0) {
+      finalUnitPrice = double.parse((totalPrice / quantity).toStringAsFixed(2));
+    }
 
     return NfceItem(
       name: name,
       quantity: quantity,
       unit: unit,
-      unitPrice: unitPrice,
+      unitPrice: finalUnitPrice,
       totalPrice: totalPrice,
     );
   }
@@ -384,15 +425,25 @@ class NfceParser {
     final discount = NfceNumberParser.parseCurrency(descMatch?.group(1));
     var totalPrice = NfceNumberParser.parseCurrency(totMatch?.group(2));
 
-    if (totalPrice <= 0.0 && unitPrice > 0.0) {
-      totalPrice = (quantity * unitPrice) - discount;
+    final expectedTotal = double.parse(((quantity * unitPrice) - discount).toStringAsFixed(2));
+    if (quantity > 0.0 && (quantity - 1.0).abs() > 0.001) {
+      if (totalPrice <= 0.0 || (totalPrice - unitPrice).abs() < 0.01) {
+        totalPrice = expectedTotal > 0 ? expectedTotal : totalPrice;
+      }
+    } else if (totalPrice <= 0.0 && unitPrice > 0.0) {
+      totalPrice = expectedTotal > 0 ? expectedTotal : unitPrice;
+    }
+
+    var finalUnitPrice = unitPrice;
+    if (finalUnitPrice <= 0.0 && quantity > 0.0 && totalPrice > 0.0) {
+      finalUnitPrice = double.parse((totalPrice / quantity).toStringAsFixed(2));
     }
 
     return NfceItem(
       name: name,
       quantity: quantity,
       unit: unit,
-      unitPrice: unitPrice,
+      unitPrice: finalUnitPrice,
       totalPrice: totalPrice,
       discount: discount,
     );

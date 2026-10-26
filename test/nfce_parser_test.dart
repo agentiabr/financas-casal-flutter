@@ -248,5 +248,40 @@ void main() {
       expect(json['items'][0]['qtd'], equals(2.0));
       expect(json['items'][0]['unidade'], equals('UN'));
     });
+
+    test('Calcula e preserva pre?o fracionado de produtos por quilo (ex: P?o Franc?s 0,090kg x 27,90/kg = 2,51)', () {
+      final parser = NfceParser();
+      const htmlFracionado = '''
+        <html>
+          <body>
+            <div class="txtTopo">PADARIA CENTRAL</div>
+            <table id="tabResult">
+              <tr id="Item + 1">
+                <td class="fixo-prod-serv-descricao">
+                  <span class="txtTit">PAO FRANCES<span class="RCod">(C?digo: 101)</span></span>
+                  <span class="Rqtd">Qtde.:0,090</span>
+                  <span class="RUN">UN: KG</span>
+                  <span class="RvlUnit">Vl. Unit.: 27,90</span>
+                </td>
+                <td class="fixo-prod-serv-preco">
+                  <span class="valor">2,51</span>
+                </td>
+              </tr>
+            </table>
+            <div id="totalNota"><div id="linhaTotal"><span class="totalNfe">2,51</span></div></div>
+          </body>
+        </html>
+      ''';
+
+      final inv = parser.parse(htmlFracionado);
+      expect(inv.items.length, equals(1));
+      final item = inv.items.first;
+      expect(item.name, equals('PAO FRANCES'));
+      expect(item.quantity, equals(0.09));
+      expect(item.unit, equals('KG'));
+      expect(item.unitPrice, equals(27.90));
+      expect(item.totalPrice, equals(2.51));
+      expect(inv.total, equals(2.51));
+    });
   });
 }
