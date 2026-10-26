@@ -4539,21 +4539,21 @@ html, body {
                 <span class="text-[11px] font-bold text-slate-800">Chat</span>
               </div>
 
-              <div onclick="openShoppingListModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-lg mb-1">
                   🛒
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Compras</span>
               </div>
 
-              <div onclick="openHealthMedsModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-rose-100/70 text-rose-600 flex items-center justify-center text-lg mb-1">
                   💊
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Saúde</span>
               </div>
 
-              <div onclick="openPetAreaModal()" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <div class="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-600 flex items-center justify-center text-lg mb-1">
                   🐾
                 </div>
@@ -4859,28 +4859,24 @@ html, body {
 
         <div class="flex-1 flex flex-col relative overflow-hidden">
           
-          <!-- BANNER HERO COM O PIGGY POUSADO POR CIMA DA CAIXA ARREDONDADA (z-20 com sombra) -->
+          <!-- BANNER HERO COM O PIGGY (SÓBRIO, SEM DICA - DICAS NO PITACO DE CADA SEÇÃO) -->
           <div class="px-5 pt-1 relative z-20">
             <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
               <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
               
               <div class="relative z-10 flex items-center justify-between gap-3">
-                <div class="max-w-[62%]">
+                <div class="max-w-[65%]">
                   <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
-                    Tudo da sua família em um só lugar.
+                    Espaço Família &amp; Vida
                   </h3>
                   <p class="text-xs text-blue-100 mt-1 leading-snug">
-                    Organize, planeje e viva com mais tranquilidade.
+                    Rotina, saúde, transporte e cuidados compartilhados em 8 módulos integrados.
                   </p>
-                  <button type="button" onclick="openHealthMedsModal()" class="mt-3 px-4 py-1.5 rounded-full bg-white text-blue-700 hover:bg-blue-50 text-xs font-black shadow-md transition-all inline-flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                    <span>Explorar módulos</span>
-                    <span>→</span>
-                  </button>
                 </div>
 
                 <!-- Mascote Porquinho Robô 3D sorrindo -->
                 <div class="w-28 sm:w-32 flex-shrink-0 flex items-center justify-center">
-                  <img src="images/mascote_oficial_mentor.png" onerror="this.src=\'assets/images/mascote_oficial_mentor.png\'" alt="Mascote Oficial" class="w-full h-auto max-h-[125px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
+                  <img src="images/mascote_oficial_mentor.png" onerror="this.src='assets/images/mascote_oficial_mentor.png'" alt="Mascote Oficial" class="w-full h-auto max-h-[120px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
                 </div>
               </div>
             </div>
@@ -4899,7 +4895,7 @@ html, body {
             <div class="grid grid-cols-2 gap-3 pb-6">
               
               <!-- 1. Educação -->
-              <div onclick="openEducacaoHub()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
                     🎓
@@ -4955,7 +4951,7 @@ html, body {
               </div>
 
               <!-- 5. Transporte & Manutenção -->
-              <div onclick="openVeiculosHub()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
                     🚗
@@ -4969,7 +4965,7 @@ html, body {
               </div>
 
               <!-- 6. Meus Prestadores -->
-              <div onclick="openServiceProvidersModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                     🔧
@@ -4983,7 +4979,7 @@ html, body {
               </div>
 
               <!-- 7. Cofrinho e Metas -->
-              <div onclick="openCreatePiggyModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
                     🐷
@@ -4997,7 +4993,7 @@ html, body {
               </div>
 
               <!-- 8. Cartões -->
-              <div onclick="openManageCardsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                     💳
@@ -16455,12 +16451,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             </p>
             <div class="grid grid-cols-2 gap-2">
               <button type="button" onclick="handleChatConfirmShoppingAvailability(true)" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
-                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-                <span>1 - Consegue comprar?</span>
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Consigo</span>
               </button>
               <button type="button" onclick="handleChatConfirmShoppingAvailability(false)" class="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
-                <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                <span>2 - Não consigo</span>
+                <i data-lucide="x" class="w-4 h-4"></i>
+                <span>Não consigo</span>
               </button>
             </div>
           </div>
@@ -16862,7 +16858,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                     <span class="text-[10px] font-bold px-2 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">✓ Recebimento Confirmado</span>
                   </div>
                   <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
-                    Vai conseguir fazer as compras pra mim?
+                    Vai conseguir fazer as compras?
                   </h4>
                   <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">
                     ${senderDisplayName} aguarda sua confirmação:
@@ -16870,12 +16866,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 </div>
               </div>
               <div class="mt-3 pt-2 border-t border-emerald-200/60 dark:border-slate-700 flex items-center justify-end gap-2 flex-wrap">
-                <button type="button" onclick="handleChatConfirmShoppingAvailability(false)" class="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer active:scale-95">
-                  Hoje não consigo
+                <button type="button" onclick="handleChatConfirmShoppingAvailability(false)" class="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-rose-100 hover:text-rose-700 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer active:scale-95 flex items-center gap-1">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  <span>Não consigo</span>
                 </button>
                 <button type="button" onclick="handleChatConfirmShoppingAvailability(true)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95">
-                  <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                  <span>Sim, vou fazer as compras!</span>
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Consigo</span>
                 </button>
               </div>
             </div>
@@ -34587,13 +34584,39 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   window.currentActiveSectionKey = null;
 
   window.triggerSectionWithIntelligentMascot = function(sectionKey, callback) {
-    if (typeof callback === 'function') {
-      try {
-        callback();
-      } catch(err) {
-        console.error('Erro ao executar callback da seção:', err);
-      }
+    window._pendingSectionCallback = callback;
+    window.currentActiveSectionKey = sectionKey;
+
+    const modal = document.getElementById('modalMascotSectionPitaco');
+    if (!modal) {
+      if (typeof callback === 'function') callback();
+      return;
     }
+
+    const pitaco = generateContextualPitaco(sectionKey);
+    const header = document.getElementById('mascotPitacoHeader');
+    const badge = document.getElementById('mascotPitacoBadge');
+    const text = document.getElementById('mascotPitacoText');
+    const img = document.getElementById('mascotPitacoImg');
+    const btnLabel = document.getElementById('btnEnterSectionLabel');
+    const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
+
+    if (header) header.innerText = pitaco.header;
+    if (badge) {
+      badge.innerHTML = pitaco.badge;
+      badge.className = 'inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border ' + (pitaco.badgeColor || 'border-sky-300 bg-sky-50 text-sky-600');
+    }
+    if (text) text.innerHTML = pitaco.text;
+    if (img && pitaco.img) img.src = pitaco.img;
+    if (btnLabel) btnLabel.innerText = 'Acessar ' + (pitaco.header || 'Seção');
+    if (checkSkip) checkSkip.checked = false;
+
+    // Posiciona o modal no body com z-index ultra-alto para visualização impecável
+    if (modal.parentElement !== document.body) document.body.appendChild(modal);
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    modal.style.zIndex = '999999';
+    if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
   };
 
   window.confirmEnterSectionFromPitaco = function() {
