@@ -4940,7 +4940,7 @@ html, body {
                 </div>
               </div>
 
-              <!-- 4. Minha Saúde -->
+              <!-- 4. Vida Saudável -->
               <div onclick="openHealthMedsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
@@ -4949,12 +4949,12 @@ html, body {
                   <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
                 <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Minha Saúde</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Consultas e exames</p>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Vida Saudável</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Rotina e medicamentos</p>
                 </div>
               </div>
 
-              <!-- 5. Veículos -->
+              <!-- 5. Transporte & Manutenção -->
               <div onclick="openVeiculosHub()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
@@ -4963,12 +4963,12 @@ html, body {
                   <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
                 <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Veículos</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Manutenção e multas</p>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Transporte &amp; Manutenção</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Combustível e manutenção</p>
                 </div>
               </div>
 
-              <!-- 6. Prestadores de Serviço -->
+              <!-- 6. Meus Prestadores -->
               <div onclick="openServiceProvidersModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
                   <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
@@ -4977,8 +4977,8 @@ html, body {
                   <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
                 <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Prestadores</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Contatos e orçamentos</p>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Meus Prestadores</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Contatos de confiança</p>
                 </div>
               </div>
 
@@ -4996,17 +4996,17 @@ html, body {
                 </div>
               </div>
 
-              <!-- 8. Documentos & Faturas -->
+              <!-- 8. Cartões -->
               <div onclick="openManageCardsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
-                    📄
+                  <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    💳
                   </div>
                   <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
                 <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Documentos</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Recibos e garantias</p>
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Cartões</h4>
+                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Controle de gastos com cartões</p>
                 </div>
               </div>
 
@@ -6300,32 +6300,53 @@ html, body {
     </div>
   </div>
 
-  <!-- MODAL: GERENCIAR CARTÕES (Z-INDEX 80 ISOLADO) -->
-  <div id="modalManageCards" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[80] flex items-center justify-center p-4">
-    <div class="bg-white rounded-none max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-        <div class="flex items-center gap-2">
-          <div class="p-2 bg-slate-100 text-purple-700 rounded-none border border-slate-300">
-            <i data-lucide="credit-card" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-base text-slate-800">Gerenciar Cartões de Crédito</h3>
-        </div>
-        <button onclick="closeManageCardsModal()" class="p-1 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400">
-          <i data-lucide="x" class="w-5 h-5"></i>
+  <!-- ============================================================== -->
+  <!-- MODAL DEDICADO: CARTÕES & FATURAS (PADRÃO MUNDO PET & SAÚDE)      -->
+  <!-- ============================================================== -->
+  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>💳</span><span>Cartões</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Controle de gastos com cartões e faturas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+      
+      <!-- CARD: LISTA DE CARTÕES ATUAIS -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Cartões Cadastrados</span>
+          </div>
+          <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">Limites &amp; Vencimentos</span>
+        </div>
+        <div class="space-y-2.5" id="manageCardsList">
+          <!-- Lista dos cartões atuais renderizada dinamicamente -->
+        </div>
       </div>
 
-      <div class="mt-4">
-        <div class="space-y-2" id="manageCardsList">
-          <!-- Lista dos cartões atuais -->
-        </div>
-
-        <form onsubmit="handleAddNewCard(event)" class="mt-4 p-4 bg-slate-50 rounded-none border border-slate-300 text-xs space-y-3">
-          <h4 class="font-bold text-slate-800">+ Cadastrar Novo Cartão</h4>
+      <!-- CARD: FORMULÁRIO DE NOVO CARTÃO -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="font-black text-xs text-slate-800 mb-2.5 flex items-center gap-1.5">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-500"></i>
+          <span>Cadastrar Novo Cartão</span>
+        </h4>
+        <form onsubmit="handleAddNewCard(event)" class="text-xs space-y-3">
           <div>
             <label class="block text-slate-600 font-semibold mb-1">Nome / Banco do Cartão</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-1">
-              <select id="newCardPreset" onchange="onCardPresetSelected(this.value)" class="w-full px-2 py-1.5 text-xs bg-white rounded-none border border-slate-300">
+              <select id="newCardPreset" onchange="onCardPresetSelected(this.value)" class="w-full px-3 py-2 text-xs bg-slate-50 rounded-xl border border-slate-300 focus:outline-none">
                 <option value="">Selecione banco ou digite ao lado...</option>
                 <option value="Nubank Ultravioleta">🟣 Nubank</option>
                 <option value="XP Visa Infinite">⚫ XP Infinite</option>
@@ -6340,13 +6361,13 @@ html, body {
                 <option value="Mercado Pago">🔵 Mercado Pago</option>
                 <option value="custom">✏️ Outro Cartão Personalizado...</option>
               </select>
-              <input type="text" id="newCardName" required placeholder="Digite o nome do cartão..." class="w-full px-3 py-1.5 bg-white text-xs rounded-none border border-slate-300">
+              <input type="text" id="newCardName" required placeholder="Digite o nome do cartão..." class="w-full px-3 py-2 bg-slate-50 text-xs rounded-xl border border-slate-300 focus:outline-none font-semibold">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-slate-600 font-semibold mb-1">Titular</label>
-              <select id="newCardOwner" class="w-full px-3 py-2 bg-white rounded-none border border-slate-300">
+              <select id="newCardOwner" class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 focus:outline-none font-semibold">
                 <option value="Rodrigo">Rodrigo</option>
                 <option value="Márcia">Márcia</option>
                 <option value="Comum">Comum</option>
@@ -6354,17 +6375,17 @@ html, body {
             </div>
             <div>
               <label class="block text-slate-600 font-semibold mb-1">Limite Total (R$)</label>
-              <input type="number" id="newCardLimit" required placeholder="5000" class="w-full px-3 py-2 bg-white rounded-none border border-slate-300">
+              <input type="number" id="newCardLimit" required placeholder="5000" class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 focus:outline-none font-semibold font-mono">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-slate-600 font-semibold mb-1">Últimos 4 Dígitos</label>
-              <input type="text" id="newCardDigits" maxlength="4" placeholder="1234" class="w-full px-3 py-2 bg-white rounded-none border border-slate-300">
+              <input type="text" id="newCardDigits" maxlength="4" placeholder="1234" class="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-300 focus:outline-none font-mono">
             </div>
             <div>
               <label class="block text-slate-600 font-semibold mb-1 text-[11px]">Cor do Cartão</label>
-              <select id="newCardColor" class="w-full px-2 py-1 text-[11px] bg-white rounded-xl border border-slate-300">
+              <select id="newCardColor" class="w-full px-3 py-2 text-[11px] bg-slate-50 rounded-xl border border-slate-300 focus:outline-none">
                 <option value="purple">🟣 Roxo</option>
                 <option value="black">⚫ Preto</option>
                 <option value="orange">🟠 Laranja</option>
@@ -6376,17 +6397,12 @@ html, body {
               </select>
             </div>
           </div>
-          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-none shadow-sm">
-            Adicionar Cartão
+          <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold rounded-xl shadow-sm transition-all cursor-pointer">
+            + Adicionar Cartão
           </button>
         </form>
       </div>
 
-      <div class="mt-4 pt-3 border-t border-slate-200 flex justify-end">
-        <button onclick="closeManageCardsModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-none text-xs border border-slate-300">
-          Fechar
-        </button>
-      </div>
     </div>
   </div>
 
@@ -23042,15 +23058,17 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, FOCADO EM COMPRAS)      -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="fixed inset-0 z-[120] hidden flex flex-col bg-slate-900 w-full h-full overflow-hidden">
-    <!-- Cabeçalho Nativo de Página Inteira com Botão Voltar -->
-    <div class="page-header-back">
-      <div class="flex items-center gap-3">
-        <button type="button" onclick="closeFamilyChatModal()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
-          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+  <div id="modalFamilyChat" class="fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
         <div>
-          <h3 class="font-black text-base sm:text-lg text-white leading-tight">Chat da Família</h3>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>💬</span><span>Chat da Família</span>
+          </h2>
           <p class="text-[11px] text-blue-200" id="chatHeaderSubtitle">Rodrigo &amp; Márcia • online</p>
         </div>
       </div>
@@ -23065,15 +23083,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <span>💡</span>
         </button>
         <!-- 3. Botão 3 Pontinhos (Mais Opções da Conversa) -->
-        <button type="button" onclick="openChatMoreOptionsModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Mais opções da conversa">
+        <button type="button" onclick="openChatMoreOptionsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Mais opções da conversa">
           <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-        </button>
-        <!-- 4. Botão Fechar -->
-        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Fechar">
-          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
+
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS (PADRÃO MUNDO PET) -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
 
     <!-- Barra Dinâmica: Avatar do Usuário Ativo (À Esquerda) e Seletor de Destinatário (À Direita) -->
     <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto flex-shrink-0 select-none">
@@ -23157,6 +23174,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <i data-lucide="send" class="w-4.5 h-4.5"></i>
         </button>
       </form>
+    </div>
     </div>
   </div>
 
@@ -24180,43 +24198,59 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1050] flex items-center justify-center p-2.5 sm:p-4" onclick="if(event.target===this) closeHealthMedsModal()">
-    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
-      
-      <!-- Cabeçalho do Modal de Saúde -->
-      <div class="flex items-start justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-md flex-shrink-0">
-            💊
-          </div>
-          <div>
-            <h3 class="font-black text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight">Rotina Rodrigo</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Controle diário de horários e medicação contínua</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <!-- Toggle do Áudio dos Alarmes e Notificações de Remédios -->
-          
-          
-          <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer border border-slate-200 dark:border-slate-700" title="Fechar">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
+  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>❤️</span><span>Vida Saudável</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Rotina diária, medicamentos contínuos e bem-estar</p>
         </div>
       </div>
+      <button type="button" onclick="openAddNewContinuousMedModal()" class="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Remédio</span>
+      </button>
+    </div>
 
-      <!-- BOTÃO PROEMINENTE: ADICIONAR NOVO MEDICAMENTO -->
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
       
-      <!-- SELETOR DE ABAS DA SAUDE: REMEDIOS vs ACADEMIA & ATLETA -->
-      <div class="flex items-center gap-2 p-1 bg-slate-800/80 rounded-2xl my-3 border border-slate-700/60">
-        <button type="button" id="tabBtnHealthMeds" onclick="switchHealthMainTab('meds')" class="flex-1 py-2 px-3 rounded-xl bg-sky-600 text-white font-black text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
-          <span>&#128138;</span>
-          <span>Medicamentos & Doses</span>
-        </button>
-        <button type="button" id="tabBtnHealthFitness" onclick="switchHealthMainTab('fitness')" class="flex-1 py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
-          <span>&#127947;</span>
-          <span>Academia & Atleta</span>
-        </button>
+      <!-- CARD 1: ROTINA DO MEMBRO ATIVO (MANTIDO EXATAMENTE CONFORME SOLICITADO) -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 text-white flex items-center justify-center font-bold text-xl shadow-xs flex-shrink-0">
+              💊
+            </div>
+            <div>
+              <h3 id="healthActiveRoutineTitle" class="font-black text-base sm:text-lg text-slate-900 tracking-tight">Rotina Rodrigo</h3>
+              <p class="text-[11px] text-slate-500 font-medium">Controle diário de horários e medicação contínua</p>
+            </div>
+          </div>
+          <button type="button" onclick="openHealthExpenseQuickModal()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Lançar Gasto</span>
+          </button>
+        </div>
+
+        <!-- SELETOR DE ABAS DA SAÚDE: REMÉDIOS vs ACADEMIA & ATLETA -->
+        <div class="flex items-center gap-2 p-1 bg-slate-100 rounded-2xl mt-3 border border-slate-200">
+          <button type="button" id="tabBtnHealthMeds" onclick="switchHealthMainTab('meds')" class="flex-1 py-2 px-3 rounded-xl bg-sky-600 text-white font-black text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
+            <span>💊</span>
+            <span>Medicamentos &amp; Doses</span>
+          </button>
+          <button type="button" id="tabBtnHealthFitness" onclick="switchHealthMainTab('fitness')" class="flex-1 py-2 px-3 rounded-xl text-slate-600 hover:text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+            <span>🏋️</span>
+            <span>Academia &amp; Atleta</span>
+          </button>
+        </div>
       </div>
 
       <!-- OPCAO: NAO FALAR O NOME NO ALARME (DIRETA E RESPEITOSA) -->
@@ -24460,10 +24494,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
     </div>
 
-    <!-- Fim do Corpo Branco do Modal -->
+    </div>
   </div>
-  <!-- Fim do Modal modalHealthMeds -->
-</div>
 
 
   <!-- ============================================================== -->
@@ -25448,65 +25480,70 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
-  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeVeiculosHub()">
-    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
-      
-      <!-- Topo -->
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl border border-blue-200 dark:border-blue-800 shadow-xs">
-            🚗
-          </div>
-          <div>
-            <h3 class="font-black text-base text-slate-900 dark:text-white">Veículos & Transporte do Casal</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Combustível, seguro, IPVA, manutenção preventiva e planejamento de cofrinhos.</p>
-          </div>
-        </div>
-        <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
+  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
-      </div>
-
-      <!-- Resumo de Gastos do Ciclo Vigente -->
-      <div class="my-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Gasto neste Ciclo com Veículos</span>
-          <div class="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 font-mono mt-0.5" id="veiculosCicloTotal">R$ 0,00</div>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1" id="veiculosCicloCount">0 lançamentos registrados</p>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🚗</span><span>Transporte &amp; Manutenção</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Combustível, seguro, IPVA, manutenção preventiva e planejamento de cofrinhos</p>
         </div>
-        <button type="button" onclick="closeVeiculosHub(); openNewTxModalWithCat('Veículo')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
+      </div>
+      <button type="button" onclick="openNewTxModalWithCat('Veículo')" class="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Adicionar</span>
+      </button>
+    </div>
+
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+      
+      <!-- Resumo de Gastos do Ciclo Vigente -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Gasto neste Ciclo com Transporte</span>
+          <div class="text-xl sm:text-2xl font-black text-blue-600 font-mono mt-0.5" id="veiculosCicloTotal">R$ 0,00</div>
+          <p class="text-[10px] text-slate-500 mt-1" id="veiculosCicloCount">0 lançamentos registrados</p>
+        </div>
+        <button type="button" onclick="openNewTxModalWithCat('Veículo')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
           <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>+ Lançar Despesa de Veículo</span>
+          <span>+ Lançar Despesa de Transporte</span>
         </button>
       </div>
 
       <!-- DICA DE ESPECIALISTA: JUNTAR IPVA E SEGURO ANTECIPADO -->
-      <div class="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div class="p-4 rounded-3xl bg-amber-50/90 border border-amber-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-sm">
         <div class="flex items-start gap-2.5">
           <span class="text-xl flex-shrink-0">💡</span>
           <div>
-            <h4 class="font-extrabold text-xs text-amber-900 dark:text-amber-200">Dica de Especialista: Cofrinho de IPVA & Seguro</h4>
-            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 mt-0.5">
+            <h4 class="font-extrabold text-xs text-amber-900">Dica de Especialista: Cofrinho de IPVA &amp; Seguro</h4>
+            <p class="text-[11px] text-amber-800/90 mt-0.5">
               O IPVA e o Seguro do carro chegam todo início de ano pesando no bolso. Guardando cerca de <strong>R$ 250 a R$ 350 por mês</strong> em um cofrinho, vocês pagam tudo à vista com desconto e sem aperto!
             </p>
           </div>
         </div>
         <button type="button" onclick="closeVeiculosHub(); openCreatePiggyPrefilled('IPVA & Seguro Veículos', 3600)" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
-          <span>Criar Cofrinho IPVA 🐷</span>
+          <span>Criar Cofrinho IPVA 🚗</span>
         </button>
       </div>
 
       <!-- Formulário de Cadastro de Veículo (Carro, Moto, Caminhão, etc) -->
-      <div class="p-4 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 mb-4">
-        <h4 class="font-black text-xs text-slate-800 dark:text-slate-200 mb-2.5 flex items-center gap-1.5">
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="font-black text-xs text-slate-800 mb-2.5 flex items-center gap-1.5">
           <i data-lucide="car" class="w-4 h-4 text-blue-500"></i>
           <span>Cadastrar / Adicionar Veículo da Família</span>
         </h4>
         <form onsubmit="handleSaveCustomVehicle(event)" class="space-y-2.5">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Tipo de Veículo</label>
-              <select id="inputVehicleType" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Tipo de Veículo</label>
+              <select id="inputVehicleType" class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none">
                 <option value="Carro">🚗 Carro</option>
                 <option value="Moto">🏍️ Moto</option>
                 <option value="Caminhão">🚚 Caminhão</option>
@@ -25515,31 +25552,31 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Modelo / Placa</label>
-              <input type="text" id="inputVehicleName" placeholder="Ex: Corolla (ABC-1234)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Modelo / Placa</label>
+              <input type="text" id="inputVehicleName" placeholder="Ex: Corolla (ABC-1234)" required class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none font-semibold">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Previsão Anual IPVA + Seguro (R$)</label>
-              <input type="text" id="inputVehicleAnnualCost" placeholder="Ex: 3.500,00" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Previsão Anual IPVA + Seguro (R$)</label>
+              <input type="text" id="inputVehicleAnnualCost" placeholder="Ex: 3.500,00" class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none font-semibold font-mono">
             </div>
           </div>
           <div class="flex justify-end pt-1">
-            <button type="submit" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
               Salvar Veículo
             </button>
           </div>
         </form>
 
         <!-- Lista de Veículos Cadastrados -->
-        <div id="customVehiclesList" class="mt-3 space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-2.5">
+        <div id="customVehiclesList" class="mt-3 space-y-1.5 border-t border-slate-100 pt-2.5">
           <!-- Injetado dinamicamente -->
         </div>
       </div>
 
       <!-- Tabela de Lançamentos Recentes de Veículos no Ciclo -->
-      <div>
-        <h4 class="font-black text-xs text-slate-800 dark:text-slate-200 mb-2">Gastos Registrados neste Ciclo</h4>
-        <div id="veiculosRecentTxsList" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="font-black text-xs text-slate-800 mb-2">Gastos Registrados neste Ciclo</h4>
+        <div id="veiculosRecentTxsList" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
           <!-- Injetado dinamicamente -->
         </div>
       </div>
@@ -25550,46 +25587,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
-  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeEducacaoHub()">
-    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs flex flex-col">
-      
-      <!-- Topo -->
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl border border-indigo-200 dark:border-indigo-800 shadow-xs">
-            🎓
-          </div>
-          <div>
-            <h3 class="font-black text-base text-slate-900 dark:text-white">Educação & Formação do Casal</h3>
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">Faculdade, especialização, cursos, livros, materiais e cofrinho de formatura.</p>
-          </div>
-        </div>
-        <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
+  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
-      </div>
-
-      <!-- Resumo de Gastos do Ciclo Vigente -->
-      <div class="my-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Gasto neste Ciclo com Educação</span>
-          <div class="text-xl sm:text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono mt-0.5" id="educacaoCicloTotal">R$ 0,00</div>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1" id="educacaoCicloCount">0 lançamentos registrados</p>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🎓</span><span>Educação</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Faculdade, especialização, cursos, livros, materiais e cofrinhos</p>
         </div>
-        <button type="button" onclick="closeEducacaoHub(); openNewTxModalWithCat('Educação')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
+      </div>
+      <button type="button" onclick="openNewTxModalWithCat('Educação')" class="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Adicionar</span>
+      </button>
+    </div>
+
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+      
+      <!-- Resumo de Gastos do Ciclo Vigente -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Gasto neste Ciclo com Educação</span>
+          <div class="text-xl sm:text-2xl font-black text-indigo-600 font-mono mt-0.5" id="educacaoCicloTotal">R$ 0,00</div>
+          <p class="text-[10px] text-slate-500 mt-1" id="educacaoCicloCount">0 lançamentos registrados</p>
+        </div>
+        <button type="button" onclick="openNewTxModalWithCat('Educação')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Lançar Despesa de Educação</span>
         </button>
       </div>
 
       <!-- DICA DE ESPECIALISTA: POUPANÇA PARA FORMATURA E CURSOS -->
-      <div class="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 mb-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div class="p-4 rounded-3xl bg-amber-50/90 border border-amber-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-sm">
         <div class="flex items-start gap-2.5">
           <span class="text-xl flex-shrink-0">💡</span>
           <div>
-            <h4 class="font-extrabold text-xs text-amber-900 dark:text-amber-200">Dica de Especialista: Cofrinho para Formatura & Cursos</h4>
-            <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 mt-0.5">
-              Gastos com fotos, beca, baile de formatura, materiais e pós-graduação chegam todos juntos no final do curso. Planejando um cofrinho mensal de <strong>R$ 150 a R$ 250</strong>, vocês celebram o diploma sem nenhuma dívida!
+            <h4 class="font-extrabold text-xs text-amber-900">Dica de Especialista: Cofrinho para Formatura &amp; Cursos</h4>
+            <p class="text-[11px] text-amber-800/90 mt-0.5">
+              Gastos com fotos, beca, baile de formatura, materiais e pós-graduação chegam todos juntos. Planejando um cofrinho mensal de <strong>R$ 150 a R$ 250</strong>, vocês celebram o diploma sem dívidas!
             </p>
           </div>
         </div>
@@ -25598,17 +25640,17 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </button>
       </div>
 
-      <!-- Formulário de Cadastro de Curso / Formação (Faculdade, Pós, etc) -->
-      <div class="p-4 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 mb-4">
-        <h4 class="font-black text-xs text-slate-800 dark:text-slate-200 mb-2.5 flex items-center gap-1.5">
+      <!-- Formulário de Cadastro de Curso / Formação -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="font-black text-xs text-slate-800 mb-2.5 flex items-center gap-1.5">
           <i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-500"></i>
           <span>Cadastrar Curso / Formação Acadêmica</span>
         </h4>
         <form onsubmit="handleSaveCustomEducation(event)" class="space-y-2.5">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Nível / Tipo</label>
-              <select id="inputEduType" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Nível / Tipo</label>
+              <select id="inputEduType" class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none">
                 <option value="Faculdade">🎓 Faculdade / Graduação</option>
                 <option value="Pós-Graduação">🏛️ Pós-Graduação / MBA</option>
                 <option value="Curso Profissionalizante">💻 Curso Técnico / Certificação</option>
@@ -25618,31 +25660,31 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Curso / Instituição</label>
-              <input type="text" id="inputEduName" placeholder="Ex: Engenharia / Unip" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Curso / Instituição</label>
+              <input type="text" id="inputEduName" placeholder="Ex: Engenharia / Unip" required class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none font-semibold">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-0.5">Mensalidade Estimada (R$)</label>
-              <input type="text" id="inputEduMonthlyCost" placeholder="Ex: 850,00" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none">
+              <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Mensalidade Estimada (R$)</label>
+              <input type="text" id="inputEduMonthlyCost" placeholder="Ex: 850,00" class="w-full px-2.5 py-2 text-xs bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none font-semibold font-mono">
             </div>
           </div>
           <div class="flex justify-end pt-1">
-            <button type="submit" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+            <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer">
               Salvar Formação
             </button>
           </div>
         </form>
 
         <!-- Lista de Cursos Cadastrados -->
-        <div id="customEducationList" class="mt-3 space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-2.5">
+        <div id="customEducationList" class="mt-3 space-y-1.5 border-t border-slate-100 pt-2.5">
           <!-- Injetado dinamicamente -->
         </div>
       </div>
 
       <!-- Tabela de Lançamentos Recentes de Educação no Ciclo -->
-      <div>
-        <h4 class="font-black text-xs text-slate-800 dark:text-slate-200 mb-2">Gastos Registrados neste Ciclo</h4>
-        <div id="educacaoRecentTxsList" class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+      <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+        <h4 class="font-black text-xs text-slate-800 mb-2">Gastos Registrados neste Ciclo</h4>
+        <div id="educacaoRecentTxsList" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
           <!-- Injetado dinamicamente -->
         </div>
       </div>
@@ -30307,29 +30349,29 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-2.5 sm:p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
-
-    <!-- Cabeçalho do Modal -->
-    <div class="p-4 sm:p-5 bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white flex items-center justify-between flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-lg shadow-sm">
-          🛠️
-        </div>
-        <div>
-          <h3 class="font-black text-sm sm:text-base text-white leading-tight">Meus Prestadores</h3>
-          <p class="text-[11px] text-sky-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <button type="button" onclick="closeServiceProvidersModal()" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
+<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
+        <div>
+          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🛠️</span><span>Meus Prestadores</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
+        </div>
       </div>
+      <button type="button" onclick="toggleServiceProviderForm()" class="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Prestador</span>
+      </button>
     </div>
 
-    <!-- Corpo Rolável -->
-    <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
 
       <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
       <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
@@ -30453,7 +30495,6 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
     </div>
   </div>
-</div>
 
 <script>
 (function() {
@@ -35980,6 +36021,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
   };
 
+  
+  // Aliases Globais de Renderização para Padronização de Módulos
+  window.renderVeiculosHubUI = function() { if (typeof renderVeiculosHubData === 'function') renderVeiculosHubData(); };
+  window.renderEducacaoHubUI = function() { if (typeof renderEducacaoHubData === 'function') renderEducacaoHubData(); };
+  window.renderCardsManagementList = function() { if (typeof renderManageCardsList === 'function') renderManageCardsList(); };
+
   window.openVeiculosHub = function() {
     window.ensureModalsOnBody();
     const m = document.getElementById('modalVeiculosHub');
@@ -37683,10 +37730,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     pet: { label: 'Pets & Vacinas', icon: '🐾', desc: 'Vacinas e carteirinha' },
     saude: { label: 'Minha Saúde', icon: '💊', desc: 'Remédios e cartelas' },
     prestadores: { label: 'Prestadores de Serviços', icon: '🛠️', desc: 'Eletricista, gás, móveis' },
-    cartoes: { label: 'Cartões & Faturas', icon: '💳', desc: 'Faturas e compras' },
+    cartoes: { label: 'Cartões', icon: '💳', desc: 'Controle de gastos com cartões' },
     cofrinhos: { label: 'Cofrinhos & Metas', icon: '🐷', desc: 'Guardar e render' },
-    veiculos: { label: 'Veículos & Garagem', icon: '🚗', desc: 'Gasolina e manutenção' },
-    educacao: { label: 'Educação & Estudos', icon: '🎓', desc: 'Cursos e faculdade' }
+    veiculos: { label: 'Transporte & Manutenção', icon: '🚗', desc: 'Combustível e manutenção' },
+    educacao: { label: 'Educação', icon: '🎓', desc: 'Cursos e mensalidades' }
   };
 
   let currentQuickHubOrder = [...DEFAULT_QUICKHUB_ORDER];
@@ -39034,6 +39081,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
   };
   window.closeAdminModal = function() { hideElement('modalAdminPanel'); };
+
+  
+  // Aliases Globais de Renderização para Padronização de Módulos
+  window.renderVeiculosHubUI = function() { if (typeof renderVeiculosHubData === 'function') renderVeiculosHubData(); };
+  window.renderEducacaoHubUI = function() { if (typeof renderEducacaoHubData === 'function') renderEducacaoHubData(); };
+  window.renderCardsManagementList = function() { if (typeof renderManageCardsList === 'function') renderManageCardsList(); };
 
   window.openVeiculosHub = function() {
     ensureElementVisible('modalVeiculosHub');
