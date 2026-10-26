@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.83+160";
+    window.APP_BUILD_VERSION = "2.1.84+161";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -30,22 +30,61 @@
 
 
     (function() {
-            try {
-        document.documentElement.classList.remove('require-auth');
-        localStorage.removeItem('financas_session_locked');
-        localStorage.removeItem('financas_auth_logged_out');
+      try {
+        var savedUser = null;
+        try {
+          savedUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
+        } catch(e) {}
+        var isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+        var bioEnabled = localStorage.getItem('financas_biometrics_enabled') === 'true';
+        var isSessionLocked = localStorage.getItem('financas_session_locked') === 'true';
+        var hasValidLogin = (localStorage.getItem('financas_logged_in') === 'true' || !!savedUser) && !isLoggedOut;
+
+        // Se o usuário já está autenticado no aparelho e não requer biometria/PIN:
+        if (hasValidLogin && !bioEnabled && !isSessionLocked) {
+          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+          localStorage.removeItem('financas_session_locked');
+          document.documentElement.classList.remove('require-auth');
+          if (document.body) document.body.classList.remove('require-auth');
+        } else {
+          // Se não está logado, fez logout, ou requer biometria:
+          // Mantém 'require-auth' ativo para NUNCA piscar a tela de saldo antes de autenticar!
+          document.documentElement.classList.add('require-auth');
+          if (document.body) document.body.classList.add('require-auth');
+        }
         document.documentElement.style.position = 'static';
         document.documentElement.style.overflowY = 'auto';
-        if (document.body) {
-          document.body.classList.remove('require-auth');
-          document.body.style.position = 'static';
-          document.body.style.overflowY = 'auto';
-          document.body.style.pointerEvents = 'auto';
-        }
       } catch(e) {}
 
       document.addEventListener('DOMContentLoaded', () => {
         try {
+          var savedUser = null;
+          try {
+            savedUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
+          } catch(e) {}
+          var isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+          var bioEnabled = localStorage.getItem('financas_biometrics_enabled') === 'true';
+          var isSessionLocked = localStorage.getItem('financas_session_locked') === 'true';
+          var hasValidLogin = (localStorage.getItem('financas_logged_in') === 'true' || !!savedUser) && !isLoggedOut;
+
+          if (hasValidLogin && !bioEnabled && !isSessionLocked) {
+            sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+            document.documentElement.classList.remove('require-auth');
+            if (document.body) document.body.classList.remove('require-auth');
+            const authEl = document.getElementById('authOverlayContainer');
+            if (authEl) {
+              authEl.classList.add('hidden');
+              authEl.style.display = 'none';
+            }
+          } else {
+            document.documentElement.classList.add('require-auth');
+            if (document.body) document.body.classList.add('require-auth');
+            const authEl = document.getElementById('authOverlayContainer');
+            if (authEl) {
+              authEl.classList.remove('hidden');
+              authEl.style.removeProperty('display');
+            }
+          }
           document.documentElement.style.position = 'static';
           document.documentElement.style.overflowY = 'auto';
           if (document.body) {
@@ -13411,10 +13450,28 @@ html, body {
         // Não preenche credenciais automaticamente por segurança
       }
 
+      let savedUserObj = null;
+      try {
+        savedUserObj = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
+      } catch(e) {}
+      const isExplicitLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+      const isSessionLocked = localStorage.getItem('financas_session_locked') === 'true';
+      const bioActive = localStorage.getItem('financas_biometrics_enabled') === 'true';
+      const hasValidSavedLogin = (localStorage.getItem('financas_logged_in') === 'true' || !!savedUserObj) && !isExplicitLoggedOut;
+
       let isAuthenticated = false;
       try {
         isAuthenticated = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
       } catch(e) {}
+
+      // Auto-restauração resiliente da sessão se já logado anteriormente
+      if (!isAuthenticated && hasValidSavedLogin && !bioActive && !isSessionLocked) {
+        isAuthenticated = true;
+        try {
+          sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+          localStorage.removeItem('financas_session_locked');
+        } catch(e) {}
+      }
 
       const el = document.getElementById('authOverlayContainer');
       const bioModal = document.getElementById('modalBiometricPrompt');
@@ -13423,23 +13480,43 @@ html, body {
         currentUserSession = null;
         window.currentUserSession = null;
         document.documentElement.classList.add('require-auth');
-        if (el) { el.classList.remove('hidden'); document.body.classList.add('auth-locked'); }
+        if (el) {
+          el.classList.remove('hidden');
+          el.style.removeProperty('display');
+          document.body.classList.add('auth-locked');
+        }
         if (bioModal) bioModal.classList.add('hidden');
+        if (bioActive && hasValidSavedLogin) {
+          setTimeout(() => { triggerBiometricLogin(false); }, 300);
+        }
         return;
       }
 
       // Sessão já validada
       try {
         let savedUser = localStorage.getItem('financas_auth_user');
-        currentUserSession = JSON.parse(savedUser);
+        currentUserSession = JSON.parse(savedUser) || savedUserObj || {
+          nome: 'Rodrigo Cardoso',
+          email: 'rodrigocardosocn@gmail.com',
+          plano: 'Super Administrador Vitalício'
+        };
         window.currentUserSession = currentUserSession;
+        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+        localStorage.setItem('financas_logged_in', 'true');
+        localStorage.removeItem('financas_auth_logged_out');
+        localStorage.removeItem('financas_session_locked');
+        sessionStorage.setItem('pigctrl_session_authenticated', 'true');
       } catch(e) {
         currentUserSession = null;
         window.currentUserSession = null;
       }
       if (typeof updateHeaderUserName === "function") updateHeaderUserName();
       document.documentElement.classList.remove('require-auth');
-      if (el) el.classList.add('hidden');
+      if (el) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+        document.body.classList.remove('auth-locked');
+      }
       if (bioModal) bioModal.classList.add('hidden');
     }
 
@@ -26230,14 +26307,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     // Re-verifica alarmes sempre que o app volta do segundo plano no celular
     window.onAppResumedFromBackground = function() {
       setTimeout(checkHealthScheduleTimers, 600);
-      // Se a sessão estiver bloqueada após saída, força o login por biometria ou senha
-      if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
+      const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+      const bioActive = localStorage.getItem('financas_biometrics_enabled') === 'true';
+      const isSessionLocked = localStorage.getItem('financas_session_locked') === 'true';
+      if (bioActive && (isSessionLocked || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true')) {
         document.documentElement.classList.add('require-auth');
         const authEl = document.getElementById('authOverlayContainer');
         if (authEl) authEl.classList.remove('hidden');
         if (typeof triggerNativeBiometrics === 'function') {
           setTimeout(triggerNativeBiometrics, 400);
         }
+      } else if (isLoggedOut) {
+        document.documentElement.classList.add('require-auth');
+        const authEl = document.getElementById('authOverlayContainer');
+        if (authEl) authEl.classList.remove('hidden');
       }
     };
 
@@ -30141,6 +30224,15 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   // 5. BLOQUEIO DE SEGURANÇA OBRIGATÓRIO AO SAIR E VOLTAR PARA O APLICATIVO
   // --------------------------------------------------------------------------
   window.lockAppSessionNow = function() {
+    const bioActive = localStorage.getItem('financas_biometrics_enabled') === 'true';
+    const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+    // Se o usuário está autenticado normalmente no seu celular sem biometria obrigatória, não encerra a sessão
+    if (!bioActive && !isLoggedOut && localStorage.getItem('financas_logged_in') === 'true') {
+      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+      localStorage.removeItem('financas_session_locked');
+      return;
+    }
+
     localStorage.setItem('financas_session_locked', 'true');
     sessionStorage.removeItem('pigctrl_session_authenticated');
     document.documentElement.classList.add('require-auth');
@@ -30160,19 +30252,43 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       if (typeof checkHealthScheduleTimers === 'function') checkHealthScheduleTimers();
     }, 500);
 
-    const lastPaused = parseInt(localStorage.getItem('ctrlpig_last_paused_timestamp') || '0', 10);
-    const timeoutMin = parseInt(localStorage.getItem('ctrlpig_session_lock_timeout') || '5', 10);
-    const elapsedMinutes = lastPaused > 0 ? (Date.now() - lastPaused) / 60000 : 999;
+    const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+    const bioActive = localStorage.getItem('financas_biometrics_enabled') === 'true';
+    let savedUser = null;
+    try {
+      savedUser = JSON.parse(localStorage.getItem('financas_auth_user') || 'null');
+    } catch(e) {}
+    const isLoggedIn = (localStorage.getItem('financas_logged_in') === 'true' || !!savedUser) && !isLoggedOut;
 
-    // Se estiver dentro da tolerância de inatividade (ex: 5 minutos) E não foi logout explícito:
-    if (timeoutMin > 0 && elapsedMinutes < timeoutMin && localStorage.getItem('financas_auth_logged_out') !== 'true') {
+    // Se o usuário está logado sem biometria obrigatória:
+    if (isLoggedIn && !bioActive) {
       sessionStorage.setItem('pigctrl_session_authenticated', 'true');
       localStorage.removeItem('financas_session_locked');
       if (typeof window.forceUnlockAuthOverlay === 'function') {
         window.forceUnlockAuthOverlay();
       }
       document.documentElement.classList.remove('require-auth');
-    } else if (localStorage.getItem('financas_session_locked') === 'true' || sessionStorage.getItem('pigctrl_session_authenticated') !== 'true') {
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) {
+        authEl.classList.add('hidden');
+        authEl.style.display = 'none';
+      }
+      return;
+    }
+
+    // Se biometria está ativada ou foi logout explícito:
+    const lastPaused = parseInt(localStorage.getItem('ctrlpig_last_paused_timestamp') || '0', 10);
+    const timeoutMin = parseInt(localStorage.getItem('ctrlpig_session_lock_timeout') || '5', 10);
+    const elapsedMinutes = lastPaused > 0 ? (Date.now() - lastPaused) / 60000 : 999;
+
+    if (timeoutMin > 0 && elapsedMinutes < timeoutMin && !isLoggedOut) {
+      sessionStorage.setItem('pigctrl_session_authenticated', 'true');
+      localStorage.removeItem('financas_session_locked');
+      if (typeof window.forceUnlockAuthOverlay === 'function') {
+        window.forceUnlockAuthOverlay();
+      }
+      document.documentElement.classList.remove('require-auth');
+    } else {
       window.lockAppSessionNow();
     }
   };
