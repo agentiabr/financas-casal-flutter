@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.87+164";
+    window.APP_BUILD_VERSION = "2.1.88+165";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -10600,13 +10600,13 @@ html, body {
           }">
             <!-- LINHA 1: Checkbox + Nome do Produto | Valor Unitário + Lixeira -->
             <div class="flex items-center justify-between gap-2 w-full">
-              <div class="flex items-center gap-2 min-w-0 flex-1">
-                <button type="button" onclick="toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${
-                  isChecked 
-                    ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs' 
-                    : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-transparent hover:border-emerald-500'
+              <div class="flex items-center gap-2 min-w-0 flex-1 cursor-pointer select-none" onclick="toggleBuilderItem('${safeName}')">
+                <button type="button" onclick="event.stopPropagation(); toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${
+                  isChecked
+                    ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs'
+                    : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-850 text-transparent hover:border-emerald-500'
                 } cursor-pointer flex-shrink-0" title="${isChecked ? 'Desmarcar' : 'Marcar para comprar'}">
-                  ${isChecked ? '✓' : ''}
+                  ${isChecked ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : ''}
                 </button>
 
                 <span class="text-xs sm:text-sm font-black leading-snug break-words ${isChecked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'}">
@@ -16680,8 +16680,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                   ` : ''}
                   <div class="space-y-2">
                     ${locItems.map(it => {
-                      const isDone = it.status === 'comprado';
-                      const isOut = it.status === 'falta';
+                      const isDone = it.status === 'no_carrinho' || it.status === 'comprado';
+                      const isOut = it.status === 'nao_tinha' || it.status === 'falta';
                       const itemQtd = parseInt(it.qtdComprada || it.qtdDesejada || 1, 10);
                       const curPrice = parseFloat(it.precoUnitario) || 0;
                       const refPrice = parseFloat(it.menorPreco || it.ultimoPreco || 0);
@@ -16702,12 +16702,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                       return `
                         <div class="p-3 rounded-2xl border transition-all ${isDone ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60' : (isOut ? 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-200 dark:border-rose-800/60 opacity-80' : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200/80 dark:border-slate-750')} shadow-2xs space-y-2">
                           <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                              <button type="button" onclick="toggleItemPurchased('${it.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer flex-shrink-0 active:scale-90 ${isDone ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs' : 'border-slate-300 dark:border-slate-600 hover:border-emerald-500 bg-white dark:bg-slate-850'}" title="${isDone ? 'Desmarcar compra' : 'Marcar como pego'}">
-                                ${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+                            <div class="flex items-center gap-2.5 min-w-0 cursor-pointer select-none flex-1" onclick="toggleItemInCart('${it.id}')">
+                              <button type="button" onclick="event.stopPropagation(); toggleItemInCart('${it.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer flex-shrink-0 active:scale-90 ${isDone ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs' : 'border-slate-300 dark:border-slate-600 hover:border-emerald-500 bg-white dark:bg-slate-850'}" title="${isDone ? 'Desmarcar compra' : 'Marcar como pego'}">
+                                ${isDone ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : ''}
                               </button>
-                              
-                              <div class="min-w-0">
+
+                              <div class="min-w-0 flex-1">
                                 <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 truncate block ${isDone ? 'line-through text-slate-400 dark:text-slate-500' : ''}">
                                   ${escapeHtml(it.nome)}
                                 </span>
@@ -16716,11 +16716,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                                   ${refPrice > 0 ? `<span>• Ref: <strong>R$ ${refPrice.toFixed(2).replace('.', ',')}</strong></span>` : ''}
                                 </div>
                               </div>
-
-                              <button type="button" onclick="toggleItemHistoryInfo('${it.id}', '${escapeHtml(it.nome)}')" class="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer flex-shrink-0 text-[11px] font-bold" title="Ver histórico de preços">
-                                ℹ
-                              </button>
                             </div>
+
+                            <button type="button" onclick="toggleItemHistoryInfo('${it.id}', '${escapeHtml(it.nome)}')" class="w-5 h-5 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-colors cursor-pointer flex-shrink-0 text-[11px] font-bold" title="Ver histórico de preços">
+                              ℹ️
+                            </button>
                             
                             <div class="flex items-center gap-1.5 flex-shrink-0">
                               <div class="flex items-center gap-0.5 font-mono font-black text-xs text-slate-900 dark:text-white whitespace-nowrap">
@@ -17107,7 +17107,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const items = getActiveShoppingItems();
       const it = items.find(x => x.id === id);
       if (it) {
-        if (it.status === 'no_carrinho') {
+        if (it.status === 'no_carrinho' || it.status === 'comprado') {
           it.status = 'pendente';
         } else {
           it.status = 'no_carrinho';
@@ -17116,9 +17116,30 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         saveActiveShoppingItems(items);
         updateCartSummaryUI();
         renderCleanChatStream();
-        playChatDing();
+        if (typeof playChatDing === 'function') playChatDing();
       }
     }
+    window.toggleItemInCart = toggleItemInCart;
+    window.toggleItemPurchased = toggleItemInCart;
+
+    function toggleItemHistoryInfo(id, nome) {
+      const items = getActiveShoppingItems();
+      const it = items.find(x => x.id === id) || {};
+      const prodName = nome || it.nome || '';
+      const stats = (typeof getProductPriceStats === 'function') ? getProductPriceStats(prodName) : null;
+      const preco = stats ? stats.latestPrice : (it.precoUnitario || it.ultimoPreco || 0);
+      const loja = stats ? stats.latestStore : (it.lojaNome || 'Supermercado');
+      if (typeof window.showStoreInfoToast === 'function') {
+        window.showStoreInfoToast(prodName, preco, loja, id);
+      } else {
+        const infoBox = document.getElementById('chatItemInfoBox_' + id);
+        if (infoBox) {
+          infoBox.textContent = `Última compra de ${prodName}: ${preco > 0 ? 'R$ ' + preco.toFixed(2).replace('.', ',') : 'Sem histórico'} em ${loja}`;
+          infoBox.classList.toggle('hidden');
+        }
+      }
+    }
+    window.toggleItemHistoryInfo = toggleItemHistoryInfo;
 
     function toggleItemMissing(id) {
       const items = getActiveShoppingItems();
