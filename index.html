@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.81+158";
+    window.APP_BUILD_VERSION = "2.1.82+159";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -4038,8 +4038,7 @@ html, body {
     #main-content,
     #dashboardSectionsContainer,
     #legacyCompatibilityStubs,
-    #cardHeroInstallments,
-    #sectionTable {
+    #cardHeroInstallments {
       display: none !important;
     }
 
@@ -4519,6 +4518,172 @@ html, body {
               </div>
             </div>
           </div>
+
+          <!-- ============================================================== -->
+          <!-- TABELA E CARDS DE TRANSAÇÕES / LANÇAMENTOS DO CICLO (V2.1.82) -->
+          <!-- ============================================================== -->
+          <section class="w-full mt-4" id="sectionTable">
+
+      <div class="app-card rounded-none p-4 sm:p-5">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div class="flex items-center gap-2">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-base font-bold text-slate-800 dark:text-white">Contas e Gastos Deste Mês</h2>
+                <span id="txCountBadge" class="text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">0 itens</span>
+                <!-- Olhinho exclusivo da seção Contas e Gastos Deste Mês -->
+                <button type="button" onclick="toggleTablePrivacy(event)" id="btnSectionTablePrivacy" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold" title="Ocultar ou mostrar os valores desta tabela">
+                  <i data-lucide="eye" id="iconSectionTablePrivacy" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="openActionHubModal()" class="btn-primary-action px-3.5 py-2 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer" title="Lançar valor por Voz, Foto ou Digitação">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ Lançar Valor</span>
+            </button>
+            <button onclick="openBillsReminderModal()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-amber-300 dark:border-amber-800 cursor-pointer" title="Cadastrar vencimento de contas a pagar">
+              <i data-lucide="calendar-clock" class="w-4 h-4 text-amber-600"></i>
+              <span>Cadastrar Vencimentos</span>
+            </button>
+            <button onclick="exportToCSV()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all border border-slate-300 dark:border-slate-700 cursor-pointer" title="Exportar dados para planilha CSV">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">Exportar CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD ANEXADO ABAIXO DO BOTÃO LANÇAR VALOR: SALDO REAL NO BANCO -->
+        <div class="mt-3.5 mb-2 p-3.5 sm:p-4 bg-slate-50/90 dark:bg-slate-850 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/70 dark:border-blue-900/60 flex items-center justify-center flex-shrink-0 font-bold shadow-xs">
+              <i data-lucide="landmark" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Saldo Real no Banco</h3>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Opcional</span>
+              </div>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="bankCheckDiffDisplay">
+                Informe o saldo atual do seu aplicativo de banco para conciliação com o app.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 self-stretch sm:self-auto flex-wrap sm:flex-nowrap">
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 flex-1 sm:flex-initial">
+              <span class="text-[11px] font-bold text-slate-400">Saldo:</span>
+              <span id="bankCheckValueDisplay" class="text-sm sm:text-base font-black text-slate-900 dark:text-white tabular-nums">R$ 0,00</span>
+              <span id="bankCheckTimestamp" class="text-[10px] text-slate-400 hidden lg:inline">• Não conferido</span>
+            </div>
+
+            <div class="relative w-36 sm:w-40 flex-shrink-0">
+              <span class="absolute left-2.5 top-2 text-[11px] font-bold text-slate-400 pointer-events-none">R$</span>
+              <input type="text" id="inlineInputBankBalance" onchange="handleSaveInlineBankBalance(this.value)" onkeydown="if(event.key==='Enter')handleSaveInlineBankBalance(this.value)" placeholder="Digitar saldo..." title="Digite o saldo real do banco e pressione Enter ou clique fora para salvar" class="w-full pl-8 pr-2.5 py-1.5 text-xs font-black rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 tabular-nums shadow-2xs">
+            </div>
+
+            <button type="button" onclick="openBankCheckModal()" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer flex-shrink-0" title="Verificar conciliação completa com extrato">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">Conciliar</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="sectionTableContent" class="collapsible-content">
+          <!-- FILTROS POR ÍCONES MINIMALISTAS (ESTILO IPHONE GLASS) -->
+          <div class="pt-3 pb-3 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+            
+            <!-- Campo de Busca Compacto -->
+            <div class="relative flex-1 max-w-xs">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+              <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Buscar lançamentos..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-blue-500 focus:outline-none">
+            </div>
+
+            <!-- Barra de Filtros Compacta e Clean com Setinhas (Esquerda e Direita) -->
+            <div class="relative flex items-center w-full sm:w-auto">
+              <!-- Setinha Esquerda de Navegação Horizontal -->
+              <button onclick="scrollFilterBarLeft()" id="btnScrollFilterLeft" type="button" class="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver filtros anteriores">
+                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+              </button>
+
+              <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar scroll-smooth w-full px-7" id="iconFilterBar">
+                <button onclick="setFilterByIcon('tipo', '')" id="filterIcon_Todas" title="Todos os Lançamentos" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-blue-500 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
+                  <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+                  <span>Todos</span>
+                </button>
+
+                <button onclick="setFilterByIcon('tipo', 'Despesa Fixa')" id="filterIcon_Fixas" title="Apenas Despesas Fixas" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-blue-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
+                  <i data-lucide="home" class="w-3.5 h-3.5 text-blue-500"></i>
+                  <span>Fixas</span>
+                </button>
+
+                <button onclick="setFilterByIcon('tipo', 'Despesa Variável')" id="filterIcon_Variaveis" title="Apenas Despesas Variáveis" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
+                  <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-amber-500"></i>
+                  <span>Variáveis</span>
+                </button>
+
+                <button onclick="setFilterByIcon('tipo', 'Receita')" id="filterIcon_Receitas" title="Apenas Receitas" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-500"></i>
+                  <span>Receitas</span>
+                </button>
+
+                <button onclick="setFilterByIcon('pagamento', 'Cartão de Crédito')" id="filterIcon_Cartao" title="Cartão de Crédito" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
+                  <i data-lucide="credit-card" class="w-3.5 h-3.5 text-purple-500"></i>
+                  <span>Cartões</span>
+                </button>
+
+                <button onclick="setFilterByIcon('pagamento', 'PIX')" id="filterIcon_Pix" title="PIX" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-500"></i>
+                  <span>PIX</span>
+                </button>
+
+                <button onclick="setFilterByIcon('pagamento', 'Boleto')" id="filterIcon_Boleto" title="Boleto" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer">
+                  <i data-lucide="barcode" class="w-3.5 h-3.5 text-amber-500"></i>
+                  <span>Boleto</span>
+                </button>
+
+                <!-- Inputs ocultos para compatibilidade com o motor de filtros -->
+                <input type="hidden" id="filterTipo" value="">
+                <input type="hidden" id="filterPagamento" value="">
+                <input type="hidden" id="filterComprovante" value="">
+              </div>
+
+              <!-- Setinha Direita de Navegação Horizontal -->
+              <button onclick="scrollFilterBarRight()" id="btnScrollFilterRight" type="button" class="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver mais filtros">
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Tabela Desktop -->
+          <div class="hidden md:block overflow-x-auto custom-scrollbar mt-2 border border-slate-200 dark:border-slate-700 rounded-xl" id="desktopTableContainer">
+            <table class="w-full text-left text-xs border-collapse" id="mainTransactionsTable">
+              <thead>
+                <tr class="table-header-row font-bold text-xs" id="tableHeaderRow">
+                  <!-- Renderizado via JS -->
+                </tr>
+              </thead>
+              <tbody id="tableBodyTransactions" class="divide-y divide-slate-200">
+                <!-- Renderizado via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Modo Cards Mobile -->
+          <div id="mobileCardsContainer" class="block md:hidden space-y-2.5 mt-3">
+            <!-- Renderizado via JS -->
+          </div>
+
+        </div>
+
+      </div>
+    
+          </section>
+
 
         </div>
 
@@ -38777,6 +38942,181 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     ensureElementVisible('modalNotificationsCenter');
   };
   window.closeNotificationsModal = function() { hideElement('modalNotificationsCenter'); };
+
+  // ============================================================================
+  // GERENCIAMENTO E RENDERIZAÇÃO DE TRANSAÇÕES (V2.1.82)
+  // ============================================================================
+  window.getCategoryEmoji = function(cat, tipo) {
+    if (tipo === 'Receita') return { emoji: '💼', bg: 'bg-emerald-50 text-emerald-600' };
+    const c = (cat || '').toLowerCase();
+    if (c.includes('aliment') || c.includes('mercado') || c.includes('compras') || c.includes('feira')) return { emoji: '🛒', bg: 'bg-blue-50 text-blue-600' };
+    if (c.includes('restaurante') || c.includes('lanche') || c.includes('comida')) return { emoji: '🍽️', bg: 'bg-amber-50 text-amber-600' };
+    if (c.includes('saúde') || c.includes('saude') || c.includes('farm') || c.includes('médic')) return { emoji: '💊', bg: 'bg-rose-50 text-rose-600' };
+    if (c.includes('transp') || c.includes('uber') || c.includes('combust') || c.includes('gasolina') || c.includes('carro')) return { emoji: '🚗', bg: 'bg-sky-50 text-sky-600' };
+    if (c.includes('educa') || c.includes('escola') || c.includes('curso')) return { emoji: '🎓', bg: 'bg-purple-50 text-purple-600' };
+    if (c.includes('mora') || c.includes('aluguel') || c.includes('condom') || c.includes('luz') || c.includes('água') || c.includes('agua')) return { emoji: '🏠', bg: 'bg-indigo-50 text-indigo-600' };
+    if (c.includes('pet') || c.includes('veter')) return { emoji: '🐾', bg: 'bg-amber-50 text-amber-600' };
+    if (c.includes('lazer') || c.includes('viagem') || c.includes('cinema')) return { emoji: '🏖️', bg: 'bg-teal-50 text-teal-600' };
+    return { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
+  };
+
+  window.currentApprovedTxFilter = 'todas';
+  window.setApprovedTxFilter = function(filter) {
+    window.currentApprovedTxFilter = filter;
+    const btns = ['todas', 'entradas', 'saidas', 'parceladas'];
+    btns.forEach(b => {
+      const el = document.getElementById(`txFilterBtn_${b}`);
+      if (el) {
+        if (b === filter) {
+          el.className = 'px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-xs transition-all cursor-pointer';
+        } else {
+          el.className = 'px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/80 shadow-2xs transition-all cursor-pointer';
+        }
+      }
+    });
+    window.renderApprovedTransactionsList();
+  };
+
+  window.renderApprovedTransactionsList = function() {
+    try {
+      const container = document.getElementById('screenTransactionsListContainer');
+      if (!container) return;
+
+      let txs = [];
+      if (typeof getFilteredAndSortedTransactions === 'function') {
+        txs = getFilteredAndSortedTransactions() || [];
+      } else if (typeof getTransactionsForActiveCycle === 'function') {
+        txs = getTransactionsForActiveCycle() || [];
+      } else if (Array.isArray(window.transactions)) {
+        txs = window.transactions;
+      }
+
+      // Card Resumo no Topo de Transações (Total Gasto, Entradas e Saldo)
+      const totalReceitas = txs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const totalGastos = txs.filter(t => t.tipo !== 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
+      const saldoLivre = totalReceitas - totalGastos;
+
+      const elTxGastos = document.getElementById('screenTxTotalGastos');
+      const elTxEntradas = document.getElementById('screenTxTotalEntradas');
+      const elTxSaldo = document.getElementById('screenTxSaldoLivre');
+      const elTxBadge = document.getElementById('screenTxCountBadge');
+
+      const isHidden = window.privacyHidden === true;
+      if (elTxGastos) elTxGastos.textContent = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(totalGastos, 'despesa') : 'R$ ' + totalGastos.toFixed(2));
+      if (elTxEntradas) elTxEntradas.textContent = isHidden ? '+ R$ •••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(totalReceitas, 'receitas') : '+ R$ ' + totalReceitas.toFixed(2));
+      if (elTxSaldo) elTxSaldo.textContent = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+
+      // Filtro da tela
+      const f = window.currentApprovedTxFilter || 'todas';
+      let filtered = txs;
+      if (f === 'entradas') {
+        filtered = txs.filter(t => t.tipo === 'Receita');
+      } else if (f === 'saidas') {
+        filtered = txs.filter(t => t.tipo !== 'Receita');
+      } else if (f === 'parceladas') {
+        filtered = txs.filter(t => t.parcelado || t.parcelaAtual || t.totalParcelas || (t.descricao && t.descricao.includes('/')));
+      }
+
+      if (elTxBadge) elTxBadge.textContent = `${filtered.length} lançamentos`;
+
+      if (!filtered || filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-6 text-center border border-slate-200/80 shadow-xs">
+            <span class="text-3xl block mb-2">🐷</span>
+            <h4 class="font-black text-sm text-slate-800">Nenhum lançamento encontrado</h4>
+            <p class="text-xs text-slate-500 mt-1">Não há transações para este filtro no ciclo ativo.</p>
+            <button type="button" onclick="openNewTxModal()" class="mt-3.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 shadow-xs cursor-pointer active:scale-95 transition-all">
+              + Adicionar Novo Lançamento
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const sorted = [...filtered].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+      const groups = {};
+      sorted.forEach(t => {
+        const d = t.data || 'Outros';
+        if (!groups[d]) groups[d] = [];
+        groups[d].push(t);
+      });
+
+      let html = '';
+      for (const [dateStr, items] of Object.entries(groups)) {
+        html += `
+          <div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">${dateStr}</span>
+            <div class="space-y-1.5">
+        `;
+
+        items.forEach(t => {
+          const isRec = t.tipo === 'Receita';
+          const isFixa = t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia';
+          const isPago = t.status === 'Pago' || t.status === 'Recebido';
+          const valNum = parseFloat(t.valor) || 0;
+          const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
+          const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
+          const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
+          const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${t.responsavel}</span>` : '';
+          
+          const btnQuitar = isFixa ? `
+            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'}" title="Clique para alterar status">
+              ${isPago ? 'Pago ✓' : 'Quitar ⚡'}
+            </button>
+          ` : '';
+
+          html += `
+            <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1.5" data-tx-id="${t.id}">
+              <div class="swipe-tx-card relative bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 z-10 transition-transform duration-100 ease-out will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
+                    ${meta.emoji}
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
+                      ${memberBadge}
+                      ${btnQuitar}
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <span class="font-black text-xs ${valColor}">${valFormatted}</span>
+                  <button type="button" onclick="event.stopPropagation(); if (typeof window.deleteTxWithAnimation === 'function') { window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container')); } else if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+    } catch(err) {
+      console.warn('Erro ao renderizar lista de transações:', err);
+    }
+  };
+
+  // Garante renderização das tabelas e listas no início e nas atualizações
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (typeof window.renderTransactionsTableHeader === 'function') window.renderTransactionsTableHeader();
+      if (typeof window.renderTransactionsTable === 'function') window.renderTransactionsTable();
+      if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+    }, 200);
+  });
 })();
 </script>
 
