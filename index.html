@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.77";
+    window.APP_BUILD_VERSION = "2.1.79";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -30,18 +30,58 @@
 
 
     (function() {
-      // Garante desativação imediata de qualquer bloqueio obsoleto de tela
       try {
         document.documentElement.classList.remove('require-auth');
+        document.documentElement.style.position = 'static';
+        document.documentElement.style.overflowY = 'auto';
+        if (document.body) {
+          document.body.classList.remove('require-auth');
+          document.body.style.position = 'static';
+          document.body.style.overflowY = 'auto';
+          document.body.style.pointerEvents = 'auto';
+        }
         localStorage.removeItem('financas_session_locked');
         localStorage.removeItem('financas_auth_logged_out');
       } catch(e) {}
     })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        document.documentElement.style.position = 'static';
+        document.documentElement.style.overflowY = 'auto';
+        if (document.body) {
+          document.body.style.position = 'static';
+          document.body.style.overflowY = 'auto';
+          document.body.style.pointerEvents = 'auto';
+        }
+      } catch(e) {}
+    });
   </script>
   <style>
     /* Regra Mestra Global: .hidden SEMPRE oculta elementos com máxima prioridade */
     .hidden, [hidden] {
       display: none !important;
+    }
+
+    /* Desbloqueio Mestre Global: rolagem vertical suave e irrestrita no Dashboard */
+    html, body {
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y !important;
+      height: auto !important;
+      min-height: 100% !important;
+      position: static !important;
+    }
+
+    #approvedAppContainer, #screen_dashboard {
+      overflow-x: hidden !important;
+      overflow-y: visible !important;
+      height: auto !important;
+      min-height: 100vh !important;
+      position: relative !important;
+      pointer-events: auto !important;
+      touch-action: pan-y !important;
     }
 
     /* MASCOTE DESTRUÍDO / PIFADO (QUANDO SALDO ESTÁ NO VERMELHO) */

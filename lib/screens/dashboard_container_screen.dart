@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -172,7 +174,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.78+155';
+  static const String _kCurrentAppVersion = '2.1.79+156';
 
   void _initWebViewController() {
     // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading
@@ -1510,7 +1512,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
-        // Se por qualquer motivo o WebView não estiver no index.html, recupera imediatamente
+        // Se por qualquer motivo o WebView nao estiver no index.html, recupera imediatamente
         try {
           final currentUrl = await _controller.currentUrl();
           if (currentUrl != null && !currentUrl.contains('index.html')) {
@@ -1529,7 +1531,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         } catch (_) {}
 
-        // 2. Se não houver modal aberto, confirmação de 2 toques para sair do app (nunca volta para login)
+        // 2. Se nao houver modal aberto, confirmacao de 2 toques para sair do app (nunca volta para login)
         final now = DateTime.now();
         if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
           _lastBackPressTime = now;
@@ -1561,13 +1563,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             bottom: false,
             child: Stack(
               children: [
-              WebViewWidget(controller: _controller),
-                AnimatedOpacity(
-                  opacity: _isLoading ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 450),
-                  curve: Curves.easeOut,
-                  child: IgnorePointer(
-                    ignoring: !_isLoading,
+                WebViewWidget(
+                  controller: _controller,
+                  gestureRecognizers: {
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                    ),
+                  },
+                ),
+                if (_isLoading)
+                  Positioned.fill(
                     child: Container(
                       width: double.infinity,
                       height: double.infinity,
@@ -1586,7 +1591,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Ícone Animado Pulsando
                             ScaleTransition(
                               scale: _pulseAnimation,
                               child: Container(
@@ -1613,7 +1617,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                               ),
                             ),
                             const SizedBox(height: 20),
-                            // Logo CtrlPig
                             const Text(
                               'CtrlPig',
                               style: TextStyle(
@@ -1624,7 +1627,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Subtítulo Oficial
                             const Text(
                               'Controle Financeiro Inteligente',
                               style: TextStyle(
@@ -1644,7 +1646,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                               ),
                             ),
                             const SizedBox(height: 18),
-                            // Indicador de Carregamento Discreto
                             const Text(
                               'Carregando seu painel...',
                               style: TextStyle(
@@ -1658,7 +1659,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                       ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
