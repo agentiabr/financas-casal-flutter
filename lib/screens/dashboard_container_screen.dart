@@ -174,7 +174,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.88+165';
+  static const String _kCurrentAppVersion = '2.1.89+166';
 
   void _initWebViewController() {
     // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading

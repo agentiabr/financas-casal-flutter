@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.88+165";
+    window.APP_BUILD_VERSION = "2.1.89+166";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -23113,19 +23113,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- 2. FEED DA LISTA DE MERCADO (GÔNDOLA COMPLETA COM CONEXÃO DA CONVERSA) -->
     <div id="chatShoppingListFeed" class="hidden flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
       <!-- Faixa de Conexão Rápida com a Conversa (para não perder o que a família fala) -->
-      <div id="chatShoppingFloatingMsgBar" class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-2 shadow-xs mb-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs flex-shrink-0 shadow-2xs">
+      <div id="chatShoppingFloatingMsgBar" class="bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 rounded-2xl p-3.5 sm:p-4 min-h-[72px] sm:min-h-[78px] flex items-center justify-between gap-3 shadow-sm mb-3 transition-all">
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-sm flex-shrink-0 shadow-xs">
             💬
           </div>
-          <div class="min-w-0">
-            <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 block leading-tight" id="chatShoppingLastSender">Última mensagem na conversa:</span>
-            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium truncate mt-0.5" id="chatShoppingLastMessage">Nenhuma mensagem recente.</p>
+          <div class="min-w-0 flex-1">
+            <span class="text-xs font-black text-blue-700 dark:text-blue-300 block leading-tight tracking-wide" id="chatShoppingLastSender">Última mensagem na conversa:</span>
+            <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-medium line-clamp-2 mt-1 leading-snug break-words" id="chatShoppingLastMessage">Nenhuma mensagem recente.</p>
           </div>
         </div>
-        <button type="button" onclick="switchChatViewTab('conversa')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1">
+        <button type="button" onclick="switchChatViewTab('conversa')" class="px-3.5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5">
           <span>Ver Conversa</span>
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
       </div>
 
