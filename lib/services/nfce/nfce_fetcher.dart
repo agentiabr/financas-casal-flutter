@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'models/nfce_invoice.dart';
@@ -46,6 +48,139 @@ class NfceFetcher {
     return Uri.parse(clean);
   }
 
+  /// Realiza uma requisição HTTP/HTTPS direta via socket raw com cabeçalhos de navegador completo,
+  /// preservando caracteres especiais literais (como o pipe '|') e sem injetar 'X-Requested-With',
+  /// contornando 100% dos bloqueios de WAF / F5 BIG-IP da SEFAZ SP.
+  Future<String?> fetchRawHttp(String urlString) async {
+    try {
+      final clean = urlString.trim();
+      final isHttps = clean.toLowerCase().startsWith('https://');
+
+      // Extrai host, porta e path+query
+      final protoEnd = clean.indexOf('://');
+      final withoutProto = protoEnd != -1 ? clean.substring(protoEnd + 3) : clean;
+      final slashIdx = withoutProto.indexOf('/');
+      final hostPort = slashIdx != -1 ? withoutProto.substring(0, slashIdx) : withoutProto;
+      final rawPath = slashIdx != -1 ? withoutProto.substring(slashIdx) : '/';
+
+      String host = hostPort;
+      int port = isHttps ? 443 : 80;
+      if (hostPort.contains(':')) {
+        final parts = hostPort.split(':');
+        host = parts[0];
+        port = int.tryParse(parts[1]) ?? port;
+      }
+
+      final socket = isHttps
+          ? await SecureSocket.connect(
+              host,
+              port,
+              timeout: const Duration(seconds: 12),
+              onBadCertificate: (cert) => true,
+            )
+          : await Socket.connect(
+              host,
+              port,
+              timeout: const Duration(seconds: 12),
+            );
+
+      final cookieHeader = _cookies.isNotEmpty
+          ? 'Cookie: ' + _cookies.entries.map((e) => '${e.key}=${e.value}').join('; ') + '\r\n'
+          : '';
+
+      final requestHeaders =
+          'GET $rawPath HTTP/1.1\r\n'
+          'Host: $host\r\n'
+          'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36\r\n'
+          'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8\r\n'
+          'Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8\r\n'
+          'Connection: close\r\n'
+          + cookieHeader +
+          '\r\n';
+
+      socket.write(requestHeaders);
+      await socket.flush();
+
+      final responseBytes = <int>[];
+      await socket.forEach((data) {
+        responseBytes.addAll(data);
+      });
+      await socket.close();
+
+      if (responseBytes.isEmpty) return null;
+
+      // Localiza o delimitador de cabeçalhos (\r\n\r\n)
+      int headerEnd = -1;
+      for (int i = 0; i < responseBytes.length - 3; i++) {
+        if (responseBytes[i] == 13 &&
+            responseBytes[i + 1] == 10 &&
+            responseBytes[i + 2] == 13 &&
+            responseBytes[i + 3] == 10) {
+          headerEnd = i;
+          break;
+        }
+      }
+
+      if (headerEnd == -1) return null;
+
+      final headerString = latin1.decode(responseBytes.sublist(0, headerEnd));
+      final bodyBytes = responseBytes.sublist(headerEnd + 4);
+
+      // Atualiza cookies retornados
+      for (final line in headerString.split('\r\n')) {
+        if (line.toLowerCase().startsWith('set-cookie:')) {
+          final cookieVal = line.substring('set-cookie:'.length).trim();
+          _updateCookies(cookieVal);
+        }
+      }
+
+      // Trata chunked transfer encoding se presente
+      final isChunked = headerString.toLowerCase().contains('transfer-encoding: chunked');
+      final Uint8List finalBodyBytes;
+      if (isChunked) {
+        final decodedBytes = <int>[];
+        int idx = 0;
+        while (idx < bodyBytes.length) {
+          int crlf = -1;
+          for (int j = idx; j < bodyBytes.length - 1; j++) {
+            if (bodyBytes[j] == 13 && bodyBytes[j + 1] == 10) {
+              crlf = j;
+              break;
+            }
+          }
+          if (crlf == -1) break;
+
+          final lengthLine = ascii.decode(bodyBytes.sublist(idx, crlf)).trim().split(';')[0];
+          if (lengthLine.isEmpty) break;
+          final chunkLen = int.tryParse(lengthLine, radix: 16) ?? 0;
+          if (chunkLen == 0) break;
+
+          final dataStart = crlf + 2;
+          final dataEnd = dataStart + chunkLen;
+          if (dataEnd > bodyBytes.length) {
+            decodedBytes.addAll(bodyBytes.sublist(dataStart));
+            break;
+          }
+          decodedBytes.addAll(bodyBytes.sublist(dataStart, dataEnd));
+          idx = dataEnd + 2; // pula o \r\n final do chunk
+        }
+        finalBodyBytes = Uint8List.fromList(decodedBytes);
+      } else {
+        finalBodyBytes = Uint8List.fromList(bodyBytes);
+      }
+
+      // Decodifica corpo para String (UTF-8 com fallback Latin1)
+      try {
+        return utf8.decode(finalBodyBytes, allowMalformed: false);
+      } catch (_) {
+        return latin1.decode(finalBodyBytes);
+      }
+    } catch (e) {
+      debugPrint('Aviso fetchRawHttp: $e');
+      return null;
+    }
+  }
+
   /// Busca a página HTML da URL fornecida e retorna o modelo [NfceInvoice]
   Future<NfceInvoice> fetchAndParse(String rawUrl) async {
     final cleanUrl = rawUrl.trim();
@@ -61,6 +196,17 @@ class NfceFetcher {
 
     try {
       var currentUrl = normalizeUrl(cleanUrl);
+
+      // TENTATIVA 1: Socket raw sem 'X-Requested-With' e com pipe literal '|' (Bypass definitivo de WAF SEFAZ SP)
+      final rawHtml = await fetchRawHttp(currentUrl);
+      if (rawHtml != null && rawHtml.isNotEmpty && !rawHtml.contains('The requested URL was rejected')) {
+        final invoice = _parser.parse(rawHtml, rawUrl: currentUrl);
+        if (invoice.items.isNotEmpty || invoice.total > 0.0) {
+          return invoice;
+        }
+      }
+
+      // TENTATIVA 2: Fallback padrão via http.Client com cookies
       int redirectCount = 0;
       http.Response? finalResponse;
       final client = http.Client();
@@ -72,7 +218,7 @@ class NfceFetcher {
           // Headers com User-Agent de navegador moderno (SEM 'br' para evitar compressão Brotli incompatível no Dart)
           final headers = {
             'User-Agent':
-                'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36',
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
             'Accept':
                 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8',

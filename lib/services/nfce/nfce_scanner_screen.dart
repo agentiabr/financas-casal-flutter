@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'models/nfce_invoice.dart';
 import 'nfce_fetcher.dart';
@@ -37,6 +38,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   late final MobileScannerController _scannerController;
   late final AnimationController _animController;
   late final Animation<double> _scanLineAnimation;
+  final NfceFetcher _fetcher = NfceFetcher();
 
   bool _isProcessing = false;
   String _statusMessage = 'Aponte a câmera para o QR Code do cupom fiscal';
@@ -294,7 +296,42 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       }
     } catch (_) {}
 
-    // SOLUÇÃO A: Abre imediatamente o Navegador Integrado Inteligente com a URL oficial da SEFAZ
+    // 1. TENTA CAPTURA DIRETA INSTANTÂNEA VIA SOCKET RAW (SEM WAF / SEM X-Requested-With)
+    try {
+      final invoice = await _fetcher.fetchAndParse(targetUrl);
+      if (invoice.items.isNotEmpty || invoice.total > 0.0) {
+        try {
+          HapticFeedback.heavyImpact();
+        } catch (_) {}
+
+        if (mounted) {
+          setState(() {
+            _statusMessage = '✓ ${invoice.items.length} produtos capturados!';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Color(0xFF10B981)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('🎉 ${invoice.items.length} produtos capturados (${invoice.storeName})!'),
+                  ),
+                ],
+              ),
+              backgroundColor: const Color(0xFF0F172A),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          Navigator.of(context).pop(invoice);
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('Aviso captura direta instantânea: $e');
+    }
+
+    // 2. Se a consulta direta não retornou itens (ex: CAPTCHA ou confirmação manual), abre a visualização integrada
     _openBrowserView(targetUrl);
   }
 
@@ -307,7 +344,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
     setState(() {
       _browserUrl = targetUrl;
       _browserProgress = 0.15;
-      _browserStatus = 'Conectando ao portal oficial da SEFAZ SP...';
+      _browserStatus = 'Carregando página oficial da SEFAZ SP...';
       _isProcessing = false;
     });
 
@@ -316,7 +353,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
     final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent(
-          'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36')
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36')
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
@@ -349,7 +386,13 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
         ),
       );
 
-    await controller.loadRequest(safeUri);
+    // Tenta primeiro carregar o HTML já obtido via socket raw para evitar bloqueio WAF da SEFAZ
+    final rawHtml = await _fetcher.fetchRawHttp(targetUrl);
+    if (rawHtml != null && rawHtml.isNotEmpty && !rawHtml.contains('The requested URL was rejected')) {
+      await controller.loadHtmlString(rawHtml, baseUrl: 'https://www.nfce.fazenda.sp.gov.br');
+    } else {
+      await controller.loadRequest(safeUri);
+    }
 
     setState(() {
       _browserController = controller;
@@ -858,6 +901,20 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                     ],
                   ),
                   actions: [
+                    IconButton(
+                      icon: const Icon(Icons.open_in_browser, color: Colors.white, size: 20),
+                      tooltip: 'Abrir no Google Chrome',
+                      onPressed: () async {
+                        if (_browserUrl != null) {
+                          final uri = Uri.parse(_browserUrl!.replaceAll('|', '%7C'));
+                          try {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          } catch (e) {
+                            debugPrint('Aviso launchUrl: $e');
+                          }
+                        }
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: ElevatedButton.icon(
