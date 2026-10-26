@@ -461,7 +461,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             Future.delayed(const Duration(milliseconds: 700), () => HapticFeedback.vibrate());
           } catch (_) {}
         } else if (text.isNotEmpty && audioEnabled) {
-          _speakNativeTTS(text, alarmStyle: alarmStyle);
+          // Unifica a fala e o alarme no motor nativo para garantir voz feminina única e sem sobreposição
+          try {
+            _flutterTts?.stop();
+            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                .invokeMethod('speakAlarmNative', {'text': text});
+          } catch (_) {
+            _speakNativeTTS(text, alarmStyle: 'female');
+          }
         }
       } else if (action == 'set_med_audio_enabled') {
         final enabled = data['enabled'] as bool? ?? true;
@@ -1118,7 +1125,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         await _flutterTts!.setPitch(0.70); // Tom encorpado / grave masculino
         await _flutterTts!.setSpeechRate(0.46);
       } else {
-        await _flutterTts!.setPitch(1.35); // Tom nítido / agudo feminino
+        await _flutterTts!.setPitch(1.10); // Tom nítido, calmo e natural feminino
         await _flutterTts!.setSpeechRate(0.50);
       }
       _flutterTts!.setCompletionHandler(() {

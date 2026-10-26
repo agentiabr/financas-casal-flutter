@@ -61,40 +61,40 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp" />
 
-        <!-- Botão 1 (Principal): Concluído / Já Tomei -->
-        <Button
-            android:id="@+id/btn_alarm_taken"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="✓ JÁ TOMEI / CONCLUÍDO"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#052E16"
-            android:backgroundTint="#22C55E"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Botão 2: Adiar 5 Minutos -->
-        <Button
-            android:id="@+id/btn_alarm_snooze"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="💤 ADIAR 5 MINUTOS"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#451A03"
-            android:backgroundTint="#F59E0B"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Botão 3: Desligar Alarme -->
+        <!-- Botão 1: Desligar Alarme (Em destaque vermelho para fácil toque) -->
         <Button
             android:id="@+id/btn_alarm_dismiss"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:text="🔕 DESLIGAR ALARME"
+            android:layout_height="54dp"
+            android:text="🛑 DESLIGAR ALARME"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#DC2626"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Botão 2 (Principal): Concluído / Já Tomei -->
+        <Button
+            android:id="@+id/btn_alarm_taken"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="✓ JÁ TOMEI / CONCLUÍDO"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#16A34A"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Botão 3: Adiar 5 Minutos -->
+        <Button
+            android:id="@+id/btn_alarm_snooze"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="⏰ ADIAR 5 MINUTOS"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:textColor="#CBD5E1"
-            android:backgroundTint="#334155" />
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#D97706" />
 
     </LinearLayout>
 </RelativeLayout>

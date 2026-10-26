@@ -18,7 +18,7 @@ class AlarmAlertActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. Acorda e acende imediatamente a tela mesmo em bloqueio total (Samsung A13, M62, etc.)
+        // 1. Acorda e acende imediatamente a tela mesmo em bloqueio total
         try {
             val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
             @Suppress("DEPRECATION")
@@ -26,24 +26,22 @@ class AlarmAlertActivity : Activity() {
                 PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
                 "ctrlpig:AlarmAlertWakeLock"
             ).apply {
-                acquire(25000L)
+                acquire(45000L)
             }
         } catch (_: Exception) {}
 
-        // 2. Configuração nativa para acender a tela e aparecer sobre a tela de bloqueio
+        // 2. Configuração nativa para acender a tela e sobrepor a tela de bloqueio SEM pedir PIN/senha
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
-            keyguardManager?.requestDismissKeyguard(this, null)
         }
         
         @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         )
 
         setContentView(R.layout.activity_alarm_alert)
@@ -59,9 +57,9 @@ class AlarmAlertActivity : Activity() {
         @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         )
     }
 
@@ -99,16 +97,19 @@ class AlarmAlertActivity : Activity() {
             tvIcon.text = "🛒"
             btnTaken.text = "✓ RECEBI A LISTA"
             btnSnooze.text = "⏰ VER DEPOIS"
+            btnDismiss.text = "🛑 FECHAR"
         } else if (isPet) {
             tvBadge.text = "🐾 CONTROLPIG • CUIDADO PET AGENDADO"
             tvIcon.text = "🐾"
             btnTaken.text = "✓ CUIDADO REALIZADO"
-            btnSnooze.text = "💤 ADIAR 5 MIN"
+            btnSnooze.text = "⏰ ADIAR 5 MIN"
+            btnDismiss.text = "🛑 DESLIGAR ALARME"
         } else {
             tvBadge.text = "⏰ CONTROLPIG • ALARME DE SAÚDE"
             tvIcon.text = "💊"
             btnTaken.text = "✓ JÁ TOMEI"
-            btnSnooze.text = "💤 ADIAR 5 MIN"
+            btnSnooze.text = "⏰ ADIAR 5 MIN"
+            btnDismiss.text = "🛑 DESLIGAR ALARME"
         }
 
         tvTitle.text = title
