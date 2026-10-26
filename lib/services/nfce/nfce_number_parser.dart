@@ -172,4 +172,35 @@ class NfceNumberParser {
 
     return DateTime.now().toIso8601String().split('T')[0];
   }
+
+  /// Constrói a URL oficial de consulta pública da SEFAZ a partir de uma Chave de Acesso de 44 dígitos
+  static String buildUrlFromAccessKey(String rawKey) {
+    final cleanKey = rawKey.replaceAll(RegExp(r'\D'), '');
+    if (cleanKey.length != 44) return '';
+    final uf = cleanKey.substring(0, 2);
+    switch (uf) {
+      case '35': // SP
+        return 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=$cleanKey';
+      case '33': // RJ
+        return 'http://www.fazenda.rj.gov.br/consultaNFCe?p=$cleanKey';
+      case '31': // MG
+        return 'http://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml?p=$cleanKey';
+      case '43': // RS
+        return 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx?p=$cleanKey';
+      case '41': // PR
+        return 'http://www.fazenda.pr.gov.br/nfce/qrcode?p=$cleanKey';
+      case '29': // BA
+        return 'http://nfe.sefaz.ba.gov.br/servicos/nfce/qrcode.aspx?p=$cleanKey';
+      case '53': // DF
+        return 'http://dec.fazenda.df.gov.br/ConsultarNFCe.aspx?p=$cleanKey';
+      case '52': // GO
+        return 'https://nfe.sefaz.go.gov.br/nfeweb/sites/nfce/danfeNFCe?p=$cleanKey';
+      case '42': // SC
+        return 'https://sat.sef.sc.gov.br/nfce/consulta?p=$cleanKey';
+      case '23': // CE
+        return 'http://nfce.sefaz.ce.gov.br/pages/ShowNFCe.html?p=$cleanKey';
+      default:
+        return 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=$cleanKey';
+    }
+  }
 }
