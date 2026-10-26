@@ -7413,13 +7413,14 @@ html, body {
   </div>
 
   <!-- TOAST FLUTUANTE COM BOTÃO "DESFAZER" -->
-  <div id="toastUndo" class="fixed bottom-6 right-6 z-[110] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-none shadow-2xl border border-slate-800 max-w-sm">
-    <div class="flex items-center gap-2">
-      <i data-lucide="info" class="w-4 h-4 text-blue-400 flex-shrink-0"></i>
-      <span id="toastUndoMsg" class="text-xs font-medium">Ação realizada.</span>
+  <div id="toastUndo" class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-[110] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-between gap-3 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/80">
+    <div class="flex items-center gap-2 min-w-0">
+      <i data-lucide="trash-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
+      <span id="toastUndoMsg" class="text-xs font-semibold truncate">Lançamento movido para a lixeira.</span>
     </div>
-    <button id="btnToastUndo" onclick="undoLastDelete()" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-none transition-all flex items-center gap-1 pointer-events-auto">
-      <span>↩️ Desfazer</span>
+    <button id="btnToastUndo" onclick="undoLastDelete()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 pointer-events-auto flex-shrink-0 shadow-xs cursor-pointer">
+      <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+      <span>Desfazer</span>
     </button>
   </div>
 
@@ -9587,9 +9588,26 @@ html, body {
       saveData();
       deleteTransactionFromFlutter(id);
       updateDashboard();
+      if (typeof window.renderApprovedTransactionsList === 'function') {
+        window.renderApprovedTransactionsList();
+      }
 
-      showToastUndo(`"${deleted.descricao}" movido para a lixeira.`);
+      showToastUndo(`"${deleted.descricao || 'Lançamento'}" movido para a lixeira.`);
     }
+
+    window.deleteTxWithAnimation = function(id, container) {
+      if (container) {
+        container.style.transition = 'max-height 0.28s ease, margin 0.28s ease, opacity 0.28s ease';
+        container.style.maxHeight = container.offsetHeight + 'px';
+        container.offsetHeight; // Força reflow
+        container.style.maxHeight = '0px';
+        container.style.marginBottom = '0px';
+        container.style.opacity = '0';
+      }
+      setTimeout(() => {
+        deleteTx(id);
+      }, container ? 250 : 0);
+    };
 
     function undoLastDelete() {
       if (!lastDeletedItem) return;
@@ -9604,8 +9622,11 @@ html, body {
 
       updateTrashBadge();
       updateDashboard();
+      if (typeof window.renderApprovedTransactionsList === 'function') {
+        window.renderApprovedTransactionsList();
+      }
       hideToastUndo();
-      showToastUndo(`"${itemRecuperado.descricao}" restaurado com sucesso!`, false);
+      showToastUndo(`"${itemRecuperado.descricao || 'Lançamento'}" restaurado com sucesso!`, false);
     }
 
     function showToastUndo(msg, showUndoBtn = true) {
@@ -9615,13 +9636,19 @@ html, body {
 
       if (!toast || !msgEl) return;
       msgEl.textContent = msg;
-      if (btnUndo) btnUndo.style.display = showUndoBtn && lastDeletedItem ? 'flex' : 'none';
+      if (btnUndo) {
+        btnUndo.style.display = (showUndoBtn && lastDeletedItem) ? 'flex' : 'none';
+        btnUndo.onclick = function() {
+          undoLastDelete();
+          hideToastUndo();
+        };
+      }
 
       toast.classList.remove('translate-y-24', 'opacity-0');
       clearTimeout(toastUndoTimeout);
       toastUndoTimeout = setTimeout(() => {
         hideToastUndo();
-      }, (showUndoBtn && lastDeletedItem) ? 2600 : 1600);
+      }, (showUndoBtn && lastDeletedItem) ? 5000 : 2500);
     }
 
     function hideToastUndo() {
@@ -36844,23 +36871,38 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           ` : '';
 
           html += `
-            <div onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});" class="bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all active:scale-98">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
-                  ${meta.emoji}
+            <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1.5" data-tx-id="${t.id}">
+              <!-- Fundo Vermelho de Exclusão revelado ao puxar para a direita -->
+              <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-4 text-white font-extrabold text-xs rounded-2xl z-0">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trash-2" class="w-5 h-5 text-white animate-pulse"></i>
+                  <span class="tracking-wide text-xs">Excluir</span>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
-                  <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
-                    ${memberBadge}
-                    ${btnQuitar}
+                <span class="text-[10px] text-rose-200 font-bold">Solte para apagar</span>
+              </div>
+
+              <!-- Card Frontal Deslizável -->
+              <div class="swipe-tx-card relative bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 z-10 transition-transform duration-100 ease-out will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
+                    ${meta.emoji}
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
+                      ${memberBadge}
+                      ${btnQuitar}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <span class="font-black text-xs ${valColor}">${valFormatted}</span>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <span class="font-black text-xs ${valColor}">${valFormatted}</span>
+                  <button type="button" onclick="event.stopPropagation(); window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container'));" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+                </div>
               </div>
             </div>
           `;
@@ -37010,17 +37052,31 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           const prefix = isRec ? '+ ' : '- ';
           const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? prefix + formatBRL(parseFloat(t.valor)||0, 'despesa') : prefix + 'R$ ' + (parseFloat(t.valor)||0).toFixed(2));
           return `
-            <div class="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0 cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id})">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center font-bold text-sm">
-                  <i data-lucide="${icon}" class="w-4 h-4"></i>
+            <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1" data-tx-id="${t.id}">
+              <div class="absolute inset-0 bg-rose-600 flex items-center justify-between px-4 text-white font-extrabold text-xs rounded-2xl z-0">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trash-2" class="w-4 h-4 text-white animate-pulse"></i>
+                  <span class="tracking-wide text-xs">Excluir</span>
                 </div>
-                <div>
-                  <h4 class="text-xs font-black text-slate-900 leading-tight">${t.descricao || t.categoria || 'Lançamento'}</h4>
-                  <span class="text-[10px] text-slate-500 font-semibold">${t.data || ''} • ${t.categoria || 'Geral'}</span>
+                <span class="text-[10px] text-rose-200 font-bold">Solte para apagar</span>
+              </div>
+              <div class="swipe-tx-card relative bg-white flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 transition-transform duration-100 ease-out border-b border-slate-100 last:border-0 cursor-pointer z-10 will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center font-bold text-sm">
+                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-black text-slate-900 leading-tight">${t.descricao || t.categoria || 'Lançamento'}</h4>
+                    <span class="text-[10px] text-slate-500 font-semibold">${t.data || ''} • ${t.categoria || 'Geral'}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <span class="text-xs font-black ${valClass}">${valFormatted}</span>
+                  <button type="button" onclick="event.stopPropagation(); window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container'));" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
               </div>
-              <span class="text-xs font-black ${valClass}">${valFormatted}</span>
             </div>
           `;
         }).join('');
@@ -37035,6 +37091,116 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       console.warn('Aviso ao sincronizar interface do design aprovado:', err);
     }
   };
+
+  // ============================================================================
+  // SISTEMA UNIVERSAL DE SWIPE PARA A DIREITA (DESLIZAR PARA EXCLUIR COM DESFAZER)
+  // ============================================================================
+  (function() {
+    let startX = 0;
+    let startY = 0;
+    let currentCard = null;
+    let container = null;
+    let isDragging = false;
+
+    function handleStart(clientX, clientY, target) {
+      const card = target.closest('.swipe-tx-card');
+      if (!card) return;
+      currentCard = card;
+      container = card.closest('.swipe-tx-container');
+      startX = clientX;
+      startY = clientY;
+      isDragging = false;
+      card.style.transition = 'none';
+    }
+
+    function handleMove(clientX, clientY) {
+      if (!currentCard || !container) return;
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+
+      // Puxando para a direita (dx > 0) e dominante horizontalmente
+      if (dx > 8 && Math.abs(dx) > Math.abs(dy)) {
+        isDragging = true;
+        currentCard.dataset.dragged = 'true';
+        const moveX = Math.min(dx, container.offsetWidth);
+        currentCard.style.transform = `translateX(${moveX}px)`;
+        currentCard.style.opacity = Math.max(0.15, (1 - (moveX / (container.offsetWidth * 1.25)))).toFixed(2);
+      }
+    }
+
+    function handleEnd(clientX) {
+      if (!currentCard || !container) return;
+      const dx = clientX - startX;
+      const txId = parseInt(container.dataset.txId, 10);
+      const card = currentCard;
+      const cont = container;
+
+      card.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+
+      if (isDragging && dx > 80 && txId) {
+        // Desliza para fora da tela e deleta com desfazer
+        card.style.transform = `translateX(${cont.offsetWidth + 30}px)`;
+        card.style.opacity = '0';
+        setTimeout(() => {
+          if (typeof window.deleteTxWithAnimation === 'function') {
+            window.deleteTxWithAnimation(txId, cont);
+          }
+        }, 180);
+      } else {
+        // Retorna suavemente à posição normal
+        card.style.transform = 'translateX(0px)';
+        card.style.opacity = '1';
+        setTimeout(() => {
+          delete card.dataset.dragged;
+        }, 80);
+      }
+
+      currentCard = null;
+      container = null;
+      isDragging = false;
+    }
+
+    // Touch events (celular / WebView nativo)
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length === 1) {
+        handleStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length === 1) {
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches.length === 1) {
+        handleEnd(e.changedTouches[0].clientX);
+      }
+    }, { passive: true });
+
+    // Mouse drag events (computador / web preview)
+    let isMouseDown = false;
+    document.addEventListener('mousedown', (e) => {
+      if (e.button === 0) {
+        isMouseDown = true;
+        handleStart(e.clientX, e.clientY, e.target);
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isMouseDown) {
+        handleMove(e.clientX, e.clientY);
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (isMouseDown) {
+        isMouseDown = false;
+        handleEnd(e.clientX);
+      }
+    });
+  })();
 
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(window.syncApprovedDesignWithAppData, 300);
