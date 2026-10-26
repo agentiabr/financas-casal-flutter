@@ -423,17 +423,17 @@ object NotificationHelper {
             // Ações Nativas 100% Visíveis na Tela de Bloqueio em qualquer Android
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                 val dismissAction = Notification.Action.Builder(
-                    android.R.drawable.ic_menu_close_clear_cancel,
+                    0,
                     "🛑 DESLIGAR",
                     dismissPending
                 ).build()
                 val takenAction = Notification.Action.Builder(
-                    android.R.drawable.checkbox_on_background,
+                    0,
                     "✅ JÁ TOMEI",
                     takenPending
                 ).build()
                 val snoozeAction = Notification.Action.Builder(
-                    android.R.drawable.ic_popup_reminder,
+                    0,
                     "⏰ ADIAR 5 MIN",
                     snoozePending
                 ).build()
