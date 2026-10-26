@@ -149,7 +149,7 @@
             android:showOnLockScreen="true"
             android:inheritedShowWhenLocked="true"
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.Light.NoTitleBar">
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
 
 
 
