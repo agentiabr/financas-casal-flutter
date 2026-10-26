@@ -172,7 +172,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.77+154';
+  static const String _kCurrentAppVersion = '2.1.78+155';
 
   void _initWebViewController() {
     // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading
@@ -653,7 +653,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         if (url != null && url.isNotEmpty) {
           await _fetchNfceFromUrl(url);
         }
-      } else if (action == 'scan_invoice_qrcode') {
+      } else if (action == 'scan_invoice_qrcode' || action == 'open_invoice_qr_scanner') {
         _isPickingExternalMedia = true;
         await _scanInvoiceQrCode();
         Future.delayed(const Duration(seconds: 2), () {
@@ -1220,7 +1220,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         if (!status.isGranted) {
           _controller.runJavaScript("""
             if (typeof showToastUndo === 'function') {
-              showToastUndo('PermissÃ£o de cÃ¢mera necessÃ¡ria para ler o QR Code!', false);
+              showToastUndo('Permissao de camera necessaria para ler o QR Code!', false);
             }
           """);
           return;
@@ -1229,7 +1229,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
       if (!mounted) return;
 
-      // Abre a tela de scanner contÃ­nuo nativo (mobile_scanner)
+      // Abre a tela de scanner continuo nativo (mobile_scanner)
       final NfceInvoice? invoice = await Navigator.of(context).push<NfceInvoice>(
         MaterialPageRoute(
           builder: (context) => const NfceScannerScreen(),
@@ -1237,20 +1237,24 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       );
 
       if (invoice == null) {
-        // UsuÃ¡rio cancelou ou fechou a cÃ¢mera sem escanear
+        // Usuario cancelou ou fechou a camera sem escanear
         return;
       }
 
       final jsonResult = jsonEncode(invoice.toJson());
-      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
-      final safeUrl = (invoice.rawUrl ?? '').replaceAll("'", r"\'");
+      final b64 = base64Encode(utf8.encode(jsonResult));
 
-      // Injeta os dados oficiais diretamente na WebView (alimenta modal, tabela de mercado e comparador)
+      // Injeta os dados oficiais com seguranca absoluta via Base64 (imune a quebras de linha ou aspas)
       _controller.runJavaScript("""
-        if (typeof window.onNativeInvoiceQrResult === 'function') {
-          window.onNativeInvoiceQrResult('$safeJson');
-        } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
-          window.applyOcrResultToInvoiceModal($jsonResult);
+        try {
+          const rawData = decodeURIComponent(escape(atob('$b64')));
+          if (typeof window.onNativeInvoiceQrResult === 'function') {
+            window.onNativeInvoiceQrResult(rawData);
+          } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
+            window.applyOcrResultToInvoiceModal(JSON.parse(rawData));
+          }
+        } catch (e) {
+          console.error('Erro ao injetar resultado NFC-e:', e);
         }
       """);
     } catch (e) {
@@ -1274,13 +1278,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       if (invoice == null) return;
 
       final jsonResult = jsonEncode(invoice.toJson());
-      final safeJson = jsonResult.replaceAll(r'\', r'\\').replaceAll("'", r"\'");
+      final b64 = base64Encode(utf8.encode(jsonResult));
 
       _controller.runJavaScript("""
-        if (typeof window.onNativeInvoiceQrResult === 'function') {
-          window.onNativeInvoiceQrResult('$safeJson');
-        } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
-          window.applyOcrResultToInvoiceModal($jsonResult);
+        try {
+          const rawData = decodeURIComponent(escape(atob('$b64')));
+          if (typeof window.onNativeInvoiceQrResult === 'function') {
+            window.onNativeInvoiceQrResult(rawData);
+          } else if (typeof window.applyOcrResultToInvoiceModal === 'function') {
+            window.applyOcrResultToInvoiceModal(JSON.parse(rawData));
+          }
+        } catch (e) {
+          console.error('Erro ao consultar NFC-e via URL:', e);
         }
       """);
     } catch (e) {

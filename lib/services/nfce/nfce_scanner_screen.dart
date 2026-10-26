@@ -60,7 +60,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
-      autoStart: false,
+      autoStart: true,
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
@@ -89,7 +89,10 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
 
-    _initCamera();
+    // Garante inicializacao robusta apos montagem completa do frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initCamera();
+    });
 
     // Se uma URL inicial foi informada diretamente
     if (widget.initialUrl != null && widget.initialUrl!.trim().isNotEmpty) {
@@ -97,7 +100,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
         _handleBarcodeValue(widget.initialUrl!.trim());
       });
     } else {
-      // Dica amigável após 8 segundos caso o usuário tenha dificuldade com iluminação
+      // Dica amigavel apos 8 segundos caso o usuario tenha dificuldade com iluminacao
       _friendlyHintTimer = Timer(const Duration(seconds: 8), () {
         if (mounted && !_isProcessing) {
           setState(() {
@@ -114,17 +117,38 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       if (!status.isGranted) {
         if (mounted) {
           setState(() {
-            _statusMessage = 'Permissão de câmera necessária. Use o botão abaixo para fotografar.';
+            _statusMessage = 'Permissao de camera necessaria para ler a nota fiscal.';
           });
         }
         return;
       }
-      if (!_scannerController.value.isRunning) {
-        await _scannerController.start();
+
+      // Pequena pausa para garantir liberacao de sessoes anteriores de camera no hardware
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (!mounted) return;
+
+      int retries = 3;
+      while (retries > 0 && mounted) {
+        try {
+          if (!_scannerController.value.isRunning) {
+            await _scannerController.start();
+          }
+          break;
+        } catch (e) {
+          retries--;
+          debugPrint('Tentando inicializar camera do MobileScanner... ()');
+          if (retries > 0) {
+            await Future.delayed(const Duration(milliseconds: 350));
+          }
+        }
       }
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
     } catch (e) {
-      debugPrint('Aviso ao iniciar câmera do MobileScanner: $e');
+      debugPrint('Aviso ao inicializar camera do MobileScanner: ');
     }
   }
 
@@ -242,7 +266,9 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
     _browserExtractionTimer?.cancel();
     _friendlyHintTimer?.cancel();
     _animController.dispose();
-    _scannerController.dispose();
+    try {
+      _scannerController.dispose();
+    } catch (_) {}
     super.dispose();
   }
 
@@ -822,53 +848,36 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.camera_alt_outlined, color: Color(0xFFFBBF24), size: 48),
+                      const Icon(Icons.qr_code_scanner, color: Color(0xFF10B981), size: 52),
                       const SizedBox(height: 16),
                       const Text(
-                        'Visor ao vivo indisponível neste aparelho',
+                        'Leitor de Cupom NFC-e Pronto',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Toque no botão abaixo para tirar uma foto nítida do QR Code ou Código de Barras da nota fiscal.',
+                        'Aponte para o QR Code da nota fiscal. Se a imagem nao abrir de imediato, toque no botao abaixo.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
-                        onPressed: _pickQrFromCamera,
-                        icon: const Icon(Icons.camera),
-                        label: const Text('Fotografar Cupom'),
+                        onPressed: _initCamera,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Iniciar Camera Novamente', style: TextStyle(fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: _pickQrFromGallery,
-                        icon: const Icon(Icons.image, size: 18),
-                        label: const Text('Escolher da Galeria'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white70,
-                          side: const BorderSide(color: Colors.white30),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextButton.icon(
-                        onPressed: () async {
-                          try {
-                            await _scannerController.stop();
-                            await _scannerController.start();
-                            setState(() {});
-                          } catch (_) {}
-                        },
-                        icon: const Icon(Icons.refresh, color: Colors.white60, size: 16),
-                        label: const Text('Tentar Câmera ao Vivo Novamente', style: TextStyle(color: Colors.white60, fontSize: 12)),
+                        onPressed: _openManualKeyDialog,
+                        icon: const Icon(Icons.edit_note, color: Colors.white70, size: 18),
+                        label: const Text('Digitar Chave Manualmente', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       ),
                     ],
                   ),

@@ -14458,8 +14458,31 @@ window.triggerScanQrWithNativeCamera = function() {
 };
 
 // ============================================================================
+// ============================================================================
 // GESTÃO DE CHAVES E PREVENÇÃO DE LEITURAS DUPLICADAS DE NFC-e (ROBUSTA)
 // ============================================================================
+window.extractCleanNfceKey = function(keyOrUrl) {
+  if (!keyOrUrl) return null;
+  const str = String(keyOrUrl).trim();
+  // 1. Procura bloco contíguo de exatamente 44 dígitos
+  const match = str.match(/\b(\d{44})\b/) || str.match(/[?&]chNFe=(\d{44})/i) || str.match(/[?&]p=(\d{44})/i);
+  if (match) return match[1];
+  // 2. Se a string só contém dígitos e tem exatamente 44 dígitos
+  const onlyDigits = str.replace(/\D/g, '');
+  if (onlyDigits.length === 44) return onlyDigits;
+  // 3. Se contém p= seguido de 44 dígitos
+  const pMatch = str.match(/p=([0-9]{44})/i);
+  if (pMatch) return pMatch[1];
+  // 4. Se só há dígitos e tem >= 44 dígitos, extrai se iniciar por código de UF do Brasil (11 a 53)
+  if (onlyDigits.length >= 44) {
+    const uf = parseInt(onlyDigits.slice(0, 2), 10);
+    if (uf >= 11 && uf <= 53) {
+      return onlyDigits.slice(0, 44);
+    }
+  }
+  return null;
+};
+
 window.getScannedReceiptKeys = function() {
   try {
     const raw = localStorage.getItem('ctrlpig_scanned_receipt_keys');
@@ -14472,20 +14495,22 @@ window.getScannedReceiptKeys = function() {
 window.findScannedReceiptDetails = function(keyOrUrl) {
   if (!keyOrUrl) return null;
   const rawStr = String(keyOrUrl).trim();
-  const digits = rawStr.replace(/\D/g, '');
-  const key44 = digits.length >= 44 ? digits.slice(0, 44) : (rawStr.match(/(\d{44})/)?.[1] || null);
+  const key44 = window.extractCleanNfceKey(rawStr);
 
   // 1. Consulta no histórico local de notas lidas
   const history = window.getScannedReceiptKeys();
   const matchHist = history.find(item => {
     if (!item) return false;
     if (typeof item === 'string') {
-      return item === rawStr || (key44 && item.includes(key44));
+      const itemKey44 = window.extractCleanNfceKey(item);
+      if (key44 && itemKey44 && key44 === itemKey44) return true;
+      if (rawStr.length >= 35 && item === rawStr) return true;
+      return false;
     }
-    const itemKey = String(item.key || '').replace(/\D/g, '');
-    const itemUrl = String(item.url || '');
-    if (item.key === rawStr || itemUrl === rawStr) return true;
-    if (key44 && (itemKey.includes(key44) || itemUrl.includes(key44))) return true;
+    const itemKey = window.extractCleanNfceKey(item.key || item.url);
+    const itemUrl = String(item.url || '').trim();
+    if (key44 && itemKey && key44 === itemKey) return true;
+    if (rawStr.length >= 35 && itemUrl === rawStr) return true;
     return false;
   });
 
@@ -14514,10 +14539,11 @@ window.findScannedReceiptDetails = function(keyOrUrl) {
     if (Array.isArray(txs)) {
       const matchTx = txs.find(t => {
         if (!t) return false;
-        const tKey = String(t.chave_acesso || t.chave || t.accessKey || '').replace(/\D/g, '');
-        const tUrl = String(t.comprovante_qrcode || t.raw_nfce_url || t.nfce_url || t.observacoes || '');
-        if (key44 && (tKey.includes(key44) || tUrl.includes(key44))) return true;
-        if (rawStr && (tUrl.includes(rawStr) || t.comprovante_qrcode === rawStr)) return true;
+        const tKeyRaw = t.chave_nfce || t.chave_acesso || t.chave || t.accessKey || '';
+        const tKey44 = window.extractCleanNfceKey(tKeyRaw);
+        if (key44 && tKey44 && key44 === tKey44) return true;
+        const tUrl = String(t.raw_nfce_url || t.nfce_url || t.comprovante_qrcode || '').trim();
+        if (rawStr.length >= 35 && tUrl === rawStr) return true;
         return false;
       });
 
@@ -14527,7 +14553,7 @@ window.findScannedReceiptDetails = function(keyOrUrl) {
           store: matchTx.descricao || matchTx.estabelecimento || 'Supermercado',
           total: matchTx.valor || 0,
           date: matchTx.data ? (matchTx.data.includes('-') ? matchTx.data.split('-').reverse().join('/') : matchTx.data) : 'anteriormente',
-          key: key44 || matchTx.chave_acesso || rawStr
+          key: key44 || matchTx.chave_nfce || matchTx.chave_acesso || rawStr
         };
       }
     }
@@ -14545,8 +14571,7 @@ window.registerScannedReceiptKey = function(keyOrUrl, store, total) {
   try {
     const history = window.getScannedReceiptKeys();
     const rawStr = String(keyOrUrl).trim();
-    const digits = rawStr.replace(/\D/g, '');
-    const cleanKey = digits.length >= 44 ? digits.slice(0, 44) : rawStr;
+    const cleanKey = window.extractCleanNfceKey(rawStr) || rawStr;
     const entry = {
       key: cleanKey,
       url: rawStr,
@@ -14577,7 +14602,7 @@ window.openDuplicateInvoiceAlertModal = function(data) {
 
   const modal = document.getElementById('modalDuplicateInvoiceAlert');
   if (!modal) {
-    alert(`🛑 NOTA FISCAL JÁ UTILIZADA!\n\nEsta nota (${data.store} - ${data.total}) já foi lida em ${data.date}.\nPara evitar itens duplicados, a leitura foi cancelada.`);
+    alert(`🚫 NOTA FISCAL JÁ UTILIZADA!\n\nEsta nota (${data.store} - ${data.total}) já foi lida em ${data.date}.\nPara evitar itens duplicados, a leitura foi cancelada.`);
     return;
   }
   const storeEl = document.getElementById('dupInvoiceStore');
@@ -14621,7 +14646,7 @@ window.cancelDuplicateInvoiceAction = function() {
   if (modalScan) modalScan.classList.add('hidden');
 
   if (typeof showToastUndo === 'function') {
-    showToastUndo('🛑 Nota Fiscal não aceita: Cupom já foi utilizado anteriormente!', true);
+    showToastUndo('🚫 Nota Fiscal não aceita: Cupom já foi utilizado anteriormente!', true);
   }
 };
 
@@ -14657,9 +14682,10 @@ window.renderShoppingInvoicePreview = function(res, items) {
   if (countEl) countEl.textContent = `${items.length} ${items.length === 1 ? 'item capturado' : 'itens capturados'}`;
   if (totalEl) totalEl.textContent = typeof formatBRL === 'function' ? formatBRL(total) : `R$ ${total.toFixed(2)}`;
 
-  if (res.accessKey && keyContainer && keyText) {
+  const accessKey = res.accessKey || window.extractCleanNfceKey(res.rawUrl);
+  if (accessKey && keyContainer && keyText) {
     keyContainer.classList.remove('hidden');
-    keyText.textContent = res.accessKey;
+    keyText.textContent = accessKey;
   } else if (keyContainer) {
     keyContainer.classList.add('hidden');
   }
@@ -14691,7 +14717,7 @@ window.renderShoppingInvoicePreview = function(res, items) {
                   ${qtdStr}
                 </span>
                 ${isFracionado && pUnit > 0 ? `
-                  <span class="text-slate-400">×</span>
+                  <span class="text-slate-400">•</span>
                   <span class="font-semibold text-slate-600 dark:text-slate-300 text-[10px]">
                     ${typeof formatBRL === 'function' ? formatBRL(pUnit) : 'R$ ' + pUnit.toFixed(2)}/${un}
                   </span>
@@ -14743,11 +14769,16 @@ window.confirmShoppingInvoicePreview = function() {
   const store = res.store || res.estabelecimento || 'Supermercado';
   const date = res.date || res.data || (new Date().toISOString().split('T')[0]);
   const total = typeof res.total === 'number' ? res.total : (parseFloat(res.total) || 0);
-  const key = res.accessKey || res.chave || res.rawUrl;
+  const key = res.accessKey || res.chave || window.extractCleanNfceKey(res.rawUrl) || res.rawUrl;
 
   // 1. Registra a chave para evitar repetição futura
   if (key) {
     window.registerScannedReceiptKey(key, store, total);
+  }
+  if (Array.isArray(res.accessKeys)) {
+    res.accessKeys.forEach(k => {
+      if (k) window.registerScannedReceiptKey(k, store, total);
+    });
   }
 
   // 2. Incorpora itens ao Histórico de Preços e Comparador por Loja com valores fracionados corretos
@@ -14761,8 +14792,8 @@ window.confirmShoppingInvoicePreview = function() {
           produto: it.produto || 'Item de Mercado',
           estabelecimento: store,
           data: date,
-          preco: pUnit > 0 ? pUnit : pTotal, // Preço unitário/kg de referência
-          valorTotal: pTotal, // Valor total pago fracionado
+          preco: pUnit > 0 ? pUnit : pTotal,
+          valorTotal: pTotal,
           qtd: it.qtd || 1,
           precoAnterior: pUnit > 0 ? pUnit * 0.97 : (pTotal || 0),
           unidade: it.unidade || 'UN'
@@ -14772,7 +14803,7 @@ window.confirmShoppingInvoicePreview = function() {
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
     }
 
-    // 3. Adiciona / Marca itens na Lista de Compras Ativa (financas_active_shopping_items)
+    // 3. Adiciona / Marca itens na Lista de Compras Ativa
     try {
       const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
       items.forEach((it, idx) => {
@@ -14850,7 +14881,7 @@ window.confirmShoppingInvoicePreview = function() {
 
   // 6. Feedback de sucesso
   if (typeof showToastUndo === 'function') {
-    showToastUndo(`🎉 Nota Fiscal confirmada com sucesso! ${items.length} itens registrados.`, false);
+    showToastUndo(`✅ Nota Fiscal confirmada com sucesso! ${items.length} itens registrados.`, false);
   }
 };
 
@@ -14865,7 +14896,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   }
   if (!res) return;
 
-  const accessKey = res.accessKey || res.chave || (res.rawUrl ? (res.rawUrl.match(/(\d{44})/)?.[1] || null) : null);
+  const accessKey = res.accessKey || res.chave || window.extractCleanNfceKey(res.rawUrl);
   const receiptIdentifier = accessKey || res.rawUrl;
 
   const executeInvoiceProcessing = function() {
@@ -14895,15 +14926,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             </div>
             <p class="text-[11px] mb-2">${res.errorMessage || 'A consulta online demorou, mas a Chave de Acesso foi salva.'}</p>
             <div class="font-mono text-[10px] bg-white dark:bg-slate-900 p-1.5 rounded border border-amber-200 dark:border-amber-800 break-all select-all mb-2.5">
-              Chave: <strong>${res.accessKey || 'Não identificada'}</strong>
+              Chave: <strong>${accessKey || 'Não identificada'}</strong>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'fetch_nfce_url', url: '${res.rawUrl || ''}'}));" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 shadow-sm">
-                <span>🔄</span> Consultar com Navegador Integrado
+                <span>🌐</span> Consultar com Navegador Integrado
               </button>
               ${res.rawUrl ? `
               <button onclick="if(window.FlutterBridge) FlutterBridge.postMessage(JSON.stringify({action: 'open_external_url', url: '${res.rawUrl}'}));" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-[10px] flex items-center gap-1">
-                <span>🌐</span> Abrir Navegador
+                <span>🔗</span> Abrir Navegador
               </button>
               ` : ''}
             </div>
@@ -14934,7 +14965,6 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       let totalItem = typeof it.total === 'number' ? it.total : (parseFloat(String(it.total).replace(/\./g, '').replace(',', '.')) || 0);
 
       // Correção matemática automática para produtos fracionados:
-      // Se a quantidade é fracionada (ex: 0,090 kg) e o total capturado veio zerado OU igual ao preço por kg:
       if (qtd > 0 && Math.abs(qtd - 1.0) > 0.001) {
         const expectedFracTotal = parseFloat((qtd * precoUnit).toFixed(2));
         if (totalItem <= 0 || Math.abs(totalItem - precoUnit) < 0.02) {
@@ -14962,8 +14992,27 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     if (typeof extractedReceiptItems !== 'undefined') extractedReceiptItems = normalizedIncoming;
     if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
 
-    // RENDERIZA CONFERÊNCIA DOS PRODUTOS DIRETAMENTE NA LISTA DE COMPRAS
-    window.renderShoppingInvoicePreview(res, normalizedIncoming);
+    // RENDERIZA CONFERÊNCIA DOS PRODUTOS NA LISTA DE COMPRAS
+    // Se já havia uma nota em conferência na tela que não foi confirmada,
+    // une os itens das notas permitindo conferência conjunta de múltiplas notas!
+    if (window.pendingShoppingInvoiceData && Array.isArray(window.pendingShoppingInvoiceData.items) && window.pendingShoppingInvoiceData.items.length > 0) {
+      const prevData = window.pendingShoppingInvoiceData;
+      const combinedItems = [...prevData.items, ...normalizedIncoming];
+      const combinedTotal = (parseFloat(prevData.res.total) || 0) + (parseFloat(res.total) || 0);
+      const prevStore = prevData.res.store || prevData.res.estabelecimento || 'Mercado';
+      const curStore = res.store || res.estabelecimento || 'Mercado';
+      const combinedStore = prevStore === curStore ? curStore : `${prevStore} + ${curStore}`;
+      const combinedRes = {
+        ...res,
+        store: combinedStore,
+        total: combinedTotal,
+        accessKey: accessKey || prevData.res.accessKey,
+        accessKeys: [prevData.res.accessKey, accessKey].filter(Boolean)
+      };
+      window.renderShoppingInvoicePreview(combinedRes, combinedItems);
+    } else {
+      window.renderShoppingInvoicePreview(res, normalizedIncoming);
+    }
 
     const itemCount = normalizedIncoming.length;
     const formattedTotal = (typeof res.total === 'number' && res.total > 0)
@@ -14975,7 +15024,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ocrStatus.innerHTML = `
           <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
             <div class="font-bold flex items-center gap-1.5">
-              <span>✓</span> <span>Cupom NFC-e Consultado Oficialmente:</span>
+              <span>✅</span> <span>Cupom NFC-e Consultado Oficialmente:</span>
             </div>
             <div>${itemCount} itens discriminados carregados da SEFAZ com valores fracionados.${formattedTotal ? ` Total líquido: <strong>${formattedTotal}</strong>` : ''}</div>
           </div>
@@ -14984,7 +15033,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
 
     if (typeof showToastUndo === 'function') {
-      showToastUndo(`🧾 Nota Fiscal lida: ${itemCount} produtos disponíveis para conferência!`, false);
+      showToastUndo(`✅ Nota Fiscal lida: ${itemCount} produtos disponíveis para conferência!`, false);
     }
   };
 
@@ -15017,7 +15066,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
     // 3. Notificação visual de bloqueio
     if (typeof showToastUndo === 'function') {
-      showToastUndo('🛑 NOTA FISCAL JÁ UTILIZADA! Cupom já registrado anteriormente.', true);
+      showToastUndo('🚫 NOTA FISCAL JÁ UTILIZADA! Cupom já registrado anteriormente.', true);
     }
 
     // 4. Abre o modal oficial de bloqueio (Sem aceitar duplicidade e sem exibir produtos)
