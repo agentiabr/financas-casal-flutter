@@ -6768,49 +6768,47 @@ html, body {
     </div>
   </div>
 
-  <!-- MODAL DE ALERTA: NOTA FISCAL JÁ LIDA / DUPLICADA -->
+  <!-- MODAL DE ALERTA: NOTA FISCAL JÁ LIDA / DUPLICADA (BLOQUEIO TOTAL) -->
   <div id="modalDuplicateInvoiceAlert" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="cancelDuplicateInvoiceAction()"></div>
-    <div class="relative z-10 max-w-sm w-full bg-white dark:bg-slate-900 border-2 border-amber-400 dark:border-amber-500 rounded-3xl shadow-2xl p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
+    <div class="relative z-10 max-w-sm w-full bg-white dark:bg-slate-900 border-2 border-rose-500 dark:border-rose-500 rounded-3xl shadow-2xl p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl shrink-0 font-bold">
-          ⚠️
+        <div class="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl shrink-0 font-bold shadow-xs">
+          🛑
         </div>
         <div>
-          <h3 class="text-sm font-black text-slate-900 dark:text-white leading-tight">Nota Fiscal Já Lida!</h3>
-          <p class="text-[11px] text-amber-600 dark:text-amber-400 font-bold">Cupom já registrado anteriormente</p>
+          <h3 class="text-sm font-black text-rose-600 dark:text-rose-400 leading-tight">Nota Fiscal Já Utilizada!</h3>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">Cupom já lançado anteriormente • Não aceito</p>
         </div>
       </div>
 
-      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-        Este QR Code ou Chave de Acesso já foi escaneado e computado no app para evitar lançamentos em duplicidade.
+      <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+        Esta nota fiscal já foi escaneada e cadastrada no aplicativo. Para evitar produtos e despesas duplicadas no seu controle, ela não será aceita novamente.
       </p>
 
       <!-- Card de Detalhes da Nota Já Lida -->
-      <div class="bg-amber-50/80 dark:bg-slate-800/80 p-3 rounded-2xl border border-amber-200 dark:border-amber-900/60 text-xs space-y-1 text-slate-700 dark:text-slate-300">
-        <div class="flex justify-between">
+      <div class="bg-rose-50/70 dark:bg-slate-800/80 p-3 rounded-2xl border border-rose-200 dark:border-rose-900/60 text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
+        <div class="flex justify-between items-center">
           <span class="text-slate-500 text-[11px]">Estabelecimento:</span>
-          <strong id="dupInvoiceStore" class="text-slate-900 dark:text-white font-bold">Mercado</strong>
+          <strong id="dupInvoiceStore" class="text-slate-900 dark:text-white font-bold text-xs truncate max-w-[170px]">Mercado</strong>
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between items-center">
           <span class="text-slate-500 text-[11px]">Valor Total:</span>
-          <strong id="dupInvoiceTotal" class="text-emerald-700 dark:text-emerald-400 font-mono font-bold">R$ 0,00</strong>
+          <strong id="dupInvoiceTotal" class="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-sm">R$ 0,00</strong>
         </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500 text-[11px]">Lida em:</span>
-          <span id="dupInvoiceDate" class="font-medium text-[11px]">--/--/----</span>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-500 text-[11px]">Lida/Registrada em:</span>
+          <span id="dupInvoiceDate" class="font-bold text-[11px] text-slate-800 dark:text-slate-200">--/--/----</span>
         </div>
-        <div id="dupInvoiceKeyRow" class="hidden pt-1 border-t border-amber-200/60 dark:border-slate-700 text-[10px] font-mono break-all text-slate-500">
-          Chave: <span id="dupInvoiceKey">...</span>
+        <div id="dupInvoiceKeyRow" class="hidden pt-1.5 border-t border-rose-200/60 dark:border-slate-700 text-[10px] font-mono break-all text-slate-500">
+          Chave: <span id="dupInvoiceKey" class="text-[9px]">...</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 pt-1">
-        <button type="button" onclick="cancelDuplicateInvoiceAction()" class="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer text-center">
-          Cancelar (Não Duplicar)
-        </button>
-        <button type="button" onclick="proceedDuplicateInvoiceAction()" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs active:scale-95 transition-colors cursor-pointer text-center whitespace-nowrap">
-          Conferir Mesmo Assim
+      <div class="pt-1">
+        <button type="button" onclick="cancelDuplicateInvoiceAction()" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl text-xs shadow-lg active:scale-95 transition-all cursor-pointer text-center flex items-center justify-center gap-2">
+          <span>✓</span>
+          <span>Entendido (Nota Não Aceita)</span>
         </button>
       </div>
     </div>
@@ -14505,7 +14503,7 @@ window.triggerScanQrWithNativeCamera = function() {
 };
 
 // ============================================================================
-// GESTÃO DE CHAVES E PREVENÇÃO DE LEITURAS DUPLICADAS DE NFC-e
+// GESTÃO DE CHAVES E PREVENÇÃO DE LEITURAS DUPLICADAS DE NFC-e (ROBUSTA)
 // ============================================================================
 window.getScannedReceiptKeys = function() {
   try {
@@ -14516,30 +14514,87 @@ window.getScannedReceiptKeys = function() {
   }
 };
 
-window.isReceiptAlreadyScanned = function(keyOrUrl) {
-  if (!keyOrUrl) return false;
-  const cleanKey = String(keyOrUrl).replace(/\D/g, '');
+window.findScannedReceiptDetails = function(keyOrUrl) {
+  if (!keyOrUrl) return null;
+  const rawStr = String(keyOrUrl).trim();
+  const digits = rawStr.replace(/\D/g, '');
+  const key44 = digits.length >= 44 ? digits.slice(0, 44) : (rawStr.match(/(\d{44})/)?.[1] || null);
+
+  // 1. Consulta no histórico local de notas lidas
   const history = window.getScannedReceiptKeys();
-  return history.some(item => {
+  const matchHist = history.find(item => {
+    if (!item) return false;
     if (typeof item === 'string') {
-      return item === keyOrUrl || (cleanKey.length === 44 && item.includes(cleanKey));
+      return item === rawStr || (key44 && item.includes(key44));
     }
-    if (item && typeof item === 'object') {
-      if (item.key && (item.key === keyOrUrl || (cleanKey.length === 44 && String(item.key).replace(/\D/g, '') === cleanKey))) return true;
-      if (item.url && item.url === keyOrUrl) return true;
-    }
+    const itemKey = String(item.key || '').replace(/\D/g, '');
+    const itemUrl = String(item.url || '');
+    if (item.key === rawStr || itemUrl === rawStr) return true;
+    if (key44 && (itemKey.includes(key44) || itemUrl.includes(key44))) return true;
     return false;
   });
+
+  if (matchHist) {
+    return {
+      found: true,
+      store: matchHist.store || 'Supermercado / Estabelecimento',
+      total: matchHist.total || 0,
+      date: matchHist.scannedAt ? new Date(matchHist.scannedAt).toLocaleDateString('pt-BR') : 'anteriormente',
+      key: key44 || matchHist.key || rawStr
+    };
+  }
+
+  // 2. Consulta em TODAS as transações cadastradas no sistema
+  try {
+    let txs = [];
+    if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+      txs = transactions;
+    } else if (typeof window.transactions !== 'undefined' && Array.isArray(window.transactions)) {
+      txs = window.transactions;
+    } else {
+      const rawTx = localStorage.getItem('financas_transacoes') || localStorage.getItem('ctrlpig_transactions');
+      if (rawTx) txs = JSON.parse(rawTx);
+    }
+
+    if (Array.isArray(txs)) {
+      const matchTx = txs.find(t => {
+        if (!t) return false;
+        const tKey = String(t.chave_acesso || t.chave || t.accessKey || '').replace(/\D/g, '');
+        const tUrl = String(t.comprovante_qrcode || t.raw_nfce_url || t.nfce_url || t.observacoes || '');
+        if (key44 && (tKey.includes(key44) || tUrl.includes(key44))) return true;
+        if (rawStr && (tUrl.includes(rawStr) || t.comprovante_qrcode === rawStr)) return true;
+        return false;
+      });
+
+      if (matchTx) {
+        return {
+          found: true,
+          store: matchTx.descricao || matchTx.estabelecimento || 'Supermercado',
+          total: matchTx.valor || 0,
+          date: matchTx.data ? (matchTx.data.includes('-') ? matchTx.data.split('-').reverse().join('/') : matchTx.data) : 'anteriormente',
+          key: key44 || matchTx.chave_acesso || rawStr
+        };
+      }
+    }
+  } catch (_) {}
+
+  return null;
+};
+
+window.isReceiptAlreadyScanned = function(keyOrUrl) {
+  return window.findScannedReceiptDetails(keyOrUrl) !== null;
 };
 
 window.registerScannedReceiptKey = function(keyOrUrl, store, total) {
   if (!keyOrUrl) return;
   try {
     const history = window.getScannedReceiptKeys();
-    const cleanKey = String(keyOrUrl).replace(/\D/g, '');
+    const rawStr = String(keyOrUrl).trim();
+    const digits = rawStr.replace(/\D/g, '');
+    const cleanKey = digits.length >= 44 ? digits.slice(0, 44) : rawStr;
     const entry = {
-      key: cleanKey.length === 44 ? cleanKey : keyOrUrl,
-      url: keyOrUrl,
+      key: cleanKey,
+      url: rawStr,
       store: store || 'Estabelecimento',
       total: total || 0,
       scannedAt: new Date().toISOString()
@@ -14556,13 +14611,18 @@ window.registerScannedReceiptKey = function(keyOrUrl, store, total) {
 };
 
 window.pendingDuplicateReceiptCallback = null;
-window.openDuplicateInvoiceAlertModal = function(data, onProceed) {
-  window.pendingDuplicateReceiptCallback = onProceed;
+window.openDuplicateInvoiceAlertModal = function(data) {
+  // Limpa rigorosamente qualquer prévia de itens para NUNCA exibir produtos de nota repetida
+  const container = document.getElementById('shoppingListInvoicePreviewContainer');
+  if (container) container.classList.add('hidden');
+  const listEl = document.getElementById('shoppingInvoiceItemsList');
+  if (listEl) listEl.innerHTML = '';
+  window.pendingShoppingInvoiceData = null;
+  window.extractedReceiptItems = [];
+
   const modal = document.getElementById('modalDuplicateInvoiceAlert');
   if (!modal) {
-    if (confirm(`⚠️ Esta Nota Fiscal (${data.store} - ${data.total}) já foi lida em ${data.date}. Deseja conferir novamente?`)) {
-      if (onProceed) onProceed();
-    }
+    alert(`🛑 NOTA FISCAL JÁ UTILIZADA!\n\nEsta nota (${data.store} - ${data.total}) já foi lida em ${data.date}.\nPara evitar itens duplicados, a leitura foi cancelada.`);
     return;
   }
   const storeEl = document.getElementById('dupInvoiceStore');
@@ -14571,7 +14631,7 @@ window.openDuplicateInvoiceAlertModal = function(data, onProceed) {
   const keyRow = document.getElementById('dupInvoiceKeyRow');
   const keyEl = document.getElementById('dupInvoiceKey');
 
-  if (storeEl) storeEl.textContent = data.store || 'Mercado';
+  if (storeEl) storeEl.textContent = data.store || 'Mercado / Estabelecimento';
   if (totalEl) totalEl.textContent = data.total || 'R$ 0,00';
   if (dateEl) dateEl.textContent = data.date || 'anteriormente';
   if (data.accessKey && keyRow && keyEl) {
@@ -14587,17 +14647,27 @@ window.cancelDuplicateInvoiceAction = function() {
   const modal = document.getElementById('modalDuplicateInvoiceAlert');
   if (modal) modal.classList.add('hidden');
   window.pendingDuplicateReceiptCallback = null;
+
+  // Garante que absolutamente nenhum item de nota duplicada seja mantido ou exibido
+  const container = document.getElementById('shoppingListInvoicePreviewContainer');
+  if (container) container.classList.add('hidden');
+  const listEl = document.getElementById('shoppingInvoiceItemsList');
+  if (listEl) listEl.innerHTML = '';
+  window.pendingShoppingInvoiceData = null;
+  window.extractedReceiptItems = [];
+  if (typeof window.syncExtractedReceiptItems === 'function') window.syncExtractedReceiptItems([]);
+  if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
+
+  const modalScan = document.getElementById('modalInvoiceScan');
+  if (modalScan) modalScan.classList.add('hidden');
+
   if (typeof showToastUndo === 'function') {
-    showToastUndo('Leitura cancelada. Nota duplicada descartada.', false);
+    showToastUndo('🛑 Nota Fiscal não aceita: Cupom já foi utilizado anteriormente!', true);
   }
 };
 
 window.proceedDuplicateInvoiceAction = function() {
-  const modal = document.getElementById('modalDuplicateInvoiceAlert');
-  if (modal) modal.classList.add('hidden');
-  const cb = window.pendingDuplicateReceiptCallback;
-  window.pendingDuplicateReceiptCallback = null;
-  if (typeof cb === 'function') cb();
+  window.cancelDuplicateInvoiceAction();
 };
 
 // ============================================================================
@@ -14959,26 +15029,47 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
   };
 
-  // VERIFICA SE A NOTA FISCAL JÁ FOI LIDA ANTERIORMENTE
-  if (receiptIdentifier && window.isReceiptAlreadyScanned(receiptIdentifier)) {
-    const history = window.getScannedReceiptKeys();
-    const cleanKey = String(receiptIdentifier).replace(/\D/g, '');
-    const prev = history.find(h => {
-      const k = typeof h === 'string' ? h : (h.key || h.url);
-      return k === receiptIdentifier || (cleanKey.length === 44 && String(k).replace(/\D/g, '') === cleanKey);
-    });
-    const prevStore = (prev && prev.store) ? prev.store : (res.store || 'Supermercado');
-    const prevTotal = (prev && prev.total) ? (typeof formatBRL === 'function' ? formatBRL(prev.total) : `R$ ${prev.total}`) : (res.total ? `R$ ${res.total}` : 'R$ 0,00');
-    const prevDate = (prev && prev.scannedAt) ? new Date(prev.scannedAt).toLocaleDateString('pt-BR') : 'anteriormente';
+  // VERIFICA SE A NOTA FISCAL JÁ FOI LIDA OU UTILIZADA ANTERIORMENTE (BLOQUEIO TOTAL)
+  const existingReceipt = window.findScannedReceiptDetails(receiptIdentifier || accessKey || res.rawUrl);
+  if (existingReceipt) {
+    // 1. Limpa e esconde imediatamente qualquer prévia de produtos na Lista de Compras
+    const container = document.getElementById('shoppingListInvoicePreviewContainer');
+    if (container) container.classList.add('hidden');
+    const listEl = document.getElementById('shoppingInvoiceItemsList');
+    if (listEl) listEl.innerHTML = '';
+    window.pendingShoppingInvoiceData = null;
+    window.extractedReceiptItems = [];
+    if (typeof window.syncExtractedReceiptItems === 'function') window.syncExtractedReceiptItems([]);
+    if (typeof renderExtractedItemsPreview === 'function') renderExtractedItemsPreview();
 
+    const modalScan = document.getElementById('modalInvoiceScan');
+    if (modalScan) modalScan.classList.add('hidden');
+
+    const prevStore = existingReceipt.store || res.store || 'Mercado / Estabelecimento';
+    const prevTotal = (typeof existingReceipt.total === 'number' && existingReceipt.total > 0)
+      ? (typeof formatBRL === 'function' ? formatBRL(existingReceipt.total) : `R$ ${existingReceipt.total.toFixed(2)}`)
+      : (existingReceipt.total ? String(existingReceipt.total) : (res.total ? `R$ ${res.total}` : 'R$ 0,00'));
+    const prevDate = existingReceipt.date || 'anteriormente';
+
+    // 2. Alerta tátil se suportado
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate([180, 80, 180]); } catch (_) {}
+    }
+
+    // 3. Notificação visual de bloqueio
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('🛑 NOTA FISCAL JÁ UTILIZADA! Cupom já registrado anteriormente.', true);
+    }
+
+    // 4. Abre o modal oficial de bloqueio (Sem aceitar duplicidade e sem exibir produtos)
     window.openDuplicateInvoiceAlertModal({
       store: prevStore,
       total: prevTotal,
       date: prevDate,
-      accessKey: accessKey
-    }, () => {
-      executeInvoiceProcessing();
+      accessKey: accessKey || existingReceipt.key || ''
     });
+
+    // 5. ENCERRA IMEDIATAMENTE (NUNCA EXECUTA O PROCESSAMENTO DOS PRODUTOS)
     return;
   }
 
