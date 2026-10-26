@@ -45,6 +45,14 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   Timer? _friendlyHintTimer;
   String? _lastScannedValue;
 
+  // Variáveis para a Solução A: Navegador Integrado Inteligente com Auto-Captura
+  String? _browserUrl;
+  WebViewController? _browserController;
+  double _browserProgress = 0.0;
+  String _browserStatus = 'Conectando ao portal oficial da SEFAZ SP...';
+  Timer? _browserExtractionTimer;
+  bool _isExtractingFromBrowser = false;
+
   @override
   void initState() {
     super.initState();
@@ -216,6 +224,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
 
   @override
   void dispose() {
+    _browserExtractionTimer?.cancel();
     _friendlyHintTimer?.cancel();
     _animController.dispose();
     _scannerController.dispose();
@@ -285,86 +294,160 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       }
     } catch (_) {}
 
-    try {
-      final invoice = await NfceFetcher().fetchAndParse(targetUrl).timeout(
-        const Duration(seconds: 8),
-      );
-      if (invoice.items.isNotEmpty) {
-        if (mounted) {
-          HapticFeedback.heavyImpact();
-          Navigator.of(context).pop(invoice);
-          return;
-        }
-      }
-    } catch (e) {
-      debugPrint('Aviso: Consulta direta SEFAZ retornou erro ou timeout: $e');
-    }
+    // SOLUÇÃO A: Abre imediatamente o Navegador Integrado Inteligente com a URL oficial da SEFAZ
+    _openBrowserView(targetUrl);
+  }
 
-    // Se a consulta HTTP direta não extraiu itens, utiliza Chromium WebView silenciosa (idêntico ao navegador do celular)
+  /// Inicializa e abre a visualização integrada do navegador oficial da SEFAZ
+  void _openBrowserView(String targetUrl) async {
     try {
-      final webViewInvoice = await _resolveViaWebView(targetUrl);
-      if (webViewInvoice != null && webViewInvoice.items.isNotEmpty) {
-        if (mounted) {
-          HapticFeedback.heavyImpact();
-          Navigator.of(context).pop(webViewInvoice);
-          return;
-        }
-      }
-    } catch (e) {
-      debugPrint('Aviso: Resolução via WebView SEFAZ: $e');
-    }
+      await _scannerController.stop();
+    } catch (_) {}
 
-    // Se a consulta online não retornou itens ou demorou, retorna com dados extraídos do QR code
-    if (mounted) {
-      HapticFeedback.heavyImpact();
-      Navigator.of(context).pop(
-        NfceInvoice(
-          storeName: 'NFC-e (' + (accessKey != null ? accessKey.substring(0, 4) : 'Cupom') + ')',
-          date: qrDate,
-          total: qrTotal,
-          paymentMethod: 'Cartão de Débito',
-          accessKey: accessKey,
-          rawUrl: targetUrl,
-          items: const [],
-          isFallback: false,
-          errorMessage: null,
+    setState(() {
+      _browserUrl = targetUrl;
+      _browserProgress = 0.15;
+      _browserStatus = 'Conectando ao portal oficial da SEFAZ SP...';
+      _isProcessing = false;
+    });
+
+    final safeUri = NfceFetcher.parseSafeUri(targetUrl);
+
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent(
+          'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36')
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            if (mounted) {
+              setState(() {
+                _browserProgress = progress / 100.0;
+                if (progress < 100) {
+                  _browserStatus = 'Carregando SEFAZ ($progress%)...';
+                } else {
+                  _browserStatus = 'Página carregada. Buscando itens...';
+                }
+              });
+            }
+            if (progress >= 60) {
+              _attemptExtractionFromBrowser();
+            }
+          },
+          onPageFinished: (String finishedUrl) {
+            if (mounted) {
+              setState(() {
+                _browserProgress = 1.0;
+                _browserStatus = 'Analisando tabela oficial de produtos...';
+              });
+            }
+            _attemptExtractionFromBrowser();
+          },
+          onWebResourceError: (error) {
+            debugPrint('Aviso WebResource: ${error.description}');
+          },
         ),
       );
+
+    await controller.loadRequest(safeUri);
+
+    setState(() {
+      _browserController = controller;
+    });
+
+    // Inicia polling ativo a cada 800ms para capturar os itens assim que a tabela for renderizada
+    _browserExtractionTimer?.cancel();
+    _browserExtractionTimer = Timer.periodic(const Duration(milliseconds: 800), (_) {
+      _attemptExtractionFromBrowser();
+    });
+  }
+
+  /// Tenta extrair os dados da página da SEFAZ aberta no WebView
+  Future<void> _attemptExtractionFromBrowser({bool force = false}) async {
+    if (_browserController == null || _isExtractingFromBrowser || !mounted) return;
+    _isExtractingFromBrowser = true;
+
+    try {
+      // 1. Script inteligente que expande acordeões/tabelas se necessário e extrai o HTML atual
+      const script = '''
+        (function() {
+          try {
+            // Se houver botão/aba de itens que precisa ser clicado, clica automaticamente
+            var btnItens = document.querySelector('a[href*="tabResult"], #btnItens, .btnItens, a:contains("Itens")');
+            if (btnItens && !document.querySelector('#tabResult tr')) {
+              btnItens.click();
+            }
+            return document.documentElement.outerHTML;
+          } catch(e) {
+            return '';
+          }
+        })()
+      ''';
+
+      final htmlObj = await _browserController!.runJavaScriptReturningResult(script);
+      String html = htmlObj.toString();
+      if (html.startsWith('"') && html.endsWith('"')) {
+        html = jsonDecode(html) as String;
+      }
+
+      if (html.isNotEmpty && html.length > 500) {
+        final invoice = NfceParser().parse(html, rawUrl: _browserUrl);
+
+        if (invoice.items.isNotEmpty) {
+          // ✓ SUCESSO ABSOLUTO! Produtos capturados com precisão!
+          _browserExtractionTimer?.cancel();
+          HapticFeedback.heavyImpact();
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Color(0xFF10B981)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text('🎉 ${invoice.items.length} produtos capturados da SEFAZ!'),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF0F172A),
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+
+            Navigator.of(context).pop(invoice);
+            return;
+          }
+        } else if (force) {
+          // Se o usuário clicou explicitamente em 'Capturar'
+          _browserExtractionTimer?.cancel();
+          HapticFeedback.heavyImpact();
+
+          if (mounted) {
+            Navigator.of(context).pop(invoice);
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Aviso na extração do browser: $e');
+    } finally {
+      _isExtractingFromBrowser = false;
     }
   }
 
-  Future<NfceInvoice?> _resolveViaWebView(String url) async {
+  void _closeBrowserView() async {
+    _browserExtractionTimer?.cancel();
+    setState(() {
+      _browserUrl = null;
+      _browserController = null;
+      _isProcessing = false;
+      _statusMessage = 'Aponte a câmera para o QR Code do cupom fiscal';
+    });
     try {
-      final completer = Completer<NfceInvoice?>();
-      late final WebViewController controller;
-      controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setUserAgent(
-            'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36')
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onPageFinished: (finishedUrl) async {
-              try {
-                await Future.delayed(const Duration(milliseconds: 700));
-                final htmlObj = await controller.runJavaScriptReturningResult('document.documentElement.outerHTML');
-                String html = htmlObj.toString();
-                if (html.startsWith('"') && html.endsWith('"')) {
-                  html = jsonDecode(html) as String;
-                }
-                final invoice = NfceParser().parse(html, rawUrl: finishedUrl);
-                if (invoice.items.isNotEmpty && !completer.isCompleted) {
-                  completer.complete(invoice);
-                }
-              } catch (_) {}
-            },
-          ),
-        );
-
-      await controller.loadRequest(NfceFetcher.parseSafeUri(url));
-      return await completer.future.timeout(const Duration(seconds: 6));
-    } catch (_) {
-      return null;
-    }
+      await _scannerController.start();
+    } catch (_) {}
   }
 
   void _toggleTorch() async {
@@ -733,6 +816,108 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+
+          // 7. SOLUÇÃO A: NAVEGADOR INTEGRADO INTELIGENTE (OFICIAL SEFAZ SP)
+          if (_browserUrl != null && _browserController != null)
+            Positioned.fill(
+              child: Scaffold(
+                backgroundColor: const Color(0xFF0F172A),
+                appBar: AppBar(
+                  backgroundColor: const Color(0xFF0A3981),
+                  elevation: 3,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    tooltip: 'Voltar ao Scanner',
+                    onPressed: _closeBrowserView,
+                  ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Consulta SEFAZ SP Oficial',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _browserStatus,
+                        style: const TextStyle(
+                          color: Color(0xFF38BDF8),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _attemptExtractionFromBrowser(force: true),
+                        icon: const Icon(Icons.download_done, color: Colors.white, size: 16),
+                        label: const Text(
+                          'Capturar',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                  bottom: _browserProgress < 1.0
+                      ? PreferredSize(
+                          preferredSize: const Size.fromHeight(3),
+                          child: LinearProgressIndicator(
+                            value: _browserProgress,
+                            backgroundColor: Colors.transparent,
+                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF38BDF8)),
+                          ),
+                        )
+                      : null,
+                ),
+                body: Stack(
+                  children: [
+                    WebViewWidget(controller: _browserController!),
+                    if (_browserProgress < 0.5)
+                      Container(
+                        color: const Color(0xFF0F172A),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Conectando ao portal oficial da Fazenda SP...',
+                                style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 6),
+                              const Text(
+                                'Os produtos serão capturados automaticamente.',
+                                style: TextStyle(color: Colors.white60, fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
