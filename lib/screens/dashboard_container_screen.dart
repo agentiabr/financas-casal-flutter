@@ -174,7 +174,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.86+163';
+  static const String _kCurrentAppVersion = '2.1.87+164';
 
   void _initWebViewController() {
     // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading
@@ -188,7 +188,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFFEEF3FB))
+      ..setBackgroundColor(const Color(0xFF071933))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
