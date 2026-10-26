@@ -14375,12 +14375,22 @@ html, body {
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       const found = contas.find(c => c.email && c.email.toLowerCase() === defaultEmail.toLowerCase());
-      const expectedPass = found ? found.senha : 'PHNcnrj2013@';
+      const hasCustomPass = found && found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
 
-      if (pass === expectedPass || pass === 'PHNcnrj2013@' || pass === '1234' || (who === 'marcia' && pass === '123456')) {
+      let isValid = false;
+      if (hasCustomPass) {
+        // Se a conta já possui senha personalizada ou redefinida, EXIGE ESTRITAMENTE a senha nova ativa!
+        // As senhas antigas são completamente rejeitadas.
+        isValid = (pass === found.senha);
+      } else {
+        // Primeiro acesso antes de qualquer alteração de senha:
+        isValid = (pass === 'PHNcnrj2013@' || pass === '1234' || (who === 'marcia' && pass === '123456'));
+      }
+
+      if (isValid) {
         applyMemberSessionAndUnlock(who);
       } else {
-        showToastUndo('Senha incorreta! Digite novamente ou use a biometria.', false);
+        showToastUndo('Senha incorreta! Digite a sua senha atual ou redefina na aba "Esqueceu?".', false);
         window._pendingQuickLoginMember = null;
       }
     }
@@ -14474,7 +14484,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         let found = contas.find(c => (c.email && c.email.toLowerCase() === idInput.toLowerCase()) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
 
         if (found) {
-          if (!pass || found.senha === pass) {
+          const hasCustomPass = found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
+          const passMatch = hasCustomPass ? (pass === found.senha) : (pass === 'PHNcnrj2013@' || pass === '1234');
+          if (passMatch) {
             currentUserSession = found;
             window.currentUserSession = currentUserSession;
             try {
@@ -14537,17 +14549,51 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         return;
       }
 
-      const lowerId = idInput.toLowerCase();
+      if (!pass) {
+        showToastUndo('Por favor, digite a sua senha de acesso.', false);
+        return;
+      }
 
-      // 1. Procura nas contas cadastradas/recuperadas locais primeiro (respeita senha redefinida)
+      const lowerId = idInput.toLowerCase();
+      const cleanId = idInput.replace(/\D/g, '');
+
+      // 1. Procura nas contas cadastradas/recuperadas locais primeiro (respeita rigorosamente a senha ativa)
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      const cleanId = idInput.replace(/\D/g, '');
-      let found = contas.find(c => (c.email && c.email.toLowerCase() === lowerId) || (c.cpf && cleanId && c.cpf.replace(/\D/g, '') === cleanId));
+      let found = contas.find(c => 
+        (c.email && c.email.toLowerCase() === lowerId) || 
+        (cleanId && c.cpf && c.cpf.replace(/\D/g, '') === cleanId) ||
+        (lowerId.includes('rodrigo') && c.email && c.email.toLowerCase().includes('rodrigo')) ||
+        (lowerId.includes('marcia') && c.email && c.email.toLowerCase().includes('marcia'))
+      );
 
-      if (found && found.senha && pass && found.senha !== pass && found.senha !== '__REMOVED_FOR_SECURITY__' && pass !== 'PHNcnrj2013@' && pass !== '1234') {
-        showToastUndo('Senha incorreta! Clique em "Esqueceu?" para redefinir com código via WhatsApp.', false);
-        return;
+      const hasCustomPass = found && found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
+
+      if (hasCustomPass) {
+        // Se a conta já possui senha ativa cadastrada ou redefinida:
+        // A SENHA ANTIGA É INVALIDADA E TERMINANTEMENTE RECUSADA! APENAS A NOVA SENHA É ACEITA!
+        if (pass !== found.senha) {
+          showToastUndo('Senha incorreta! Digite a sua senha atual ou redefina na aba "Esqueceu?".', false);
+          return;
+        }
+      } else {
+        // Primeiro acesso antes de qualquer alteração ou redefinição de senha:
+        const isRodrigo = lowerId === 'rodrigocardosocn@gmail.com' || lowerId.includes('rodrigo');
+        const isMarcia = lowerId.includes('marcia');
+        let passValida = false;
+
+        if (isRodrigo) {
+          passValida = (pass === 'PHNcnrj2013@' || pass === '1234');
+        } else if (isMarcia) {
+          passValida = (pass === '123456' || pass === '1234');
+        } else {
+          passValida = pass.length >= 4;
+        }
+
+        if (!passValida) {
+          showToastUndo('Senha incorreta! Clique na aba "Esqueceu?" para redefinir sua senha.', false);
+          return;
+        }
       }
 
       // 2. RECONHECIMENTO PRIORITÁRIO: Rodrigo Cardoso
@@ -14559,9 +14605,14 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
           whatsapp: '(11) 98765-4321',
           plano: 'Super Administrador Vitalício'
         };
+        currentUserSession.senha = pass;
         window.currentUserSession = currentUserSession;
         try {
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+          if (!found) {
+            contas.push(currentUserSession);
+            localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+          }
         } catch(e) {}
         window.forceUnlockAuthOverlay();
         showToastUndo('Bem-vindo de volta, Rodrigo Cardoso! 🐷', false);
@@ -14573,7 +14624,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
         if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
           try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass || '__REMOVED_FOR_SECURITY__' }));
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass }));
           } catch(err) {}
         }
         return;
@@ -14581,13 +14632,32 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
       // 3. RECONHECIMENTO DE MÁRCIA
       if (lowerId.includes('marcia')) {
-        quickLogin('marcia');
+        currentUserSession = found || {
+          nome: 'Márcia Oliveira',
+          email: 'marcia@ctrlpig.app',
+          cpf: '987.654.321-00',
+          whatsapp: '(11) 98765-4321',
+          plano: 'Membro da Família'
+        };
+        currentUserSession.senha = pass;
+        window.currentUserSession = currentUserSession;
+        try {
+          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
+          if (!found) {
+            contas.push(currentUserSession);
+            localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+          }
+        } catch(e) {}
+        window.forceUnlockAuthOverlay();
+        showToastUndo('Bem-vinda de volta, Márcia! 🌸', false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
 
       // 4. Se achou conta local cadastrada
       if (found) {
         currentUserSession = found;
+        currentUserSession.senha = pass;
         window.currentUserSession = currentUserSession;
         try {
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
@@ -14598,16 +14668,19 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         return;
       }
 
-      // 5. Acesso direto resiliente (nunca bloqueia o usuário)
+      // 5. Acesso direto resiliente (novo usuário)
       currentUserSession = {
         nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
         email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
         cpf: idInput,
         whatsapp: '',
+        senha: pass,
         plano: 'Usuário Ativo'
       };
       window.currentUserSession = currentUserSession;
+      contas.push(currentUserSession);
       try {
+        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
       } catch(e) {}
       window.forceUnlockAuthOverlay();
@@ -14777,6 +14850,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
       if (found) {
         found.senha = newPass;
+        if (lowerIdent.includes('rodrigo')) {
+          found.email = 'rodrigocardosocn@gmail.com';
+        }
       } else {
         found = {
           nome: lowerIdent.includes('rodrigo') ? 'Rodrigo Cardoso' : (ident.includes('@') ? ident.split('@')[0] : ident),
@@ -14852,6 +14928,124 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
     window.sendWhatsAppRecoveryCode = sendWhatsAppRecoveryCode;
     window.triggerBiometricLogin = triggerBiometricLogin;
     window.forceUnlockAuthOverlay = forceUnlockAuthOverlay;
+
+    // =========================================================================
+    // GESTÃO DE PERFIL E ALTERAÇÃO DE SENHA DO USUÁRIO
+    // =========================================================================
+    function openUserProfileModal() {
+      const modal = document.getElementById('modalUserProfile');
+      if (!modal) return;
+      const user = window.currentUserSession || {};
+      const nameInp = document.getElementById('inputProfileNome');
+      const wppInp = document.getElementById('inputProfileWhatsapp');
+      const idadeInp = document.getElementById('inputProfileIdade');
+      const headerName = document.getElementById('profileModalUserName');
+      const headerPlan = document.getElementById('profileModalUserPlan');
+      const passInp = document.getElementById('inputProfileNovaSenha');
+      const passConfInp = document.getElementById('inputProfileConfirmaSenha');
+      const avatarInp = document.getElementById('inputProfileAvatarChosen');
+      
+      if (nameInp) nameInp.value = user.nome || '';
+      if (wppInp) wppInp.value = user.whatsapp || '';
+      if (idadeInp) idadeInp.value = user.idade || '';
+      if (avatarInp) avatarInp.value = user.avatar || '👨‍💼';
+      if (headerName) headerName.textContent = user.nome || 'Meu Perfil';
+      if (headerPlan) headerPlan.textContent = user.plano || 'Plano Ativo';
+      if (passInp) passInp.value = '';
+      if (passConfInp) passConfInp.value = '';
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeUserProfileModal() {
+      const modal = document.getElementById('modalUserProfile');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function selectProfileAvatar(avatar) {
+      const avatarInp = document.getElementById('inputProfileAvatarChosen');
+      if (avatarInp) avatarInp.value = avatar;
+      showToastUndo(`Avatar ${avatar} selecionado!`, false);
+    }
+
+    function handleSaveUserProfile(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      
+      const nome = (document.getElementById('inputProfileNome')?.value || '').trim();
+      const whatsapp = (document.getElementById('inputProfileWhatsapp')?.value || '').trim();
+      const idade = (document.getElementById('inputProfileIdade')?.value || '').trim();
+      const avatar = (document.getElementById('inputProfileAvatarChosen')?.value || '👨‍💼').trim();
+      const novaSenha = (document.getElementById('inputProfileNovaSenha')?.value || '').trim();
+      const confirmaSenha = (document.getElementById('inputProfileConfirmaSenha')?.value || '').trim();
+      
+      if (novaSenha || confirmaSenha) {
+        if (novaSenha !== confirmaSenha) {
+          showToastUndo('A confirmação da senha não confere! Digite senhas idênticas.', false);
+          return;
+        }
+        if (novaSenha.length < 4) {
+          showToastUndo('A nova senha deve ter no mínimo 4 caracteres.', false);
+          return;
+        }
+      }
+
+      let user = window.currentUserSession || {};
+      if (nome) user.nome = nome;
+      if (whatsapp) user.whatsapp = whatsapp;
+      if (idade) user.idade = idade;
+      if (avatar) user.avatar = avatar;
+      
+      if (novaSenha) {
+        user.senha = novaSenha;
+      }
+      
+      window.currentUserSession = user;
+      
+      // Atualiza ou insere na lista de contas cadastradas locais
+      let contas = [];
+      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
+      const lowerEmail = (user.email || '').toLowerCase();
+      const cleanCpf = (user.cpf || '').replace(/\D/g, '');
+      
+      let foundIndex = contas.findIndex(c => 
+        (c.email && c.email.toLowerCase() === lowerEmail) ||
+        (cleanCpf && c.cpf && c.cpf.replace(/\D/g, '') === cleanCpf) ||
+        (lowerEmail.includes('rodrigo') && c.email && c.email.toLowerCase().includes('rodrigo'))
+      );
+      
+      if (foundIndex >= 0) {
+        contas[foundIndex] = { ...contas[foundIndex], ...user };
+        if (novaSenha) contas[foundIndex].senha = novaSenha;
+      } else {
+        contas.push(user);
+      }
+      
+      try {
+        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+        localStorage.setItem('financas_auth_user', JSON.stringify(user));
+        localStorage.setItem('financas_usuario_ativo', JSON.stringify(user));
+      } catch(err) {}
+
+      // Sincroniza via bridge com nativo se online
+      if (novaSenha && window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            action: 'auth_reset_password',
+            email: user.email,
+            new_password: novaSenha
+          }));
+        } catch(err) {}
+      }
+
+      closeUserProfileModal();
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      showToastUndo(novaSenha ? 'Perfil e nova senha salvos com sucesso! 🐷' : 'Perfil atualizado com sucesso! 🐷', false);
+    }
+
+    window.openUserProfileModal = openUserProfileModal;
+    window.closeUserProfileModal = closeUserProfileModal;
+    window.selectProfileAvatar = selectProfileAvatar;
+    window.handleSaveUserProfile = handleSaveUserProfile;
 
     function maskCpf(input) {
       let v = input.value.replace(/\D/g, '');
@@ -35640,6 +35834,9 @@ window.openMemberModal = function() {
 
         <!-- Atalhos Utilitários & Acessibilidade -->
         <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2 text-left">
+          <button type="button" onclick="document.getElementById('modalMemberSwitcher').classList.add('hidden'); window.openUserProfileModal();" class="w-full py-2.5 px-3 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-300 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-extrabold text-xs rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs mb-2">
+            <span>👤</span> <span>Editar Meu Perfil & Alterar Senha</span>
+          </button>
           <div class="flex items-center justify-between text-xs py-1">
             <span class="font-bold text-slate-700 dark:text-slate-300">Tamanho da Fonte:</span>
             <div class="inline-flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-1 gap-2 font-black">
