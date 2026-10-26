@@ -42,9 +42,9 @@ jobs:
       - name: Organizar e Renomear APKs
         run: |
           mkdir -p apks_dist
-          TAG_VAL="${GITHUB_REF_NAME:-v2.1.71}"
+          TAG_VAL="${GITHUB_REF_NAME:-v2.1.72}"
           if [ "$TAG_VAL" = "main" ] || [ "$TAG_VAL" = "master" ]; then
-            TAG_VAL="v2.1.71"
+            TAG_VAL="v2.1.72"
           fi
           echo "Utilizando prefixo de versao: $TAG_VAL"
           cp build/app/outputs/flutter-apk/app-release.apk "apks_dist/ControlPig_${TAG_VAL}_Universal.apk"

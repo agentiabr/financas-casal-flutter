@@ -56,8 +56,15 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // 2. Cadastro de Novo Usuário (Rodrigo ou Márcia)
-  Future<String?> signUp({required String email, required String password, required String nome}) async {
+  // 2. Cadastro de Novo Usuário (Individual, Casal ou Família com Suporte a Código Vitalício)
+  Future<String?> signUp({
+    required String email,
+    required String password,
+    required String nome,
+    String accountType = 'casal',
+    String? activationCode,
+    bool isLifetime = false,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
@@ -66,9 +73,33 @@ class AuthService extends ChangeNotifier {
         final res = await SupabaseConfig.client.auth.signUp(
           email: email.trim(),
           password: password,
-          data: {'nome': nome},
+          data: {
+            'nome': nome,
+            'account_type': accountType,
+            'activation_code': activationCode ?? '',
+            'is_lifetime': isLifetime,
+          },
         );
         _currentUser = res.user;
+
+        // Registra o workspace/household isolado se possível
+        if (res.user != null) {
+          try {
+            final householdTitle = accountType == 'individual'
+                ? 'Espaço de $nome'
+                : (accountType == 'casal' ? 'Casal $nome' : 'Família $nome');
+            final maxMembros = accountType == 'individual' ? 1 : (accountType == 'casal' ? 2 : 6);
+
+            await SupabaseConfig.client.from('households').insert({
+              'nome_familia': householdTitle,
+              'plano': accountType,
+              'max_membros': maxMembros,
+            });
+          } catch (e) {
+            debugPrint('Aviso ao registrar household no Supabase: $e');
+          }
+        }
+
         _isLoading = false;
         notifyListeners();
         return null; // Sucesso

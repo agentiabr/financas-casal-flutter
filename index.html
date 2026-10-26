@@ -22717,6 +22717,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </button>
       </div>
 
+      <!-- Banner de Licença / Código Vitalício VIP -->
+      <div class="mt-3.5 p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 flex items-center justify-between">
+        <div>
+          <h4 class="font-extrabold text-amber-900 dark:text-amber-200 text-xs flex items-center gap-1.5">
+            <span>✨</span><span>Acesso Vitalício VIP</span>
+          </h4>
+          <p class="text-[10px] text-amber-700 dark:text-amber-300 font-medium">Tem um código ou convite?</p>
+        </div>
+        <button type="button" onclick="if (window.FlutterBridge) { FlutterBridge.postMessage(JSON.stringify({ action: 'open_license_dialog' })); } else { alert('Disponível no app móvel'); }" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-black text-xs rounded-xl shadow-xs transition-all cursor-pointer">
+          Ativar Código
+        </button>
+      </div>
+
       <form onsubmit="handleSaveUserProfile(event)" class="mt-4 space-y-3.5">
         
         <!-- Seleção de Avatar por Perfil / Idade / Gênero -->

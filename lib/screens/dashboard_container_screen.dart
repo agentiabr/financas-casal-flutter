@@ -14,9 +14,11 @@ import '../services/speech_service.dart';
 import '../services/ocr_service.dart';
 import '../services/biometric_service.dart';
 import '../services/auth_service.dart';
+import '../services/license_service.dart';
 import '../services/nfce/nfce.dart';
 import '../models/transaction_model.dart';
 import '../providers/finance_provider.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'onboarding_survey_screen.dart';
 
 class DashboardContainerScreen extends StatefulWidget {
@@ -790,12 +792,140 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             }
           """);
         }
+      } else if (action == 'open_license_dialog') {
+        _showLifetimeActivationDialog();
       } else if (action == 'exit_app') {
         SystemNavigator.pop();
       }
     } catch (e) {
       debugPrint('Erro ao processar mensagem do JS: $e');
     }
+  }
+
+  void _showLifetimeActivationDialog() {
+    final codeCtrl = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(LucideIcons.sparkles, color: Color(0xFF10B981), size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Ativar Código Vitalício',
+                            style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Insira seu código promocional ou convite VIP',
+                            style: TextStyle(color: Colors.white60, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white60),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                TextField(
+                  controller: codeCtrl,
+                  textCapitalization: TextCapitalization.characters,
+                  autofocus: true,
+                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  decoration: InputDecoration(
+                    labelText: 'Código Vitalício',
+                    labelStyle: const TextStyle(color: Colors.white70),
+                    hintText: 'Ex: CASAL-VIP',
+                    hintStyle: const TextStyle(color: Colors.white38),
+                    filled: true,
+                    fillColor: const Color(0xFF1E293B),
+                    prefixIcon: const Icon(LucideIcons.keyRound, color: Color(0xFF38BDF8), size: 18),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFF334155))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFF10B981), width: 1.5)),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                ElevatedButton(
+                  onPressed: () async {
+                    final code = codeCtrl.text.trim();
+                    if (code.isEmpty) return;
+                    final res = LicenseService.validateCode(code, AccountPlanType.casal);
+                    if (res.isValid) {
+                      await LicenseService.saveLicense(
+                        plan: res.planType,
+                        isLifetime: res.isLifetime,
+                        code: code,
+                      );
+                      if (mounted) {
+                        Navigator.of(ctx).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(res.message),
+                            backgroundColor: const Color(0xFF10B981),
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                        _controller.runJavaScript("""
+                          if (typeof showToastUndo === 'function') {
+                            showToastUndo('✨ Acesso Vitalício Ativado!', false);
+                          }
+                        """);
+                      }
+                    } else {
+                      setModalState(() {});
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(res.message),
+                          backgroundColor: const Color(0xFFEF4444),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  child: const Text('Validar e Ativar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _startNativeVoiceRecording() async {
