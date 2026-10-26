@@ -36,7 +36,7 @@ jobs:
 
       - name: Compilar APK Universal e Otimizados
         run: |
-          flutter build apk --release --android-skip-build-dependency-validation
+          flutter build apk --release --verbose --android-skip-build-dependency-validation
           flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
 
       - name: Organizar e Renomear APKs

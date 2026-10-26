@@ -417,7 +417,6 @@ object NotificationHelper {
                 .setContentIntent(openPending)
                 .setDeleteIntent(dismissPending)
                 .setColor(0xFFFFFFFF.toInt())
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setFullScreenIntent(fullScreenPending, true)
 
             // Ações Nativas 100% Visíveis na Tela de Bloqueio em qualquer Android
@@ -444,6 +443,7 @@ object NotificationHelper {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setVisibility(Notification.VISIBILITY_PUBLIC)
                 builder.setCategory(Notification.CATEGORY_ALARM)
             }
 
