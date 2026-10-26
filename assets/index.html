@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.89+166";
+    window.APP_BUILD_VERSION = "2.1.90+167";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -20528,6 +20528,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (modal) modal.classList.add('hidden');
     }
 
+    function openAddPetMedModal(defaultPetId) {
+      const modal = document.getElementById('modalAddEditPetCare');
+      if (!modal) return;
+      openAddPetCareModal();
+      const catSelect = document.getElementById('inputPetCareCategoria');
+      if (catSelect) {
+        catSelect.value = 'Remédio';
+        handlePetCareCategoryChange('Remédio');
+      }
+      const modalTitle = document.getElementById('modalPetCareTitle');
+      if (modalTitle) modalTitle.innerHTML = '<span>💊</span> Cadastrar Remédio do Pet';
+    }
+    window.openAddPetMedModal = openAddPetMedModal;
+
     function handlePetCareCategoryChange(cat) {
       const shortcuts = document.getElementById('petCareShortcuts');
       if (!shortcuts) return;
@@ -23939,6 +23953,31 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <span class="text-base">💰</span>
           <span class="text-[10px]">Lançar Gasto</span>
         </button>
+      </div>
+    </div>
+
+        <!-- ROTINA DE REMÉDIOS E HORÁRIOS DO PET (SIMILAR A REMÉDIOS HUMANOS) -->
+    <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg shadow-2xs">
+            💊
+          </div>
+          <div>
+            <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5 leading-tight">
+              <span>Remédios &amp; Horários do Pet</span>
+              <span id="petMedsCountBadge" class="text-[9px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Rotina Ativa</span>
+            </h3>
+            <p class="text-[11px] text-slate-500">Medicamentos contínuos, horários das doses e alarmes</p>
+          </div>
+        </div>
+        <button type="button" onclick="openAddPetMedModal()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
+          <span>+ Remédio</span>
+        </button>
+      </div>
+
+      <div id="petCareListContainer" class="space-y-2 mt-2">
+        <!-- Injetado dinamicamente via renderPetCareList() -->
       </div>
     </div>
 
@@ -38946,6 +38985,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     if (typeof renderPetCarouselTabs === 'function') renderPetCarouselTabs();
     if (typeof renderPetProfileUI === 'function') renderPetProfileUI();
     if (typeof renderPetExpensesSummary === 'function') renderPetExpensesSummary();
+    if (typeof renderPetVaccinesList === 'function') renderPetVaccinesList();
+    if (typeof renderPetCareList === 'function') renderPetCareList();
+    if (typeof runPet10PriceComparison === 'function') runPet10PriceComparison();
+    if (window.lucide) lucide.createIcons();
   };
   window.closePetAreaModal = function() { hideElement('modalPetArea'); };
 
