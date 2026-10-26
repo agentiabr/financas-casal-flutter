@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.84+161";
+    window.APP_BUILD_VERSION = "2.1.85+162";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -4558,183 +4558,6 @@ html, body {
             </div>
           </div>
 
-          <!-- ============================================================== -->
-          <!-- TABELA E CARDS DE TRANSAÇÕES / LANÇAMENTOS DO CICLO (V2.1.82) -->
-          <!-- ============================================================== -->
-          <section class="w-full mt-4" id="sectionTable">
-
-      <div class="app-card rounded-none p-4 sm:p-5">
-        
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div class="flex items-center gap-2">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h2 class="text-base font-bold text-slate-800 dark:text-white">Contas e Gastos Deste Mês</h2>
-                <span id="txCountBadge" class="text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">0 itens</span>
-                <!-- Olhinho exclusivo da seção Contas e Gastos Deste Mês -->
-                <button type="button" onclick="toggleTablePrivacy(event)" id="btnSectionTablePrivacy" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all cursor-pointer flex items-center gap-1 text-[11px] font-bold" title="Ocultar ou mostrar os valores desta tabela">
-                  <i data-lucide="eye" id="iconSectionTablePrivacy" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 flex-wrap">
-            <button onclick="openActionHubModal()" class="btn-primary-action px-3.5 py-2 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer" title="Lançar valor por Voz, Foto ou Digitação">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>+ Lançar Valor</span>
-            </button>
-            <button onclick="openBillsReminderModal()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-amber-300 dark:border-amber-800 cursor-pointer" title="Cadastrar vencimento de contas a pagar">
-              <i data-lucide="calendar-clock" class="w-4 h-4 text-amber-600"></i>
-              <span>Cadastrar Vencimentos</span>
-            </button>
-            <button onclick="exportToCSV()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all border border-slate-300 dark:border-slate-700 cursor-pointer" title="Exportar dados para planilha CSV">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span class="hidden sm:inline">Exportar CSV</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- CARD ANEXADO ABAIXO DO BOTÃO LANÇAR VALOR: SALDO REAL NO BANCO -->
-        <div class="mt-3.5 mb-2 p-3.5 sm:p-4 bg-slate-50/90 dark:bg-slate-850 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/70 dark:border-blue-900/60 flex items-center justify-center flex-shrink-0 font-bold shadow-xs">
-              <i data-lucide="landmark" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Saldo Real no Banco</h3>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Opcional</span>
-              </div>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5" id="bankCheckDiffDisplay">
-                Informe o saldo atual do seu aplicativo de banco para conciliação com o app.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2.5 self-stretch sm:self-auto flex-wrap sm:flex-nowrap">
-            <div class="flex items-center gap-2 bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 flex-1 sm:flex-initial">
-              <span class="text-[11px] font-bold text-slate-400">Saldo:</span>
-              <span id="bankCheckValueDisplay" class="text-sm sm:text-base font-black text-slate-900 dark:text-white tabular-nums">R$ 0,00</span>
-              <span id="bankCheckTimestamp" class="text-[10px] text-slate-400 hidden lg:inline">• Não conferido</span>
-            </div>
-
-            <div class="relative w-36 sm:w-40 flex-shrink-0">
-              <span class="absolute left-2.5 top-2 text-[11px] font-bold text-slate-400 pointer-events-none">R$</span>
-              <input type="text" id="inlineInputBankBalance" onchange="handleSaveInlineBankBalance(this.value)" onkeydown="if(event.key==='Enter')handleSaveInlineBankBalance(this.value)" placeholder="Digitar saldo..." title="Digite o saldo real do banco e pressione Enter ou clique fora para salvar" class="w-full pl-8 pr-2.5 py-1.5 text-xs font-black rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 tabular-nums shadow-2xs">
-            </div>
-
-            <button type="button" onclick="openBankCheckModal()" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer flex-shrink-0" title="Verificar conciliação completa com extrato">
-              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-              <span class="hidden sm:inline">Conciliar</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="sectionTableContent" class="collapsible-content">
-          <!-- FILTROS POR ÍCONES MINIMALISTAS (ESTILO IPHONE GLASS) -->
-          <div class="pt-3 pb-3 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            
-            <!-- Campo de Busca Compacto -->
-            <div class="relative flex-1 max-w-xs">
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-              <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Buscar lançamentos..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-blue-500 focus:outline-none">
-            </div>
-
-            <!-- Barra de Filtros Compacta e Clean com Setinhas (Esquerda e Direita) -->
-            <div class="relative flex items-center w-full sm:w-auto">
-              <!-- Setinha Esquerda de Navegação Horizontal -->
-              <button onclick="scrollFilterBarLeft()" id="btnScrollFilterLeft" type="button" class="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver filtros anteriores">
-                <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
-              </button>
-
-              <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar no-scrollbar scroll-smooth w-full px-7" id="iconFilterBar">
-                <button onclick="setFilterByIcon('tipo', '')" id="filterIcon_Todas" title="Todos os Lançamentos" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-blue-500 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
-                  <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-                  <span>Todos</span>
-                </button>
-
-                <button onclick="setFilterByIcon('tipo', 'Despesa Fixa')" id="filterIcon_Fixas" title="Apenas Despesas Fixas" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-blue-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
-                  <i data-lucide="home" class="w-3.5 h-3.5 text-blue-500"></i>
-                  <span>Fixas</span>
-                </button>
-
-                <button onclick="setFilterByIcon('tipo', 'Despesa Variável')" id="filterIcon_Variaveis" title="Apenas Despesas Variáveis" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
-                  <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-amber-500"></i>
-                  <span>Variáveis</span>
-                </button>
-
-                <button onclick="setFilterByIcon('tipo', 'Receita')" id="filterIcon_Receitas" title="Apenas Receitas" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
-                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-500"></i>
-                  <span>Receitas</span>
-                </button>
-
-                <button onclick="setFilterByIcon('pagamento', 'Cartão de Crédito')" id="filterIcon_Cartao" title="Cartão de Crédito" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap">
-                  <i data-lucide="credit-card" class="w-3.5 h-3.5 text-purple-500"></i>
-                  <span>Cartões</span>
-                </button>
-
-                <button onclick="setFilterByIcon('pagamento', 'PIX')" id="filterIcon_Pix" title="PIX" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer">
-                  <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-500"></i>
-                  <span>PIX</span>
-                </button>
-
-                <button onclick="setFilterByIcon('pagamento', 'Boleto')" id="filterIcon_Boleto" title="Boleto" class="filter-icon-btn px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-amber-500 font-bold text-[11px] flex items-center gap-1 shadow-2xs transition-all whitespace-nowrap cursor-pointer">
-                  <i data-lucide="barcode" class="w-3.5 h-3.5 text-amber-500"></i>
-                  <span>Boleto</span>
-                </button>
-
-                <!-- Inputs ocultos para compatibilidade com o motor de filtros -->
-                <input type="hidden" id="filterTipo" value="">
-                <input type="hidden" id="filterPagamento" value="">
-                <input type="hidden" id="filterComprovante" value="">
-              </div>
-
-              <!-- Setinha Direita de Navegação Horizontal -->
-              <button onclick="scrollFilterBarRight()" id="btnScrollFilterRight" type="button" class="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/95 dark:bg-slate-800/95 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 shadow-xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition-all z-10" title="Ver mais filtros">
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-
-          </div>
-
-          <!-- Alternador de Visão: Tabela / Cards -->
-          <div class="flex items-center justify-between mt-3 mb-2">
-            <span class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider">Lançamentos do Ciclo</span>
-            <div class="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
-              <button type="button" id="btnViewModeTable" onclick="switchTableViewMode('table')" class="px-3 py-1 rounded-lg text-xs font-black bg-white text-blue-600 shadow-xs cursor-pointer transition-all">
-                📊 Tabela
-              </button>
-              <button type="button" id="btnViewModeCards" onclick="switchTableViewMode('cards')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 cursor-pointer transition-all">
-                📱 Cards
-              </button>
-            </div>
-          </div>
-
-          <!-- Tabela com rolagem horizontal (100% visível em celulares e desktop) -->
-          <div class="overflow-x-auto custom-scrollbar border border-slate-200 dark:border-slate-700 rounded-xl block bg-white dark:bg-slate-900 shadow-2xs" id="desktopTableContainer">
-            <table class="w-full text-left text-xs border-collapse" id="mainTransactionsTable">
-              <thead>
-                <tr class="table-header-row font-bold text-xs" id="tableHeaderRow">
-                  <!-- Renderizado via JS -->
-                </tr>
-              </thead>
-              <tbody id="tableBodyTransactions" class="divide-y divide-slate-200 dark:divide-slate-800">
-                <!-- Renderizado via JS -->
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Modo Cards Responsivo -->
-          <div id="mobileCardsContainer" class="hidden space-y-2.5 mt-2">
-            <!-- Renderizado via JS -->
-          </div>
-
-        </div>
-
-      </div>
-    
-          </section>
 
 
         </div>
@@ -8498,17 +8321,17 @@ html, body {
     }
 
     function filterTableByTipo(tipo) {
-      const sel = document.getElementById('filterTipo');
-      if (sel) sel.value = tipo;
-      applyFilters();
-      document.getElementById('sectionTable').scrollIntoView({ behavior: 'smooth' });
+      if (typeof switchScreen === 'function') switchScreen('transacoes');
+      if (typeof setApprovedTxFilter === 'function') {
+        if (tipo === 'Receita') setApprovedTxFilter('entradas');
+        else if (tipo === 'Despesa') setApprovedTxFilter('saidas');
+        else setApprovedTxFilter('todas');
+      }
     }
 
     function filterTableByCartao(cartaoNome) {
-      const sel = document.getElementById('filterPagamento');
-      if (sel) sel.value = 'Cartão de Crédito';
-      applyFilters();
-      document.getElementById('sectionTable').scrollIntoView({ behavior: 'smooth' });
+      if (typeof switchScreen === 'function') switchScreen('transacoes');
+      if (typeof setApprovedTxFilter === 'function') setApprovedTxFilter('parceladas');
     }
 
     // ==========================================
@@ -21943,10 +21766,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <span class="text-[8px] font-bold mt-0.5">Início</span>
       </button>
 
-      <!-- 2. Tabela (Ao lado direito do Início) -->
-      <button onclick="document.getElementById('sectionTable').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-emerald-600">
+      <!-- 2. Transações (Ao lado direito do Início) -->
+      <button onclick="if(typeof switchScreen === 'function') switchScreen('transacoes');" class="flex flex-col items-center justify-center py-0.5 text-slate-600 dark:text-slate-400 hover:text-emerald-600">
         <i data-lucide="receipt" class="w-4 h-4 text-emerald-500"></i>
-        <span class="text-[8px] font-bold mt-0.5">Tabela</span>
+        <span class="text-[8px] font-bold mt-0.5">Transações</span>
       </button>
 
       <!-- 3. Carrinho de Compras / Mercado -->
