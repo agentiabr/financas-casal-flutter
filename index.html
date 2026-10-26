@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.36";
+    window.APP_BUILD_VERSION = "2.1.77";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -30,63 +30,18 @@
 
 
     (function() {
+      // Garante desativação imediata de qualquer bloqueio obsoleto de tela
       try {
-        var isAuth = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
-        var isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
-        if (!isAuth || isLoggedOut) {
-          document.documentElement.classList.add('require-auth');
-        }
-      } catch(e) {
-        document.documentElement.classList.add('require-auth');
-      }
-
-      // Failsafe imediato global para remoção da Splash Screen
-      window.dismissAppIntroSplash = function() {
-        var s = document.getElementById('appIntroSplashScreen');
-        if (s) {
-          s.style.transition = 'opacity 0.4s ease-out';
-          s.style.opacity = '0';
-          s.style.pointerEvents = 'none';
-          setTimeout(function() {
-            if (s && s.parentNode) {
-              s.parentNode.removeChild(s);
-            }
-          }, 450);
-        }
-      };
-
-      // Failsafe absoluto em 1.5s
-      setTimeout(function() {
-        if (typeof window.dismissAppIntroSplash === 'function') {
-          window.dismissAppIntroSplash();
-        }
-      }, 1500);
+        document.documentElement.classList.remove('require-auth');
+        localStorage.removeItem('financas_session_locked');
+        localStorage.removeItem('financas_auth_logged_out');
+      } catch(e) {}
     })();
   </script>
   <style>
-    html.require-auth footer,
-    html.require-auth #main-content,
-    html.require-auth #app-navbar-container,
-    html.require-auth nav,
-    html.require-auth #btnFloatingFamilyChat {
+    /* Regra Mestra Global: .hidden SEMPRE oculta elementos com máxima prioridade */
+    .hidden, [hidden] {
       display: none !important;
-    }
-    html.require-auth, html.require-auth body {
-      overflow: hidden !important;
-      height: 100% !important;
-      position: fixed !important;
-      width: 100% !important;
-      overscroll-behavior: none !important;
-    }
-    html.require-auth #authOverlayContainer {
-      display: flex !important;
-      position: fixed !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      overscroll-behavior: contain !important;
     }
 
     /* MASCOTE DESTRUÍDO / PIFADO (QUANDO SALDO ESTÁ NO VERMELHO) */
@@ -6769,7 +6724,7 @@ html, body {
   </div>
 
   <!-- MODAL DE ALERTA: NOTA FISCAL JÁ LIDA / DUPLICADA (BLOQUEIO TOTAL) -->
-  <div id="modalDuplicateInvoiceAlert" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4">
+  <div id="modalDuplicateInvoiceAlert" style="display: none;" class="hidden fixed inset-0 z-[999999] flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="cancelDuplicateInvoiceAction()"></div>
     <div class="relative z-10 max-w-sm w-full bg-white dark:bg-slate-900 border-2 border-rose-500 dark:border-rose-500 rounded-3xl shadow-2xl p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
       <div class="flex items-center gap-3">
@@ -14640,12 +14595,16 @@ window.openDuplicateInvoiceAlertModal = function(data) {
   } else if (keyRow) {
     keyRow.classList.add('hidden');
   }
+  modal.style.display = 'flex';
   modal.classList.remove('hidden');
 };
 
 window.cancelDuplicateInvoiceAction = function() {
   const modal = document.getElementById('modalDuplicateInvoiceAlert');
-  if (modal) modal.classList.add('hidden');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+  }
   window.pendingDuplicateReceiptCallback = null;
 
   // Garante que absolutamente nenhum item de nota duplicada seja mantido ou exibido
@@ -16537,9 +16496,9 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   window.logoutUser = function() {
     currentUserSession = null;
     localStorage.removeItem('financas_auth_user');
-    localStorage.setItem('financas_auth_logged_out', 'true');
+    localStorage.removeItem('financas_auth_logged_out');
     sessionStorage.removeItem('pigctrl_session_authenticated');
-    document.documentElement.classList.add('require-auth');
+    document.documentElement.classList.remove('require-auth');
     const authEl = document.getElementById('authOverlayContainer');
     if (authEl) {
       if (authEl.parentElement !== document.body) document.body.appendChild(authEl);

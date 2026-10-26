@@ -146,8 +146,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       // Tolerância de 5 minutos: só bloqueia por inatividade se o usuário ficou fora por 5 min ou mais
       if (difference.inMinutes >= 5 && !_isPickingExternalMedia) {
         _controller.runJavaScript("""
-          localStorage.setItem('financas_session_locked', 'true');
-          sessionStorage.removeItem('pigctrl_session_authenticated');
           if (typeof window.lockAppSessionNow === 'function') {
             window.lockAppSessionNow();
           }
@@ -174,9 +172,18 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.35+112';
+  static const String _kCurrentAppVersion = '2.1.77+154';
 
   void _initWebViewController() {
+    // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted && _isLoading) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xFFEEF3FB))
@@ -187,8 +194,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             _checkPendingNativeMedTaken();
             _checkPendingShoppingAcceptance();
             // Abertura imediata e suave do painel financeiro
-            Future.delayed(const Duration(milliseconds: 600), () {
-              if (mounted) {
+            Future.delayed(const Duration(milliseconds: 400), () {
+              if (mounted && _isLoading) {
                 setState(() {
                   _isLoading = false;
                 });
@@ -206,6 +213,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('Erro no WebView: ${error.description}');
+            if (mounted && _isLoading) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
             if (error.isForMainFrame ?? false) {
               _controller.loadFlutterAsset('assets/index.html');
             }
