@@ -5119,9 +5119,9 @@ html, body {
           <span>Lista</span>
         </button>
 
-        <!-- 3. Botão Central (+) Flutuante em Círculo (Nova Transação) -->
+        <!-- 3. Botão Central (+) Flutuante em Círculo (Hub de Ações Rápidas) -->
         <div class="flex items-center justify-center -mt-4 px-1 select-none">
-          <button type="button" onclick="if(typeof openNewTxModal === 'function') openNewTxModal(); else if(typeof openAddTransactionModal === 'function') openAddTransactionModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Nova Transação">
+          <button type="button" onclick="openActionHubModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Novo Lançamento ou Ação Rápida">
             <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
           </button>
         </div>
@@ -5473,18 +5473,12 @@ html, body {
 
     </div>
 
-    <!-- 3. RODAPÉ FIXO: TIRAR FOTO E ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
-    <div class="flex-shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 px-3.5 sm:px-5 py-3 shadow-[0_-8px_25px_rgba(0,0,0,0.12)] z-30">
-      <div class="flex items-center gap-2.5 max-w-lg mx-auto">
-        <button type="button" onclick="triggerScanQrWithNativeCamera()" class="flex-1 py-3 px-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer" title="Escanear QR-Code NFC-e da Nota Fiscal">
-          <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-          <span>QR-Code NF</span>
-        </button>
-        <button type="button" onclick="triggerInvoiceCameraCapture()" class="flex-1 py-3 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer" title="Tirar foto da Nota Fiscal impressa para leitura automática">
-          <i data-lucide="camera" class="w-4 h-4 text-white"></i>
-          <span>Tirar Foto da NF</span>
-        </button>
-      </div>
+    <!-- 3. BOTÃO FLUTUANTE REDONDO FIXO: ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
+    <div class="absolute bottom-5 right-5 z-40">
+      <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white flex flex-col items-center justify-center shadow-2xl border-2 border-emerald-400 cursor-pointer transition-all hover:scale-105" title="Escanear QR-Code NFC-e">
+        <i data-lucide="qr-code" class="w-6 h-6 text-emerald-400"></i>
+        <span class="text-[8px] font-black tracking-tighter uppercase text-emerald-300 -mt-0.5">QR-NF</span>
+      </button>
     </div>
   </div>
 
@@ -5946,16 +5940,12 @@ html, body {
           </button>
         </div>
 
-        <!-- RODAPÉ FIXO: TIRAR FOTO E ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
+        <!-- RODAPÉ FIXO: ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
         <div class="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pt-3 pb-1 mt-4 shadow-md z-20">
-          <div class="flex items-center gap-2.5 max-w-lg mx-auto">
-            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="flex-1 py-3 px-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer" title="Escanear QR-Code NFC-e da Nota Fiscal">
-              <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-              <span>QR-Code NF</span>
-            </button>
-            <button type="button" onclick="triggerInvoiceCameraCapture()" class="flex-1 py-3 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer" title="Tirar foto da Nota Fiscal impressa para leitura automática">
-              <i data-lucide="camera" class="w-4 h-4 text-white"></i>
-              <span>Tirar Foto da NF</span>
+          <div class="flex items-center justify-center max-w-lg mx-auto">
+            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2.5 shadow-md transition-all cursor-pointer" title="Escanear QR-Code NFC-e da Nota Fiscal">
+              <i data-lucide="qr-code" class="w-5 h-5 text-emerald-400"></i>
+              <span>Escanear QR-Code da Nota Fiscal</span>
             </button>
           </div>
         </div>
@@ -6026,26 +6016,7 @@ html, body {
         </button>
       </div>
 
-      <!-- Atalho: Preenchimento Automático por Foto (Google ML Kit Local) -->
-        <div class="p-2.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-slate-800 dark:to-slate-850 border border-emerald-200 dark:border-slate-700 mt-3 mb-1 shadow-2xs">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span>🧾</span><span>Preencher por Foto da Nota (ML Kit)</span>
-            </span>
-            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">100% Local</span>
-          </div>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mb-2">Tire a foto ou selecione da galeria para preencher loja, valor, data e categoria sem digitar.</p>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="triggerInvoiceCameraCapture()" class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer">
-              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-              <span>📸 Tirar Foto</span>
-            </button>
-            <button type="button" onclick="triggerInvoiceGalleryCapture()" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer">
-              <i data-lucide="image" class="w-3.5 h-3.5"></i>
-              <span>🖼️ Da Galeria</span>
-            </button>
-          </div>
-        </div>
+
 
         <form onsubmit="handleSaveNewTx(event)" class="space-y-3 mt-3 text-xs">
         <div>
@@ -7139,6 +7110,7 @@ html, body {
       updatePrivacyUI();
       updateTablePrivacyUI();
       updateBankCheckUI();
+      renderInstallments();
       renderPiggiesUI();
       initAllCurrencyMasks();
       // Sempre inicia desligado ao abrir o app; o usuário liga na tela de login ou dentro do app
@@ -9425,6 +9397,19 @@ html, body {
         bSum.innerHTML = `Faltam <strong class="text-indigo-600 dark:text-indigo-300 font-extrabold">${formatBRL(totalGeralRestante)}</strong> no geral (${formatBRL(totalComprometidoNoCiclo)} neste ciclo)`;
       }
 
+      // Atualiza Card de Compras Parceladas no Dashboard Principal
+      const elDashCiclo = document.getElementById('valParcelasCicloAtivo');
+      const elDashRestante = document.getElementById('valParcelasTotalRestante');
+      const elDashProg = document.getElementById('barParcelasProgresso');
+      const elDashPercent = document.getElementById('percentParcelasQuitado');
+      const elDashBadge = document.getElementById('cardInstallmentsCountBadge');
+
+      if (elDashCiclo) elDashCiclo.textContent = formatBRL(totalComprometidoNoCiclo);
+      if (elDashRestante) elDashRestante.textContent = formatBRL(totalGeralRestante);
+      if (elDashProg) elDashProg.style.width = `${percentPago}%`;
+      if (elDashPercent) elDashPercent.textContent = `${percentPago}% pago`;
+      if (elDashBadge) elDashBadge.textContent = `${activeList.length} ativas`;
+
       // Atualiza Demonstração Visual na Barra de Status
       const elPaidText = document.getElementById('valInstallmentsPaidText');
       const elRemText = document.getElementById('valInstallmentsRemainingText');
@@ -9627,7 +9612,7 @@ html, body {
       const elHeroBadge = document.getElementById('heroSaldoBadge');
       const isHeroBalanceHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
 
-      // O olhinho esconde ESTRITAMENTE o Saldo Atual (Receitas, Despesas e demais métricas ficam sempre visíveis)
+      // O olhinho esconde TODO o card de Saldo Total (Saldo Livre, Receitas e Despesas)
       if (elSaldoText) {
         const formattedSaldo = typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2);
         elSaldoText.dataset.real = formattedSaldo;
@@ -9635,13 +9620,13 @@ html, body {
       }
       if (elReceitasVal) {
         const formattedReceitas = typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2);
-        elReceitasVal.textContent = formattedReceitas;
         elReceitasVal.dataset.real = formattedReceitas;
+        elReceitasVal.textContent = isHeroBalanceHidden ? '+ R$ •••••' : formattedReceitas;
       }
       if (elDespesasVal) {
         const formattedDespesas = typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2);
-        elDespesasVal.textContent = formattedDespesas;
         elDespesasVal.dataset.real = formattedDespesas;
+        elDespesasVal.textContent = isHeroBalanceHidden ? '- R$ •••••' : formattedDespesas;
       }
       if (elValComp) {
         elValComp.textContent = `${percentGasto}%`;
@@ -36066,7 +36051,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     } catch(_) {}
 
     if (screenKey === 'transacoes') {
+      window.currentApprovedTxFilter = 'todas';
+      const fTodasBtn = document.getElementById('txFilterBtn_todas');
+      if (fTodasBtn && typeof setApprovedTxFilter === 'function') {
+        try { setApprovedTxFilter('todas'); } catch(_) {}
+      }
       if (typeof renderApprovedTransactionsList === 'function') renderApprovedTransactionsList();
+      if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
       if (typeof updateTrashBadge === 'function') updateTrashBadge();
     }
     if (window.lucide) lucide.createIcons();
@@ -37121,7 +37112,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       eyeIcon.style.color = '#475569';
     });
 
-    // Oculta ou exibe ESTRITAMENTE o Saldo Atual no card principal
+    // Oculta ou exibe TODO o card principal de Saldo Total (Saldo, Receitas e Despesas)
     const saldoText = document.getElementById('heroSaldoText');
     if (saldoText) {
       if (isHidden) {
@@ -37133,6 +37124,34 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         saldoText.textContent = 'R$ •••••';
       } else {
         saldoText.textContent = saldoText.dataset.real || 'R$ 1.221,87';
+      }
+    }
+
+    const recVal = document.getElementById('heroReceitasVal');
+    if (recVal) {
+      if (isHidden) {
+        if (!recVal.dataset.real || recVal.dataset.real.includes('•')) {
+          if (recVal.textContent && !recVal.textContent.includes('•')) {
+            recVal.dataset.real = recVal.textContent;
+          }
+        }
+        recVal.textContent = '+ R$ •••••';
+      } else {
+        recVal.textContent = recVal.dataset.real || '+ R$ 0,00';
+      }
+    }
+
+    const despVal = document.getElementById('heroDespesasVal');
+    if (despVal) {
+      if (isHidden) {
+        if (!despVal.dataset.real || despVal.dataset.real.includes('•')) {
+          if (despVal.textContent && !despVal.textContent.includes('•')) {
+            despVal.dataset.real = despVal.textContent;
+          }
+        }
+        despVal.textContent = '- R$ •••••';
+      } else {
+        despVal.textContent = despVal.dataset.real || '- R$ 0,00';
       }
     }
 
