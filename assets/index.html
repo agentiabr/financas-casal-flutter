@@ -7361,14 +7361,6 @@ html, body {
     }
 
     function formatBRL(val, cardKey = null) {
-      // Se um cardKey foi informado, seu estado individual prevalece permitindo abri-lo individualmente!
-      let isMasked = false;
-      if (cardKey && cardPrivacyStates.hasOwnProperty(cardKey)) {
-        isMasked = !!cardPrivacyStates[cardKey];
-      } else {
-        isMasked = isPrivacyGlobal;
-      }
-      if (isMasked) return 'R$ •••••';
       if (val === undefined || val === null || isNaN(val)) return 'R$ 0,00';
       return Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
@@ -9571,22 +9563,26 @@ html, body {
       const elValComp = document.getElementById('valComprometido');
       const elValDias = document.getElementById('valDiasRestantes');
       const elHeroBadge = document.getElementById('heroSaldoBadge');
-      const isHidden = window.privacyHidden === true;
+      const isHeroBalanceHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
 
+      // O olhinho esconde ESTRITAMENTE o Saldo Atual (Receitas, Despesas e demais métricas ficam sempre visíveis)
       if (elSaldoText) {
-        elSaldoText.textContent = isHidden ? 'R$ ••••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
-        elSaldoText.dataset.real = (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+        const formattedSaldo = typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2);
+        elSaldoText.dataset.real = formattedSaldo;
+        elSaldoText.textContent = isHeroBalanceHidden ? 'R$ •••••' : formattedSaldo;
       }
       if (elReceitasVal) {
-        elReceitasVal.textContent = isHidden ? '+ R$ ••••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
-        elReceitasVal.dataset.real = (typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2));
+        const formattedReceitas = typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2);
+        elReceitasVal.textContent = formattedReceitas;
+        elReceitasVal.dataset.real = formattedReceitas;
       }
       if (elDespesasVal) {
-        elDespesasVal.textContent = isHidden ? '- R$ ••••••' : (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
-        elDespesasVal.dataset.real = (typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2));
+        const formattedDespesas = typeof formatBRL === 'function' ? '- ' + formatBRL(totalGastos, 'despesa') : '- R$ ' + totalGastos.toFixed(2);
+        elDespesasVal.textContent = formattedDespesas;
+        elDespesasVal.dataset.real = formattedDespesas;
       }
       if (elValComp) {
-        elValComp.textContent = isHidden ? '••%' : `${percentGasto}%`;
+        elValComp.textContent = `${percentGasto}%`;
         elValComp.dataset.real = `${percentGasto}%`;
       }
       if (elValDias && typeof getCycleDaysRemainingInfo === 'function') {
@@ -9594,14 +9590,12 @@ html, body {
         elValDias.textContent = `${cycleInfo.daysRemaining} dias`;
       }
       if (elHeroBadge) {
-        if (isHidden) {
-          elHeroBadge.innerHTML = '<span>••••••</span>';
-        } else if (saldoLivre >= 0) {
+        if (saldoLivre >= 0) {
           elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
           elHeroBadge.innerHTML = '<span>↑ Saldo Saudável</span> no ciclo vigente';
         } else {
-          elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200';
-          elHeroBadge.innerHTML = '<span>⚠️ Atenção</span> Saldo negativo';
+          elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+          elHeroBadge.innerHTML = '<span>⚠️ Atenção aos Gastos</span>';
         }
       }
 
@@ -37042,13 +37036,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     window.setActiveCycle(key);
   };
 
-  // 3. Olhinho: Alternância de Ícones Eye / Eye-Off e Ocultação Global de Saldo, Receitas e Despesas
-  const _origTogglePrivacy = window.togglePrivacy;
+  // 3. Olhinho: Alternância de Ícones Eye / Eye-Off e Ocultação EXCLUSIVA do Saldo Atual
   window.togglePrivacy = function() {
-    window.privacyHidden = !window.privacyHidden;
-    const isHidden = window.privacyHidden;
+    const currentHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+    const isHidden = !currentHidden;
+    localStorage.setItem('ctrlpig_hero_balance_hidden', isHidden ? 'true' : 'false');
+    window.privacyHidden = false; // Garante que NUNCA esconde os demais cards ou métricas do app
+    if (typeof isPrivacyGlobal !== 'undefined') isPrivacyGlobal = false;
 
-    // Atualiza todos os ícones de olhinho na interface
+    // Atualiza os ícones de olhinho do card de Saldo Atual
     const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
     eyeIcons.forEach(eyeIcon => {
       eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
@@ -37056,60 +37052,46 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       eyeIcon.style.color = '#475569';
     });
 
-    // 1. Oculta / Restaura Saldo Atual
+    // Oculta ou exibe ESTRITAMENTE o Saldo Atual no card principal
     const saldoText = document.getElementById('heroSaldoText');
     if (saldoText) {
       if (isHidden) {
-        if (!saldoText.dataset.real) saldoText.dataset.real = saldoText.textContent;
+        if (!saldoText.dataset.real || saldoText.dataset.real.includes('•')) {
+          if (saldoText.textContent && !saldoText.textContent.includes('•')) {
+            saldoText.dataset.real = saldoText.textContent;
+          }
+        }
         saldoText.textContent = 'R$ •••••';
       } else {
         saldoText.textContent = saldoText.dataset.real || 'R$ 1.221,87';
       }
     }
 
-    // 2. Oculta / Restaura Card de Receitas
-    const receitasVal = document.getElementById('heroReceitasVal');
-    if (receitasVal) {
+    const valEl = document.getElementById('heroSaldoDisponivelVal');
+    if (valEl) {
       if (isHidden) {
-        if (!receitasVal.dataset.real) receitasVal.dataset.real = receitasVal.textContent;
-        receitasVal.textContent = '+ R$ •••••';
-      } else {
-        receitasVal.textContent = receitasVal.dataset.real || '+ R$ 0,00';
+        if (!valEl.dataset.realValue || valEl.dataset.realValue.includes('•')) {
+          if (valEl.textContent && !valEl.textContent.includes('•')) {
+            valEl.dataset.realValue = valEl.textContent;
+          }
+        }
+        valEl.textContent = 'R$ •••••';
+      } else if (valEl.dataset.realValue) {
+        valEl.textContent = valEl.dataset.realValue;
       }
     }
 
-    // 3. Oculta / Restaura Card de Despesas
-    const despesasVal = document.getElementById('heroDespesasVal');
-    if (despesasVal) {
-      if (isHidden) {
-        if (!despesasVal.dataset.real) despesasVal.dataset.real = despesasVal.textContent;
-        despesasVal.textContent = '- R$ •••••';
-      } else {
-        despesasVal.textContent = despesasVal.dataset.real || '- R$ 0,00';
-      }
+    const btnHero = document.getElementById('btnHeroPrivacyToggle');
+    if (btnHero) {
+      btnHero.title = isHidden ? 'Mostrar Saldo Atual' : 'Ocultar Saldo Atual';
     }
 
-    // 4. Oculta / Restaura Indicadores complementares
-    const badgeComp = document.getElementById('valComprometido');
-    if (badgeComp) {
-      if (isHidden) {
-        if (!badgeComp.dataset.real) badgeComp.dataset.real = badgeComp.textContent;
-        badgeComp.textContent = '••%';
-      } else {
-        badgeComp.textContent = badgeComp.dataset.real || '0%';
-      }
-    }
-
-    // Se o usuário reativou a visão, recalcula os valores reais do ciclo vigente
+    // Receitas e Despesas permanecem SEMPRE visíveis e com seus valores reais
     if (!isHidden) {
       if (typeof updateDashboard === 'function') updateDashboard();
-      if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData();
     }
 
-    if (typeof window.renderApprovedTransactionsList === 'function') {
-      window.renderApprovedTransactionsList();
-    }
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
   };
 
   // 4. Acessibilidade A- / A+ com Persistência
@@ -39344,10 +39326,9 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const elTxSaldo = document.getElementById('screenTxSaldoLivre');
       const elTxBadge = document.getElementById('screenTxCountBadge');
 
-      const isHidden = window.privacyHidden === true;
-      if (elTxGastos) elTxGastos.textContent = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(totalGastos, 'despesa') : 'R$ ' + totalGastos.toFixed(2));
-      if (elTxEntradas) elTxEntradas.textContent = isHidden ? '+ R$ •••••' : (typeof formatBRL === 'function' ? '+ ' + formatBRL(totalReceitas, 'receitas') : '+ R$ ' + totalReceitas.toFixed(2));
-      if (elTxSaldo) elTxSaldo.textContent = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
+      if (elTxGastos) elTxGastos.textContent = (typeof formatBRL === 'function' ? formatBRL(totalGastos, 'despesa') : 'R$ ' + totalGastos.toFixed(2));
+      if (elTxEntradas) elTxEntradas.textContent = (typeof formatBRL === 'function' ? '+ ' + formatBRL(totalReceitas, 'receitas') : '+ R$ ' + totalReceitas.toFixed(2));
+      if (elTxSaldo) elTxSaldo.textContent = (typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2));
 
       // Filtro da tela
       const f = window.currentApprovedTxFilter || 'todas';
