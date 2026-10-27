@@ -4344,12 +4344,12 @@ html, body {
             <div class="flex items-center gap-2.5 cursor-pointer group" onclick="toggleUserProfileType()" title="Toque para alternar Família / Solteiro">
               <div class="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md flex-shrink-0">
                 <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-sm">
-                  <span>👨</span>
+                  <span id="headerUserAvatar">👨</span>
                 </div>
                 <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
               </div>
               <div class="flex flex-col text-left leading-tight">
-                <span class="text-base font-black text-white tracking-tight">Rodrigo</span>
+                <span id="headerUserName" class="text-base font-black text-white tracking-tight">Rodrigo</span>
                 <span id="headerUserRoleBadge" class="text-[10px] text-blue-200 font-semibold tracking-wider uppercase">GESTOR FAMILIAR</span>
               </div>
             </div>
@@ -6722,20 +6722,50 @@ html, body {
       return false;
     }
 
-    function ensureActiveTransactionsLoaded() {
-      if (!Array.isArray(transactions) || transactions.length === 0) {
-        transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
-        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+    function isCurrentUserMaster() {
+      const user = window.currentUserSession;
+      if (!user) return false;
+      const email = (user.email || '').toLowerCase().trim();
+      return email === 'rodrigocardosocn@gmail.com' || user.isMaster === true || user.plano === 'Super Administrador Vitalício';
+    }
+    window.isCurrentUserMaster = isCurrentUserMaster;
+
+    function getUserTransactionsStorageKey(user) {
+      const u = user || window.currentUserSession;
+      if (!u || !u.email) return 'financas_transacoes_v4';
+      const email = (u.email || '').toLowerCase().trim();
+      if (email === 'rodrigocardosocn@gmail.com') {
+        return 'financas_transacoes_v4';
       }
-      // Garante que o ciclo ativo tenha os lançamentos presentes
-      const hasCurrent = transactions.some(t => isTxInCycle(t, currentCycle));
-      if (!hasCurrent && Array.isArray(INITIAL_TRANSACTIONS)) {
-        const octOfficial = INITIAL_TRANSACTIONS.filter(t => isTxInCycle(t, '05/Out a 04/Nov 2026'));
-        if (octOfficial.length > 0) {
-          const ids = new Set(transactions.map(t => t.id));
-          const toAdd = octOfficial.filter(t => !ids.has(t.id));
-          transactions.unshift(...toAdd);
-          localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      return 'financas_transacoes_v4_' + email.replace(/[^a-z0-9]/g, '_');
+    }
+    window.getUserTransactionsStorageKey = getUserTransactionsStorageKey;
+
+    function saveTransactionsToLocalStorage() {
+      const key = getUserTransactionsStorageKey();
+      try {
+        localStorage.setItem(key, JSON.stringify(window.transactions || transactions || []));
+      } catch(e) {}
+    }
+    window.saveTransactionsToLocalStorage = saveTransactionsToLocalStorage;
+
+    function ensureActiveTransactionsLoaded() {
+      const isMaster = isCurrentUserMaster();
+      const key = getUserTransactionsStorageKey();
+      if (!Array.isArray(transactions) || (transactions.length === 0 && isMaster)) {
+        transactions = isMaster ? JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS)) : [];
+        try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
+      }
+      if (isMaster) {
+        const hasCurrent = transactions.some(t => isTxInCycle(t, currentCycle));
+        if (!hasCurrent && Array.isArray(INITIAL_TRANSACTIONS)) {
+          const octOfficial = INITIAL_TRANSACTIONS.filter(t => isTxInCycle(t, '05/Out a 04/Nov 2026'));
+          if (octOfficial.length > 0) {
+            const ids = new Set(transactions.map(t => t.id));
+            const toAdd = octOfficial.filter(t => !ids.has(t.id));
+            transactions.unshift(...toAdd);
+            try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
+          }
         }
       }
       window.transactions = transactions;
@@ -6927,18 +6957,20 @@ html, body {
     }
 
     function loadData() {
-      // Transações v4
+      // Transações v4 isoladas por usuário
       const isDemoModeActive = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
-      const savedTxs = localStorage.getItem('financas_transacoes_v4');
+      const key = getUserTransactionsStorageKey();
+      const isMaster = isCurrentUserMaster();
+      const savedTxs = localStorage.getItem(key);
       if (savedTxs) {
         try { 
           transactions = JSON.parse(savedTxs); 
         } catch(e) { 
-          transactions = INITIAL_TRANSACTIONS; 
+          transactions = isMaster ? INITIAL_TRANSACTIONS : []; 
         }
       } else {
-        transactions = INITIAL_TRANSACTIONS;
-        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+        transactions = isMaster ? INITIAL_TRANSACTIONS : [];
+        try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
       }
 
       // Se modo de demonstração estiver ativo, bloqueia qualquer dado real de Rodrigo & Márcia
@@ -6958,7 +6990,7 @@ html, body {
             { id: 9010, data: '2026-10-15', ciclo: '05/Out a 04/Nov 2026', tipo: 'Despesa Variável', categoria: 'Farmácia', descricao: 'Farmácia Droga Raia (Vitaminas)', valor: 76.50, responsavel: 'Ana', forma_pagamento: 'PIX', status: 'Pago' },
             { id: 9011, data: '2026-10-15', ciclo: '05/Out a 04/Nov 2026', tipo: 'Despesa Variável', categoria: 'Lazer & Restaurante', descricao: 'Almoço em Família', valor: 135.00, responsavel: 'Ana', forma_pagamento: 'Cartão Crédito', status: 'Pago' }
           ];
-          localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+          saveData();
           currentCycle = '05/Out a 04/Nov 2026';
           localStorage.setItem('financas_active_cycle', currentCycle);
         }
@@ -6983,7 +7015,7 @@ html, body {
           return true;
         });
         if (transactions.length !== initialCount) {
-          localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+          saveData();
         }
       }
 
@@ -6999,8 +7031,13 @@ html, body {
       // Migração V4 garantida para Outubro 2026
       if (!localStorage.getItem('financas_v4_migrated')) {
         currentCycle = '05/Out a 04/Nov 2026';
-        transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
-        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+        if (isMaster) {
+          transactions = JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS));
+          try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
+        } else {
+          transactions = [];
+          try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
+        }
         localStorage.setItem('financas_active_cycle', currentCycle);
         localStorage.setItem('financas_v4_migrated', 'true');
       }
@@ -7117,7 +7154,12 @@ html, body {
     }
 
     function saveData() {
-      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      if (typeof saveTransactionsToLocalStorage === 'function') {
+        saveTransactionsToLocalStorage();
+      } else {
+        const k = typeof getUserTransactionsStorageKey === 'function' ? getUserTransactionsStorageKey() : 'financas_transacoes_v4';
+        try { localStorage.setItem(k, JSON.stringify(transactions)); } catch(e) {}
+      }
     }
 
     // ==========================================
@@ -7166,7 +7208,7 @@ html, body {
         }
       });
       transactions = Array.from(map.values());
-      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      saveData();
       if (typeof updateDashboard === 'function') updateDashboard();
       if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
       if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
@@ -13834,6 +13876,10 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       const user = window.currentUserSession;
       const avatarEl = document.getElementById('headerUserAvatar');
       const nameEl = document.getElementById('headerUserName');
+      const roleBadge = document.getElementById('headerUserRoleBadge');
+      const btnAdmin = document.getElementById('btnAdminHeader');
+
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       
       let userName = 'Usuário';
       let userAvatar = '👤';
@@ -13842,7 +13888,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         if (/m[aá]rcia/i.test(user.nome)) {
           userName = 'Márcia';
           userAvatar = '👩';
-        } else if (/rodrigo/i.test(user.nome)) {
+        } else if (/rodrigo/i.test(user.nome) && isMaster) {
           userName = 'Rodrigo';
           userAvatar = '👨';
         } else {
@@ -13854,10 +13900,26 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (avatarEl) avatarEl.textContent = userAvatar;
       if (nameEl) nameEl.textContent = userName;
 
-      // O botão Admin permanece SEMPRE como Admin ao lado do botão Sair
-      const btnAdmin = document.getElementById('btnAdminHeader');
+      if (roleBadge) {
+        if (isMaster) {
+          roleBadge.textContent = 'ADMIN MASTER';
+          roleBadge.className = 'text-[10px] text-amber-300 font-extrabold tracking-wider uppercase';
+        } else {
+          const papel = user?.papel || user?.plano || 'Membro da Família';
+          roleBadge.textContent = String(papel).toUpperCase();
+          roleBadge.className = 'text-[10px] text-blue-200 font-semibold tracking-wider uppercase';
+        }
+      }
+
+      // O botão no topo: Admin (apenas para Rodrigo/Master) ou Painel (para demais usuários/sócios)
       if (btnAdmin) {
-        btnAdmin.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-300"></i> <span>Admin</span>`;
+        if (isMaster) {
+          btnAdmin.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-300"></i> <span>Admin</span>`;
+          btnAdmin.title = 'Painel Administrativo Master: Gestão Global e Configurações';
+        } else {
+          btnAdmin.innerHTML = `<i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i> <span>Painel</span>`;
+          btnAdmin.title = 'Painel do Usuário: Família, Notificações & Personalizar';
+        }
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
       }
     }
@@ -13876,12 +13938,23 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         currentUserSession = userData || {
           nome: idInput.includes('@') ? idInput.split('@')[0] : 'Usuário Conectado',
           email: idInput.includes('@') ? idInput : 'usuario@ctrlpig.app',
-          plano: 'CtrlPig Cloud'
+          plano: 'Membro da Família'
         };
+        const isMaster = (currentUserSession.email || '').toLowerCase() === 'rodrigocardosocn@gmail.com';
+        currentUserSession.isMaster = isMaster;
+        if (!isMaster) {
+          currentUserSession.papel = 'Membro da Família';
+          if (!currentUserSession.plano || currentUserSession.plano.includes('Admin')) {
+            currentUserSession.plano = 'Membro da Família';
+          }
+        }
         window.currentUserSession = currentUserSession;
         try {
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
         } catch(e) {}
+        loadData();
+        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+        if (typeof updateDashboard === 'function') updateDashboard();
         window.forceUnlockAuthOverlay();
         showToastUndo(`Login realizado com sucesso! Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -13966,29 +14039,24 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       const lowerId = idInput.toLowerCase();
       const cleanId = idInput.replace(/\D/g, '');
 
-      // 1. Procura nas contas cadastradas/recuperadas locais primeiro (respeita rigorosamente a senha ativa)
+      // 1. Procura nas contas cadastradas/recuperadas locais primeiro
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
       let found = contas.find(c => 
         (c.email && c.email.toLowerCase() === lowerId) || 
-        (cleanId && c.cpf && c.cpf.replace(/\D/g, '') === cleanId) ||
-        (lowerId.includes('rodrigo') && c.email && c.email.toLowerCase().includes('rodrigo')) ||
-        (lowerId.includes('marcia') && c.email && c.email.toLowerCase().includes('marcia'))
+        (cleanId && c.cpf && c.cpf.replace(/\D/g, '') === cleanId)
       );
 
       const hasCustomPass = found && found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
 
       if (hasCustomPass) {
-        // Se a conta já possui senha ativa cadastrada ou redefinida:
-        // A SENHA ANTIGA É INVALIDADA E TERMINANTEMENTE RECUSADA! APENAS A NOVA SENHA É ACEITA!
         if (pass !== found.senha) {
           showToastUndo('Senha incorreta! Digite a sua senha atual ou redefina na aba "Esqueceu?".', false);
           return;
         }
       } else {
-        // Primeiro acesso antes de qualquer alteração ou redefinição de senha:
-        const isRodrigo = lowerId === 'rodrigocardosocn@gmail.com' || lowerId.includes('rodrigo');
-        const isMarcia = lowerId.includes('marcia');
+        const isRodrigo = lowerId === 'rodrigocardosocn@gmail.com';
+        const isMarcia = lowerId === 'marcia@ctrlpig.app' || lowerId === 'marcia@financas.casal';
         let passValida = false;
 
         if (isRodrigo) {
@@ -14005,15 +14073,18 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         }
       }
 
-      // 2. RECONHECIMENTO PRIORITÁRIO: Rodrigo Cardoso
-      if (lowerId === 'rodrigocardosocn@gmail.com' || lowerId.includes('rodrigo')) {
+      // 2. RECONHECIMENTO EXCLUSIVO DO ADMIN MASTER: Rodrigo Cardoso (apenas rodrigocardosocn@gmail.com)
+      if (lowerId === 'rodrigocardosocn@gmail.com') {
         currentUserSession = found || {
           nome: 'Rodrigo Cardoso',
           email: 'rodrigocardosocn@gmail.com',
           cpf: '123.456.789-00',
           whatsapp: '(11) 98765-4321',
-          plano: 'Super Administrador Vitalício'
+          plano: 'Super Administrador Vitalício',
+          papel: 'Super Administrador',
+          isMaster: true
         };
+        currentUserSession.isMaster = true;
         currentUserSession.senha = pass;
         window.currentUserSession = currentUserSession;
         try {
@@ -14023,6 +14094,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
             localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
           }
         } catch(e) {}
+        loadData();
+        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+        if (typeof updateDashboard === 'function') updateDashboard();
         window.forceUnlockAuthOverlay();
         showToastUndo('Bem-vindo de volta, Rodrigo Cardoso! 🐷', false);
         if (typeof window.unlockAppAndEnterDashboard === 'function') {
@@ -14039,15 +14113,18 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         return;
       }
 
-      // 3. RECONHECIMENTO DE MÁRCIA
-      if (lowerId.includes('marcia')) {
+      // 3. RECONHECIMENTO DE MÁRCIA (MEMBRO DA FAMÍLIA)
+      if (lowerId === 'marcia@ctrlpig.app' || lowerId === 'marcia@financas.casal') {
         currentUserSession = found || {
           nome: 'Márcia Oliveira',
           email: 'marcia@ctrlpig.app',
           cpf: '987.654.321-00',
           whatsapp: '(11) 98765-4321',
-          plano: 'Membro da Família'
+          plano: 'Membro da Família',
+          papel: 'Membro da Família',
+          isMaster: false
         };
+        currentUserSession.isMaster = false;
         currentUserSession.senha = pass;
         window.currentUserSession = currentUserSession;
         try {
@@ -14057,34 +14134,60 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
             localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
           }
         } catch(e) {}
+        loadData();
+        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+        if (typeof updateDashboard === 'function') updateDashboard();
         window.forceUnlockAuthOverlay();
         showToastUndo('Bem-vinda de volta, Márcia! 🌸', false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          try {
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
+          } catch(err) {}
+        }
         return;
       }
 
-      // 4. Se achou conta local cadastrada
+      // 4. Se achou conta local cadastrada (NUNCA É ADMIN MASTER SE NÃO FOR RODRIGO)
       if (found) {
+        const isMaster = (found.email || '').toLowerCase() === 'rodrigocardosocn@gmail.com';
+        found.isMaster = isMaster;
+        if (!isMaster) {
+          found.papel = 'Membro da Família';
+          if (!found.plano || found.plano.includes('Admin')) {
+            found.plano = 'Membro da Família';
+          }
+        }
         currentUserSession = found;
         currentUserSession.senha = pass;
         window.currentUserSession = currentUserSession;
         try {
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
         } catch(e) {}
+        loadData();
+        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+        if (typeof updateDashboard === 'function') updateDashboard();
         window.forceUnlockAuthOverlay();
         showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 🐷`, false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          try {
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
+          } catch(err) {}
+        }
         return;
       }
 
-      // 5. Acesso direto resiliente (novo usuário)
+      // 5. Acesso direto resiliente (NOVO USUÁRIO / SÓCIO - ISOLADO E COM CONTA LIMPA)
       currentUserSession = {
         nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
         email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
         cpf: idInput,
         whatsapp: '',
         senha: pass,
-        plano: 'Usuário Ativo'
+        plano: 'Membro da Família',
+        papel: 'Membro da Família',
+        isMaster: false
       };
       window.currentUserSession = currentUserSession;
       contas.push(currentUserSession);
@@ -14092,9 +14195,17 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
       } catch(e) {}
+      loadData();
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      if (typeof updateDashboard === 'function') updateDashboard();
       window.forceUnlockAuthOverlay();
       showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
+        } catch(err) {}
+      }
     }
 
     function handleAuthRegister(e) {
@@ -14126,7 +14237,18 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         }
       }
 
-      const novoUsuario = { nome, email, cpf, whatsapp, senha, plano, data_cadastro: new Date().toISOString() };
+      const isMaster = email.toLowerCase() === 'rodrigocardosocn@gmail.com';
+      const novoUsuario = {
+        nome: nome,
+        email: email,
+        cpf: cpf,
+        whatsapp: whatsapp,
+        senha: senha,
+        plano: isMaster ? 'Super Administrador Vitalício' : (plano || 'Membro da Família'),
+        papel: isMaster ? 'Super Administrador' : 'Membro da Família',
+        isMaster: isMaster,
+        data_cadastro: new Date().toISOString()
+      };
       
       let contas = [];
       try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
@@ -14144,6 +14266,11 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (checkBio) {
         try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
       }
+
+      // Inicializa ambiente limpo e isolado para esta nova conta
+      loadData();
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      if (typeof updateDashboard === 'function') updateDashboard();
 
       window.forceUnlockAuthOverlay();
       showToastUndo(`Conta criada com sucesso! Seja bem-vindo(a), ${nome}! 🐷`, false);
@@ -14485,9 +14612,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     function logoutUser() {
       currentUserSession = null;
+      window.currentUserSession = null;
       localStorage.removeItem('financas_auth_user');
+      localStorage.removeItem('financas_usuario_ativo');
       localStorage.setItem('financas_auth_logged_out', 'true');
       sessionStorage.removeItem('pigctrl_session_authenticated');
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_signout' }));
+        } catch(err) {}
+      }
       closeExitFeedbackModal();
       document.documentElement.classList.add('require-auth');
       const authEl = document.getElementById('authOverlayContainer');
@@ -14496,7 +14630,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         authEl.style.removeProperty('display');
       }
       showToastUndo('Você foi desconectado com sucesso! 👋', false);
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     // ==========================================
@@ -14511,18 +14645,21 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       const masterView = document.getElementById('adminMasterView');
       const userView = document.getElementById('adminUserCompactView');
       const headerTitle = document.getElementById('adminModalHeaderTitle');
-
       const headerDesc = document.getElementById('adminModalHeaderDesc');
 
-      if (isDemo) {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+
+      if (!isMaster || isDemo) {
+        // Usuário padrão / sócio / família: ACESSO EXCLUSIVO AO PAINEL DO USUÁRIO
         if (masterView) masterView.classList.add('hidden');
         if (userView) userView.classList.remove('hidden');
-        if (headerTitle) headerTitle.textContent = 'Painel do Usuário (Demonstração)';
+        if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Usuário';
         if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
         if (typeof window.renderAdminUserCompactModulesToggle === 'function') {
           window.renderAdminUserCompactModulesToggle();
         }
       } else {
+        // Rodrigo Cardoso (Super Administrador Vitalício)
         if (masterView) masterView.classList.remove('hidden');
         if (userView) userView.classList.add('hidden');
         if (headerTitle) headerTitle.textContent = 'Painel Administrativo Master';
@@ -28676,7 +28813,7 @@ Frase falada: "${spokenText}"`;
     const cleanRows = supabaseTxs.filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.ciclo !== '__SYSTEM_BACKUP__' && t.tipo !== '__CLOUD_SNAPSHOT__');
     if (cleanRows.length > 0 && (!Array.isArray(transactions) || transactions.length === 0)) {
       transactions = cleanRows;
-      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      saveData();
       if (typeof updateDashboard === 'function') updateDashboard();
     }
   };
@@ -28779,7 +28916,7 @@ Frase falada: "${spokenText}"`;
 
       if (isFreshInstall || (cloudSnap.ts && cloudSnap.ts > localSyncTs)) {
         transactions = cloudSnap.transactions.filter(t => t && t.id !== SNAPSHOT_ROW_ID && t.ciclo !== '__SYSTEM_BACKUP__' && t.tipo !== '__CLOUD_SNAPSHOT__');
-        localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+        saveData();
 
         if (cloudSnap.activeCycle) {
           currentCycle = cloudSnap.activeCycle;
@@ -28845,7 +28982,7 @@ Frase falada: "${spokenText}"`;
     if (typeof _origSaveData === 'function') {
       _origSaveData();
     } else {
-      localStorage.setItem('financas_transacoes_v4', JSON.stringify(transactions));
+      saveData();
     }
     localStorage.setItem('financas_cloud_snapshot_restored', 'true');
     window.scheduleCloudStatePush();
