@@ -7,6 +7,7 @@ class ReceiptItem {
   final double preco; // Preço Unitário
   final double total;
   final String unidade;
+  final double desconto;
   final bool validated;
 
   ReceiptItem({
@@ -15,6 +16,7 @@ class ReceiptItem {
     required this.preco,
     required this.total,
     this.unidade = 'un',
+    this.desconto = 0.0,
     this.validated = true,
   });
 
@@ -24,6 +26,7 @@ class ReceiptItem {
     'preco': preco,
     'total': total,
     'unidade': unidade,
+    'desconto': desconto,
     'validado': validated,
   };
 }
@@ -31,6 +34,7 @@ class ReceiptItem {
 class ReceiptOcrResult {
   final String? storeName;
   final double? totalAmount;
+  final double? discount;
   final DateTime? date;
   final String? paymentMethod;
   final String? nfceKey;
@@ -42,6 +46,7 @@ class ReceiptOcrResult {
   ReceiptOcrResult({
     this.storeName,
     this.totalAmount,
+    this.discount,
     this.date,
     this.paymentMethod,
     this.nfceKey,
@@ -61,6 +66,9 @@ class ReceiptOcrResult {
       'data': dateStr,
       'data_reconhecida': date != null,
       'valor_total': totalAmount ?? 0.0,
+      'total': totalAmount ?? 0.0,
+      'desconto': discount ?? 0.0,
+      'discount': discount ?? 0.0,
       'forma_pagamento': paymentMethod ?? 'Cartão de Crédito',
       'chave_nfce': nfceKey ?? '',
       'url_nfce': nfceUrl ?? '',
@@ -152,6 +160,26 @@ class OcrService {
       final match = totalRegex.firstMatch(rawText);
       if (match != null) {
         detectedTotal = _parseMoney(match.group(1)!);
+      }
+    }
+
+    // 2.1 Detectar Descontos Globais
+    double? detectedDiscount;
+    final discountRegex = RegExp(
+      r'(?:DESCONTO(?:S)?(?:\s+TOTAL)?|VALOR\s+DESCONTO|TOTAL\s+DE\s+DESCONTO|DESC\.?)\s*(?:R\$|RS|B\$)?[\s:]*([0-9]{1,4}(?:\.[0-9]{3})*(?:,[0-9]{2})|[0-9]+[.,\s][0-9]{2})',
+      caseSensitive: false,
+    );
+    for (int i = lines.length - 1; i >= 0; i--) {
+      final match = discountRegex.firstMatch(lines[i]);
+      if (match != null) {
+        detectedDiscount = _parseMoney(match.group(1)!);
+        if (detectedDiscount != null && detectedDiscount > 0) break;
+      }
+    }
+    if (detectedDiscount == null || detectedDiscount <= 0) {
+      final match = discountRegex.firstMatch(rawText);
+      if (match != null) {
+        detectedDiscount = _parseMoney(match.group(1)!);
       }
     }
 
@@ -310,6 +338,7 @@ class OcrService {
     return ReceiptOcrResult(
       storeName: detectedStore,
       totalAmount: detectedTotal,
+      discount: detectedDiscount ?? 0.0,
       date: detectedDate ?? DateTime.now(),
       paymentMethod: detectedPayment,
       nfceKey: detectedNfceKey,

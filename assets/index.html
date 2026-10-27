@@ -5317,10 +5317,27 @@ html, body {
                   <span id="shoppingInvoiceItemCount" class="font-bold text-emerald-600 dark:text-emerald-400">0 itens capturados</span>
                 </div>
               </div>
-              <div class="text-right">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total da Nota</span>
-                <div id="shoppingInvoiceTotalDisplay" class="text-base font-black font-mono text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
+              <div class="text-right flex flex-col items-end shrink-0">
+                <div id="shoppingInvoiceSubtotalContainer" class="hidden text-[10px] text-slate-400 font-medium">
+                  Subtotal: <span id="shoppingInvoiceSubtotalDisplay" class="line-through">R$ 0,00</span>
+                </div>
+                <div id="shoppingInvoiceDiscountContainer" class="hidden text-[11px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-200 dark:border-rose-900 mt-0.5">
+                  🏷️ Desc: <span id="shoppingInvoiceDiscountDisplay">- R$ 0,00</span>
+                </div>
+                <div class="mt-0.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total a Pagar</span>
+                  <div id="shoppingInvoiceTotalDisplay" class="text-base font-black font-mono text-emerald-600 dark:text-emerald-400">R$ 0,00</div>
+                </div>
               </div>
+            </div>
+
+            <!-- Banner de Economia com Descontos -->
+            <div id="shoppingInvoiceSavingsBanner" class="hidden p-2.5 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 dark:border-amber-400/20 rounded-2xl flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🎉</span>
+                <span class="font-extrabold text-amber-800 dark:text-amber-300">Você economizou nesta compra!</span>
+              </div>
+              <span id="shoppingInvoiceSavingsAmount" class="font-black text-emerald-600 dark:text-emerald-400 font-mono text-sm">- R$ 0,00</span>
             </div>
 
             <!-- Chave de Acesso Resumida -->
@@ -35593,6 +35610,12 @@ window.confirmShoppingInvoicePreview = function() {
   }
   const listEl = document.getElementById('shoppingInvoiceItemsList');
   if (listEl) listEl.innerHTML = '';
+  const subtotalContainer = document.getElementById('shoppingInvoiceSubtotalContainer');
+  if (subtotalContainer) subtotalContainer.classList.add('hidden');
+  const discountContainer = document.getElementById('shoppingInvoiceDiscountContainer');
+  if (discountContainer) discountContainer.classList.add('hidden');
+  const savingsBanner = document.getElementById('shoppingInvoiceSavingsBanner');
+  if (savingsBanner) savingsBanner.classList.add('hidden');
   window.pendingShoppingInvoiceData = null;
 
   // 6. Feedback de sucesso
@@ -38699,15 +38722,59 @@ window.renderShoppingInvoicePreview = function(res, items) {
   const keyContainer = document.getElementById('shoppingInvoiceKeyContainer');
   const keyText = document.getElementById('shoppingInvoiceKeyText');
   const listEl = document.getElementById('shoppingInvoiceItemsList');
+  const subtotalContainer = document.getElementById('shoppingInvoiceSubtotalContainer');
+  const subtotalDisplay = document.getElementById('shoppingInvoiceSubtotalDisplay');
+  const discountContainer = document.getElementById('shoppingInvoiceDiscountContainer');
+  const discountDisplay = document.getElementById('shoppingInvoiceDiscountDisplay');
+  const savingsBanner = document.getElementById('shoppingInvoiceSavingsBanner');
+  const savingsAmount = document.getElementById('shoppingInvoiceSavingsAmount');
 
   const store = res.store || res.estabelecimento || 'Supermercado';
   const date = res.date || res.data || (new Date().toLocaleDateString('pt-BR'));
   const total = typeof res.total === 'number' ? res.total : (parseFloat(res.total) || 0);
 
+  // Calcula desconto global da nota ou soma dos descontos dos itens
+  let discount = 0;
+  if (typeof res.desconto === 'number') {
+    discount = res.desconto;
+  } else if (typeof res.discount === 'number') {
+    discount = res.discount;
+  } else if (res.desconto || res.discount) {
+    discount = parseFloat(String(res.desconto || res.discount).replace(/\./g, '').replace(',', '.')) || 0;
+  }
+
+  if (discount <= 0 && Array.isArray(items) && items.length > 0) {
+    discount = items.reduce((acc, it) => {
+      const d = typeof it.desconto === 'number' ? it.desconto : (parseFloat(String(it.desconto || 0).replace(/\./g, '').replace(',', '.')) || 0);
+      return acc + (d > 0 ? d : 0);
+    }, 0);
+  }
+
+  const subtotal = (discount > 0) ? (total + discount) : total;
+
   if (storeNameEl) storeNameEl.textContent = store;
   if (dateEl) dateEl.textContent = date;
   if (countEl) countEl.textContent = `${items.length} ${items.length === 1 ? 'item capturado' : 'itens capturados'}`;
   if (totalEl) totalEl.textContent = typeof formatBRL === 'function' ? formatBRL(total) : `R$ ${total.toFixed(2)}`;
+
+  if (discount > 0) {
+    if (subtotalContainer && subtotalDisplay) {
+      subtotalContainer.classList.remove('hidden');
+      subtotalDisplay.textContent = typeof formatBRL === 'function' ? formatBRL(subtotal) : `R$ ${subtotal.toFixed(2)}`;
+    }
+    if (discountContainer && discountDisplay) {
+      discountContainer.classList.remove('hidden');
+      discountDisplay.textContent = `- ${typeof formatBRL === 'function' ? formatBRL(discount) : 'R$ ' + discount.toFixed(2)}`;
+    }
+    if (savingsBanner && savingsAmount) {
+      savingsBanner.classList.remove('hidden');
+      savingsAmount.textContent = `- ${typeof formatBRL === 'function' ? formatBRL(discount) : 'R$ ' + discount.toFixed(2)}`;
+    }
+  } else {
+    if (subtotalContainer) subtotalContainer.classList.add('hidden');
+    if (discountContainer) discountContainer.classList.add('hidden');
+    if (savingsBanner) savingsBanner.classList.add('hidden');
+  }
 
   const accessKey = res.accessKey || window.extractCleanNfceKey(res.rawUrl);
   if (accessKey && keyContainer && keyText) {
@@ -38732,6 +38799,8 @@ window.renderShoppingInvoicePreview = function(res, items) {
         const un = (it.unidade || 'UN').toUpperCase();
         const isFracionado = Math.abs(qtd - 1.0) > 0.001 || ['KG', 'KGS', 'G', 'GR', 'L', 'LT', 'M'].includes(un);
         const qtdStr = (qtd % 1 === 0) ? `${qtd} ${un}` : `${qtd.toFixed(3).replace(/\.?0+$/, '')} ${un}`;
+        const itemDesc = typeof it.desconto === 'number' ? it.desconto : (parseFloat(String(it.desconto || 0).replace(/\./g, '').replace(',', '.')) || 0);
+        const hasItemDiscount = itemDesc > 0;
 
         return `
           <div class="py-2.5 flex items-center justify-between gap-3 text-xs border-b border-emerald-100/50 dark:border-slate-800 last:border-b-0">
@@ -38751,9 +38820,19 @@ window.renderShoppingInvoicePreview = function(res, items) {
                 ` : (pUnit > 0 && Math.abs(pTotal - pUnit) > 0.01 ? `
                   <span class="text-slate-400">• Unit: ${typeof formatBRL === 'function' ? formatBRL(pUnit) : 'R$ ' + pUnit.toFixed(2)}</span>
                 ` : '')}
+                ${hasItemDiscount ? `
+                  <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-100 dark:bg-rose-950/80 dark:text-rose-300 px-1.5 py-0.5 rounded border border-rose-200 dark:border-rose-900">
+                    🏷️ Desc: - ${typeof formatBRL === 'function' ? formatBRL(itemDesc) : 'R$ ' + itemDesc.toFixed(2)}
+                  </span>
+                ` : ''}
               </div>
             </div>
             <div class="text-right shrink-0">
+              ${hasItemDiscount ? `
+                <div class="text-[10px] font-medium text-slate-400 line-through">
+                  ${typeof formatBRL === 'function' ? formatBRL(pTotal + itemDesc) : 'R$ ' + (pTotal + itemDesc).toFixed(2)}
+                </div>
+              ` : ''}
               <div class="font-black font-mono text-sm text-emerald-600 dark:text-emerald-400">
                 ${typeof formatBRL === 'function' ? formatBRL(pTotal) : 'R$ ' + pTotal.toFixed(2)}
               </div>
@@ -38778,6 +38857,12 @@ window.cancelShoppingInvoicePreview = function() {
   if (container) container.classList.add('hidden');
   const listEl = document.getElementById('shoppingInvoiceItemsList');
   if (listEl) listEl.innerHTML = '';
+  const subtotalContainer = document.getElementById('shoppingInvoiceSubtotalContainer');
+  if (subtotalContainer) subtotalContainer.classList.add('hidden');
+  const discountContainer = document.getElementById('shoppingInvoiceDiscountContainer');
+  if (discountContainer) discountContainer.classList.add('hidden');
+  const savingsBanner = document.getElementById('shoppingInvoiceSavingsBanner');
+  if (savingsBanner) savingsBanner.classList.add('hidden');
   window.pendingShoppingInvoiceData = null;
   if (typeof showToastUndo === 'function') {
     showToastUndo('Conferência cancelada. Nenhum produto foi adicionado.', false);
@@ -38904,6 +38989,12 @@ window.confirmShoppingInvoicePreview = function() {
   }
   const listEl = document.getElementById('shoppingInvoiceItemsList');
   if (listEl) listEl.innerHTML = '';
+  const subtotalContainer = document.getElementById('shoppingInvoiceSubtotalContainer');
+  if (subtotalContainer) subtotalContainer.classList.add('hidden');
+  const discountContainer = document.getElementById('shoppingInvoiceDiscountContainer');
+  if (discountContainer) discountContainer.classList.add('hidden');
+  const savingsBanner = document.getElementById('shoppingInvoiceSavingsBanner');
+  if (savingsBanner) savingsBanner.classList.add('hidden');
   window.pendingShoppingInvoiceData = null;
 
   // 6. Feedback de sucesso
@@ -39009,7 +39100,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         preco: precoUnit,
         precoUnitario: precoUnit,
         total: totalItem,
-        desconto: typeof it.desconto === 'number' ? it.desconto : 0,
+        desconto: typeof it.desconto === 'number' ? it.desconto : (parseFloat(String(it.desconto || 0).replace(/\./g, '').replace(',', '.')) || 0),
         validated: true
       };
     });
@@ -39026,6 +39117,9 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const prevData = window.pendingShoppingInvoiceData;
       const combinedItems = [...prevData.items, ...normalizedIncoming];
       const combinedTotal = (parseFloat(prevData.res.total) || 0) + (parseFloat(res.total) || 0);
+      const prevDiscount = (parseFloat(prevData.res.desconto || prevData.res.discount) || 0);
+      const curDiscount = (parseFloat(res.desconto || res.discount) || 0);
+      const combinedDiscount = prevDiscount + curDiscount;
       const prevStore = prevData.res.store || prevData.res.estabelecimento || 'Mercado';
       const curStore = res.store || res.estabelecimento || 'Mercado';
       const combinedStore = prevStore === curStore ? curStore : `${prevStore} + ${curStore}`;
@@ -39033,6 +39127,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ...res,
         store: combinedStore,
         total: combinedTotal,
+        discount: combinedDiscount,
+        desconto: combinedDiscount,
         accessKey: accessKey || prevData.res.accessKey,
         accessKeys: [prevData.res.accessKey, accessKey].filter(Boolean)
       };
