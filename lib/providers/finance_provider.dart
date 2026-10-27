@@ -27,17 +27,24 @@ class FinanceProvider extends ChangeNotifier {
   }
 
   void _initData() {
-    // Carrega os 212 lançamentos históricos de Rodrigo & Márcia como base inicial
-    _transactions = List.from(initialTransactionsList);
+    // Inicialização protegida: dados históricos pertencem exclusivamente a Rodrigo Cardoso
+    final currentUserEmail = SupabaseConfig.isConfigured
+        ? SupabaseConfig.client.auth.currentUser?.email?.toLowerCase().trim()
+        : null;
+    final isMaster = currentUserEmail == 'rodrigocardosocn@gmail.com';
+    if (isMaster) {
+      _transactions = List.from(initialTransactionsList);
+      _cards = [
+        CreditCardModel(id: 1, nome: 'Nubank Rodrigo', titular: 'Rodrigo', final4: '8412', limite: 8000.00, cor: 'purple'),
+        CreditCardModel(id: 2, nome: 'XP Márcia', titular: 'Márcia', final4: '1093', limite: 15000.00, cor: 'emerald'),
+        CreditCardModel(id: 3, nome: 'Itaú Click', titular: 'Comum', final4: '4521', limite: 6000.00, cor: 'amber'),
+      ];
+    } else {
+      _transactions = [];
+      _cards = [];
+    }
     _fetchFromSupabase();
     _subscribeRealtime();
-
-    // Cartões padrão
-    _cards = [
-      CreditCardModel(id: 1, nome: 'Nubank Rodrigo', titular: 'Rodrigo', final4: '8412', limite: 8000.00, cor: 'purple'),
-      CreditCardModel(id: 2, nome: 'XP Márcia', titular: 'Márcia', final4: '1093', limite: 15000.00, cor: 'emerald'),
-      CreditCardModel(id: 3, nome: 'Itaú Click', titular: 'Comum', final4: '4521', limite: 6000.00, cor: 'amber'),
-    ];
 
     // Compras parceladas
     _installments = [
@@ -171,6 +178,8 @@ class FinanceProvider extends ChangeNotifier {
   // Supabase Sync & Realtime Fetch
   Future<void> _fetchFromSupabase() async {
     if (!SupabaseConfig.isConfigured) return;
+    final currentUserEmail = SupabaseConfig.client.auth.currentUser?.email?.toLowerCase().trim();
+    if (currentUserEmail != 'rodrigocardosocn@gmail.com') return;
     try {
       final data = await SupabaseConfig.client
           .from('transactions')

@@ -389,16 +389,20 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     ''';
     _controller.runJavaScript(jsBridge);
 
-    // Envia dados do Supabase carregados no Flutter para a interface Web
+    // Envia dados do Supabase carregados no Flutter para a interface Web (apenas para Rodrigo Cardoso)
     try {
-      final provider = Provider.of<FinanceProvider>(context, listen: false);
-      if (provider.transactions.isNotEmpty) {
-        final txListJson = jsonEncode(provider.transactions.map((t) => t.toJson()).toList());
-        _controller.runJavaScript("""
-          if (typeof window.onNativeSupabaseDataLoaded === 'function') {
-            window.onNativeSupabaseDataLoaded($txListJson);
-          }
-        """);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final email = authService.currentUser?.email?.toLowerCase().trim() ?? '';
+      if (email == 'rodrigocardosocn@gmail.com') {
+        final provider = Provider.of<FinanceProvider>(context, listen: false);
+        if (provider.transactions.isNotEmpty) {
+          final txListJson = jsonEncode(provider.transactions.map((t) => t.toJson()).toList());
+          _controller.runJavaScript("""
+            if (typeof window.onNativeSupabaseDataLoaded === 'function') {
+              window.onNativeSupabaseDataLoaded($txListJson);
+            }
+          """);
+        }
       }
     } catch (e) {
       debugPrint('Aviso ao sincronizar inicial com WebView: $e');

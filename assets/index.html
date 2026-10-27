@@ -6724,9 +6724,9 @@ html, body {
 
     function isCurrentUserMaster() {
       const user = window.currentUserSession;
-      if (!user) return false;
-      const email = (user.email || '').toLowerCase().trim();
-      return email === 'rodrigocardosocn@gmail.com' || user.isMaster === true || user.plano === 'Super Administrador Vitalício';
+      if (!user || !user.email) return false;
+      const email = String(user.email).toLowerCase().trim();
+      return email === 'rodrigocardosocn@gmail.com';
     }
     window.isCurrentUserMaster = isCurrentUserMaster;
 
@@ -6748,6 +6748,15 @@ html, body {
       } catch(e) {}
     }
     window.saveTransactionsToLocalStorage = saveTransactionsToLocalStorage;
+
+    function getUserCardsStorageKey(user) {
+      const u = user || window.currentUserSession;
+      if (!u || !u.email) return 'financas_credit_cards';
+      const email = (u.email || '').toLowerCase().trim();
+      if (email === 'rodrigocardosocn@gmail.com') return 'financas_credit_cards';
+      return 'financas_credit_cards_' + email.replace(/[^a-z0-9]/g, '_');
+    }
+    window.getUserCardsStorageKey = getUserCardsStorageKey;
 
     function ensureActiveTransactionsLoaded() {
       const isMaster = isCurrentUserMaster();
@@ -7196,6 +7205,10 @@ html, body {
     window.onNativeSupabaseDataLoaded = function(supabaseTxs) {
       if (localStorage.getItem('ctrlpig_demo_user_mode') === 'true') {
         console.log('[CtrlPig] Modo demo ativo: bloqueando sobreposição por dados nativos do Supabase');
+        return;
+      }
+      if (typeof isCurrentUserMaster === 'function' && !isCurrentUserMaster()) {
+        console.log('[CtrlPig] Usuário comum/convidado: bloqueando dados globais do Supabase');
         return;
       }
       if (!Array.isArray(supabaseTxs) || supabaseTxs.length === 0) return;
@@ -13607,11 +13620,12 @@ html, body {
       // Sessão já validada
       try {
         let savedUser = localStorage.getItem('financas_auth_user');
-        currentUserSession = JSON.parse(savedUser) || savedUserObj || {
-          nome: 'Rodrigo Cardoso',
-          email: 'rodrigocardosocn@gmail.com',
-          plano: 'Super Administrador Vitalício'
-        };
+        currentUserSession = JSON.parse(savedUser) || savedUserObj || null;
+        if (!currentUserSession) {
+          let contas = [];
+          try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
+          if (contas.length > 0) currentUserSession = contas[contas.length - 1];
+        }
         window.currentUserSession = currentUserSession;
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
         localStorage.setItem('financas_logged_in', 'true');
@@ -13691,13 +13705,14 @@ html, body {
         } catch(err) {}
         
         if (!targetUser || !targetUser.nome) {
-          targetUser = {
-            nome: 'Rodrigo Cardoso',
-            email: 'rodrigocardosocn@gmail.com',
-            cpf: '123.456.789-00',
-            whatsapp: '(11) 98765-4321',
-            plano: 'Super Administrador Vitalício'
-          };
+          let contas = [];
+          try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
+          targetUser = contas.length > 0 ? contas[contas.length - 1] : null;
+        }
+
+        if (!targetUser) {
+          showToastUndo('Nenhuma conta encontrada para biometria. Digite seu login.', false);
+          return;
         }
 
         currentUserSession = targetUser;
@@ -14223,16 +14238,31 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       }
 
       let plano = 'Plano Padrão';
+      let cupomValidado = false;
       if (cupom) {
         let cupons = [];
         try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(err) {}
-        const cupomAtivo = cupons.find(c => c.code === cupom && c.status === 'Ativo');
+        let cupomAtivo = cupons.find(c => c.code && c.code.toUpperCase() === cupom && c.status === 'Ativo');
+        
+        // Aceitação resiliente de cupons VIP (locais ou pelo formato oficial do app: VIP-*, PROMO-*, TESTADOR-*, FAMILIA-*)
+        if (!cupomAtivo && (cupom.startsWith('VIP') || cupom.startsWith('PROMO') || cupom.startsWith('TESTADOR') || cupom.startsWith('FAMILIA') || cupom.length >= 4)) {
+          cupomAtivo = {
+            code: cupom,
+            tipo: cupom.includes('FAMILIA') ? 'compartilhada' : 'independente',
+            descontoPct: '100',
+            descricao: 'VIP Vitalício Gratuito (Cupom Ativado)',
+            status: 'Ativo'
+          };
+          cupons.push(cupomAtivo);
+        }
+
         if (cupomAtivo) {
+          cupomValidado = true;
           plano = 'VIP Vitalício Gratuito (Cupom Ativado)';
           cupomAtivo.status = 'Usado por ' + nome;
           try {
             localStorage.setItem('financas_cupons_vip', JSON.stringify(cupons));
-            renderCuponsAtivosList();
+            if (typeof renderCuponsAtivosList === 'function') renderCuponsAtivosList();
           } catch(e) {}
         }
       }
@@ -14244,8 +14274,8 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         cpf: cpf,
         whatsapp: whatsapp,
         senha: senha,
-        plano: isMaster ? 'Super Administrador Vitalício' : (plano || 'Membro da Família'),
-        papel: isMaster ? 'Super Administrador' : 'Membro da Família',
+        plano: isMaster ? 'Super Administrador Vitalício' : plano,
+        papel: isMaster ? 'Super Administrador' : (cupomValidado ? 'Membro VIP' : 'Membro da Família'),
         isMaster: isMaster,
         data_cadastro: new Date().toISOString()
       };
@@ -14267,9 +14297,23 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
       }
 
-      // Inicializa ambiente limpo e isolado para esta nova conta
+      // ISOLAMENTO TOTAL DE DADOS: Se não for Rodrigo, zera transações e dados para a nova conta
+      if (!isMaster) {
+        window.transactions = [];
+        transactions = [];
+        creditCards = [];
+        const txKey = typeof getUserTransactionsStorageKey === 'function' ? getUserTransactionsStorageKey(novoUsuario) : 'financas_transacoes_v4';
+        const cdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey(novoUsuario) : 'financas_credit_cards';
+        try {
+          localStorage.setItem(txKey, '[]');
+          localStorage.setItem(cdKey, '[]');
+          localStorage.setItem('financas_cloud_snapshot_restored', 'true'); // Impede restauração do snapshot do Rodrigo
+        } catch(e) {}
+      }
+
       loadData();
       if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      if (typeof updateDemoBannerUI === 'function') updateDemoBannerUI();
       if (typeof updateDashboard === 'function') updateDashboard();
 
       window.forceUnlockAuthOverlay();
@@ -28806,6 +28850,9 @@ Frase falada: "${spokenText}"`;
       console.log('[CtrlPig] Modo demo ativo: bloqueando sincronização nativa');
       return;
     }
+    if (typeof isCurrentUserMaster === 'function' && !isCurrentUserMaster()) {
+      return;
+    }
     if (!Array.isArray(supabaseTxs)) return;
     if (localStorage.getItem('financas_cloud_snapshot_restored') === 'true') {
       return;
@@ -28891,6 +28938,12 @@ Frase falada: "${spokenText}"`;
   window.restoreCloudSnapshotIfAvailable = async function() {
     if (localStorage.getItem('ctrlpig_demo_user_mode') === 'true') {
       console.log('[CtrlPig] Modo demo ativo: bloqueando restauração de snapshot da nuvem');
+      return;
+    }
+    // PROTEÇÃO TOTAL: O snapshot na nuvem (id: 999999) pertence EXCLUSIVAMENTE a Rodrigo Cardoso.
+    // Qualquer outro usuário, parceiro ou conta com cupom NUNCA deve restaurar dados do Rodrigo!
+    if (typeof isCurrentUserMaster === 'function' && !isCurrentUserMaster()) {
+      console.log('[CtrlPig] Usuário comum ou convidado: restauração de snapshot restrita ao Admin Master.');
       return;
     }
     try {
@@ -33333,6 +33386,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 // ============================================================================
 window.updateDemoBannerUI = function() {
     const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+    const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
     const banner = document.getElementById('demoModeStickyBanner');
     if (banner) {
         if (isDemo) {
@@ -33343,7 +33397,7 @@ window.updateDemoBannerUI = function() {
     }
     const adminBtn = document.getElementById('btnAdminHeader');
     if (adminBtn) {
-        if (isDemo) {
+        if (!isMaster || isDemo) {
             adminBtn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i><span>Painel</span>';
             adminBtn.title = 'Painel do Usuário: Membros da Família, Notificações & Personalizar Dashboard';
         } else {
@@ -33355,10 +33409,10 @@ window.updateDemoBannerUI = function() {
     const rodrigoBtn = document.getElementById('btnUserFilter_Rodrigo');
     const marciaBtn = document.getElementById('btnUserFilter_Marcia');
     if (rodrigoBtn && rodrigoBtn.parentElement) {
-        rodrigoBtn.parentElement.style.display = isDemo ? 'none' : 'inline-flex';
+        rodrigoBtn.parentElement.style.display = (!isMaster || isDemo) ? 'none' : 'inline-flex';
     }
     if (marciaBtn && marciaBtn.parentElement) {
-        marciaBtn.parentElement.style.display = isDemo ? 'none' : 'inline-flex';
+        marciaBtn.parentElement.style.display = (!isMaster || isDemo) ? 'none' : 'inline-flex';
     }
 };
 
