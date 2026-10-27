@@ -27115,20 +27115,33 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     };
 
     // 4. Modal de Permissões no Primeiro Acesso
-    function checkFirstAccessPermissions() {
-      const done = localStorage.getItem('ctrlpig_onboarding_perm_done');
-      if (!done) {
-        setTimeout(() => {
-          const modal = document.getElementById('modalFirstAccessPermissions');
-          if (modal) modal.classList.remove('hidden');
-        }, 1500);
+    window.checkFirstAccessPermissions = function() {
+      const isAuth = localStorage.getItem('ctrlpig_notifications_authorized') === 'true';
+      const done = localStorage.getItem('ctrlpig_onboarding_perm_done') === 'true';
+      if (isAuth || done) return;
+
+      // Não exibe se o app estiver bloqueado ou na tela de login
+      if (document.documentElement.classList.contains('require-auth')) return;
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl && !authEl.classList.contains('hidden') && authEl.style.display !== 'none') return;
+
+      const modal = document.getElementById('modalFirstAccessPermissions');
+      if (modal) {
+        if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.zIndex = '99999';
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
       }
-    }
+    };
 
     window.grantFirstAccessPermissions = function() {
       localStorage.setItem('ctrlpig_onboarding_perm_done', 'true');
       const modal = document.getElementById('modalFirstAccessPermissions');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
       requestAppNotificationPermission();
       showToastUndo('🔔 Permissões autorizadas com sucesso!', false);
     };
@@ -27136,7 +27149,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     window.dismissFirstAccessPermissions = function() {
       localStorage.setItem('ctrlpig_onboarding_perm_done', 'true');
       const modal = document.getElementById('modalFirstAccessPermissions');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
     };
 
     // 5. Sugestões: Validação Estrita de Mínimo 3 Palavras
@@ -27464,7 +27480,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     // Inicialização ao carregar
     window.addEventListener('DOMContentLoaded', () => {
-      // checkFirstAccessPermissions(); /* Desativado para evitar bloqueio de cliques */
+      // Ativa verificação de permissão de notificação no primeiro acesso após dashboard autenticado
+      setTimeout(() => {
+        if (!document.documentElement.classList.contains('require-auth')) {
+          if (typeof window.checkFirstAccessPermissions === 'function') {
+            window.checkFirstAccessPermissions();
+          }
+        }
+      }, 1500);
       renderTestadoresSalvosAdmin();
       renderPiggyTipsAdminList();
     });
@@ -34783,8 +34806,18 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     };
   }
 
-  // FLUXO PÓS-LOGIN: PERFIL E TUTORIAL DO PROFESSOR
+  // FLUXO PÓS-LOGIN: NOTIFICAÇÕES NO PRIMEIRO ACESSO, PERFIL E TUTORIAL DO PROFESSOR
   window.checkPostLoginFlow = function() {
+    // 1. Permissões de Notificação no Primeiro Acesso
+    const isAuth = localStorage.getItem('ctrlpig_notifications_authorized') === 'true';
+    const isPermDone = localStorage.getItem('ctrlpig_onboarding_perm_done') === 'true';
+    if (!isAuth && !isPermDone) {
+      if (typeof window.checkFirstAccessPermissions === 'function') {
+        setTimeout(window.checkFirstAccessPermissions, 600);
+      }
+      return;
+    }
+
     const profileCompleted = localStorage.getItem('financas_user_profile_completed') === 'true';
     if (!profileCompleted) {
       const modalProfile = document.getElementById('modalUserProfileSetup');
