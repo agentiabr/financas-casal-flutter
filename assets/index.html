@@ -5473,13 +5473,7 @@ html, body {
 
     </div>
 
-    <!-- 3. BOTÃO FLUTUANTE REDONDO FIXO: ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
-    <div class="absolute bottom-5 right-5 z-40">
-      <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white flex flex-col items-center justify-center shadow-2xl border-2 border-emerald-400 cursor-pointer transition-all hover:scale-105" title="Escanear QR-Code NFC-e">
-        <i data-lucide="qr-code" class="w-6 h-6 text-emerald-400"></i>
-        <span class="text-[8px] font-black tracking-tighter uppercase text-emerald-300 -mt-0.5">QR-NF</span>
-      </button>
-    </div>
+
   </div>
 
 
@@ -9631,6 +9625,12 @@ html, body {
       if (elValComp) {
         elValComp.textContent = `${percentGasto}%`;
         elValComp.dataset.real = `${percentGasto}%`;
+      }
+      const elValParcelados = document.getElementById('valParcelados');
+      if (elValParcelados) {
+        const activeParcs = typeof getActiveInstallments === 'function' ? getActiveInstallments() : [];
+        elValParcelados.textContent = `${activeParcs.length} ativas`;
+        elValParcelados.dataset.real = `${activeParcs.length} ativas`;
       }
       if (elValDias && typeof getCycleDaysRemainingInfo === 'function') {
         const cycleInfo = getCycleDaysRemainingInfo(currentCycle);
@@ -15757,26 +15757,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     const INITIAL_CLEAN_CHAT_MESSAGES = [
       {
-        id: "m_1",
-        sender: "Márcia",
-        avatar: "👩",
+        id: "m_intro",
+        sender: "ControlPig",
+        avatar: "🐷",
         isMe: false,
-        text: "Oi, amor! Mandei a lista de mercado de hoje. Conforme for pegando na gôndola, vai marcando e colocando o preço pra não ter surpresa no caixa! 💕",
-        time: "17:15"
-      },
-      {
-        id: "m_2",
-        type: "shopping_list_card",
-        sender: "Sistema",
-        time: "17:16"
-      },
-      {
-        id: "m_3",
-        sender: "Rodrigo",
-        avatar: "👨",
-        isMe: true,
-        text: "Pode deixar, amor! Já peguei o leite e o pão. O iogurte Nestlé não tinha, marquei como esgotado.",
-        time: "17:22"
+        text: "👋 Bem-vindo ao Chat da Família! Aqui vocês podem conversar, ditar despesas por voz, enviar e sincronizar a Lista de Compras do mercado em tempo real entre Rodrigo e Márcia.",
+        time: "10:00"
       }
     ];
 
@@ -17195,10 +17181,30 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const items = getActiveShoppingItems();
       const it = items.find(x => x.id === id);
       if (it) {
-        it.status = it.status === 'nao_tinha' ? 'pendente' : 'nao_tinha';
+        const wasMissing = it.status === 'nao_tinha';
+        it.status = wasMissing ? 'pendente' : 'nao_tinha';
         saveActiveShoppingItems(items);
         updateCartSummaryUI();
         renderCleanChatStream();
+
+        // Envia mensagem no chat da família informando quem enviou a lista
+        if (!wasMissing) {
+          const activeUser = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Rodrigo';
+          const partnerName = activeUser.toLowerCase().includes('rodrigo') ? 'Márcia' : 'Rodrigo';
+          const timeNow = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          const msgs = getCleanChatMessages();
+          msgs.push({
+            id: 'm_missing_' + Date.now(),
+            sender: activeUser,
+            avatar: activeUser.toLowerCase().includes('rodrigo') ? '👨' : '👩',
+            isMe: true,
+            text: `⚠️ Aviso do mercado: Procurei na gôndola, mas não tem "${it.nome}" hoje!`,
+            time: timeNow
+          });
+          saveCleanChatMessages(msgs);
+          renderCleanChatStream();
+          showToastUndo(`⚠️ Notificado no chat: Não tem "${it.nome}".`, false);
+        }
       }
     }
 
@@ -21134,15 +21140,18 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       saveHealthScheduleSettings(settings);
       window.renderHealthAlarmStyleUI();
 
+      if (typeof stopMedicationAlarmAudio === 'function') {
+        stopMedicationAlarmAudio();
+      }
       if (style === 'female') {
         showToastUndo('👩 Alarme configurado para Voz Feminina (Mulher)!', false);
-        if (typeof speakMedicationAlarm === 'function') {
-          speakMedicationAlarm('Alarme configurado para voz feminina.', true);
+        if (typeof window.speakSingleNotice === 'function') {
+          window.speakSingleNotice('Alarme configurado para voz feminina.');
         }
       } else if (style === 'male') {
         showToastUndo('👨 Alarme configurado para Voz Masculina (Homem)!', false);
-        if (typeof speakMedicationAlarm === 'function') {
-          speakMedicationAlarm('Alarme configurado para voz masculina.', true);
+        if (typeof window.speakSingleNotice === 'function') {
+          window.speakSingleNotice('Alarme configurado para voz masculina.');
         }
       } else if (style === 'vibrate') {
         showToastUndo('📳 Alarme configurado para Somente Vibrar (Silencioso)!', false);
@@ -25621,10 +25630,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <p class="text-[11px] text-blue-200">Faculdade, especialização, cursos, livros, materiais e cofrinhos</p>
         </div>
       </div>
-      <button type="button" onclick="openNewTxModalWithCat('Educação')" class="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
-        <i data-lucide="plus" class="w-4 h-4"></i>
-        <span>Adicionar</span>
-      </button>
+
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -29542,9 +29548,9 @@ Frase falada: "${spokenText}"`;
         localStorage.setItem('ctrlpig_notif_spoken_once', 'true');
         window._userExplicitlyClickedNotifAuth = false;
         showToastUndo('🔔 Notificações e alertas autorizados com sucesso!', false);
-        // Fala UMA ÚNICA VEZ e NUNCA repete
-        if (typeof window.speakSingleNotice === 'function') {
-          window.speakSingleNotice('Notificações e alertas ativados com sucesso.');
+        // Não dispara áudios nem alarmes ao autorizar permissão
+        if (typeof stopMedicationAlarmAudio === 'function') {
+          stopMedicationAlarmAudio();
         }
       }
       window._userExplicitlyClickedNotifAuth = false;
@@ -37810,6 +37816,20 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   }
 
   const initialize = () => {
+    // Aplica imediatamente a persistência do olhinho salvo pelo usuário
+    const savedHeroPrivacy = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+    if (savedHeroPrivacy) {
+      const elSaldo = document.getElementById('heroSaldoText');
+      const elRec = document.getElementById('heroReceitasVal');
+      const elDesp = document.getElementById('heroDespesasVal');
+      if (elSaldo) elSaldo.textContent = 'R$ •••••';
+      if (elRec) elRec.textContent = '+ R$ •••••';
+      if (elDesp) elDesp.textContent = '- R$ •••••';
+      const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
+      eyeIcons.forEach(eyeIcon => {
+        eyeIcon.setAttribute('data-lucide', 'eye-off');
+      });
+    }
     window.piggyTips = updateTipsFromAdmin();
     if (window.piggyTips.length) window.stepPiggyTip(0);
     prepareChat();
@@ -39531,6 +39551,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const elTxEntradas = document.getElementById('screenTxTotalEntradas');
       const elTxSaldo = document.getElementById('screenTxSaldoLivre');
       const elTxBadge = document.getElementById('screenTxCountBadge');
+      const isHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
 
       if (elTxGastos) elTxGastos.textContent = (typeof formatBRL === 'function' ? formatBRL(totalGastos, 'despesa') : 'R$ ' + totalGastos.toFixed(2));
       if (elTxEntradas) elTxEntradas.textContent = (typeof formatBRL === 'function' ? '+ ' + formatBRL(totalReceitas, 'receitas') : '+ R$ ' + totalReceitas.toFixed(2));
