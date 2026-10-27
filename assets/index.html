@@ -2676,8 +2676,8 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr auto 1fr 1fr;
-  max-width: 28rem; /* 448px */
+  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
   padding-left: 0.5rem;
@@ -3188,8 +3188,8 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr auto 1fr 1fr;
-  max-width: 28rem; /* 448px */
+  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
   padding-left: 0.5rem;
@@ -3884,8 +3884,8 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr auto 1fr 1fr;
-  max-width: 28rem; /* 448px */
+  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
   padding-left: 0.5rem;
@@ -5142,30 +5142,36 @@ html, body {
           <span>Início</span>
         </button>
 
-        <!-- 2. Lista de Compras -->
-        <button id="navTab_compras" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bottom-nav-item">
-          <i data-lucide="shopping-cart" class="w-5 h-5 mb-0.5"></i>
-          <span>Lista</span>
+        <!-- 2. Transações -->
+        <button id="navTab_transacoes" onclick="switchScreen('transacoes')" class="bottom-nav-item">
+          <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
+          <span>Transações</span>
         </button>
 
-        <!-- 3. Botão Central (+) Flutuante em Círculo (Hub de Ações Rápidas) -->
+        <!-- 3. Mercado -->
+        <button id="navTab_compras" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bottom-nav-item">
+          <i data-lucide="shopping-cart" class="w-5 h-5 mb-0.5"></i>
+          <span>Mercado</span>
+        </button>
+
+        <!-- 4. Botão Central (+) Flutuante em Círculo (Hub de Ações Rápidas) -->
         <div class="flex items-center justify-center -mt-4 px-1 select-none">
           <button type="button" onclick="openActionHubModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Novo Lançamento ou Ação Rápida">
             <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
           </button>
         </div>
 
-        <!-- 4. Família & Vida -->
+        <!-- 5. Família & Vida -->
         <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
           <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
           <span>Família &amp; Vida</span>
         </button>
 
-        <!-- 5. Chat -->
+        <!-- 6. Chat -->
         <button id="navTab_chat" onclick="openFamilyChatModal()" class="bottom-nav-item relative">
           <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
           <span>Chat</span>
-          <span class="absolute top-1 right-4 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         </button>
 
       </div>
