@@ -7870,7 +7870,18 @@ html, body {
     }
 
     function closeCreatePiggyModal() {
-      document.getElementById('modalCreatePiggy').classList.add('hidden');
+      const m = document.getElementById('modalCreatePiggy');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+      if (window._originModalBeforeCreatePiggy === 'educacao') {
+        window._originModalBeforeCreatePiggy = null;
+        if (typeof window.openEducacaoHub === 'function') window.openEducacaoHub();
+      } else if (window._originModalBeforeCreatePiggy === 'veiculos') {
+        window._originModalBeforeCreatePiggy = null;
+        if (typeof window.openVeiculosHub === 'function') window.openVeiculosHub();
+      }
     }
 
     function handleCreatePiggy(e) {
@@ -21549,6 +21560,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function renderHealthMedsUI() {
+      const routineTitle = document.getElementById('healthActiveRoutineTitle');
+      if (routineTitle) {
+        const uName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.trim() : 'Rodrigo';
+        routineTitle.textContent = `Rotina ${uName}`;
+      }
       renderHealthAudioToggleUI();
       const meds = getHealthMeds();
       const settings = getHealthScheduleSettings();
@@ -22626,7 +22642,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="flex items-center justify-between">
               <span class="text-[11px] text-slate-500 dark:text-slate-400 font-bold">Membros cadastrados:</span>
               <span class="text-[11px] font-black text-indigo-700 dark:text-indigo-300" id="adminMembrosCount">
-                2 membros ativos (Rodrigo & Márcia)
+                1 membro ativo
               </span>
             </div>
           </div>
@@ -24497,10 +24513,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <p class="text-[11px] text-slate-500 font-medium">Controle diário de horários e medicação contínua</p>
             </div>
           </div>
-          <button type="button" onclick="openHealthExpenseQuickModal()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Lançar Gasto</span>
-          </button>
+
         </div>
 
         <!-- SELETOR DE ABAS DA SAÚDE: REMÉDIOS vs ACADEMIA & ATLETA -->
@@ -25788,7 +25801,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             </p>
           </div>
         </div>
-        <button type="button" onclick="closeVeiculosHub(); openCreatePiggyPrefilled('IPVA & Seguro Veículos', 3600)" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
+        <button type="button" onclick="window._originModalBeforeCreatePiggy = 'veiculos'; closeVeiculosHub(); openCreatePiggyPrefilled('IPVA & Seguro Veículos', 3600)" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
           <span>Criar Cofrinho IPVA 🚗</span>
         </button>
       </div>
@@ -25892,7 +25905,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             </p>
           </div>
         </div>
-        <button type="button" onclick="closeEducacaoHub(); openCreatePiggyPrefilled('Formatura & Estudos', 3000)" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
+        <button type="button" onclick="window._originModalBeforeCreatePiggy = 'educacao'; closeEducacaoHub(); openCreatePiggyPrefilled('Formatura & Estudos', 3000)" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer flex-shrink-0">
           <span>Criar Cofrinho Formatura 🎓</span>
         </button>
       </div>
@@ -36317,7 +36330,25 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
   };
 
-  window.openHealthMedsModal = function() {
+    window.ensureModalsOnBody = function() {
+    try {
+      const modalIds = [
+        'modalAddNewContinuousMed', 'modalEditMedication', 'modalMedTakeConfirmation',
+        'modalAddEditPet', 'modalAddPetVaccine', 'modalAddEditPetCare', 'modalPetQrCode',
+        'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel',
+        'modalManageCards', 'modalVeiculosHub', 'modalEducacaoHub', 'modalSelectCycle',
+        'modalComparativoMercados', 'modalNewTx', 'modalEditTx', 'modalTrash',
+        'modalCreatePiggy', 'modalPiggyDepositSpecific', 'modalPiggyWithdrawSpecific'
+      ];
+      modalIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement !== document.body) {
+          document.body.appendChild(el);
+        }
+      });
+    } catch(e) {}
+  };
+window.openHealthMedsModal = function() {
     window.ensureModalsOnBody();
     const m = document.getElementById('modalHealthMeds');
     if (m) {
@@ -36460,6 +36491,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       m.classList.add('hidden');
       m.style.display = 'none';
     }
+    if (window._originModalBeforeCreatePiggy === 'educacao') {
+      window._originModalBeforeCreatePiggy = null;
+      if (typeof window.openEducacaoHub === 'function') window.openEducacaoHub();
+    } else if (window._originModalBeforeCreatePiggy === 'veiculos') {
+      window._originModalBeforeCreatePiggy = null;
+      if (typeof window.openVeiculosHub === 'function') window.openVeiculosHub();
+    }
   };
 
   // 5. NOVA TRANSAÇÃO E EDIÇÃO
@@ -36567,13 +36605,19 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   };
   window.closeNotificationsModal = window.closeNotificationsCenterModal;
 
+  // Mantém openAdminModal com checagem de Master/Usuário protegida
+  const _origCallAdmin = window.openAdminModal;
   window.openAdminModal = function() {
-    window.ensureModalsOnBody();
-    const m = document.getElementById('modalAdminPanel');
-    if (m) {
-      if (m.parentElement !== document.body) document.body.appendChild(m);
-      m.classList.remove('hidden');
-      m.style.display = 'flex';
+    if (typeof window.ensureModalsOnBody === 'function') window.ensureModalsOnBody();
+    if (typeof _origCallAdmin === 'function') {
+      _origCallAdmin();
+    } else {
+      const m = document.getElementById('modalAdminPanel');
+      if (m) {
+        if (m.parentElement !== document.body) document.body.appendChild(m);
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
     }
     if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
     if (typeof renderPiggyTipsAdminList === 'function') renderPiggyTipsAdminList();
@@ -37258,6 +37302,31 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     const container = document.getElementById('cyclesListContainer');
     if (!container) return;
     
+    const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+    if (!isMaster) {
+      const uTxs = Array.isArray(window.transactions) ? window.transactions : (Array.isArray(transactions) ? transactions : []);
+      const rec = uTxs.filter(t => t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+      const desp = uTxs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+      container.innerHTML = `
+        <div class="p-3.5 rounded-2xl border bg-blue-50/80 border-blue-500 shadow-xs flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm">
+              ✓
+            </div>
+            <div>
+              <strong class="text-sm font-black text-blue-900 block">Ciclo Atual</strong>
+              <span class="text-[11px] text-slate-500 font-semibold">05/Out a 04/Nov 2026</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-black block text-rose-600">- R$ ${desp.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${rec.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
     let html = '';
     const keys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
     keys.forEach(k => {
@@ -37533,9 +37602,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
   };
 
-  // Inicializa ciclo ativo com dados reais de Outubro 2026
-  if (window.appCyclesData[window.currentActiveCycleKey]) {
+  // Inicializa ciclo ativo (Dados reais apenas para o Master Oficial; conta nova/sócio inicia limpa e isolada)
+  const isMasterUser = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+  if (isMasterUser && window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey]) {
     window.transactions = window.appCyclesData[window.currentActiveCycleKey].transactions;
+  } else if (!isMasterUser) {
+    window.transactions = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : [];
   }
 
   // Executa na carga da página
@@ -37650,16 +37722,16 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
   // Abrir modal de remédios garantindo anexo ao body com prioridade absoluta no topo
   window.openAddNewContinuousMedModal = function() {
-    window.ensureModalsOnBody();
+    if (typeof window.ensureModalsOnBody === 'function') window.ensureModalsOnBody();
     const m = document.getElementById('modalAddNewContinuousMed');
     if (m) {
-      document.body.appendChild(m);
+      if (m.parentElement !== document.body) document.body.appendChild(m);
       m.style.zIndex = '2500';
       m.classList.remove('hidden');
       m.style.display = 'flex';
     }
     if (typeof window.renderDynamicMedTimeInputs === 'function') {
-      window.renderDynamicMedTimeInputs('new', ['06:50', '20:00']);
+      try { window.renderDynamicMedTimeInputs('new', ['06:50', '20:00']); } catch(_) {}
     }
     if (window.lucide) lucide.createIcons();
   };
@@ -37677,6 +37749,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 (function () {
   const getCycleTransactions = () => {
     try {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      if (!isMaster) {
+        return Array.isArray(window.transactions) ? window.transactions : (Array.isArray(transactions) ? transactions : []);
+      }
       if (typeof getTransactionsForActiveCycle === 'function') return getTransactionsForActiveCycle() || [];
       return Array.isArray(window.transactions) ? window.transactions : [];
     } catch (_) { return []; }
@@ -39675,7 +39751,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   window.openTransactionModal = window.openNewTxModal;
   window.closeNewTxModal = function() { hideElement('modalNewTx'); };
 
-  window.openAdminModal = function() {
+  // Não sobrescreve openAdminModal para preservar proteção Master
+  window.openAdminModalDirect = function() {
     ensureElementVisible('modalAdminPanel');
     if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
   };
