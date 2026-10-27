@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="require-auth">
 <head>
+  <script>
+    (function() {
+      try {
+        var h = localStorage.getItem('ctrlpig_hero_balance_hidden');
+        if (h === null || h === 'true') {
+          document.documentElement.classList.add('hero-balance-hidden');
+        }
+      } catch(e) {}
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Diretivas Anti-Cache para Atualizações Instantâneas entre Versões -->
@@ -4425,7 +4435,7 @@ html, body {
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
                 <div class="mt-1 flex items-baseline gap-2">
                   <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                    R$ 1.221,87
+                    R$ •••••
                   </h2>
                 </div>
               </div>
@@ -4433,7 +4443,7 @@ html, body {
               <!-- Lado Direito: Olhinho no topo e Botão Discreto de Lançar Valores logo abaixo -->
               <div class="flex flex-col items-end gap-1.5 -mr-1">
                 <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
-                  <i data-lucide="eye" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
+                  <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
                 </button>
                 <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-[11px] border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar valores (por voz, foto de cupom ou digitação)">
                   <span class="text-blue-600 font-black text-xs leading-none">+</span>
@@ -4499,7 +4509,7 @@ html, body {
                 </div>
                 <div>
                   <span class="text-[10px] font-bold text-emerald-800 uppercase block">Receitas</span>
-                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ 5.560,00</span>
+                  <span id="heroReceitasVal" class="text-sm font-black text-emerald-700">+ R$ •••••</span>
                 </div>
               </div>
               <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3 flex items-center gap-2.5">
@@ -4508,12 +4518,31 @@ html, body {
                 </div>
                 <div>
                   <span class="text-[10px] font-bold text-rose-800 uppercase block">Despesas</span>
-                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ 4.338,13</span>
+                  <span id="heroDespesasVal" class="text-sm font-black text-rose-700">- R$ •••••</span>
                 </div>
               </div>
             </div>
 
           </div>
+          <script>
+            (function() {
+              try {
+                var isHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') !== 'false';
+                var sEl = document.getElementById('heroSaldoText');
+                var rEl = document.getElementById('heroReceitasVal');
+                var dEl = document.getElementById('heroDespesasVal');
+                var eye = document.getElementById('iconHeroPrivacy');
+                if (isHidden) {
+                  if (sEl) sEl.textContent = 'R$ •••••';
+                  if (rEl) rEl.textContent = '+ R$ •••••';
+                  if (dEl) dEl.textContent = '- R$ •••••';
+                  if (eye) eye.setAttribute('data-lucide', 'eye-off');
+                } else {
+                  if (eye) eye.setAttribute('data-lucide', 'eye');
+                }
+              } catch(e) {}
+            })();
+          </script>
         </div>
 
         <!-- ============================================================== -->
@@ -9659,13 +9688,17 @@ html, body {
       const elValComp = document.getElementById('valComprometido');
       const elValDias = document.getElementById('valDiasRestantes');
       const elHeroBadge = document.getElementById('heroSaldoBadge');
-      const isHeroBalanceHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+      const isHeroBalanceHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') !== 'false';
 
-      // O olhinho esconde TODO o card de Saldo Total (Saldo Livre, Receitas e Despesas)
+      // O olhinho esconde TODO o card de Saldo Total (Saldo Livre, Receitas e Despesas) SEM NENHUM VAZAMENTO
       if (elSaldoText) {
         const formattedSaldo = typeof formatBRL === 'function' ? formatBRL(saldoLivre, 'saldo') : 'R$ ' + saldoLivre.toFixed(2);
         elSaldoText.dataset.real = formattedSaldo;
         elSaldoText.textContent = isHeroBalanceHidden ? 'R$ •••••' : formattedSaldo;
+      }
+      const heroEyeIcon = document.getElementById('iconHeroPrivacy');
+      if (heroEyeIcon) {
+        heroEyeIcon.setAttribute('data-lucide', isHeroBalanceHidden ? 'eye-off' : 'eye');
       }
       if (elReceitasVal) {
         const formattedReceitas = typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2);
@@ -37320,7 +37353,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         }
         saldoText.textContent = 'R$ •••••';
       } else {
-        saldoText.textContent = saldoText.dataset.real || 'R$ 1.221,87';
+        saldoText.textContent = saldoText.dataset.real || 'R$ 0,00';
       }
     }
 
