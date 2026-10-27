@@ -37378,6 +37378,63 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     image.alt = state === 'negativo' ? 'Piggy triste: saldo negativo' : state === 'alerta' ? 'Piggy preocupado: saldo comprometido' : 'Piggy positivo';
   }
 
+  function drawNativeCategoryDonut(canvas, dataValues, colors) {
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    const width = 144;
+    const height = 144;
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+
+    ctx.save();
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, width, height);
+
+    const total = dataValues.reduce((a, b) => a + (Number(b) || 0), 0);
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 54;
+    const lineWidth = 20;
+
+    if (total <= 0) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    let currentAngle = -0.5 * Math.PI;
+    dataValues.forEach((val, i) => {
+      const sliceAngle = (val / total) * 2 * Math.PI;
+      if (sliceAngle <= 0) return;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = colors[i % colors.length];
+      ctx.lineCap = 'butt';
+      ctx.stroke();
+
+      if (dataValues.length > 1) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + 0.03);
+        ctx.lineWidth = lineWidth + 2;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+      }
+
+      currentAngle += sliceAngle;
+    });
+    ctx.restore();
+  }
+
   function refreshHomeCategoryBreakdown(txs) {
     const totals = new Map();
     txs.filter(t => t.tipo !== 'Receita').forEach(t => {
@@ -37390,43 +37447,99 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     if (sorted.length > 8) top.push(['Outras', sorted.slice(8).reduce((sum, item) => sum + item[1], 0)]);
     const chartCanvas = document.getElementById('previewDonutChart');
     const colors = ['#2563EB', '#F59E0B', '#0EA5E9', '#A855F7', '#10B981', '#F43F5E', '#6366F1', '#14B8A6', '#94A3B8'];
-    if (chartCanvas && window.Chart && window.Chart.getChart) {
-      const chart = window.Chart.getChart(chartCanvas);
-      if (chart) {
-        chart.data.labels = top.map(item => item[0]);
-        chart.data.datasets[0].data = top.map(item => item[1]);
-        chart.data.datasets[0].backgroundColor = colors.slice(0, top.length);
-        chart.update();
+
+    if (chartCanvas) {
+      const labels = top.map(item => item[0]);
+      const dataValues = top.map(item => item[1]);
+
+      // 1. Sempre renderiza nativamente no canvas (zero dependência de rede, 100% à prova de falhas)
+      drawNativeCategoryDonut(chartCanvas, dataValues, colors);
+
+      // 2. Se o Chart.js estiver disponível, inicializa ou atualiza o gráfico para permitir hover/tooltips interativos
+      if (window.Chart) {
+        try {
+          let chart = window.homeCategoryChartInstance;
+          if (chart && chart.canvas === chartCanvas) {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = dataValues;
+            chart.data.datasets[0].backgroundColor = colors.slice(0, dataValues.length);
+            chart.update('none');
+          } else {
+            if (chart) {
+              try { chart.destroy(); } catch (_) {}
+            }
+            const ctx = chartCanvas.getContext('2d');
+            window.homeCategoryChartInstance = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                labels: labels,
+                datasets: [{
+                  data: dataValues,
+                  backgroundColor: colors.slice(0, dataValues.length),
+                  borderWidth: 2,
+                  borderColor: '#ffffff',
+                  hoverOffset: 4
+                }]
+              },
+              options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                animation: { duration: 300 },
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        const val = Number(context.parsed) || 0;
+                        const pct = totalExpenses > 0 ? ((val / totalExpenses) * 100).toFixed(1) : 0;
+                        const fmt = typeof formatBRL === 'function' ? formatBRL(val, 'despesa') : `R$ ${val.toFixed(2)}`;
+                        return ` ${context.label}: ${fmt} (${pct}%)`;
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          }
+        } catch (e) {
+          console.warn('Fallback ativo para Donut nativo:', e);
+        }
       }
     }
+
     const dashboard = document.getElementById('screen_dashboard');
     if (!dashboard) return;
     const heading = [...dashboard.querySelectorAll('h3')].find(el => /despesas por categoria/i.test(el.textContent));
-    const card = heading && heading.closest('.p-4');
+    const card = heading && heading.closest('.p-4, .bg-white');
     const totalLabel = card && card.querySelector('.text-base.font-black.text-slate-900');
     if (totalLabel) totalLabel.textContent = typeof formatBRL === 'function' ? formatBRL(totalExpenses, 'despesa') : `R$ ${totalExpenses.toFixed(2)}`;
     const row = card && card.querySelector('.flex.items-center.justify-around');
     const legend = row && row.children[1];
     if (legend) {
-      legend.className = 'space-y-1 text-xs w-full max-w-[190px] max-h-40 overflow-y-auto';
-      legend.replaceChildren(...top.map((item, index) => {
-        const line = document.createElement('div');
-        line.className = 'flex items-center justify-between gap-2';
-        const left = document.createElement('div');
-        left.className = 'flex items-center gap-1.5 min-w-0';
-        const dot = document.createElement('span');
-        dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0';
-        dot.style.backgroundColor = colors[index];
-        const label = document.createElement('span');
-        label.className = 'text-slate-700 font-medium text-[11px] truncate';
-        label.textContent = item[0];
-        const value = document.createElement('span');
-        value.className = 'font-bold text-slate-900 text-[11px] whitespace-nowrap';
-        value.textContent = totalExpenses > 0 ? `${Math.round(item[1] / totalExpenses * 100)}%` : '0%';
-        left.append(dot, label);
-        line.append(left, value);
-        return line;
-      }));
+      legend.className = 'space-y-1.5 text-xs w-full max-w-[190px] max-h-44 overflow-y-auto custom-scrollbar pr-1';
+      if (!top.length) {
+        legend.innerHTML = '<span class="text-xs text-slate-400 italic">Sem despesas registradas no ciclo.</span>';
+      } else {
+        legend.replaceChildren(...top.map((item, index) => {
+          const line = document.createElement('div');
+          line.className = 'flex items-center justify-between gap-2';
+          const left = document.createElement('div');
+          left.className = 'flex items-center gap-1.5 min-w-0';
+          const dot = document.createElement('span');
+          dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0';
+          dot.style.backgroundColor = colors[index % colors.length];
+          const label = document.createElement('span');
+          label.className = 'text-slate-700 font-medium text-[11px] truncate';
+          label.textContent = item[0];
+          const value = document.createElement('span');
+          value.className = 'font-bold text-slate-900 text-[11px] whitespace-nowrap';
+          value.textContent = totalExpenses > 0 ? `${Math.round(item[1] / totalExpenses * 100)}%` : '0%';
+          left.append(dot, label);
+          line.append(left, value);
+          return line;
+        }));
+      }
     }
   }
 
