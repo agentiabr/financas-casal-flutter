@@ -205,6 +205,7 @@ object AlarmAudioPlayer {
 object NotificationHelper {
     const val NOTIF_CHANNEL_ID = "ctrlpig_white_high_channel_v3"
     const val NOTIF_SHOPPING_CHANNEL_ID = "ctrlpig_shopping_channel_v1"
+    const val NOTIF_GENERAL_CHANNEL_ID = "ctrlpig_general_notifications_v1"
     const val ACTION_FIRE_ALARM = "com.antigravity.ctrlpig.ACTION_FIRE_ALARM"
     const val ACTION_SNOOZE_5M = "com.antigravity.ctrlpig.ACTION_SNOOZE_5M"
     const val ACTION_DISMISS = "com.antigravity.ctrlpig.ACTION_DISMISS"
@@ -242,9 +243,69 @@ object NotificationHelper {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
 
+            val genName = "Avisos Gerais & Segurança"
+            val genDesc = "Avisos da conta, códigos de acesso para redefinir senha e comunicados gerais"
+            val genChannel = NotificationChannel(NOTIF_GENERAL_CHANNEL_ID, genName, NotificationManager.IMPORTANCE_HIGH).apply {
+                description = genDesc
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 150, 250)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(channel)
             nm.createNotificationChannel(shopChannel)
+            nm.createNotificationChannel(genChannel)
+        }
+    }
+
+    fun showStandardNotification(
+        context: Context,
+        title: String,
+        body: String,
+        notifId: Int
+    ): Boolean {
+        return try {
+            ensureChannel(context)
+
+            val pendingFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+
+            val openIntent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val openPending = PendingIntent.getActivity(context, notifId, openIntent, pendingFlags)
+
+            val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NOTIF_GENERAL_CHANNEL_ID else NOTIF_CHANNEL_ID
+            val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Notification.Builder(context, channelId)
+            } else {
+                @Suppress("DEPRECATION")
+                Notification.Builder(context).setPriority(Notification.PRIORITY_HIGH)
+            }
+
+            builder.setSmallIcon(context.applicationInfo.icon)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setContentIntent(openPending)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                builder.setStyle(Notification.BigTextStyle().bigText(body))
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setVisibility(Notification.VISIBILITY_PUBLIC)
+                builder.setCategory(Notification.CATEGORY_MESSAGE)
+            }
+
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.notify(notifId, builder.build())
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 
@@ -337,6 +398,34 @@ object NotificationHelper {
                          body.contains("🛒", ignoreCase = true)
         if (isShopping) {
             return showShoppingNotification(context, title, body, notifId)
+        }
+
+        // Se a notificação for de código de acesso, recuperação de senha, ativação ou segurança geral:
+        val isAuthOrSecurity = title.contains("Código", ignoreCase = true) ||
+                               title.contains("Senha", ignoreCase = true) ||
+                               title.contains("Redefinir", ignoreCase = true) ||
+                               title.contains("Acesso", ignoreCase = true) ||
+                               title.contains("Segurança", ignoreCase = true) ||
+                               body.contains("Código", ignoreCase = true) ||
+                               body.contains("senha", ignoreCase = true) ||
+                               body.contains("redefinir", ignoreCase = true) ||
+                               body.contains("ativada com sucesso", ignoreCase = true) ||
+                               body.contains("verificação", ignoreCase = true)
+
+        val isExplicitMedAlarm = slotTime.isNotEmpty() ||
+                                 title.contains("Remédio", ignoreCase = true) ||
+                                 title.contains("Medicamento", ignoreCase = true) ||
+                                 title.contains("Hora do Remédio", ignoreCase = true) ||
+                                 title.contains("Pílula", ignoreCase = true) ||
+                                 title.contains("Tratamento", ignoreCase = true) ||
+                                 title.contains("Saúde", ignoreCase = true) ||
+                                 body.contains("remédio", ignoreCase = true) ||
+                                 body.contains("medicamento", ignoreCase = true) ||
+                                 body.contains("dose", ignoreCase = true)
+
+        // Se for código/senha, OU se NÃO for alarme explícito de saúde/remédio (sem slot, sem fala e sem termos de remédio):
+        if (isAuthOrSecurity || (!isExplicitMedAlarm && speechText.isEmpty() && slotTime.isEmpty())) {
+            return showStandardNotification(context, title, body, notifId)
         }
 
         return try {
@@ -687,8 +776,20 @@ class MainActivity: FlutterFragmentActivity() {
                     val body = call.argument<String>("body") ?: ""
                     val speech = call.argument<String>("speech") ?: ""
                     val slot = call.argument<String>("slot") ?: ""
+                    val type = call.argument<String>("type") ?: ""
                     val notifId = call.argument<Int>("id") ?: (System.currentTimeMillis() % 100000).toInt()
-                    val ok = NotificationHelper.showWhiteCardNotification(this, title, body, notifId, speech, slot)
+                    val ok = if (type == "auth" || type == "general") {
+                        NotificationHelper.showStandardNotification(this, title, body, notifId)
+                    } else {
+                        NotificationHelper.showWhiteCardNotification(this, title, body, notifId, speech, slot)
+                    }
+                    result.success(ok)
+                }
+                "showStandardNotification" -> {
+                    val title = call.argument<String>("title") ?: "ControlPig"
+                    val body = call.argument<String>("body") ?: ""
+                    val notifId = call.argument<Int>("id") ?: (System.currentTimeMillis() % 100000).toInt()
+                    val ok = NotificationHelper.showStandardNotification(this, title, body, notifId)
                     result.success(ok)
                 }
                 "showShoppingNotification" -> {

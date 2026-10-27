@@ -548,23 +548,34 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
               .invokeMethod('setAlarmStyle', {'style': style});
         } catch (_) {}
-      } else if (action == 'show_notification') {
+      } else if (action == 'show_notification' || action == 'show_standard_notification') {
         final title = data['title'] as String? ?? 'ControlPig';
         final body = data['body'] as String? ?? '';
         final speech = data['speech'] as String? ?? '';
         final slot = data['slot'] as String? ?? '';
+        final type = data['type'] as String? ?? (action == 'show_standard_notification' ? 'general' : '');
         final id = data['id'] is int
             ? data['id'] as int
             : (DateTime.now().millisecondsSinceEpoch % 100000);
         try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('showNotification', {
-            'title': title,
-            'body': body,
-            'speech': speech,
-            'slot': slot,
-            'id': id,
-          });
+          if (action == 'show_standard_notification' || type == 'auth' || type == 'general') {
+            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                .invokeMethod('showStandardNotification', {
+              'title': title,
+              'body': body,
+              'id': id,
+            });
+          } else {
+            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
+                .invokeMethod('showNotification', {
+              'title': title,
+              'body': body,
+              'speech': speech,
+              'slot': slot,
+              'type': type,
+              'id': id,
+            });
+          }
         } catch (e) {
           debugPrint('Aviso ao disparar notificação nativa: $e');
         }

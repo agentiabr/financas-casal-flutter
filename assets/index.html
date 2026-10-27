@@ -14393,6 +14393,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
             action: 'show_notification',
+            type: 'auth',
             title: '🐷 CtrlPig Controle Financeiro Inteligente',
             body: `Código de Acesso para redefinir sua senha: ${code}`,
             id: 94821
@@ -14502,6 +14503,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
             action: 'show_notification',
+            type: 'auth',
             title: '🐷 CtrlPig Controle Financeiro Inteligente',
             body: `Sua nova senha foi ativada com sucesso, ${found.nome}!`,
             id: 94822
@@ -28848,6 +28850,7 @@ Frase falada: "${spokenText}"`;
       try {
         window.FlutterBridge.postMessage(JSON.stringify({
           action: 'show_notification',
+          type: 'general',
           title: String(title || 'ControlPig'),
           body: String(body || ''),
           id: Math.floor(Date.now() % 100000)
@@ -31810,6 +31813,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       try {
         window.FlutterBridge.postMessage(JSON.stringify({
           action: 'show_notification',
+          type: 'med_alarm',
           title: title || '⏰ Hora do Remédio • ControlPig',
           body: body || '',
           speech: speechText || body || '',
