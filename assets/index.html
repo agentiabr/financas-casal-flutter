@@ -14330,7 +14330,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
       }
 
-      // ISOLAMENTO TOTAL DE DADOS: Se não for Rodrigo, zera transações e dados para a nova conta
+      // ISOLAMENTO TOTAL DE DADOS: Se não for Rodrigo, zera transações, membros e todos os módulos para a nova família
       if (!isMaster) {
         window.transactions = [];
         transactions = [];
@@ -14341,6 +14341,19 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
           localStorage.setItem(txKey, '[]');
           localStorage.setItem(cdKey, '[]');
           localStorage.setItem('financas_cloud_snapshot_restored', 'true'); // Impede restauração do snapshot do Rodrigo
+          localStorage.setItem('financas_membros_familia', JSON.stringify([{ id: 'm_' + Date.now(), nome: nome, papel: 'Titular', avatar: '👤' }]));
+          localStorage.setItem('ctrlpig_pets_list', '[]');
+          localStorage.setItem('ctrlpig_registered_pets', '[]');
+          localStorage.setItem('ctrlpig_pet_vaccines', '[]');
+          localStorage.setItem('ctrlpig_health_meds', '[]');
+          localStorage.setItem('continuousHealthMeds', '[]');
+          localStorage.setItem('ctrlpig_service_providers_v1', '[]');
+          localStorage.setItem('financas_active_shopping_items', '[]');
+          localStorage.setItem('ctrlpig_active_shopping_v1', '[]');
+          localStorage.setItem('financas_piggies_list', '[]');
+          localStorage.setItem('financas_piggies_v1', '[]');
+          localStorage.setItem('ctrlpig_custom_vehicles', '[]');
+          localStorage.setItem('ctrlpig_custom_education', '[]');
         } catch(e) {}
       }
 
@@ -14748,7 +14761,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         renderGeminiKeyUI();
         const memCount = document.getElementById('adminMembrosCount');
         const dinM = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
-        if (memCount) memCount.textContent = `${2 + dinM.length} membros ativos (Rodrigo, Márcia${dinM.length ? ', ' + dinM.map(m => m.nome).join(', ') : ''})`;
+        if (memCount) {
+          const isMasterFamily = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+          if (isMasterFamily) {
+            memCount.textContent = `${2 + dinM.length} membros ativos (Rodrigo, Márcia${dinM.length ? ', ' + dinM.map(m => m.nome).join(', ') : ''})`;
+          } else {
+            const userNome = (window.currentUserSession && window.currentUserSession.nome) || 'Família';
+            const listNomes = dinM.length ? dinM.map(m => m.nome).join(', ') : userNome;
+            memCount.textContent = `${dinM.length || 1} membro(s) ativo(s) (${listNomes})`;
+          }
+        }
       }
 
       const modal = document.getElementById('modalAdminPanel');
