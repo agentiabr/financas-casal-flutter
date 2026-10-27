@@ -9630,19 +9630,15 @@ html, body {
       const heroCompText = document.getElementById('heroMiniComprometimentoText');
       if (heroCompText) heroCompText.textContent = (saldoLivre >= 0) ? 'Saldo livre e saudável no ciclo' : 'Atenção: Saldo comprometido';
 
-      // Regra Dinâmica: Alerta Vermelho se Saldo Negativo
-      if (saldoLivre < 0) {
-        document.body.classList.add('theme-negative-alert');
-        if (heroBadgeEl) {
-          heroBadgeEl.innerHTML = '<i data-lucide="alert-triangle" class="w-3 h-3"></i><span>Saldo Negativo</span>';
-          heroBadgeEl.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-red-600/40 border border-red-300 text-red-100 backdrop-blur-sm animate-pulse';
-        }
-      } else {
-        document.body.classList.remove('theme-negative-alert');
-        if (heroBadgeEl) {
-          heroBadgeEl.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3"></i><span>Saldo Positivo</span>';
-          heroBadgeEl.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm';
-        }
+      // Regra Dinâmica: Alerta Vermelho Desativado / Removido (mantém tema azul uniforme)
+      document.body.classList.remove('theme-negative-alert');
+      if (heroBadgeEl) {
+        heroBadgeEl.innerHTML = (saldoLivre >= 0)
+          ? '<i data-lucide="check-circle" class="w-3 h-3"></i><span>Saldo Positivo</span>'
+          : '<i data-lucide="alert-circle" class="w-3 h-3"></i><span>Atenção aos Gastos</span>';
+        heroBadgeEl.className = (saldoLivre >= 0)
+          ? 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/40 text-emerald-100 backdrop-blur-sm'
+          : 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/30 border border-amber-300/40 text-amber-100 backdrop-blur-sm';
       }
 
       const subtextLabel = document.getElementById('saldoSubtextLabel');
@@ -22325,21 +22321,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
-        <!-- SEÇÃO: ALERTA VISUAL DE SALDO NEGATIVO (CONFIGURÁVEL) -->
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-slate-200 dark:border-slate-800">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>🚨</span><span>Alerta Visual Vermelho em Saldo Negativo</span>
-            </h4>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="chkNegativeRedAlertOption" onchange="toggleNegativeRedAlertPreference(this.checked)" checked class="sr-only peer">
-              <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
-            </label>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-400">
-            Quando ativado (padrão), o cabeçalho e o card principal mudam para vermelho de alerta caso os gastos superem as receitas do ciclo. Desative se preferir manter o azul constante.
-          </p>
-        </div>
 
         <!-- SEÇÃO: GESTÃO DE MEMBROS (CARD ÚNICO OFICIAL) -->
         <div class="p-3.5 bg-indigo-50/80 dark:bg-indigo-950/40 rounded-2xl border border-indigo-200 dark:border-indigo-800/80 shadow-xs">
@@ -26707,8 +26688,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     // 3. Reconhecimento de voz contínuo com interim live preview e botão "Concluir Fala"
     // ============================================================================
     function isNegativeRedAlertEnabled() {
-      const saved = localStorage.getItem('ctrlpig_negative_red_alert_enabled');
-      return saved === null ? true : (saved === 'true');
+      // Alerta visual vermelho removido do app, garantindo interface azul constante e elegante
+      return false;
     }
 
     function toggleNegativeRedAlertPreference(enabled) {
