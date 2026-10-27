@@ -4761,8 +4761,9 @@ html, body {
             </button>
             <h2 class="text-xl font-black text-white tracking-tight">Transações</h2>
           </div>
-          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar Transações">
-            <i data-lucide="search" class="w-4 h-4"></i>
+          <button type="button" onclick="openTrashModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all relative cursor-pointer active:scale-95" title="Lixeira de Transações">
+            <i data-lucide="trash-2" class="w-4 h-4 text-rose-300 hover:text-white transition-colors"></i>
+            <span id="trashBadgeCount" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-[#071933]"></span>
           </button>
         </div>
 
@@ -36066,6 +36067,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
     if (screenKey === 'transacoes') {
       if (typeof renderApprovedTransactionsList === 'function') renderApprovedTransactionsList();
+      if (typeof updateTrashBadge === 'function') updateTrashBadge();
     }
     if (window.lucide) lucide.createIcons();
   };
