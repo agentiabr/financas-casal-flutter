@@ -2676,7 +2676,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
@@ -3188,7 +3188,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
@@ -3884,7 +3884,7 @@ html, body {
 
 .bottom-nav-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr auto 1fr 1fr;
   max-width: 32rem; /* 512px */
   margin: 0 auto;
   align-items: center;
@@ -5136,38 +5136,32 @@ html, body {
     <nav class="bottom-nav">
       <div class="bottom-nav-grid">
         
-        <!-- 1. Início -->
-        <button id="navTab_dashboard" onclick="switchScreen('dashboard')" class="bottom-nav-item active">
-          <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
-          <span>Início</span>
-        </button>
-
-        <!-- 2. Transações -->
+        <!-- 1. Transações -->
         <button id="navTab_transacoes" onclick="switchScreen('transacoes')" class="bottom-nav-item">
           <i data-lucide="receipt" class="w-5 h-5 mb-0.5"></i>
           <span>Transações</span>
         </button>
 
-        <!-- 3. Mercado -->
+        <!-- 2. Mercado -->
         <button id="navTab_compras" onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bottom-nav-item">
           <i data-lucide="shopping-cart" class="w-5 h-5 mb-0.5"></i>
           <span>Mercado</span>
         </button>
 
-        <!-- 4. Botão Central (+) Flutuante em Círculo (Hub de Ações Rápidas) -->
+        <!-- 3. Botão Central (+) Flutuante em Círculo (Hub de Ações Rápidas) -->
         <div class="flex items-center justify-center -mt-4 px-1 select-none">
           <button type="button" onclick="openActionHubModal();" class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 active:scale-90 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all cursor-pointer" title="Novo Lançamento ou Ação Rápida">
             <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
           </button>
         </div>
 
-        <!-- 5. Família & Vida -->
+        <!-- 4. Família & Vida -->
         <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
           <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
           <span>Família &amp; Vida</span>
         </button>
 
-        <!-- 6. Chat -->
+        <!-- 5. Chat -->
         <button id="navTab_chat" onclick="openFamilyChatModal()" class="bottom-nav-item relative">
           <i data-lucide="message-circle" class="w-5 h-5 mb-0.5"></i>
           <span>Chat</span>
@@ -6758,8 +6752,16 @@ html, body {
     }
 
     function isCurrentUserMaster() {
-      const user = window.currentUserSession;
-      if (!user || !user.email) return false;
+      let user = window.currentUserSession;
+      if (!user) {
+        try { user = JSON.parse(localStorage.getItem('financas_auth_user') || 'null'); } catch(_) {}
+      }
+      if (!user || !user.email) {
+        // Se não há usuário logado explícito, por padrão de compatibilidade histórica é Master
+        const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+        if (!isLoggedOut && !localStorage.getItem('financas_cadastros_usuarios')) return true;
+        return false;
+      }
       const email = String(user.email).toLowerCase().trim();
       return email === 'rodrigocardosocn@gmail.com';
     }
@@ -13672,9 +13674,14 @@ html, body {
         let savedUser = localStorage.getItem('financas_auth_user');
         currentUserSession = JSON.parse(savedUser) || savedUserObj || null;
         if (!currentUserSession) {
-          let contas = [];
-          try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-          if (contas.length > 0) currentUserSession = contas[contas.length - 1];
+          currentUserSession = null;
+          window.currentUserSession = null;
+          localStorage.removeItem('financas_auth_user');
+          localStorage.removeItem('financas_logged_in');
+          document.documentElement.classList.add('require-auth');
+          const authEl = document.getElementById('authOverlayContainer');
+          if (authEl) { authEl.classList.remove('hidden'); authEl.style.removeProperty('display'); }
+          return;
         }
         window.currentUserSession = currentUserSession;
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
@@ -32265,13 +32272,52 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   };
 
   window.handleFullAlarmDismiss = function() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const ctx = window.currentAlarmContext || {};
+    const slot = ctx.slotTime || '';
+
+    // Cancela e remove qualquer agendamento de adiamento pendente
+    try {
+      localStorage.removeItem('ctrlpig_snoozed_med_alarm');
+      if (typeof _snoozeAlarmTimeoutId !== 'undefined' && _snoozeAlarmTimeoutId) {
+        clearTimeout(_snoozeAlarmTimeoutId);
+        _snoozeAlarmTimeoutId = null;
+      }
+    } catch(_) {}
+
+    // Grava bloqueio definitivo de repetição para o horário de hoje (nunca mais toca hoje a menos que adie)
+    if (slot) {
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${slot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${slot}`, 'true');
+    }
+    // Também silencia qualquer slot ativo dentro dos últimos 60 min
+    const now = new Date();
+    const curMin = now.getHours() * 60 + now.getMinutes();
+    const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+    meds.forEach(m => {
+      const allH = [m.horario, ...(Array.isArray(m.horariosPersonalizados) ? m.horariosPersonalizados : [])].filter(Boolean);
+      allH.forEach(h => {
+        const [hh, mm] = String(h).split(':').map(Number);
+        if (!isNaN(hh) && !isNaN(mm)) {
+          const diff = (hh * 60 + mm) - curMin;
+          if (diff <= 10 && diff >= -60) {
+            localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${h}`, 'true');
+            localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${h}`, 'true');
+            localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${h}`, 'true');
+          }
+        }
+      });
+    });
+
     if (typeof window.dismissAllHealthAlarmBanners === 'function') {
       window.dismissAllHealthAlarmBanners();
-    } else if (typeof stopMedicationAlarmAudio === 'function') {
+    }
+    if (typeof stopMedicationAlarmAudio === 'function') {
       stopMedicationAlarmAudio();
     }
 
-    showToastUndo('🔕 Alarme desligado.', false);
+    showToastUndo('🔕 Alarme desligado com sucesso.', false);
     window.currentAlarmContext = null;
   };
 
@@ -34769,9 +34815,14 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
         <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
 
-      <div class="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-        <input type="checkbox" id="checkSkipPitacoThisMonth" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-        <label for="checkSkipPitacoThisMonth" class="cursor-pointer">Não mostrar esta dica novamente este mês</label>
+      <div class="mt-3 flex flex-col items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+        <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-700 dark:hover:text-slate-200">
+          <input type="checkbox" id="checkSkipPitaco3Days" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+          <span>Não mostrar esta dica nos próximos 3 dias</span>
+        </label>
+        <button type="button" onclick="disableMascotTipsForSection()" class="text-[10px] text-slate-400 hover:text-rose-500 underline transition-colors cursor-pointer">
+          Ou desligar dicas desta seção permanentemente
+        </button>
       </div>
     </div>
 
@@ -34898,6 +34949,20 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     window._pendingSectionCallback = callback;
     window.currentActiveSectionKey = sectionKey;
 
+    // Verifica se o usuário optou por não mostrar esta dica
+    try {
+      const skipPref = localStorage.getItem('financas_skip_pitaco_' + sectionKey);
+      if (skipPref === 'always') {
+        if (typeof callback === 'function') callback();
+        return;
+      }
+      const skipUntil = parseInt(skipPref, 10);
+      if (!isNaN(skipUntil) && Date.now() < skipUntil) {
+        if (typeof callback === 'function') callback();
+        return;
+      }
+    } catch(e) {}
+
     const modal = document.getElementById('modalMascotSectionPitaco');
     if (!modal) {
       if (typeof callback === 'function') callback();
@@ -34934,21 +34999,29 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     const modal = document.getElementById('modalMascotSectionPitaco');
     if (modal) modal.classList.add('hidden');
 
-    const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
+    const checkSkip = document.getElementById('checkSkipPitaco3Days');
     if (checkSkip && checkSkip.checked && window.currentActiveSectionKey) {
-      localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, 'true');
+      // Reaparece somente em 3 dias
+      const skipUntil = Date.now() + (3 * 24 * 60 * 60 * 1000);
+      localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, String(skipUntil));
     }
 
     // Executa a abertura da seção alvo AGORA
     const cb = window._pendingSectionCallback;
     window._pendingSectionCallback = null;
     if (typeof cb === 'function') {
-      try {
-        cb();
-      } catch(err) {
-        console.error('Erro ao abrir seção pós-pitaco:', err);
+      try { cb(); } catch(err) { console.error('Erro ao abrir seção pós-pitaco:', err); }
+    }
+  };
+
+  window.disableMascotTipsForSection = function() {
+    if (window.currentActiveSectionKey) {
+      localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, 'always');
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Dicas desta seção foram desligadas.', false);
       }
     }
+    window.confirmEnterSectionFromPitaco();
   };
 
   window.closeMascotPitaco = function() {
@@ -36640,16 +36713,28 @@ window.openHealthMedsModal = function() {
   // 8. LOGOUT SEGURO
   window.logoutUser = function() {
     currentUserSession = null;
+    window.currentUserSession = null;
     localStorage.removeItem('financas_auth_user');
+    localStorage.removeItem('financas_logged_in');
+    localStorage.removeItem('financas_usuario_ativo');
     localStorage.setItem('financas_auth_logged_out', 'true');
     sessionStorage.removeItem('pigctrl_session_authenticated');
+    sessionStorage.clear();
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try { window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_signout' })); } catch(_) {}
+    }
     document.documentElement.classList.add('require-auth');
+    if (document.body) document.body.classList.add('require-auth');
     const authEl = document.getElementById('authOverlayContainer');
     if (authEl) {
       if (authEl.parentElement !== document.body) document.body.appendChild(authEl);
       authEl.classList.remove('hidden');
       authEl.style.display = 'flex';
     }
+    const idField = document.getElementById('loginIdentifier');
+    const passField = document.getElementById('loginPassword');
+    if (idField) idField.value = '';
+    if (passField) passField.value = '';
     if (typeof showToastUndo === 'function') showToastUndo('Sessão encerrada com sucesso.', false);
   };
 
@@ -37755,12 +37840,32 @@ window.openHealthMedsModal = function() {
 (function () {
   const getCycleTransactions = () => {
     try {
-      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
-      if (!isMaster) {
-        return Array.isArray(window.transactions) ? window.transactions : (Array.isArray(transactions) ? transactions : []);
+      let session = window.currentUserSession;
+      if (!session) {
+        try { session = JSON.parse(localStorage.getItem('financas_auth_user') || 'null'); } catch(_) {}
       }
-      if (typeof getTransactionsForActiveCycle === 'function') return getTransactionsForActiveCycle() || [];
-      return Array.isArray(window.transactions) ? window.transactions : [];
+      const isNonMaster = session && session.email && (session.email.toLowerCase().trim() !== 'rodrigocardosocn@gmail.com');
+
+      if (isNonMaster) {
+        const uKey = (typeof getUserTransactionsStorageKey === 'function') ? getUserTransactionsStorageKey(session) : null;
+        let uTxs = [];
+        if (uKey) {
+          try { uTxs = JSON.parse(localStorage.getItem(uKey) || '[]'); } catch(_) {}
+        }
+        if (!uTxs.length && Array.isArray(window.transactions)) uTxs = window.transactions;
+        return uTxs;
+      }
+
+      // Conta Master / Rodrigo: ciclo ativo com todas as transações reais de Outubro 2026
+      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey] && Array.isArray(window.appCyclesData[window.currentActiveCycleKey].transactions) && window.appCyclesData[window.currentActiveCycleKey].transactions.length) {
+        return window.appCyclesData[window.currentActiveCycleKey].transactions;
+      }
+      if (Array.isArray(window.transactions) && window.transactions.length) return window.transactions;
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length) return transactions;
+      if (typeof INITIAL_TRANSACTIONS !== 'undefined' && Array.isArray(INITIAL_TRANSACTIONS) && INITIAL_TRANSACTIONS.length) {
+        return INITIAL_TRANSACTIONS.filter(t => isTransactionInCycle(t, window.currentActiveCycleKey || '05/Out a 04/Nov 2026'));
+      }
+      return [];
     } catch (_) { return []; }
   };
 
@@ -39757,11 +39862,37 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   window.openTransactionModal = window.openNewTxModal;
   window.closeNewTxModal = function() { hideElement('modalNewTx'); };
 
-  // Não sobrescreve openAdminModal para preservar proteção Master
-  window.openAdminModalDirect = function() {
+  // Abertura do Admin robusta e segura (Master oficial vs Painel do Usuário)
+  window.openAdminModal = function() {
+    const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+    const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+    const masterView = document.getElementById('adminMasterView');
+    const userView = document.getElementById('adminUserCompactView');
+    const headerTitle = document.getElementById('adminModalHeaderTitle');
+    const headerDesc = document.getElementById('adminModalHeaderDesc');
+
+    if (!isMaster || isDemo) {
+      if (masterView) masterView.classList.add('hidden');
+      if (userView) userView.classList.remove('hidden');
+      if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Usuário';
+      if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
+      if (typeof window.renderAdminUserCompactModulesToggle === 'function') {
+        window.renderAdminUserCompactModulesToggle();
+      }
+    } else {
+      if (masterView) masterView.classList.remove('hidden');
+      if (userView) userView.classList.add('hidden');
+      if (headerTitle) headerTitle.textContent = 'Painel do Administrador';
+      if (headerDesc) headerDesc.textContent = 'Controle master do sistema, dados do casal e personalizações.';
+    }
+
     ensureElementVisible('modalAdminPanel');
     if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
+    if (typeof renderPiggyTipsAdminList === 'function') renderPiggyTipsAdminList();
+    if (typeof window.renderAdminDashboardCustomizer === 'function') window.renderAdminDashboardCustomizer();
+    if (window.lucide) lucide.createIcons();
   };
+  window.openAdminModalDirect = window.openAdminModal;
   window.closeAdminModal = function() { hideElement('modalAdminPanel'); };
 
   
