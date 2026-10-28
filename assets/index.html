@@ -4260,6 +4260,27 @@ html, body {
           </div>
         </div>
 
+        <!-- Escolha do Tipo de Plano: Individual vs Casal / Família -->
+        <div class="p-2.5 rounded-xl bg-white/15 border border-white/30">
+          <label class="block text-[11px] font-bold text-white/90 mb-1.5">👥 Qual modalidade você deseja usar? *</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
+              <input type="radio" name="regTipoPlano" value="familia" checked class="text-emerald-500 focus:ring-0">
+              <div class="leading-tight">
+                <span class="block text-[11px] font-black text-white">👨‍👩‍👧‍👦 Casal / Família</span>
+                <span class="block text-[9px] text-white/70">Com Membros &amp; Chat</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
+              <input type="radio" name="regTipoPlano" value="individual" class="text-emerald-500 focus:ring-0">
+              <div class="leading-tight">
+                <span class="block text-[11px] font-black text-white">👤 Individual</span>
+                <span class="block text-[9px] text-white/70">Pessoal + Lista Compras</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
         <!-- Cupom de Parceria / Convite -->
         <div class="p-2.5 rounded-xl bg-white/15 border border-white/30">
           <label class="block text-[11px] font-bold text-white/90 mb-1">🏷️ Cupom de Convite ou Parceria (Opcional)</label>
@@ -4606,48 +4627,14 @@ html, body {
                 <canvas id="previewDonutChart" width="144" height="144"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
                   <span class="text-[10px] font-bold text-slate-400 uppercase">Total</span>
-                  <span class="text-base font-black text-slate-900 leading-tight">R$ 3.650</span>
-                  <span class="text-[9px] text-slate-400">no mês</span>
+                  <span id="previewDonutTotalVal" class="text-base font-black text-slate-900 leading-tight">R$ 0,00</span>
+                  <span class="text-[9px] text-slate-400">no ciclo</span>
                 </div>
               </div>
 
               <!-- Legenda de Fatias -->
-              <div class="space-y-1.5 text-xs w-full max-w-[170px]">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                    <span class="text-slate-700 font-medium text-[11px]">Moradia</span>
-                  </div>
-                  <span class="font-bold text-slate-900 text-[11px]">42%</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                    <span class="text-slate-700 font-medium text-[11px]">Alimentação</span>
-                  </div>
-                  <span class="font-bold text-slate-900 text-[11px]">28%</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-                    <span class="text-slate-700 font-medium text-[11px]">Educação</span>
-                  </div>
-                  <span class="font-bold text-slate-900 text-[11px]">18%</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                    <span class="text-slate-700 font-medium text-[11px]">Saúde</span>
-                  </div>
-                  <span class="font-bold text-slate-900 text-[11px]">7%</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-                    <span class="text-slate-700 font-medium text-[11px]">Outros</span>
-                  </div>
-                  <span class="font-bold text-slate-900 text-[11px]">5%</span>
-                </div>
+              <div id="previewDonutLegend" class="space-y-1.5 text-xs w-full max-w-[190px] max-h-44 overflow-y-auto custom-scrollbar pr-1">
+                <span class="text-xs text-slate-400 italic">Sem despesas registradas no ciclo.</span>
               </div>
             </div>
           </div>
@@ -9867,6 +9854,11 @@ html, body {
       updateCharts();
       renderFamilyMembersSpending(activeTxs);
       refreshHomeRecentTransactions(activeTxs);
+      if (typeof window.refreshHomeCategoryBreakdown === 'function') {
+        window.refreshHomeCategoryBreakdown(activeTxs);
+      } else if (typeof refreshHomeCategoryBreakdown === 'function') {
+        refreshHomeCategoryBreakdown(activeTxs);
+      }
       if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
       if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
@@ -10393,17 +10385,20 @@ html, body {
     let activeEstablishmentFilter = 'Todos';
 
     function loadPriceHistory() {
-      const saved = localStorage.getItem('financas_price_history');
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_price_history') : 'financas_price_history';
+      const saved = localStorage.getItem(key);
       if (saved) {
-        try { priceHistory = JSON.parse(saved); } catch(e) { priceHistory = INITIAL_PRICE_HISTORY; }
+        try { priceHistory = JSON.parse(saved); } catch(e) { priceHistory = isMaster ? INITIAL_PRICE_HISTORY : []; }
       } else {
-        priceHistory = INITIAL_PRICE_HISTORY;
+        priceHistory = isMaster ? INITIAL_PRICE_HISTORY : [];
       }
       renderPriceHistoryTable();
     }
 
     function savePriceHistory() {
-      localStorage.setItem('financas_price_history', JSON.stringify(priceHistory));
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_price_history') : 'financas_price_history';
+      localStorage.setItem(key, JSON.stringify(priceHistory));
     }
 
     // ==============================================================
@@ -10786,10 +10781,16 @@ html, body {
 
       const search = (document.getElementById('filterBuilderSearch')?.value || '').toLowerCase().trim();
 
-      // Obter lista única de produtos do histórico
+      // Obter lista única de produtos do histórico (ou catálogo básico inicial para novas contas)
+      const defaultStarterCatalog = [
+        'Arroz Tipo 1 5kg', 'Feijão Carioca 1kg', 'Leite Integral 1L',
+        'Café Torrado e Moído 500g', 'Óleo de Soja 900ml', 'Açúcar Refinado 1kg',
+        'Pão de Forma', 'Ovos Brancos 12 un', 'Detergente Líquido 500ml', 'Sabão em Pó 1.6kg'
+      ];
       const uniqueNames = Array.from(new Set([
         ...priceHistory.map(p => p.produto),
-        ...customBuilderProducts.map(p => p.produto)
+        ...customBuilderProducts.map(p => p.produto),
+        ...defaultStarterCatalog
       ]));
 
       let filteredNames = uniqueNames;
@@ -11016,7 +11017,7 @@ html, body {
           data: new Date().toISOString().split('T')[0],
           responsavel: 'Comum'
         });
-        localStorage.setItem('financas_price_history_v1', JSON.stringify(priceHistory));
+        savePriceHistory();
       }
 
       if (input) input.value = '';
@@ -11075,18 +11076,31 @@ html, body {
       }
     }
 
+    function getDynamicPartnerDisplayName() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const me = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : (isMaster ? 'Rodrigo' : 'Você');
+      if (isMaster) {
+        return me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      }
+      const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+      if (din.length > 0 && din[0].nome) return din[0].nome;
+      return 'Família';
+    }
+
     function sendShoppingListToFamilyChat() {
       const selected = Object.entries(builderSelectedItems).filter(([k, v]) => v && v.selected);
       if (selected.length === 0) {
         if (typeof showToastUndo === 'function') {
-          showToastUndo('⚠️ Marque pelo menos um item na lista antes de enviar!', false);
+          showToastUndo('⚠️ Marque pelo menos um item na lista antes de continuar!', false);
         } else {
-          alert('Por favor, marque pelo menos um item para enviar para o Chat.');
+          alert('Por favor, marque pelo menos um item na lista.');
         }
         return;
       }
 
-      const senderName = (currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const senderName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : (isMaster ? 'Rodrigo' : 'Titular');
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
 
       // 1. Converter para os itens ativos da gôndola
       const chatItems = selected.map(([name, data], idx) => {
@@ -11097,54 +11111,66 @@ html, body {
           qtdDesejada: data.qtd || 1,
           unidade: data.unidade || 'un',
           marca: '',
-          lojaId: (data.lojaNome || 'roldao').toLowerCase().replace(/\s+/g, '_'),
-          lojaNome: data.lojaNome || (stats ? stats.cheapestStore : 'Supermercados Roldão'),
+          lojaId: (data.lojaNome || 'supermercado').toLowerCase().replace(/\s+/g, '_'),
+          lojaNome: data.lojaNome || (stats ? stats.cheapestStore : 'Supermercado'),
           menorPreco: stats ? stats.cheapestPrice : (data.menorPreco || 0),
           lojaMenorPreco: stats ? stats.cheapestStore : (data.lojaMenorPreco || ''),
           ultimoPreco: stats ? stats.latestPrice : (data.ultimoPreco || 0),
           lojaUltimoPreco: stats ? stats.latestStore : (data.lojaUltimoPreco || ''),
           status: 'pendente',
           qtdComprada: 0,
-          precoUnitario: 0,
+          precoUnitario: stats ? stats.latestPrice : (data.preco || 0),
           pedidoPor: senderName
         };
       });
 
       saveActiveShoppingItems(chatItems);
 
-      // 2. Montar mensagem no chat
+      if (isIndiv) {
+        // Modo Individual: Não usa chat, abre direto a Lista de Compras na Gôndola para marcar e salvar histórico!
+        closeShoppingListModal();
+        activeChatStoreFilter = 'Todos';
+        openFamilyChatModal('lista');
+        showToastUndo(`🛒 Lista com ${chatItems.length} itens pronta na Gôndola! Marque os itens e salve no histórico.`, false);
+        if (typeof playChatDing === 'function') playChatDing();
+        return;
+      }
+
+      // 2. Modo Casal / Família: Montar mensagem no chat
       const newMsg = {
         id: 'm_' + Date.now(),
         sender: senderName,
-        avatar: senderName.toLowerCase().includes('marcia') ? '👩' : '👨',
+        avatar: (window.currentUserSession && window.currentUserSession.avatar) || (senderName.toLowerCase().includes('marcia') ? '👩' : '👨'),
         isMe: true,
-        text: `🛒 Oi amor! Montei uma nova Lista de Compras com base nos últimos preços para comparativo. Conforme for pegando na gôndola, vai marcando no chat! ❤️`,
+        text: `🛒 Montei uma nova Lista de Compras com base nos últimos preços para comparativo. Conforme for pegando na gôndola, vai marcando na lista! ❤️`,
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       };
 
       const msgs = getCleanChatMessages();
       msgs.push(newMsg);
-      // Garante que o card da lista está no feed
       if (!msgs.some(m => m.type === 'shopping_list_card')) {
         msgs.push({ id: 'm_card_' + Date.now(), type: 'shopping_list_card', sender: 'Sistema', time: newMsg.time });
       }
       saveCleanChatMessages(msgs);
 
       // 3. Fechar lista e abrir chat
-      const partnerName = senderName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      const partnerName = getDynamicPartnerDisplayName();
       closeShoppingListModal();
       activeChatStoreFilter = 'Todos';
-      openFamilyChatModal();
+      openFamilyChatModal('conversa');
       showToastUndo(`🛒 Lista com ${chatItems.length} itens enviada para ${partnerName}!`, false);
-      playChatDing();
+      if (typeof playChatDing === 'function') playChatDing();
     }
 
-
-        function updateSendListButtonLabel() {
+    function updateSendListButtonLabel() {
       const btnLabel = document.getElementById('btnSendShoppingListLabel');
       if (!btnLabel) return;
-      const me = (currentUserSession && currentUserSession.nome) ? currentUserSession.nome : 'Rodrigo';
-      const partner = me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
+      if (isIndiv) {
+        btnLabel.textContent = `🛒 Ir para a Gôndola (Marcar Compras & Salvar Preços)`;
+        return;
+      }
+      const partner = getDynamicPartnerDisplayName();
       btnLabel.textContent = `💬 Enviar Lista e Notificar ${partner}`;
     }
 
@@ -14408,14 +14434,17 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       }
 
       const isMaster = email.toLowerCase() === 'rodrigocardosocn@gmail.com';
+      const regTipoPlano = document.querySelector('input[name="regTipoPlano"]:checked')?.value || 'familia';
+      const isIndividualPlan = !isMaster && regTipoPlano === 'individual';
       const novoUsuario = {
         nome: nome,
         email: email,
         cpf: cpf,
         whatsapp: whatsapp,
         senha: senha,
-        plano: isMaster ? 'Super Administrador Vitalício' : plano,
-        papel: isMaster ? 'Super Administrador' : (cupomValidado ? 'Membro VIP' : 'Membro da Família'),
+        tipoPlano: isMaster ? 'familia' : regTipoPlano,
+        plano: isMaster ? 'Super Administrador Vitalício' : (isIndividualPlan ? 'Plano Individual' : 'Plano Casal / Família'),
+        papel: isMaster ? 'Super Administrador' : (cupomValidado ? 'Membro VIP' : (isIndividualPlan ? 'Titular Individual' : 'Titular da Família')),
         isMaster: isMaster,
         data_cadastro: new Date().toISOString()
       };
@@ -14448,7 +14477,17 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
           localStorage.setItem(txKey, '[]');
           localStorage.setItem(cdKey, '[]');
           localStorage.setItem('financas_cloud_snapshot_restored', 'true'); // Impede restauração do snapshot do Rodrigo
-          localStorage.setItem('financas_membros_familia', JSON.stringify([{ id: 'm_' + Date.now(), nome: nome, papel: 'Titular', avatar: '👤' }]));
+          const scopedSingleKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_modo_solteiro', novoUsuario) : 'financas_modo_solteiro';
+          localStorage.setItem(scopedSingleKey, isIndividualPlan ? 'true' : 'false');
+          localStorage.setItem('financas_modo_solteiro', isIndividualPlan ? 'true' : 'false');
+          if (typeof saveDynamicFamilyMembers === 'function') saveDynamicFamilyMembers([]);
+          localStorage.setItem('financas_membros_familia', '[]');
+          const scopedChatKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_clean_chat_messages', novoUsuario) : 'financas_clean_chat_messages';
+          const scopedShopKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_active_shopping_items', novoUsuario) : 'financas_active_shopping_items';
+          const scopedPriceKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_price_history', novoUsuario) : 'financas_price_history';
+          localStorage.removeItem(scopedChatKey);
+          localStorage.setItem(scopedShopKey, '[]');
+          localStorage.setItem(scopedPriceKey, '[]');
           localStorage.setItem('ctrlpig_pets_list', '[]');
           localStorage.setItem('ctrlpig_registered_pets', '[]');
           localStorage.setItem('ctrlpig_pet_vaccines', '[]');
@@ -14817,6 +14856,15 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       creditCards = [];
       piggies = [];
       trashTransactions = [];
+      if (window.homeCategoryChartInstance) {
+        try {
+          window.homeCategoryChartInstance.destroy();
+          window.homeCategoryChartInstance = null;
+        } catch (_) {}
+      }
+      if (typeof window.refreshHomeCategoryBreakdown === 'function') {
+        window.refreshHomeCategoryBreakdown([]);
+      }
       localStorage.removeItem('financas_auth_user');
       localStorage.removeItem('financas_usuario_ativo');
       localStorage.setItem('financas_auth_logged_out', 'true');
@@ -15558,7 +15606,8 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
       if (confirm(`Tem certeza que deseja excluir o membro "${target.nome}" da família?`)) {
         din = din.filter(m => m.id !== memberId);
-        localStorage.setItem('financas_membros_familia', JSON.stringify(din));
+        if (typeof saveDynamicFamilyMembers === 'function') saveDynamicFamilyMembers(din);
+        else localStorage.setItem('financas_membros_familia', JSON.stringify(din));
         renderDynamicFamilyMembers();
         renderFamilyMembersListInModal();
         if (typeof renderAuthDynamicMembersLogin === "function") renderAuthDynamicMembersLogin();
@@ -15618,7 +15667,8 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
             target.avatar = avatar;
             target.pin = pin;
             target.atualizadoEm = new Date().toISOString();
-            localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
+            if (typeof saveDynamicFamilyMembers === 'function') saveDynamicFamilyMembers(membros);
+            else localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
             showToastUndo(`Membro "${nome}" atualizado com sucesso!`, false);
           }
         }
@@ -15649,7 +15699,8 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       };
 
       membros.push(newMember);
-      localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
+      if (typeof saveDynamicFamilyMembers === 'function') saveDynamicFamilyMembers(membros);
+      else localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
       
       updateUserDropdowns(nome);
       loadUserCustomAssets();
@@ -16179,40 +16230,76 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     ];
 
     function getActiveShoppingItems() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_active_shopping_items') : 'financas_active_shopping_items';
       try {
-        const stored = localStorage.getItem('financas_active_shopping_items');
+        const stored = localStorage.getItem(key);
         if (!stored) {
-          localStorage.setItem('financas_active_shopping_items', JSON.stringify(INITIAL_ACTIVE_SHOPPING_LIST));
-          return INITIAL_ACTIVE_SHOPPING_LIST;
+          const defList = isMaster ? INITIAL_ACTIVE_SHOPPING_LIST : [];
+          localStorage.setItem(key, JSON.stringify(defList));
+          return defList;
         }
         return JSON.parse(stored);
       } catch(e) {
-        return INITIAL_ACTIVE_SHOPPING_LIST;
+        return isMaster ? INITIAL_ACTIVE_SHOPPING_LIST : [];
       }
     }
 
     function saveActiveShoppingItems(items) {
       try {
-        localStorage.setItem('financas_active_shopping_items', JSON.stringify(items));
+        const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_active_shopping_items') : 'financas_active_shopping_items';
+        localStorage.setItem(key, JSON.stringify(items));
       } catch(e) {}
     }
 
-    function getCleanChatMessages() {
-      try {
-        const stored = localStorage.getItem('financas_clean_chat_messages');
-        if (!stored) {
-          localStorage.setItem('financas_clean_chat_messages', JSON.stringify(INITIAL_CLEAN_CHAT_MESSAGES));
-          return INITIAL_CLEAN_CHAT_MESSAGES;
+    function getDefaultCleanChatMessagesForCurrentUser() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      if (isMaster) return INITIAL_CLEAN_CHAT_MESSAGES;
+      const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+      const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+      const famNames = din.length > 0 ? `${myName} e ${din.map(m => m.nome).join(', ')}` : myName;
+      return [
+        {
+          id: "m_intro_" + Date.now(),
+          sender: "ControlPig",
+          avatar: "🐷",
+          isMe: false,
+          text: `👋 Bem-vindo(a) ao Chat da Família, ${myName}! Aqui você pode conversar, ditar despesas por voz e sincronizar a Lista de Compras do mercado em tempo real (${famNames}).`,
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
         }
-        return JSON.parse(stored);
+      ];
+    }
+
+    function getCleanChatMessages() {
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_clean_chat_messages') : 'financas_clean_chat_messages';
+      try {
+        const stored = localStorage.getItem(key);
+        if (!stored) {
+          const defMsgs = getDefaultCleanChatMessagesForCurrentUser();
+          localStorage.setItem(key, JSON.stringify(defMsgs));
+          return defMsgs;
+        }
+        const parsed = JSON.parse(stored);
+        const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+        if (!isMaster && Array.isArray(parsed)) {
+          // Sanitiza eventual mensagem antiga que mencionava Rodrigo e Márcia
+          return parsed.map(m => {
+            if (m && m.id === 'm_intro' && typeof m.text === 'string' && m.text.includes('Rodrigo e Márcia')) {
+              return getDefaultCleanChatMessagesForCurrentUser()[0];
+            }
+            return m;
+          });
+        }
+        return parsed;
       } catch(e) {
-        return INITIAL_CLEAN_CHAT_MESSAGES;
+        return getDefaultCleanChatMessagesForCurrentUser();
       }
     }
 
     function saveCleanChatMessages(msgs) {
       try {
-        localStorage.setItem('financas_clean_chat_messages', JSON.stringify(msgs));
+        const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_clean_chat_messages') : 'financas_clean_chat_messages';
+        localStorage.setItem(key, JSON.stringify(msgs));
       } catch(e) {}
     }
 
@@ -16288,15 +16375,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function openFamilyChatModal(defaultTab) {
       const modal = document.getElementById('modalFamilyChat');
-      if (modal) modal.classList.remove('hidden');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
 
       const bH = document.getElementById('chatHeaderBadge');
       if (bH) bH.classList.add('hidden');
       const bF = document.getElementById('chatFloatingBadge');
       if (bF) bF.classList.add('hidden');
 
+      if (typeof window.syncIndividualAndFamilyModeUI === 'function') {
+        window.syncIndividualAndFamilyModeUI();
+      }
+
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
+      const targetTab = isIndiv ? 'lista' : (defaultTab === 'lista' ? 'lista' : 'conversa');
+
       if (typeof window.switchChatViewTab === 'function') {
-        window.switchChatViewTab(defaultTab === 'lista' ? 'lista' : 'conversa');
+        window.switchChatViewTab(targetTab);
       }
 
       renderCleanChatStream();
@@ -16839,7 +16936,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         notif = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
       } catch(e) {}
 
-      const sender = notif.sender || (myName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia');
+      const sender = notif.sender || (typeof getDynamicPartnerDisplayName === 'function' ? getDynamicPartnerDisplayName() : 'Família');
       const senderDisplayName = getShoppingSenderDisplayName(sender);
       const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || 'pending';
 
@@ -17209,8 +17306,20 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               }).join('')}
             </div>
 
-            <!-- Confirmação Dinâmica de Recebimento da Lista no Chat -->
-            ${renderShoppingListConfirmationSection()}
+            <!-- Botões de Ação da Gôndola: Finalizar Compra & Salvar no Histórico de Preços -->
+            <div class="mt-3.5 pt-3 border-t border-slate-200 dark:border-slate-750 flex flex-col sm:flex-row items-center gap-2">
+              <button type="button" onclick="openFinishShoppingModal()" class="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <span>✅ Finalizar Compra &amp; Salvar Histórico</span>
+              </button>
+              <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal(); switchShoppingModalTab('comparator');" class="w-full sm:w-auto py-2.5 px-3.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all">
+                <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                <span>📊 Histórico de Preços</span>
+              </button>
+            </div>
+
+            <!-- Confirmação Dinâmica de Recebimento da Lista no Chat (Apenas Modo Casal/Família) -->
+            ${(typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode()) ? '' : renderShoppingListConfirmationSection()}
           </div>
         `;
       } else {
@@ -17219,10 +17328,16 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <span class="text-4xl block mb-2">🛒</span>
             <h4 class="text-sm font-black text-slate-800 dark:text-white mb-1">Nenhuma lista de compras ativa</h4>
             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Monte uma nova lista de compras ou envie pelo chat para acompanhar os preços na gôndola.</p>
-            <button type="button" onclick="openShoppingListModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs cursor-pointer active:scale-95 inline-flex items-center gap-1.5">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>Montar Lista de Compras</span>
-            </button>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal(); switchShoppingModalTab('builder');" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-xs cursor-pointer active:scale-95 inline-flex items-center gap-1.5">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Montar Lista de Compras</span>
+              </button>
+              <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal(); switchShoppingModalTab('comparator');" class="px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold text-xs cursor-pointer active:scale-95 inline-flex items-center gap-1.5">
+                <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                <span>📊 Ver Comparativo de Preços</span>
+              </button>
+            </div>
           </div>
         `;
       }
@@ -17262,7 +17377,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         notif = JSON.parse(localStorage.getItem('ctrlpig_last_shopping_notif_v1') || '{}');
       } catch(e) {}
       
-      const sender = notif.sender || (myName.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia');
+      const sender = notif.sender || (typeof getDynamicPartnerDisplayName === 'function' ? getDynamicPartnerDisplayName() : 'Família');
       const senderDisplayName = getShoppingSenderDisplayName(sender);
       const stage = localStorage.getItem('ctrlpig_shopping_receipt_stage') || 'pending';
 
@@ -18640,8 +18755,46 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (modal) modal.classList.add('hidden');
     }
 
+    function recordPurchasedGondolaItemsToPriceHistory() {
+      const items = getActiveShoppingItems();
+      const defaultStore = localStorage.getItem('ctrlpig_compra_local') || 'Supermercado';
+      const todayStr = new Date().toISOString().split('T')[0];
+      let recordedCount = 0;
+
+      if (typeof priceHistory === 'undefined' || !Array.isArray(priceHistory)) {
+        window.priceHistory = [];
+      }
+
+      items.forEach((it, idx) => {
+        const isBought = it.status === 'no_carrinho' || it.status === 'comprado';
+        const unitPrice = parseFloat(it.precoUnitario) || parseFloat(it.ultimoPreco) || 0;
+        if (isBought && unitPrice > 0) {
+          const stats = typeof getProductPriceStats === 'function' ? getProductPriceStats(it.nome) : null;
+          const prevPrice = stats ? stats.latestPrice : (parseFloat(it.ultimoPreco) || null);
+          const storeName = it.estabelecimento || it.lojaNome || defaultStore;
+          priceHistory.unshift({
+            id: Date.now() + idx,
+            produto: it.nome,
+            estabelecimento: storeName,
+            data: todayStr,
+            preco: unitPrice,
+            precoAnterior: (prevPrice && prevPrice !== unitPrice) ? prevPrice : prevPrice,
+            unidade: it.unidade || 'un'
+          });
+          recordedCount++;
+        }
+      });
+
+      if (recordedCount > 0) {
+        if (typeof savePriceHistory === 'function') savePriceHistory();
+        if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
+      }
+      return recordedCount;
+    }
+
     function confirmFinishShoppingAndPostExpense() {
       const summary = calculateCartTotal();
+      const recordedCount = recordPurchasedGondolaItemsToPriceHistory();
       closeFinishShoppingModal();
 
       // Apaga as fotos temporárias da memória conforme solicitado pelo usuário
@@ -18654,7 +18807,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         return m;
       });
 
-      // Mensagem de conclusão no chat
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       msgs.push({
@@ -18662,29 +18814,36 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         sender: 'Sistema',
         avatar: '🏁',
         isMe: false,
-        text: `🏁 Compras no mercado finalizadas! Total no caixa: R$ ${summary.total.toFixed(2).replace('.', ',')} (${summary.inCart} itens comprados, ${summary.missing} indisponíveis). Valor lançado no ciclo!`,
+        text: `🏁 Compras no mercado finalizadas! Total no caixa: R$ ${summary.total.toFixed(2).replace('.', ',')} (${summary.inCart} itens comprados, ${recordedCount} preços salvos no histórico). Valor lançado no ciclo!`,
         time: timeStr
       });
       saveCleanChatMessages(msgs);
 
       // Lança a despesa diretamente nas transações se o valor for maior que zero
       if (summary.total > 0) {
+        const userName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+        const storeLoc = localStorage.getItem('ctrlpig_compra_local') || 'Supermercado';
         const novaDespesa = {
           id: Date.now(),
           data: new Date().toISOString().split('T')[0],
-          ciclo: currentCycle || "05/Set a 04/Out 2026",
-          tipo: 'despesa',
+          ciclo: currentCycle || "05/Out a 04/Nov 2026",
+          tipo: 'Despesa Variável',
           categoria: 'Alimentação',
           subcategoria: 'Supermercado',
-          estabelecimento: 'Supermercado (Lista Gôndola)',
-          descricao: `Compras de Supermercado (${summary.inCart} itens pegos na gôndola)`,
+          estabelecimento: storeLoc,
+          descricao: `Compras em ${storeLoc} (${summary.inCart} itens na gôndola)`,
           valor: summary.total,
-          pago_por: 'Rodrigo',
-          status: 'concluido'
+          responsavel: userName,
+          pago_por: userName,
+          forma_pagamento: 'Cartão de Débito',
+          status: 'Pago'
         };
 
-        if (typeof transactions !== 'undefined') {
+        if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
           transactions.unshift(novaDespesa);
+          window.transactions = transactions;
+          if (typeof saveData === 'function') saveData();
+          if (typeof updateDashboard === 'function') updateDashboard();
           if (typeof renderTable === 'function') renderTable();
           if (typeof updateMetrics === 'function') updateMetrics();
         }
@@ -18692,12 +18851,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       renderCleanChatStream();
       closeFamilyChatModal();
-      showToastUndo(`Compras finalizadas! R$ ${summary.total.toFixed(2).replace('.', ',')} lançado nas despesas. Fotos apagadas. 🎉`, false);
-      playChatDing();
+      showToastUndo(`Compras finalizadas! R$ ${summary.total.toFixed(2).replace('.', ',')} lançado e ${recordedCount} preço(s) salvo(s) no histórico! 🎉`, false);
+      if (typeof playChatDing === 'function') playChatDing();
     }
 
     function confirmFinishShoppingOnly() {
       const summary = calculateCartTotal();
+      const recordedCount = recordPurchasedGondolaItemsToPriceHistory();
       closeFinishShoppingModal();
 
       // Limpa fotos temporárias
@@ -18717,13 +18877,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         sender: 'Sistema',
         avatar: '🏁',
         isMe: false,
-        text: `🏁 Lista de compras concluída com sucesso! Total apurado: R$ ${summary.total.toFixed(2).replace('.', ',')}.`,
+        text: `🏁 Lista de compras concluída! Total apurado: R$ ${summary.total.toFixed(2).replace('.', ',')} (${recordedCount} itens salvos no histórico de preços).`,
         time: timeStr
       });
       saveCleanChatMessages(msgs);
       renderCleanChatStream();
       closeFamilyChatModal();
-      showToastUndo('Lista de compras finalizada e fotos temporárias limpas.', false);
+      showToastUndo(`Compra concluída! ${recordedCount} item(ns) salvo(s) no histórico comparativo de preços! 📊`, false);
     }
 
     // ==========================================
@@ -23011,6 +23171,123 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
       </div>
+
+      <!-- 2. PAINEL COMPLETO DO USUÁRIO (CONTA PRÓPRIA: MODALIDADE, MEMBROS DA FAMÍLIA & SEÇÕES DO APP) -->
+      <div id="adminUserCompactView" class="mt-4 space-y-3.5 hidden">
+        <!-- Banner de Status Modo Usuário Demo -->
+        <div id="adminUserDemoBanner" class="p-3 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-between gap-2 hidden">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">👤</span>
+            <div>
+              <h4 class="font-black text-xs text-amber-900 dark:text-amber-200">Painel do Usuário (Demonstração)</h4>
+              <p class="text-[10px] text-amber-800 dark:text-amber-300">Visão voltada ao titular de uma nova conta.</p>
+            </div>
+          </div>
+          <button type="button" onclick="window.exitDemoUserMode()" class="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 rounded-xl font-black text-[11px] cursor-pointer shadow-sm active:scale-95 transition-all">
+            ✕ Voltar ao Admin
+          </button>
+        </div>
+
+        <!-- 0. Escolha da Modalidade do Plano (Individual vs Casal / Família) -->
+        <div class="p-3.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div class="flex items-center justify-between mb-1.5">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🪪</span><span>Modalidade da Minha Conta</span>
+            </h4>
+            <span id="adminUserCurrentPlanBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Plano Casal / Família</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
+            Escolha se deseja usar o aplicativo no modo <strong>Casal / Família</strong> (com inclusão de membros e Chat) ou no modo <strong>Individual</strong> (sem chat, com Lista de Compras e Histórico de Preços).
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btnUserPlanMode_familia" onclick="window.setUserAccountPlanMode('familia')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer">
+              <span>👨‍👩‍👧‍👦</span>
+              <span>Casal / Família</span>
+            </button>
+            <button type="button" id="btnUserPlanMode_individual" onclick="window.setUserAccountPlanMode('individual')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer">
+              <span>👤</span>
+              <span>Individual</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. Gestão Familiar (Visível no Plano Casal / Família) -->
+        <div id="adminUserFamilyMembersCard" class="p-3.5 bg-gradient-to-br from-indigo-50/90 to-blue-50/90 dark:from-slate-800/80 dark:to-indigo-950/30 rounded-2xl border border-indigo-200 dark:border-indigo-800/80 shadow-2xs">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>👥</span><span>Membros da Minha Família</span>
+            </h4>
+            <span id="adminUserFamilyCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Plano Casal / Família</span>
+          </div>
+          <p id="adminUserFamilyPreviewText" class="text-[11px] text-slate-600 dark:text-slate-300 mb-2.5">
+            Inclua seu cônjuge/parceiro(a) ou dependentes para compartilhar os lançamentos e usar o Chat da Família.
+          </p>
+          <button type="button" onclick="closeAdminModal(); openAddUserModal();" class="w-full py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-98">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>+ Incluir / Gerenciar Membros da Família</span>
+          </button>
+        </div>
+
+        <!-- Aviso sutil quando estiver no Modo Individual -->
+        <div id="adminUserIndividualModeNotice" class="hidden p-3 bg-emerald-50/80 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800/70">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🛒</span>
+              <div>
+                <h4 class="font-extrabold text-xs text-emerald-900 dark:text-emerald-200">Modo Individual Ativo</h4>
+                <p class="text-[10px] text-emerald-700 dark:text-emerald-300">O Chat está desativado. Você conta com a Lista de Compras na Gôndola e o Histórico para comparativo de preços!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Seções que Gostaria de Ver no App -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🎛️</span><span>Seções que Desejo Ver no App</span>
+            </h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Exibir / Ocultar</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
+            Marque ou desmarque as seções e atalhos que você gostaria de ver no seu Dashboard e em Família &amp; Vida:
+          </p>
+          <div id="adminUserDashboardModulesToggleList" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+            <!-- Gerado dinamicamente por renderAdminUserCompactModulesToggle() -->
+          </div>
+        </div>
+
+        <!-- 3. Notificações do Celular -->
+        <div class="p-3.5 bg-blue-50/80 dark:bg-blue-950/40 rounded-2xl border border-blue-200 dark:border-blue-800/80">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>🔔</span><span>Notificações &amp; Lembretes</span>
+            </h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">Ativo</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
+            Receba lembretes no celular para horários de remédios, compras e contas a vencer.
+          </p>
+          <button type="button" onclick="requestAppNotificationPermission()" class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span>🔔 Configurar Notificações do Celular</span>
+          </button>
+        </div>
+
+        <!-- 4. Backup dos Meus Dados -->
+        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
+              <span>💾</span><span>Exportar Meus Dados &amp; Backup</span>
+            </h4>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
+            Baixe uma cópia segura de todos os seus lançamentos e transações para manter em seu computador ou celular.
+          </p>
+          <button type="button" onclick="exportDataJSON()" class="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <span>📥 Baixar Arquivo de Backup</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -23201,85 +23478,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       </div>
 
-      <!-- 2. PAINEL COMPACTO DO USUÁRIO (VISÃO CONVIDADO / FAMÍLIA) -->
-      <div id="adminUserCompactView" class="mt-4 space-y-3.5 hidden">
-        <!-- Banner de Status Modo Usuário -->
-        <div id="adminUserDemoBanner" class="p-3 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-between gap-2 hidden">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">👤</span>
-            <div>
-              <h4 class="font-black text-xs text-amber-900 dark:text-amber-200">Painel do Usuário (Demonstração)</h4>
-              <p class="text-[10px] text-amber-800 dark:text-amber-300">Visão simplificada voltada ao usuário comum.</p>
-            </div>
-          </div>
-          <button type="button" onclick="window.exitDemoUserMode()" class="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 rounded-xl font-black text-[11px] cursor-pointer shadow-sm active:scale-95 transition-all">
-            ✕ Voltar ao Admin
-          </button>
-        </div>
 
-        <!-- 1. Gestão Familiar -->
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>👥</span><span>Membros da Minha Família</span>
-            </h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">Compartilhar</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-            Adicione parceiro(a) ou dependentes para sincronizar os gastos familiares no seu aplicativo.
-          </p>
-          <button type="button" onclick="closeAdminModal(); openAddUserModal();" class="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>+ Adicionar Membro da Família</span>
-          </button>
-        </div>
-
-        <!-- 2. Personalizar Meu Dashboard -->
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>🎛️</span><span>Personalizar Meu Dashboard</span>
-            </h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Exibir/Ocultar</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-            Escolha os cartões que você mais usa no dia a dia para manter a tela limpa e rápida.
-          </p>
-          <div id="adminUserDashboardModulesToggleList" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
-            <!-- Gerado dinamicamente -->
-          </div>
-        </div>
-
-        <!-- 3. Notificações do Celular -->
-        <div class="p-3.5 bg-blue-50/80 dark:bg-blue-950/40 rounded-2xl border border-blue-200 dark:border-blue-800/80">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>🔔</span><span>Notificações & Lembretes</span>
-            </h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">Ativo</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-            Receba lembretes no celular para horários de remédios, compras e contas a vencer.
-          </p>
-          <button type="button" onclick="requestAppNotificationPermission()" class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
-            <span>🔔 Configurar Notificações do Celular</span>
-          </button>
-        </div>
-
-        <!-- 4. Backup dos Meus Dados -->
-        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/80">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>💾</span><span>Exportar Meus Dados & Backup</span>
-            </h4>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-            Baixe uma cópia segura de todos os seus lançamentos e transações para manter em seu computador ou celular.
-          </p>
-          <button type="button" onclick="exportDataJSON()" class="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
-            <span>📥 Baixar Arquivo de Backup</span>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -26349,7 +26548,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             responsavel: 'Comum'
           });
         }
-        localStorage.setItem('financas_price_history_v1', JSON.stringify(priceHistory));
+        savePriceHistory();
       }
 
       // Atualiza em customBuilderProducts
@@ -26385,7 +26584,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             priceHistory.splice(i, 1);
           }
         }
-        localStorage.setItem('financas_price_history_v1', JSON.stringify(priceHistory));
+        savePriceHistory();
       }
       if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
         for (let i = customBuilderProducts.length - 1; i >= 0; i--) {
@@ -33790,28 +33989,244 @@ window.exitDemoUserMode = function() {
     }
 };
 
+window.isUserInIndividualMode = function() {
+    if (typeof isCurrentUserMaster === 'function' && isCurrentUserMaster() && localStorage.getItem('ctrlpig_demo_user_mode') !== 'true') {
+        return localStorage.getItem('financas_modo_solteiro') === 'true';
+    }
+    if (window.currentUserSession && window.currentUserSession.tipoPlano) {
+        return window.currentUserSession.tipoPlano === 'individual';
+    }
+    const scopedKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_modo_solteiro') : 'financas_modo_solteiro';
+    const val = localStorage.getItem(scopedKey);
+    if (val !== null) return val === 'true';
+    return localStorage.getItem('financas_modo_solteiro') === 'true';
+};
+
+window.setUserAccountPlanMode = function(mode) {
+    const isIndiv = (mode === 'individual');
+    const scopedKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_modo_solteiro') : 'financas_modo_solteiro';
+    localStorage.setItem(scopedKey, isIndiv ? 'true' : 'false');
+    localStorage.setItem('financas_modo_solteiro', isIndiv ? 'true' : 'false');
+
+    if (window.currentUserSession) {
+        window.currentUserSession.tipoPlano = isIndiv ? 'individual' : 'familia';
+        if (!window.currentUserSession.isMaster) {
+            window.currentUserSession.plano = isIndiv ? 'Plano Individual' : 'Plano Casal / Família';
+        }
+        try {
+            localStorage.setItem('financas_auth_user', JSON.stringify(window.currentUserSession));
+            let contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]');
+            const email = (window.currentUserSession.email || '').toLowerCase();
+            contas = contas.map(c => (c.email && c.email.toLowerCase() === email) ? { ...c, tipoPlano: window.currentUserSession.tipoPlano, plano: window.currentUserSession.plano } : c);
+            localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+        } catch(e) {}
+    }
+
+    if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+    window.syncIndividualAndFamilyModeUI();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof showToastUndo === 'function') {
+        showToastUndo(isIndiv ? '👤 Modo Individual ativado! Lista de compras e histórico prontos.' : '👨‍👩‍👧‍👦 Modo Casal / Família ativado! Membros e Chat liberados.', false);
+    }
+};
+
+window.syncIndividualAndFamilyModeUI = function() {
+    const isIndiv = window.isUserInIndividualMode();
+    const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+
+    // 1. Atualiza botões no Painel do Usuário (adminUserCompactView)
+    const btnFam = document.getElementById('btnUserPlanMode_familia');
+    const btnInd = document.getElementById('btnUserPlanMode_individual');
+    const badgePlan = document.getElementById('adminUserCurrentPlanBadge');
+    const cardMembers = document.getElementById('adminUserFamilyMembersCard');
+    const noticeIndiv = document.getElementById('adminUserIndividualModeNotice');
+    const countBadge = document.getElementById('adminUserFamilyCountBadge');
+    const previewTxt = document.getElementById('adminUserFamilyPreviewText');
+
+    if (btnFam && btnInd) {
+        if (isIndiv) {
+            btnInd.className = 'py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer bg-emerald-600 text-white border-emerald-600 shadow-sm';
+            btnFam.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200';
+        } else {
+            btnFam.className = 'py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer bg-indigo-600 text-white border-indigo-600 shadow-sm';
+            btnInd.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200';
+        }
+    }
+    if (badgePlan) {
+        badgePlan.textContent = isIndiv ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal / Família';
+    }
+    if (cardMembers) {
+        if (isIndiv) cardMembers.classList.add('hidden');
+        else cardMembers.classList.remove('hidden');
+    }
+    if (noticeIndiv) {
+        if (isIndiv) noticeIndiv.classList.remove('hidden');
+        else noticeIndiv.classList.add('hidden');
+    }
+    if (!isIndiv && (countBadge || previewTxt)) {
+        const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+        const titular = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+        if (countBadge) countBadge.textContent = `${1 + din.length} de 5 vagas`;
+        if (previewTxt) {
+            if (din.length > 0) {
+                previewTxt.innerHTML = `Participantes ativos: <strong>${titular}, ${din.map(m => m.nome).join(', ')}</strong>. Adicione ou edite membros a qualquer momento.`;
+            } else {
+                previewTxt.innerHTML = `Titular: <strong>${titular}</strong>. Clique abaixo para incluir seu cônjuge/parceiro(a) ou filhos no plano!`;
+            }
+        }
+    }
+
+    // 2. Atualiza atalho de Chat no Acesso Rápido e na Barra Inferior (Dock)
+    const quickChatBtn = document.querySelector('[onclick="switchScreen(\'chat\')"]');
+    if (quickChatBtn) {
+        if (isIndiv) {
+            quickChatBtn.setAttribute('onclick', "openFamilyChatModal('lista')");
+            const iconBox = quickChatBtn.querySelector('div');
+            const labelSpan = quickChatBtn.querySelector('span');
+            if (iconBox) iconBox.textContent = '🛍️';
+            if (labelSpan) labelSpan.textContent = 'Gôndola';
+        } else {
+            quickChatBtn.setAttribute('onclick', "openFamilyChatModal('conversa')");
+            const iconBox = quickChatBtn.querySelector('div');
+            const labelSpan = quickChatBtn.querySelector('span');
+            if (iconBox) iconBox.textContent = '💬';
+            if (labelSpan) labelSpan.textContent = 'Chat';
+        }
+    }
+
+    const navChatBtn = document.getElementById('navTab_chat');
+    if (navChatBtn) {
+        const spanEl = navChatBtn.querySelector('span');
+        if (isIndiv) {
+            navChatBtn.setAttribute('onclick', "openFamilyChatModal('lista')");
+            if (spanEl) spanEl.textContent = 'Gôndola';
+        } else {
+            navChatBtn.setAttribute('onclick', "openFamilyChatModal()");
+            if (spanEl) spanEl.textContent = 'Chat';
+        }
+    }
+
+    // 3. Atualiza cabeçalho, barra de destinatários e abas dentro do modalFamilyChat
+    const modalChat = document.getElementById('modalFamilyChat');
+    if (modalChat) {
+        const titleEl = modalChat.querySelector('h2');
+        const subEl = document.getElementById('chatHeaderSubtitle');
+        const recBar = document.getElementById('chatRecipientBar');
+        const tabsBar = document.getElementById('chatViewModeTabs');
+        const floatMsgBar = document.getElementById('chatShoppingFloatingMsgBar');
+        const inputFooter = document.getElementById('chatInputFooter');
+
+        if (isIndiv) {
+            if (titleEl) titleEl.innerHTML = '🛒 Lista de Compras &amp; Gôndola';
+            if (subEl) subEl.textContent = 'Marque o que está comprando e salve no histórico de preços';
+            if (recBar) recBar.classList.add('hidden');
+            if (tabsBar) tabsBar.classList.add('hidden');
+            if (floatMsgBar) floatMsgBar.classList.add('hidden');
+            if (inputFooter) inputFooter.classList.add('hidden');
+        } else {
+            if (titleEl) titleEl.innerHTML = '💬 Chat da Família';
+            if (tabsBar) tabsBar.classList.remove('hidden');
+            if (floatMsgBar) floatMsgBar.classList.remove('hidden');
+            if (inputFooter) inputFooter.classList.remove('hidden');
+            if (recBar) {
+                recBar.classList.remove('hidden');
+                if (!isMaster) {
+                    const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+                    const titular = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+                    if (subEl) {
+                        subEl.textContent = din.length > 0
+                            ? `${titular}, ${din.map(m => m.nome).join(', ')} • Sincronizado`
+                            : `${titular} • Adicione membros no Painel do Usuário`;
+                    }
+                    const btnsHtml = [
+                        `<button type="button" onclick="selectChatRecipient('Todos')" id="btnRecipient_Todos" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-2xs transition-all whitespace-nowrap cursor-pointer">👨‍👩‍👧‍👦 Todos</button>`,
+                        `<button type="button" onclick="selectChatRecipient('${titular.replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">👤 ${titular}</button>`,
+                        ...din.map(m => `<button type="button" onclick="selectChatRecipient('${(m.nome || '').replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">${m.avatar || '👤'} ${m.nome}</button>`)
+                    ].join('');
+                    recBar.innerHTML = `<span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">Para:</span>` + btnsHtml;
+                }
+            }
+        }
+    }
+};
+
+window.getUserModuleActiveState = function(modId) {
+    const scopedKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey(`ctrlpig_module_active_${modId}`) : `ctrlpig_module_active_${modId}`;
+    const val = localStorage.getItem(scopedKey);
+    if (val !== null) return val !== 'false';
+    return localStorage.getItem(`ctrlpig_module_active_${modId}`) !== 'false';
+};
+
+window.toggleUserAppModule = function(modId, isChecked) {
+    const scopedKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey(`ctrlpig_module_active_${modId}`) : `ctrlpig_module_active_${modId}`;
+    localStorage.setItem(scopedKey, isChecked ? 'true' : 'false');
+    localStorage.setItem(`ctrlpig_module_active_${modId}`, isChecked ? 'true' : 'false');
+    window.applyUserDashboardModulesVisibility();
+    if (typeof showToastUndo === 'function') {
+        showToastUndo(isChecked ? '✅ Seção ativada no aplicativo!' : '🙈 Seção ocultada da tela!', false);
+    }
+};
+
+window.applyUserDashboardModulesVisibility = function() {
+    const mapSelectors = {
+        compras: ['[onclick*="openShoppingListModal"]', '#navTab_compras'],
+        health: ['[onclick*="openHealthMedsModal"]'],
+        pet: ['[onclick*="openPetAreaModal"]'],
+        veiculos: ['[onclick*="openVeiculosHub"]'],
+        educacao: ['[onclick*="openEducacaoHub"]'],
+        contacts: ['[onclick*="openServiceProvidersModal"]'],
+        goals: ['[onclick*="openCreatePiggyModal"]'],
+        cartoes: ['[onclick*="openManageCardsModal"]']
+    };
+
+    Object.keys(mapSelectors).forEach(modId => {
+        const active = window.getUserModuleActiveState(modId);
+        mapSelectors[modId].forEach(sel => {
+            document.querySelectorAll(sel).forEach(el => {
+                // Não esconde botões internos de modais, apenas cards de navegação/dashboard
+                if (el.id === 'navTab_compras' || el.classList.contains('rounded-2xl') || el.classList.contains('rounded-3xl')) {
+                    el.style.display = active ? '' : 'none';
+                }
+            });
+        });
+    });
+
+    // Card de Compras Parceladas no Dashboard
+    const badgeParcelas = document.getElementById('cardInstallmentsCountBadge');
+    if (badgeParcelas) {
+        const cardParcelas = badgeParcelas.closest('.rounded-3xl');
+        if (cardParcelas) {
+            cardParcelas.style.display = window.getUserModuleActiveState('cartoes') ? '' : 'none';
+        }
+    }
+};
+
 window.renderAdminUserCompactModulesToggle = function() {
+    window.syncIndividualAndFamilyModeUI();
     const listEl = document.getElementById('adminUserDashboardModulesToggleList');
     if (!listEl) return;
 
     const modules = [
-        { id: 'health', name: 'Saúde & Remédios', desc: 'Horários e estoque de remédios' },
-        { id: 'pet', name: 'Mundo Pet & Vacinas', desc: 'Vacinas, ração e coleira QR' },
-        { id: 'supermarket', name: 'Comparador de Preços', desc: 'Histórico de notas fiscais' },
-        { id: 'goals', name: 'Metas e Cofrinhos', desc: 'Economia e sonhos do casal' },
-        { id: 'contacts', name: 'Agenda de Serviços', desc: 'Profissionais e prestadores' }
+        { id: 'compras', name: '🛒 Mercado & Preços', desc: 'Lista de compras e histórico' },
+        { id: 'health', name: '💊 Saúde & Remédios', desc: 'Horários e estoque de remédios' },
+        { id: 'pet', name: '🐾 Mundo Pet & Vacinas', desc: 'Vacinas, ração e cuidados' },
+        { id: 'veiculos', name: '🚗 Transporte & Veículos', desc: 'Combustível e manutenção' },
+        { id: 'educacao', name: '🎓 Educação & Cursos', desc: 'Mensalidades e materiais' },
+        { id: 'goals', name: '🐷 Cofrinho e Metas', desc: 'Economia e objetivos' },
+        { id: 'contacts', name: '🔧 Meus Prestadores', desc: 'Profissionais de confiança' },
+        { id: 'cartoes', name: '💳 Cartões & Parceladas', desc: 'Faturas e compras parceladas' }
     ];
 
     listEl.innerHTML = modules.map(m => {
-        const isEnabled = localStorage.getItem(`ctrlpig_module_active_${m.id}`) !== 'false';
+        const isEnabled = window.getUserModuleActiveState(m.id);
         return `
-            <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <div>
+            <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-blue-400 transition-all">
+                <div class="pr-2">
                     <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">${m.name}</div>
                     <div class="text-[10px] text-slate-500">${m.desc}</div>
                 </div>
-                <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="localStorage.setItem('ctrlpig_module_active_${m.id}', this.checked); if (typeof showToastUndo==='function') showToastUndo('Módulo atualizado!', false);" class="w-4 h-4 text-blue-600 rounded">
-            </div>
+                <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="window.toggleUserAppModule('${m.id}', this.checked)" class="w-4 h-4 text-blue-600 rounded cursor-pointer">
+            </label>
         `;
     }).join('');
 };
@@ -33819,6 +34234,8 @@ window.renderAdminUserCompactModulesToggle = function() {
 // Inicializa o banner na carga da página
 document.addEventListener('DOMContentLoaded', function() {
     window.updateDemoBannerUI();
+    if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI();
+    if (typeof window.applyUserDashboardModulesVisibility === 'function') window.applyUserDashboardModulesVisibility();
 });
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     window.updateDemoBannerUI();
@@ -36572,7 +36989,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const modalIds = [
         'modalAddNewContinuousMed', 'modalEditMedication', 'modalMedTakeConfirmation',
         'modalAddEditPet', 'modalAddPetVaccine', 'modalAddEditPetCare', 'modalPetQrCode',
-        'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel',
+        'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel', 'modalAddUser', 'modalAddUser',
         'modalManageCards', 'modalVeiculosHub', 'modalEducacaoHub', 'modalSelectCycle',
         'modalComparativoMercados', 'modalNewTx', 'modalEditTx', 'modalTrash',
         'modalCreatePiggy', 'modalPiggyDepositSpecific', 'modalPiggyWithdrawSpecific'
@@ -38002,15 +38419,15 @@ window.openHealthMedsModal = function() {
       if (!session) {
         try { session = JSON.parse(localStorage.getItem('financas_auth_user') || 'null'); } catch(_) {}
       }
-      const isNonMaster = session && session.email && (session.email.toLowerCase().trim() !== 'rodrigocardosocn@gmail.com');
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
 
-      if (isNonMaster) {
+      if (!isMaster) {
         const uKey = (typeof getUserTransactionsStorageKey === 'function') ? getUserTransactionsStorageKey(session) : null;
         let uTxs = [];
         if (uKey) {
           try { uTxs = JSON.parse(localStorage.getItem(uKey) || '[]'); } catch(_) {}
         }
-        // Isolamento estrito de conta: nova conta inicia com 0 lançamentos
+        // Isolamento estrito: novas contas ou não-master sempre retornam suas próprias transações (ou vazio)
         return uTxs;
       }
 
@@ -38098,8 +38515,9 @@ window.openHealthMedsModal = function() {
   }
 
   function refreshHomeCategoryBreakdown(txs) {
+    const list = Array.isArray(txs) ? txs : (typeof transactions !== 'undefined' && Array.isArray(transactions) ? transactions : []);
     const totals = new Map();
-    txs.filter(t => t.tipo !== 'Receita').forEach(t => {
+    list.filter(t => t && t.tipo !== 'Receita').forEach(t => {
       const name = String(t.categoria || 'Outros');
       totals.set(name, (totals.get(name) || 0) + (Number(t.valor) || 0));
     });
@@ -38114,73 +38532,79 @@ window.openHealthMedsModal = function() {
       const labels = top.map(item => item[0]);
       const dataValues = top.map(item => item[1]);
 
-      // 1. Sempre renderiza nativamente no canvas (zero dependência de rede, 100% à prova de falhas)
-      drawNativeCategoryDonut(chartCanvas, dataValues, colors);
+      if (dataValues.length === 0 || totalExpenses <= 0) {
+        if (window.homeCategoryChartInstance) {
+          try {
+            window.homeCategoryChartInstance.destroy();
+            window.homeCategoryChartInstance = null;
+          } catch (_) {}
+        }
+        drawNativeCategoryDonut(chartCanvas, [], colors);
+      } else {
+        // 1. Sempre renderiza nativamente no canvas (zero dependência de rede, 100% à prova de falhas)
+        drawNativeCategoryDonut(chartCanvas, dataValues, colors);
 
-      // 2. Se o Chart.js estiver disponível, inicializa ou atualiza o gráfico para permitir hover/tooltips interativos
-      if (window.Chart) {
-        try {
-          let chart = window.homeCategoryChartInstance;
-          if (chart && chart.canvas === chartCanvas) {
-            chart.data.labels = labels;
-            chart.data.datasets[0].data = dataValues;
-            chart.data.datasets[0].backgroundColor = colors.slice(0, dataValues.length);
-            chart.update('none');
-          } else {
-            if (chart) {
-              try { chart.destroy(); } catch (_) {}
-            }
-            const ctx = chartCanvas.getContext('2d');
-            window.homeCategoryChartInstance = new Chart(ctx, {
-              type: 'doughnut',
-              data: {
-                labels: labels,
-                datasets: [{
-                  data: dataValues,
-                  backgroundColor: colors.slice(0, dataValues.length),
-                  borderWidth: 2,
-                  borderColor: '#ffffff',
-                  hoverOffset: 4
-                }]
-              },
-              options: {
-                responsive: false,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                animation: { duration: 300 },
-                plugins: {
-                  legend: { display: false },
-                  tooltip: {
-                    callbacks: {
-                      label: function(context) {
-                        const val = Number(context.parsed) || 0;
-                        const pct = totalExpenses > 0 ? ((val / totalExpenses) * 100).toFixed(1) : 0;
-                        const fmt = typeof formatBRL === 'function' ? formatBRL(val, 'despesa') : `R$ ${val.toFixed(2)}`;
-                        return ` ${context.label}: ${fmt} (${pct}%)`;
+        // 2. Se o Chart.js estiver disponível, inicializa ou atualiza o gráfico para permitir hover/tooltips interativos
+        if (window.Chart) {
+          try {
+            let chart = window.homeCategoryChartInstance;
+            if (chart && chart.canvas === chartCanvas) {
+              chart.data.labels = labels;
+              chart.data.datasets[0].data = dataValues;
+              chart.data.datasets[0].backgroundColor = colors.slice(0, dataValues.length);
+              chart.update('none');
+            } else {
+              if (chart) {
+                try { chart.destroy(); } catch (_) {}
+              }
+              const ctx = chartCanvas.getContext('2d');
+              window.homeCategoryChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    data: dataValues,
+                    backgroundColor: colors.slice(0, dataValues.length),
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                  }]
+                },
+                options: {
+                  responsive: false,
+                  maintainAspectRatio: false,
+                  cutout: '70%',
+                  animation: { duration: 300 },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          const val = Number(context.parsed) || 0;
+                          const pct = totalExpenses > 0 ? ((val / totalExpenses) * 100).toFixed(1) : 0;
+                          const fmt = typeof formatBRL === 'function' ? formatBRL(val, 'despesa') : `R$ ${val.toFixed(2)}`;
+                          return ` ${context.label}: ${fmt} (${pct}%)`;
+                        }
                       }
                     }
                   }
                 }
-              }
-            });
+              });
+            }
+          } catch (e) {
+            console.warn('Fallback ativo para Donut nativo:', e);
           }
-        } catch (e) {
-          console.warn('Fallback ativo para Donut nativo:', e);
         }
       }
     }
 
-    const dashboard = document.getElementById('screen_dashboard');
-    if (!dashboard) return;
-    const heading = [...dashboard.querySelectorAll('h3')].find(el => /despesas por categoria/i.test(el.textContent));
-    const card = heading && heading.closest('.p-4, .bg-white');
-    const totalLabel = card && card.querySelector('.text-base.font-black.text-slate-900');
+    const totalLabel = document.getElementById('previewDonutTotalVal') || (document.getElementById('screen_dashboard')?.querySelector('.p-4 .text-base.font-black.text-slate-900'));
     if (totalLabel) totalLabel.textContent = typeof formatBRL === 'function' ? formatBRL(totalExpenses, 'despesa') : `R$ ${totalExpenses.toFixed(2)}`;
-    const row = card && card.querySelector('.flex.items-center.justify-around');
-    const legend = row && row.children[1];
+
+    const legend = document.getElementById('previewDonutLegend') || (document.getElementById('screen_dashboard')?.querySelector('.flex.items-center.justify-around')?.children[1]);
     if (legend) {
       legend.className = 'space-y-1.5 text-xs w-full max-w-[190px] max-h-44 overflow-y-auto custom-scrollbar pr-1';
-      if (!top.length) {
+      if (!top.length || totalExpenses <= 0) {
         legend.innerHTML = '<span class="text-xs text-slate-400 italic">Sem despesas registradas no ciclo.</span>';
       } else {
         legend.replaceChildren(...top.map((item, index) => {
@@ -38204,6 +38628,7 @@ window.openHealthMedsModal = function() {
       }
     }
   }
+  window.refreshHomeCategoryBreakdown = refreshHomeCategoryBreakdown;
 
   function refreshHomeRecentTransactions(txs) {
     const dashboard = document.getElementById('screen_dashboard');
@@ -38377,6 +38802,8 @@ window.openHealthMedsModal = function() {
       refreshBalanceMascot(txs);
       refreshHomeCategoryBreakdown(txs);
       refreshHomeRecentTransactions(txs);
+      if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI();
+      if (typeof window.applyUserDashboardModulesVisibility === 'function') window.applyUserDashboardModulesVisibility();
       return result;
     };
   }
@@ -39983,11 +40410,22 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   };
   window.closePetAreaModal = function() { hideElement('modalPetArea'); };
 
-  window.openFamilyChatModal = function() {
+  window.openFamilyChatModal = function(defaultTab) {
     ensureElementVisible('modalFamilyChat');
     const bH = document.getElementById('chatHeaderBadge');
     if (bH) bH.classList.add('hidden');
-    if (typeof renderChatMessages === 'function') renderChatMessages();
+    if (typeof window.syncIndividualAndFamilyModeUI === 'function') {
+      window.syncIndividualAndFamilyModeUI();
+    }
+    const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
+    const targetTab = isIndiv ? 'lista' : (defaultTab === 'lista' ? 'lista' : 'conversa');
+    if (typeof window.switchChatViewTab === 'function') {
+      window.switchChatViewTab(targetTab);
+    }
+    if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
+    if (typeof updateCartSummaryUI === 'function') updateCartSummaryUI();
+    if (typeof window.updateChatStoreStatusHeader === 'function') window.updateChatStoreStatusHeader();
+    if (window.lucide) lucide.createIcons();
   };
   window.closeFamilyChatModal = function() { hideElement('modalFamilyChat'); };
 
