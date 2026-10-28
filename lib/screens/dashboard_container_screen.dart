@@ -174,7 +174,25 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.90+167';
+  static const String _kCurrentAppVersion = '2.1.118+195';
+
+  Future<void> _requestPostLoginPermissions() async {
+    try {
+      await [
+        Permission.notification,
+        Permission.camera,
+        Permission.microphone,
+      ].request();
+      final notifGranted = await Permission.notification.isGranted;
+      _controller.runJavaScript("""
+        if (typeof window.onNativeNotificationPermissionResult === 'function') {
+          window.onNativeNotificationPermissionResult($notifGranted, false);
+        }
+      """);
+    } catch (e) {
+      debugPrint('Aviso ao solicitar permissoes pos-login: $e');
+    }
+  }
 
   void _initWebViewController() {
     // Trava de segurança imediata: garante que a tela inicial nunca fique congelada ou presa no loading
@@ -422,6 +440,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeHeadphonesStatus($hasHeadphones);
           }
         """);
+      } else if (action == 'request_all_permissions') {
+        await _requestPostLoginPermissions();
       } else if (action == 'request_notification_permission') {
         var status = await Permission.notification.status;
         if (!status.isGranted) {
@@ -650,6 +670,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeAuthLoginResult($success, ${jsonEncode(err ?? '')}, $userJson);
           }
         """);
+        _requestPostLoginPermissions();
       } else if (action == 'auth_signup') {
         final email = data['email'] as String? ?? '';
         final password = data['password'] as String? ?? '';
@@ -662,6 +683,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeAuthRegisterResult($success, ${jsonEncode(err ?? '')});
           }
         """);
+        _requestPostLoginPermissions();
       } else if (action == 'auth_reset_password') {
         final email = data['email'] as String? ?? '';
         final authService = Provider.of<AuthService>(context, listen: false);

@@ -4132,11 +4132,10 @@ html, body {
     #modalManageCards,
     #modalCreatePiggy,
     #modalInstallmentsDetail,
-    #modalTilePicker,
-    #modalSoberTilePicker,
-    #modalAddUser,
     #modalFamilyChat,
-    #modalReorderQuickHub {
+    #modalReorderQuickHub,
+    #modalProductWarranties,
+    #modalKidsArea {
       z-index: 1050 !important;
     }
 
@@ -4156,6 +4155,15 @@ html, body {
     #modalNewTx,
     #modalEditTx {
       z-index: 2500 !important;
+    }
+
+    /* SELETORES DE CATEGORIA / RESPONSÁVEL / PAGAMENTO E COMPARATIVO DE MERCADOS (Acima de modalNewTx e modalShoppingListHistory) */
+    #modalTilePicker,
+    #modalSoberTilePicker,
+    #modalAddUser,
+    #modalComparativoMercados,
+    #modalEditPriceItem {
+      z-index: 3600 !important;
     }
     </style>
 </head>
@@ -4727,10 +4735,15 @@ html, body {
             </button>
             <h2 class="text-xl font-black text-white tracking-tight">Transações</h2>
           </div>
-          <button type="button" onclick="openTrashModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all relative cursor-pointer active:scale-95" title="Lixeira de Transações">
-            <i data-lucide="trash-2" class="w-4 h-4 text-rose-300 hover:text-white transition-colors"></i>
-            <span id="trashBadgeCount" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-[#071933]"></span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openSectionLampInsight('transacoes')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Transações">
+              <span>💡</span>
+            </button>
+            <button type="button" onclick="openTrashModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all relative cursor-pointer active:scale-95" title="Lixeira de Transações">
+              <i data-lucide="trash-2" class="w-4 h-4 text-rose-300 hover:text-white transition-colors"></i>
+              <span id="trashBadgeCount" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-[#071933]"></span>
+            </button>
+          </div>
         </div>
 
         <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
@@ -4874,170 +4887,175 @@ html, body {
       </section>
 
       <!-- ============================================================ -->
-      <!-- TELA 3: FAMÍLIA & VIDA                                       -->
+      <!-- TELA 3: FAMÍLIA & VIDA (10 MÓDULOS COMPACTOS SEM SCROLL)     -->
       <!-- ============================================================ -->
       <section id="screen_familia" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
         
-        <!-- Topo Integrado com Setinha Voltar ‹ e Título -->
-        <div class="px-5 pt-3 pb-2 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+        <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
+        <div class="px-4 pt-2.5 pb-1.5 flex items-center justify-between text-white flex-shrink-0 relative z-30">
           <div class="flex items-center gap-2.5">
             <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
-            <h2 class="text-xl font-black text-white tracking-tight">Família &amp; Vida</h2>
+            <h2 class="text-lg font-black text-white tracking-tight">Família &amp; Vida</h2>
           </div>
-          <button type="button" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all" title="Buscar">
-            <i data-lucide="search" class="w-4 h-4"></i>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="openSectionLampInsight('familia')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Família & Vida">
+              <span>💡</span>
+            </button>
+          </div>
         </div>
 
         <div class="flex-1 flex flex-col relative overflow-hidden">
           
-          <!-- BANNER HERO COM O PIGGY (SÓBRIO, SEM DICA - DICAS NO PITACO DE CADA SEÇÃO) -->
-          <div class="px-5 pt-1 relative z-20">
-            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
-              <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
-              
-              <div class="relative z-10 flex items-center justify-between gap-3">
-                <div class="max-w-[65%]">
-                  <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
+          <!-- BANNER HERO COMPACTO COM O PIGGY -->
+          <div class="px-4 pt-0.5 relative z-20">
+            <div class="relative overflow-hidden rounded-2xl px-3.5 py-2.5 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-lg">
+              <div class="relative z-10 flex items-center justify-between gap-2">
+                <div class="max-w-[75%]">
+                  <h3 class="font-black text-sm text-white leading-tight">
                     Espaço Família &amp; Vida
                   </h3>
-                  <p class="text-xs text-blue-100 mt-1 leading-snug">
-                    Rotina, saúde, transporte e cuidados compartilhados em 8 módulos integrados.
+                  <p class="text-[11px] text-blue-100 mt-0.5 leading-tight">
+                    Rotina, filhos, garantias, saúde e cuidados em 10 módulos integrados.
                   </p>
                 </div>
-
-                <!-- Mascote Porquinho Robô 3D sorrindo -->
-                <div class="w-28 sm:w-32 flex-shrink-0 flex items-center justify-center">
-                  <img src="images/mascote_oficial_mentor.png" onerror="this.src='assets/images/mascote_oficial_mentor.png'" alt="Mascote Oficial" class="w-full h-auto max-h-[120px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
+                <div class="w-14 flex-shrink-0 flex items-center justify-center">
+                  <img src="images/mascote_oficial_mentor.png" onerror="this.src='assets/images/mascote_oficial_mentor.png'" alt="Mascote Oficial" class="w-full h-auto max-h-[54px] object-contain drop-shadow-md">
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- CAIXA COM CANTOS ARREDONDADOS (rounded-t-[32px]) FICANDO POR BAIXO DO CARD BANNER (-mt-8)
-               COM PADDING TOP (pt-10) PARA NENHUM TEXTO OU CARD FICAR CORTADO! -->
-          <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] -mt-8 relative z-10 flex flex-col overflow-y-auto px-5 pt-11 pb-6 space-y-4 shadow-inner">
+          <!-- CAIXA ARREDONDADA COMPACTA COM OS 10 CARDS VISÍVEIS SEM PRECISAR DE SCROLL -->
+          <div class="flex-1 bg-[#DFEAF7] rounded-t-[28px] -mt-4 relative z-10 flex flex-col overflow-y-auto px-4 pt-6 pb-3 space-y-2 shadow-inner">
             
-            <div class="flex items-center justify-between pt-1">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
-              <span class="text-[11px] font-bold text-blue-700 bg-blue-100/70 px-2.5 py-0.5 rounded-full">8 disponíveis</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
+              <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">10 disponíveis</span>
             </div>
 
-            <!-- GRADE DOS 8 MÓDULOS EM CARTÕES BRANCOS ARREDONDADOS (100% VISÍVEIS SEM CORTES) -->
-            <div class="grid grid-cols-2 gap-3 pb-6">
+            <!-- GRADE COMPACTA DE 10 MÓDULOS (2x5) -->
+            <div class="grid grid-cols-2 gap-2 pb-2">
               
               <!-- 1. Educação -->
-              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
-                    🎓
+              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base flex-shrink-0">🎓</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Educação</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Cursos e formação</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Educação</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Mensalidades e cursos</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 2. Lista de Compras -->
-              <div onclick="openShoppingListModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-                    🛒
+              <div onclick="openShoppingListModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛒</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Lista de Compras</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Mercado e histórico</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Lista de Compras</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Colaborativa</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 3. Pets e Vacinas -->
-              <div onclick="openPetAreaModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-lg">
-                    🐾
+              <div onclick="openPetAreaModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-base flex-shrink-0">🐾</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Pets e Vacinas</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Cuidados e gastos</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Pets e Vacinas</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Cuidados e gastos</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 4. Vida Saudável -->
-              <div onclick="openHealthMedsModal()" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
-                    ❤️
+              <div onclick="openHealthMedsModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base flex-shrink-0">❤️</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Vida Saudável</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Rotina e remédios</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Vida Saudável</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Rotina e medicamentos</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 5. Transporte & Manutenção -->
-              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
-                    🚗
+              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base flex-shrink-0">🚗</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Transporte</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Veículos e revisão</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Transporte &amp; Manutenção</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Combustível e manutenção</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 6. Meus Prestadores -->
-              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
-                    🔧
+              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">🔧</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Prestadores</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Contatos úteis</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Meus Prestadores</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Contatos de confiança</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 7. Cofrinho e Metas -->
-              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                    🐷
+              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base flex-shrink-0">🐷</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cofrinho e Metas</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Sonhos e reservas</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Cofrinho e Metas</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Objetivos da família</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
               <!-- 8. Cartões -->
-              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="bg-white rounded-3xl p-3.5 shadow-sm border border-slate-200/70 flex flex-col justify-between h-28 cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-start justify-between">
-                  <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
-                    💳
+              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">💳</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cartões</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Limites e faturas</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                 </div>
-                <div>
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight">Cartões</h4>
-                  <p class="text-[10px] text-slate-400 mt-0.5 truncate">Controle de gastos com cartões</p>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+              </div>
+
+              <!-- 9. Garantias de Produtos (NOVO) -->
+              <div onclick="openProductWarrantiesModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-emerald-200/90 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛡️</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Prazos de produtos</p>
+                  </div>
                 </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+              </div>
+
+              <!-- 10. Crianças & Escola (NOVO) -->
+              <div onclick="openKidsAreaModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-purple-200/90 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base flex-shrink-0">🧒</div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Crianças &amp; Notas</h4>
+                    <p class="text-[10px] text-slate-400 truncate">Boletim e gastos</p>
+                  </div>
+                </div>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
               </div>
 
             </div>
@@ -5188,11 +5206,11 @@ html, body {
       </div>
       
       <div class="flex items-center gap-2">
+        <button type="button" onclick="openSectionLampInsight('compras')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 active:scale-95 text-amber-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs" title="Dicas & Insights de Mercado">
+          <span>💡</span>
+        </button>
         <button type="button" onclick="openTrashShoppingItemsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shadow-2xs" title="Lixeira / Histórico de excluídos">
           <i data-lucide="trash-2" class="w-4 h-4"></i>
-        </button>
-        <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer" title="Fechar Lista de Compras">
-          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
@@ -6307,6 +6325,9 @@ html, body {
           <p class="text-[11px] text-blue-200">Controle de gastos com cartões e faturas</p>
         </div>
       </div>
+      <button type="button" onclick="openSectionLampInsight('cartoes')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Cartões">
+        <span>💡</span>
+      </button>
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -6682,6 +6703,10 @@ html, body {
           if (d.startsWith('2026-09')) return true;
         } else if (cNorm.includes('ago')) {
           if (d.startsWith('2026-08')) return true;
+        } else if (cNorm.includes('jul')) {
+          if (d.startsWith('2026-07')) return true;
+        } else if (cNorm.includes('jun')) {
+          if (d.startsWith('2026-06')) return true;
         }
       }
 
@@ -6735,24 +6760,60 @@ html, body {
     }
     window.getUserCardsStorageKey = getUserCardsStorageKey;
 
+    function getStarterFictionalTransactions(user) {
+      const u = user || window.currentUserSession;
+      const myName = (u && u.nome) ? String(u.nome).split(' ')[0] : 'Titular';
+      return [
+        { id: 9001, data: "2026-10-05", ciclo: "05/Out a 04/Nov 2026", tipo: "Receita", categoria: "Salário", descricao: "Salário Mensal (Exemplo)", valor: 3500.00, responsavel: myName, forma_pagamento: "PIX", status: "Recebido", cartao_nome: null, isExample: true },
+        { id: 9002, data: "2026-10-08", ciclo: "05/Out a 04/Nov 2026", tipo: "Despesa Fixa", categoria: "Moradia", descricao: "Conta de Luz (Exemplo)", valor: 145.00, responsavel: myName, forma_pagamento: "PIX", status: "Pago", cartao_nome: null, isExample: true },
+        { id: 9003, data: "2026-10-12", ciclo: "05/Out a 04/Nov 2026", tipo: "Despesa Variável", categoria: "Supermercado", descricao: "Supermercado (Exemplo)", valor: 280.00, responsavel: myName, forma_pagamento: "Cartão de Débito", status: "Pago", cartao_nome: null, isExample: true },
+        { id: 9004, data: "2026-10-15", ciclo: "05/Out a 04/Nov 2026", tipo: "Despesa Variável", categoria: "Saúde", descricao: "Farmácia (Exemplo)", valor: 45.00, responsavel: myName, forma_pagamento: "PIX", status: "Pago", cartao_nome: null, isExample: true }
+      ];
+    }
+    window.getStarterFictionalTransactions = getStarterFictionalTransactions;
+
+    window.syncGlobalCycleState = function(cycleTag, cycleTxs) {
+      if (cycleTag) currentCycle = cycleTag;
+      if (Array.isArray(cycleTxs)) {
+        transactions = cycleTxs;
+        window.transactions = cycleTxs;
+      }
+    };
+
     function ensureActiveTransactionsLoaded() {
       const isMaster = isCurrentUserMaster();
       const key = getUserTransactionsStorageKey();
+      if (!isMaster) {
+        const seededKey = getUserScopedStorageKey('ctrlpig_fictional_tx_seeded');
+        const alreadySeeded = localStorage.getItem(seededKey) === 'true';
+        let storedTxs = null;
+        try {
+          const raw = localStorage.getItem(key);
+          if (raw) storedTxs = JSON.parse(raw);
+        } catch(e) {}
+        if ((!Array.isArray(storedTxs) || storedTxs.length === 0) && !alreadySeeded) {
+          storedTxs = getStarterFictionalTransactions();
+          try {
+            localStorage.setItem(key, JSON.stringify(storedTxs));
+            localStorage.setItem(seededKey, 'true');
+          } catch(e) {}
+        }
+        transactions = Array.isArray(storedTxs) ? storedTxs : [];
+        window.transactions = transactions;
+        return;
+      }
+      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]) {
+        const activeCycleObj = window.appCyclesData[window.currentActiveCycleKey];
+        currentCycle = activeCycleObj.tag || currentCycle;
+        if (Array.isArray(activeCycleObj.transactions)) {
+          transactions = activeCycleObj.transactions;
+          window.transactions = transactions;
+          return;
+        }
+      }
       if (!Array.isArray(transactions) || (transactions.length === 0 && isMaster)) {
         transactions = isMaster ? JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS)) : [];
         try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
-      }
-      if (isMaster) {
-        const hasCurrent = transactions.some(t => isTxInCycle(t, currentCycle));
-        if (!hasCurrent && Array.isArray(INITIAL_TRANSACTIONS)) {
-          const octOfficial = INITIAL_TRANSACTIONS.filter(t => isTxInCycle(t, '05/Out a 04/Nov 2026'));
-          if (octOfficial.length > 0) {
-            const ids = new Set(transactions.map(t => t.id));
-            const toAdd = octOfficial.filter(t => !ids.has(t.id));
-            transactions.unshift(...toAdd);
-            try { localStorage.setItem(key, JSON.stringify(transactions)); } catch(e) {}
-          }
-        }
       }
       window.transactions = transactions;
     }
@@ -8413,7 +8474,7 @@ html, body {
 
         const cellsMap = {
           tipo: `<td class="py-2.5 px-3 whitespace-nowrap"><div class="flex items-center gap-1">${tipoBadge}${btnQuitarFixa}</div></td>`,
-          data: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${t.data}</td>`,
+          data: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${formatDateBR(t.data)}</td>`,
           descricao: `
             <td class="py-2.5 px-3">
               <div class="flex items-center gap-1.5">
@@ -8471,7 +8532,7 @@ html, body {
             <div class="app-card rounded-xl p-3.5 flex flex-col justify-between space-y-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xs">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-[10px] text-slate-400 font-semibold">${t.data} • ${t.categoria}</span>
+                  <span class="text-[10px] text-slate-400 font-semibold">${formatDateBR(t.data)} • ${t.categoria}</span>
                   ${t.tipo === 'Despesa Fixa' ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">Fixa</span>' : ''}
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -9035,7 +9096,7 @@ html, body {
           <div class="flex items-center justify-between p-2.5 rounded-none bg-slate-50 border border-slate-300">
             <div>
               <div class="font-bold text-slate-800 text-xs">${item.tx.descricao}</div>
-              <div class="text-[10px] text-slate-400">${item.tx.data} • ${item.tx.tipo} • ${formatBRL(item.tx.valor)}</div>
+              <div class="text-[10px] text-slate-400">${formatDateBR(item.tx.data)} • ${item.tx.tipo} • ${formatBRL(item.tx.valor)}</div>
             </div>
             <button onclick="restoreFromTrash(${idx})" class="px-2.5 py-1 bg-slate-200 text-blue-700 hover:bg-slate-300 font-bold rounded-none text-xs border border-slate-300">
               Restaurar
@@ -10825,7 +10886,8 @@ html, body {
 
         const isChecked = itemState.selected;
         const suggestedStore = itemState.lojaNome || (stats ? stats.cheapestStore : 'Supermercado');
-        const unitPrice = stats ? stats.latestPrice : (itemState.preco || 0);
+        // Lista de compras inicia com valor zerado (R$ 0,00); os preços das notas ficam exclusivamente no Histórico
+        const unitPrice = (itemState && typeof itemState.preco === 'number') ? itemState.preco : 0;
         const subtotal = (itemState.qtd || 1) * unitPrice;
         const safeName = name.replace(/'/g, "\\'");
         const zebraBg = (idx % 2 === 0)
@@ -11042,10 +11104,9 @@ html, body {
       ]));
 
       uniqueNames.forEach(name => {
-        const stats = getProductPriceStats(name);
         const item = builderSelectedItems[name];
         const qtd = item ? (item.qtd || 1) : 1;
-        const price = stats ? stats.latestPrice : ((item && item.preco) ? item.preco : 0);
+        const price = (item && typeof item.preco === 'number') ? item.preco : 0;
         const sub = qtd * price;
         totalGeral += sub;
         if (item && item.selected) {
@@ -11119,7 +11180,7 @@ html, body {
           lojaUltimoPreco: stats ? stats.latestStore : (data.lojaUltimoPreco || ''),
           status: 'pendente',
           qtdComprada: 0,
-          precoUnitario: stats ? stats.latestPrice : (data.preco || 0),
+          precoUnitario: (data && typeof data.preco === 'number') ? data.preco : 0,
           pedidoPor: senderName
         };
       });
@@ -11221,61 +11282,93 @@ html, body {
       }
 
       if (list.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 text-xs">Nenhum produto encontrado neste filtro.</div>';
+        container.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 text-xs">Nenhum produto encontrado neste filtro. Escaneie uma Nota Fiscal via QR Code para registrar os preços por supermercado!</div>';
         return;
       }
 
-      container.innerHTML = list.map(item => {
-        let diffPct = 0;
-        let diffBadge = '<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg">🏷️ Estável</span>';
+      // Agrupa itens do histórico divididos por Supermercado
+      const byStore = {};
+      list.forEach(item => {
+        const st = item.estabelecimento || 'Supermercado';
+        if (!byStore[st]) byStore[st] = [];
+        byStore[st].push(item);
+      });
 
-        if (item.precoAnterior && item.precoAnterior > 0) {
-          diffPct = Math.round(((item.preco - item.precoAnterior) / item.precoAnterior) * 100);
-          if (diffPct > 0) {
-            diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg">🔺 Mais caro (+${diffPct}%)</span>`;
-          } else if (diffPct < 0) {
-            diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg">🔵 Mais barato (${diffPct}%)</span>`;
+      container.innerHTML = Object.entries(byStore).map(([storeName, storeItems]) => {
+        const storeTotal = storeItems.reduce((acc, it) => acc + (parseFloat(it.valorTotal || it.preco) || 0), 0);
+        const cardsHtml = storeItems.map(item => {
+          let diffPct = 0;
+          let diffBadge = '<span class="text-[10px] font-bold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg">🏷️ Estável</span>';
+
+          if (item.precoAnterior && item.precoAnterior > 0) {
+            diffPct = Math.round(((item.preco - item.precoAnterior) / item.precoAnterior) * 100);
+            if (diffPct > 0) {
+              diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-lg">🔺 +${diffPct}%</span>`;
+            } else if (diffPct < 0) {
+              diffBadge = `<span class="text-[10px] font-black px-2 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg">🔵 ${diffPct}%</span>`;
+            }
           }
-        }
 
-        return `
-          <div class="p-3 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-blue-300 transition-all shadow-2xs flex flex-col justify-between gap-2.5">
-            <!-- Linha Superior: Nome do Produto e Botões de Ação -->
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0 flex-1">
-                <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white leading-tight break-words">
-                  ${escapeHtml(item.produto)}
-                </h4>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                  <span class="font-semibold text-slate-700 dark:text-slate-300">🏪 ${escapeHtml(item.estabelecimento)}</span>
-                  <span>•</span>
-                  <span>📅 ${escapeHtml(item.data || 'Recente')}</span>
+          const safeProdName = (item.produto || '').replace(/'/g, "\'");
+          const safeStore = (item.estabelecimento || 'Supermercado').replace(/'/g, "\'");
+          const isAlreadyInBuilder = !!(typeof builderSelectedItems !== 'undefined' && builderSelectedItems[item.produto] && builderSelectedItems[item.produto].selected);
+
+          return `
+            <div class="p-3 rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-blue-300 transition-all shadow-2xs flex flex-col justify-between gap-2">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white leading-tight break-words">
+                    ${escapeHtml(item.produto)}
+                  </h4>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <span class="font-semibold text-slate-700 dark:text-slate-300">🏪 ${escapeHtml(item.estabelecimento)}</span>
+                    <span>•</span>
+                    <span>📅 ${escapeHtml(formatDateBR(item.data || 'Recente'))}</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1 flex-shrink-0">
+                  <button type="button" onclick="includeHistoryItemInShoppingList('${safeProdName}', '${safeStore}')" title="Incluir este produto na Lista de Compras para selecionar e enviar ao Chat" class="px-2 py-1 rounded-xl ${isAlreadyInBuilder ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-blue-600 hover:bg-blue-500 text-white'} font-black text-[10px] flex items-center gap-1 transition-all cursor-pointer active:scale-95">
+                    <span>${isAlreadyInBuilder ? '✓ Na Lista' : '+ Incluir na Lista'}</span>
+                  </button>
+                  <button type="button" onclick="openEditPriceItemModal(${item.id})" title="Editar ou corrigir preço" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
+                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button" onclick="deletePriceItemWithUndo(${item.id})" title="Excluir este registro" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
                 </div>
               </div>
 
-              <div class="flex items-center gap-1 flex-shrink-0">
-                <button type="button" onclick="openEditPriceItemModal(${item.id})" title="Editar ou corrigir preço" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
-                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-                </button>
-                <button type="button" onclick="deletePriceItemWithUndo(${item.id})" title="Excluir este registro" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-750 rounded-xl transition-colors cursor-pointer">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
+              <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <div>
+                  <span class="text-[9px] uppercase font-bold text-slate-400 block">Valor Unitário</span>
+                  <span class="font-black font-mono text-sm text-emerald-700 dark:text-emerald-400">${formatBRL(item.preco)}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] uppercase font-bold text-slate-400 block">Anterior</span>
+                  <span class="font-semibold font-mono text-xs text-slate-500 dark:text-slate-400">${item.precoAnterior ? formatBRL(item.precoAnterior) : '-'}</span>
+                </div>
+                <div class="flex-shrink-0">
+                  ${diffBadge}
+                </div>
               </div>
             </div>
+          `;
+        }).join('');
 
-            <!-- Linha Inferior: Preço Atual, Preço Anterior e Comparativo -->
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-              <div>
-                <span class="text-[9px] uppercase font-bold text-slate-400 block">Preço Atual</span>
-                <span class="font-black font-mono text-sm text-slate-900 dark:text-white">${formatBRL(item.preco)}</span>
+        return `
+          <div class="col-span-full space-y-2 mb-3">
+            <div class="flex items-center justify-between px-3.5 py-2 rounded-2xl bg-blue-950 text-white shadow-xs">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-base">🏪</span>
+                <strong class="text-xs sm:text-sm font-black truncate">${escapeHtml(storeName)}</strong>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/15 text-blue-200 font-bold">${storeItems.length} ${storeItems.length === 1 ? 'item' : 'itens'}</span>
               </div>
-              <div>
-                <span class="text-[9px] uppercase font-bold text-slate-400 block">Anterior</span>
-                <span class="font-semibold font-mono text-xs text-slate-500 dark:text-slate-400">${item.precoAnterior ? formatBRL(item.precoAnterior) : '-'}</span>
-              </div>
-              <div class="flex-shrink-0">
-                ${diffBadge}
-              </div>
+              <span class="text-xs font-mono font-black text-emerald-300">Soma: ${formatBRL(storeTotal)}</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              ${cardsHtml}
             </div>
           </div>
         `;
@@ -13125,7 +13218,7 @@ html, body {
         icon: '🐾',
         category: 'Pet',
         title: 'Coleira com QR Code & Saúde Pet',
-        text: 'Gere a plaquinha com QR Code do Pantone para resgate rápido e registre gastos e vacinas.',
+        text: 'Gere a plaquinha com QR Code do seu Pet para resgate rápido e registre gastos e vacinas.',
         buttonText: 'Ver Pet',
         action: 'openPetAreaModal()'
       },
@@ -13854,6 +13947,20 @@ html, body {
         bioModal.classList.add('hidden');
         bioModal.style.display = 'none';
       }
+      if (typeof window.sanitizeNonMasterOwnerSelects === 'function') {
+        setTimeout(window.sanitizeNonMasterOwnerSelects, 150);
+      }
+      // Solicita as permissões logo no início, imediatamente após o login no app
+      setTimeout(() => {
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          try {
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_all_permissions' }));
+          } catch(e) {}
+        }
+        if (typeof window.checkFirstAccessPermissions === 'function') {
+          window.checkFirstAccessPermissions();
+        }
+      }, 350);
     };
 
     window.onBiometricAuthResult = function(success, message) {
@@ -14466,15 +14573,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try { localStorage.setItem('financas_biometrics_enabled', checkBio.checked ? 'true' : 'false'); } catch(e) {}
       }
 
-      // ISOLAMENTO TOTAL DE DADOS: Se não for Rodrigo, zera transações, membros e todos os módulos para a nova família
+      // ISOLAMENTO TOTAL DE DADOS: Se não for Rodrigo, limpa dados do Admin Master e cria 4 transações fictícias + 1 pet fictício de exemplo
       if (!isMaster) {
-        window.transactions = [];
-        transactions = [];
+        const starterTxs = typeof window.getStarterFictionalTransactions === 'function' ? window.getStarterFictionalTransactions(nome) : [];
+        window.transactions = starterTxs;
+        transactions = starterTxs;
         creditCards = [];
         const txKey = typeof getUserTransactionsStorageKey === 'function' ? getUserTransactionsStorageKey(novoUsuario) : 'financas_transacoes_v4';
         const cdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey(novoUsuario) : 'financas_credit_cards';
         try {
-          localStorage.setItem(txKey, '[]');
+          localStorage.setItem(txKey, JSON.stringify(starterTxs));
           localStorage.setItem(cdKey, '[]');
           localStorage.setItem('financas_cloud_snapshot_restored', 'true'); // Impede restauração do snapshot do Rodrigo
           const scopedSingleKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_modo_solteiro', novoUsuario) : 'financas_modo_solteiro';
@@ -19824,13 +19932,18 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     function formatDateBR(dateStr) {
       if (!dateStr) return '';
       try {
-        const parts = String(dateStr).split('T')[0].split('-');
-        if (parts.length === 3) {
+        const clean = String(dateStr).split('T')[0].trim();
+        if (/^\d{4}[-/]\d{2}[-/]\d{2}$/.test(clean)) {
+          const parts = clean.split(/[-/]/);
           return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        if (/^\d{2}[-/]\d{2}[-/]\d{4}$/.test(clean)) {
+          return clean.replace(/-/g, '/');
         }
       } catch (e) {}
       return String(dateStr);
     }
+    window.formatDateBR = formatDateBR;
 
     const DEFAULT_PETS_LIST = [
       {
@@ -19911,25 +20024,53 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     ];
 
+    const FICTIONAL_STARTER_PETS = [
+      {
+        id: 'pet_ficticio_1',
+        nome: 'Rex (Exemplo)',
+        especie: 'Cachorro',
+        raca: 'SRD / Caramelo',
+        idade: '2 anos',
+        peso: '10 kg',
+        plano: 'Clínica Veterinária Exemplo (Fictícia)',
+        foto: ''
+      }
+    ];
+
+    const FICTIONAL_STARTER_VACCINES = [
+      {
+        id: 'vac_ficticia_1',
+        petId: 'pet_ficticio_1',
+        nome: 'Vacina V10 Anual (Exemplo)',
+        descricao: 'Imunização anual de exemplo (pode editar ou excluir)',
+        ultimaDose: '2026-06-15',
+        proximaDose: '2027-06-15',
+        clinica: 'Clínica Veterinária Exemplo'
+      }
+    ];
+
     function getRegisteredPets() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const petKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_registered_pets') : 'ctrlpig_registered_pets';
       try {
-        const stored = localStorage.getItem('ctrlpig_registered_pets');
+        const stored = localStorage.getItem(petKey);
         if (stored) {
           let parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (parsed.length < 3) {
-              const existingIds = new Set(parsed.map(p => p.id));
-              DEFAULT_PETS_LIST.forEach(defPet => {
-                if (!existingIds.has(defPet.id) && parsed.length < 3) {
-                  parsed.push(defPet);
-                }
-              });
-              localStorage.setItem('ctrlpig_registered_pets', JSON.stringify(parsed));
+            if (!isMaster) {
+              parsed = parsed.filter(p => p && p.id !== 'pet_pantone' && !String(p.nome || '').toLowerCase().includes('pantone'));
+              if (parsed.length > 0) return parsed;
+            } else {
+              return parsed;
             }
-            return parsed;
           }
         }
       } catch (e) {}
+      if (!isMaster) {
+        const starter = JSON.parse(JSON.stringify(FICTIONAL_STARTER_PETS));
+        try { localStorage.setItem(petKey, JSON.stringify(starter)); } catch (e) {}
+        return starter;
+      }
       const oldPhoto = localStorage.getItem('ctrlpig_pet_pantone_photo');
       if (oldPhoto) {
         DEFAULT_PETS_LIST[0].foto = oldPhoto;
@@ -19938,7 +20079,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function saveRegisteredPets(pets) {
-      localStorage.setItem('ctrlpig_registered_pets', JSON.stringify(pets));
+      const petKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_registered_pets') : 'ctrlpig_registered_pets';
+      localStorage.setItem(petKey, JSON.stringify(pets));
       renderPetCarouselTabs();
       renderPetProfileUI();
       renderPetVaccinesList();
@@ -19948,13 +20090,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function getActivePetId() {
       const pets = getRegisteredPets();
-      const current = localStorage.getItem('ctrlpig_active_pet_id');
+      const actKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_active_pet_id') : 'ctrlpig_active_pet_id';
+      const current = localStorage.getItem(actKey);
       if (current && pets.some(p => p.id === current)) return current;
-      return pets[0]?.id || 'pet_pantone';
+      return pets[0]?.id || 'pet_ficticio_1';
     }
 
     function setActivePetId(id) {
-      localStorage.setItem('ctrlpig_active_pet_id', id);
+      const actKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_active_pet_id') : 'ctrlpig_active_pet_id';
+      localStorage.setItem(actKey, id);
       renderPetCarouselTabs();
       renderPetProfileUI();
       renderPetVaccinesList();
@@ -19965,17 +20109,22 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     function getActivePet() {
       const pets = getRegisteredPets();
       const activeId = getActivePetId();
-      return pets.find(p => p.id === activeId) || pets[0] || DEFAULT_PETS_LIST[0];
+      return pets.find(p => p.id === activeId) || pets[0] || FICTIONAL_STARTER_PETS[0];
     }
 
     function getAllPetVaccines() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const vaxKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_pet_vaccines') : 'ctrlpig_pet_vaccines';
       try {
-        const stored = localStorage.getItem('ctrlpig_pet_vaccines');
+        const stored = localStorage.getItem(vaxKey);
         if (stored) {
           const list = JSON.parse(stored);
           if (Array.isArray(list) && list.length > 0) return list;
         }
       } catch (e) {}
+      if (!isMaster) {
+        return JSON.parse(JSON.stringify(FICTIONAL_STARTER_VACCINES));
+      }
       return DEFAULT_PET_VACCINES;
     }
 
@@ -19986,11 +20135,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function savePetVaccines(vaxList) {
+      const vaxKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_pet_vaccines') : 'ctrlpig_pet_vaccines';
       const currentPetId = getActivePetId();
       const all = getAllPetVaccines();
       const others = all.filter(v => (v.petId && v.petId !== currentPetId) || (!v.petId && currentPetId !== 'pet_pantone'));
       const combined = [...others, ...vaxList.map(v => ({ ...v, petId: v.petId || currentPetId }))];
-      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(combined));
+      localStorage.setItem(vaxKey, JSON.stringify(combined));
       renderPetVaccinesList();
       updateQuickHubUI();
     }
@@ -20908,14 +21058,16 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     ];
 
     function getAllPetCareEvents() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const careKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_pet_care_events') : 'ctrlpig_pet_care_events';
       try {
-        const stored = localStorage.getItem('ctrlpig_pet_care_events');
+        const stored = localStorage.getItem(careKey);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) return parsed;
         }
       } catch (e) {}
-      return DEFAULT_PET_CARE_EVENTS;
+      return isMaster ? DEFAULT_PET_CARE_EVENTS : [];
     }
 
     function getPetCareEvents(targetPetId) {
@@ -20925,11 +21077,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function savePetCareEvents(eventsList) {
+      const careKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_pet_care_events') : 'ctrlpig_pet_care_events';
       const currentPetId = getActivePetId();
       const all = getAllPetCareEvents();
       const others = all.filter(c => (c.petId && c.petId !== currentPetId) || (!c.petId && currentPetId !== 'pet_pantone'));
       const combined = [...others, ...eventsList.map(c => ({ ...c, petId: c.petId || currentPetId }))];
-      localStorage.setItem('ctrlpig_pet_care_events', JSON.stringify(combined));
+      localStorage.setItem(careKey, JSON.stringify(combined));
       renderPetCareList();
       syncNativePetCareAlarms();
     }
@@ -21666,15 +21819,26 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     ];
 
     function getHealthMeds() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const medKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_health_meds') : 'ctrlpig_health_meds';
       try {
-        const stored = localStorage.getItem('ctrlpig_health_meds');
-        if (stored) return JSON.parse(stored);
+        const stored = localStorage.getItem(medKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            if (!isMaster) {
+              return parsed.filter(m => m && !['med_aradois', 'med_glifage'].includes(m.id));
+            }
+            return parsed;
+          }
+        }
       } catch (e) {}
-      return DEFAULT_HEALTH_MEDS;
+      return isMaster ? DEFAULT_HEALTH_MEDS : [];
     }
 
     function saveHealthMeds(medList) {
-      localStorage.setItem('ctrlpig_health_meds', JSON.stringify(medList));
+      const medKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_health_meds') : 'ctrlpig_health_meds';
+      localStorage.setItem(medKey, JSON.stringify(medList));
       renderHealthMedsUI();
       updateQuickHubUI();
     }
@@ -23312,8 +23476,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Organize os membros e convide novos participantes</p>
             </div>
           </div>
-          <button type="button" onclick="closeAddUserModal()" class="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer" title="Fechar">
-            <i data-lucide="x" class="w-5 h-5"></i>
+          <button type="button" onclick="openSectionLampInsight('familia')" class="w-8 h-8 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-700 flex items-center justify-center transition-colors cursor-pointer" title="Dica de Gestão Familiar">
+            <span>💡</span>
           </button>
         </div>
 
@@ -23723,7 +23887,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <i data-lucide="phone" class="w-4 h-4 text-emerald-300"></i>
         </button>
         <!-- 2. Botão Dica do Mascote -->
-        <button type="button" onclick="triggerSectionWithIntelligentMascot('chat', function(){});" class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Dica do Mascote">
+        <button type="button" onclick="openSectionLampInsight('chat');" class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Dica do Mascote">
           <span>💡</span>
         </button>
         <!-- 3. Botão 3 Pontinhos (Mais Opções da Conversa) -->
@@ -24245,7 +24409,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <div class="pt-1.5 text-[11px] text-slate-200 flex items-start gap-2">
             <span class="text-base">💡</span>
             <p id="displayTripMentorAdvice" class="leading-relaxed">
-              Para o casal Rodrigo & Márcia, reservar R$ 500/mês representa uma fração pequena do saldo livre. Vocês conseguem embarcar com tranquilidade e tudo pago!
+              Com organização mensal, reservar esse valor representa uma fração tranquila do saldo livre para embarcar com tudo pago!
             </p>
           </div>
         </div>
@@ -24549,7 +24713,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <p class="text-[11px] text-blue-200">Carteirinha digital, vacinas e gastos</p>
       </div>
     </div>
-
+    <button type="button" onclick="openSectionLampInsight('pet')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights Mundo Pet">
+      <span>💡</span>
+    </button>
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -24584,7 +24750,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-1">
-            <h3 id="heroPetName" class="text-base font-black text-slate-900 dark:text-white leading-tight truncate">Pantone</h3>
+            <h3 id="heroPetName" class="text-base font-black text-slate-900 dark:text-white leading-tight truncate">Rex (Exemplo)</h3>
             <div class="flex items-center gap-1.5">
               <span id="heroPetSpeciesBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">Cachorro</span>
               <button type="button" onclick="editCurrentPet()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
@@ -24789,7 +24955,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="p-3 bg-white rounded-3xl border-2 border-slate-300 dark:border-slate-700 shadow-xl relative group">
           <canvas id="petQrCodeCanvas" width="220" height="220" class="w-[220px] h-[220px] block rounded-xl bg-white"></canvas>
           <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
-            <span id="petTagEmojiBadge">🐶</span> <span id="petTagNameBadge">Pantone</span>
+            <span id="petTagEmojiBadge">🐶</span> <span id="petTagNameBadge">Rex (Exemplo)</span>
           </div>
         </div>
 
@@ -24857,7 +25023,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <p class="text-[11px] text-blue-200">Rotina diária, medicamentos contínuos e bem-estar</p>
         </div>
       </div>
-
+      <button type="button" onclick="openSectionLampInsight('saude')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights de Saúde & Bem-Estar">
+        <span>💡</span>
+      </button>
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -25226,7 +25394,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
         <div>
           <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Nome do Pet *</label>
-          <input type="text" id="inputPetNome" required placeholder="Ex: Pantone, Mingau, Luna, Thor..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-bold">
+          <input type="text" id="inputPetNome" required placeholder="Ex: Rex, Mingau, Luna, Thor..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-bold">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -25258,7 +25426,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
         <div>
           <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Plano de Saúde ou Clínica</label>
-          <input type="text" id="inputPetPlano" placeholder="Ex: Wevets, Porto Pet, Clínica Bicho Bom..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+          <input type="text" id="inputPetPlano" placeholder="Ex: Porto Pet, Clínica Veterinária, Pet Shop..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
         </div>
 
         <div class="pt-2 flex items-center gap-2">
@@ -25306,7 +25474,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Clínica / Local</label>
-            <input type="text" id="inputVacClinica" placeholder="Wevets" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+            <input type="text" id="inputVacClinica" placeholder="Clínica Veterinária" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
           </div>
         </div>
 
@@ -25404,7 +25572,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Local / Pet Shop</label>
-            <input type="text" id="inputPetCareLocal" placeholder="Ex: Petz, Wevets, Em casa" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+            <input type="text" id="inputPetCareLocal" placeholder="Ex: Pet Shop, Clínica, Em casa" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
           </div>
         </div>
 
@@ -25461,7 +25629,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       <!-- Descrição / Detalhes -->
       <p id="fullAlarmBody" class="text-xs text-slate-300 leading-relaxed mb-6 max-w-xs">
-        Rodrigo, tomar seus medicamentos diários programados.
+        Hora de tomar seus medicamentos diários programados.
       </p>
 
       <!-- Botões de Ação Grandes e Confortáveis -->
@@ -25763,7 +25931,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
               <div class="min-w-0">
                 <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao}</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400">${t.data} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">${formatDateBR(t.data)} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
               </div>
               <div class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">${formatBRL(t.valor)}</div>
             </div>
@@ -25839,7 +26007,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
               <div class="min-w-0">
                 <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao}</div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-400">${t.data} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">${formatDateBR(t.data)} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
               </div>
               <div class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">${formatBRL(t.valor)}</div>
             </div>
@@ -25938,8 +26106,29 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const grid = document.getElementById('soberPickerGrid');
       if (!modal || !grid) return;
 
+      // Garante que o seletor apareça SEMPRE por cima do modal de Novo Lançamento / Editar Lançamento
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      modal.style.zIndex = '3600';
+
       if (titleEl) titleEl.textContent = title;
-      const options = SOBER_PICKER_OPTIONS[type] || [];
+      let options = SOBER_PICKER_OPTIONS[type] || [];
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      if (type === 'responsavel' && !isMaster) {
+        const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+        const dynMembers = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+        options = [
+          { value: 'Comum', label: 'Comum (Família)', icon: '👫', sub: 'Gasto compartilhado' },
+          { value: myName, label: myName, icon: '👤', sub: 'Conta titular' },
+          ...dynMembers.map(m => ({
+            value: m.nome,
+            label: m.nome,
+            icon: m.avatar || '👤',
+            sub: m.papel || 'Membro da família'
+          }))
+        ];
+      }
       const currentVal = document.getElementById(targetInputId)?.value || '';
 
       grid.innerHTML = options.map(opt => {
@@ -26133,7 +26322,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <p class="text-[11px] text-blue-200">Combustível, seguro, IPVA, manutenção preventiva e planejamento de cofrinhos</p>
         </div>
       </div>
-
+      <button type="button" onclick="openSectionLampInsight('veiculos')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Transporte & Veículos">
+        <span>💡</span>
+      </button>
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -26237,7 +26428,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <p class="text-[11px] text-blue-200">Faculdade, especialização, cursos, livros, materiais e cofrinhos</p>
         </div>
       </div>
-
+      <button type="button" onclick="openSectionLampInsight('educacao')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Educação">
+        <span>💡</span>
+      </button>
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -27768,11 +27961,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     };
 
-    // 4. Modal de Permissões no Primeiro Acesso
+    // 4. Modal de Permissões no Primeiro Acesso (Por Conta Logada, Logo Após o Login)
     window.checkFirstAccessPermissions = function() {
-      const isAuth = localStorage.getItem('ctrlpig_notifications_authorized') === 'true';
-      const done = localStorage.getItem('ctrlpig_onboarding_perm_done') === 'true';
-      if (isAuth || done) return;
+      const permKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_onboarding_perm_done') : 'ctrlpig_onboarding_perm_done';
+      const done = localStorage.getItem(permKey) === 'true';
+      if (done) return;
 
       // Não exibe se o app estiver bloqueado ou na tela de login
       if (document.documentElement.classList.contains('require-auth')) return;
@@ -27790,17 +27983,26 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     };
 
     window.grantFirstAccessPermissions = function() {
+      const permKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_onboarding_perm_done') : 'ctrlpig_onboarding_perm_done';
+      localStorage.setItem(permKey, 'true');
       localStorage.setItem('ctrlpig_onboarding_perm_done', 'true');
       const modal = document.getElementById('modalFirstAccessPermissions');
       if (modal) {
         modal.classList.add('hidden');
         modal.style.display = 'none';
       }
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_all_permissions' }));
+        } catch(e) {}
+      }
       requestAppNotificationPermission();
-      showToastUndo('🔔 Permissões autorizadas com sucesso!', false);
+      showToastUndo('🔔 Permissões de Notificação, Câmera e Microfone solicitadas!', false);
     };
 
     window.dismissFirstAccessPermissions = function() {
+      const permKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_onboarding_perm_done') : 'ctrlpig_onboarding_perm_done';
+      localStorage.setItem(permKey, 'true');
       localStorage.setItem('ctrlpig_onboarding_perm_done', 'true');
       const modal = document.getElementById('modalFirstAccessPermissions');
       if (modal) {
@@ -31034,7 +31236,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
           <p class="text-[11px] text-blue-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
         </div>
       </div>
-
+      <button type="button" onclick="openSectionLampInsight('prestadores')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Prestadores">
+        <span>💡</span>
+      </button>
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
@@ -36451,54 +36655,47 @@ window.confirmShoppingInvoicePreview = function() {
     window.registerScannedReceiptKey(key, store, total);
   }
 
-  // 2. Incorpora itens ao Histórico de Preços e Comparador por Loja
+  // 2. Incorpora itens e valores individuais EXCLUSIVAMENTE ao Histórico de Preços dividido por Supermercado
+  // Os valores individuais NÃO entram na Lista de Compras (que permanece zerada), mas os nomes ficam disponíveis no catálogo!
   if (items.length > 0) {
     if (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) {
       items.forEach((it, idx) => {
         const pUnit = typeof it.preco === 'number' ? it.preco : (parseFloat(it.preco) || 0);
+        const pTotal = typeof it.total === 'number' ? it.total : (parseFloat(it.total) || pUnit);
+        const prodName = (it.produto || 'Item de Mercado').trim();
+        const prevEntry = priceHistory.find(p => (p.produto || '').toLowerCase() === prodName.toLowerCase());
         priceHistory.unshift({
           id: Date.now() + idx,
-          produto: it.produto || 'Item de Mercado',
+          produto: prodName,
           estabelecimento: store,
           data: date,
-          preco: pUnit > 0 ? pUnit : (it.total || 0),
-          precoAnterior: pUnit > 0 ? pUnit * 0.97 : (it.total || 0),
+          preco: pUnit > 0 ? pUnit : pTotal,
+          valorTotal: pTotal,
+          qtd: it.qtd || 1,
+          precoAnterior: prevEntry ? prevEntry.preco : null,
           unidade: it.unidade || 'UN'
         });
+
+        // Disponibiliza o nome do produto no catálogo de Montar Lista com valor zerado (R$ 0,00) e desmarcado
+        if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
+          if (!customBuilderProducts.some(cp => (cp.produto || '').toLowerCase() === prodName.toLowerCase())) {
+            customBuilderProducts.push({ produto: prodName });
+          }
+        }
+        if (typeof builderSelectedItems !== 'undefined' && !builderSelectedItems[prodName]) {
+          builderSelectedItems[prodName] = {
+            selected: false,
+            qtd: 1,
+            unidade: it.unidade || 'un',
+            lojaNome: store,
+            preco: 0
+          };
+        }
       });
       if (typeof savePriceHistory === 'function') savePriceHistory();
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
-    }
-
-    // 3. Adiciona / Marca itens na Lista de Compras Ativa (financas_active_shopping_items)
-    try {
-      const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
-      items.forEach((it, idx) => {
-        const cleanName = (it.produto || '').toLowerCase().trim();
-        const existing = activeItems.find(a => (a.nome || '').toLowerCase().trim().includes(cleanName) || cleanName.includes((a.nome || '').toLowerCase().trim()));
-        if (existing) {
-          existing.status = 'no_carrinho';
-          existing.qtdComprada = it.qtd || existing.qtdDesejada || 1;
-          existing.precoUnitario = it.preco || existing.precoUnitario || 0;
-        } else {
-          activeItems.push({
-            id: 'item_nfce_' + Date.now() + '_' + idx,
-            nome: it.produto || 'Produto NFC-e',
-            qtdDesejada: it.qtd || 1,
-            unidade: it.unidade || 'UN',
-            marca: store,
-            status: 'no_carrinho',
-            qtdComprada: it.qtd || 1,
-            precoUnitario: it.preco || 0,
-            pedidoPor: 'NFC-e'
-          });
-        }
-      });
-      if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
       if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
       if (typeof updateBuilderSummaryUI === 'function') updateBuilderSummaryUI();
-    } catch (err) {
-      console.warn('Aviso ao sincronizar lista ativa de compras:', err);
     }
   }
 
@@ -37358,10 +37555,12 @@ window.openHealthMedsModal = function() {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>📅</span><span>Ciclos Financeiros</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Histórico de meses e fechamentos do casal</p>
+          <p class="text-[11px] text-blue-200">Histórico de meses e fechamentos</p>
         </div>
       </div>
-
+      <button type="button" onclick="openSectionLampInsight('ciclos')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Ciclos Financeiros">
+        <span>💡</span>
+      </button>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
@@ -37424,8 +37623,8 @@ window.openHealthMedsModal = function() {
   <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
       <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Fechar">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
         <div>
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
@@ -37434,7 +37633,9 @@ window.openHealthMedsModal = function() {
           <p class="text-[11px] text-blue-200">Configure o ControlPig para a realidade da sua vida</p>
         </div>
       </div>
-      <span class="text-xs font-black px-2.5 py-1 bg-white/10 rounded-full text-blue-200">Passo a Passo</span>
+      <button type="button" onclick="openSectionLampInsight('perfil')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights de Perfil">
+        <span>💡</span>
+      </button>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-4 shadow-2xl">
@@ -37624,7 +37825,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
-  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[3600] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -37634,12 +37835,15 @@ window.openHealthMedsModal = function() {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>📊</span><span>Comparativo de Mercados</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Volume e gastos reais por estabelecimento</p>
+          <p class="text-[11px] text-blue-200">Ranking de preços e gastos por supermercado</p>
         </div>
       </div>
+      <button type="button" onclick="openSectionLampInsight('comparativo_mercados')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Comparativo de Mercados">
+        <span>💡</span>
+      </button>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
       
       <!-- Card Total Geral de Mercado -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -37947,6 +38151,12 @@ window.openHealthMedsModal = function() {
     
     const cycle = window.appCyclesData[cycleKey];
     window.transactions = cycle.transactions;
+    if (typeof window.syncGlobalCycleState === 'function') {
+      window.syncGlobalCycleState(cycle.tag, cycle.transactions);
+    }
+    if (typeof window.syncApprovedDesignWithAppData === 'function') {
+      window.syncApprovedDesignWithAppData();
+    }
 
     // Atualiza tag do ciclo no cabeçalho
     const heroTag = document.getElementById('heroCycleTag');
@@ -38249,14 +38459,18 @@ window.openHealthMedsModal = function() {
     if (educacaoCard) educacaoCard.style.display = modules.educacao ? '' : 'none';
   };
 
-  // 6. Comparativo de Mercados (Item 10)
+  // 6. Comparativo de Mercados (Item 10) — Sempre acima do modalShoppingListHistory (z-index 3600)
   window.openComparativoMercadosModal = function() {
     window.ensureModalsOnBody();
     const m = document.getElementById('modalComparativoMercados');
     if (m) {
       if (m.parentElement !== document.body) document.body.appendChild(m);
+      m.style.zIndex = '3600';
       m.classList.remove('hidden');
       m.style.display = 'flex';
+    }
+    if (typeof window.renderComparativoMercadosDynamic === 'function') {
+      window.renderComparativoMercadosDynamic();
     }
     if (window.lucide) lucide.createIcons();
   };
@@ -38649,7 +38863,7 @@ window.openHealthMedsModal = function() {
       row.innerHTML = `<div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-xl ${isIncome ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} flex items-center justify-center font-bold text-sm flex-shrink-0"><i data-lucide="${isIncome ? 'arrow-down-left' : 'shopping-bag'}" class="w-4 h-4"></i></div><div class="min-w-0"><span class="text-xs font-bold text-slate-900 block leading-tight truncate"></span><span class="text-[10px] text-slate-500"></span></div></div><span class="text-xs font-black whitespace-nowrap ${isIncome ? 'text-emerald-700' : 'text-rose-600'}"></span>`;
       row.querySelector('.text-xs.font-bold').textContent = t.descricao || t.categoria || 'Lançamento';
       const rowSpans = row.querySelectorAll('span');
-      if (rowSpans[1]) rowSpans[1].textContent = `${t.data || ''} · ${t.categoria || 'Geral'}`;
+      if (rowSpans[1]) rowSpans[1].textContent = `${window.formatDateBR ? window.formatDateBR(t.data || '') : (t.data || '')} · ${t.categoria || 'Geral'}`;
       const value = rowSpans[2];
       const amount = Number(t.valor) || 0;
       value.textContent = `${isIncome ? '+' : '-'} ${typeof formatBRL === 'function' ? formatBRL(amount, isIncome ? 'receitas' : 'despesa') : `R$ ${amount.toFixed(2)}`}`;
@@ -40011,61 +40225,47 @@ window.confirmShoppingInvoicePreview = function() {
     });
   }
 
-  // 2. Incorpora itens ao Histórico de Preços e Comparador por Loja com valores fracionados corretos
+  // 2. Incorpora itens e valores individuais EXCLUSIVAMENTE ao Histórico de Preços dividido por Supermercado
+  // Os valores individuais NÃO entram na Lista de Compras (que permanece zerada), mas os nomes ficam disponíveis no catálogo!
   if (items.length > 0) {
     if (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) {
       items.forEach((it, idx) => {
         const pUnit = typeof it.preco === 'number' ? it.preco : (parseFloat(it.preco) || 0);
-        const pTotal = typeof it.total === 'number' ? it.total : (parseFloat(it.total) || 0);
+        const pTotal = typeof it.total === 'number' ? it.total : (parseFloat(it.total) || pUnit);
+        const prodName = (it.produto || 'Item de Mercado').trim();
+        const prevEntry = priceHistory.find(p => (p.produto || '').toLowerCase() === prodName.toLowerCase());
         priceHistory.unshift({
           id: Date.now() + idx,
-          produto: it.produto || 'Item de Mercado',
+          produto: prodName,
           estabelecimento: store,
           data: date,
           preco: pUnit > 0 ? pUnit : pTotal,
           valorTotal: pTotal,
           qtd: it.qtd || 1,
-          precoAnterior: pUnit > 0 ? pUnit * 0.97 : (pTotal || 0),
+          precoAnterior: prevEntry ? prevEntry.preco : null,
           unidade: it.unidade || 'UN'
         });
+
+        // Disponibiliza o nome do produto no catálogo de Montar Lista com valor zerado (R$ 0,00) e desmarcado
+        if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
+          if (!customBuilderProducts.some(cp => (cp.produto || '').toLowerCase() === prodName.toLowerCase())) {
+            customBuilderProducts.push({ produto: prodName });
+          }
+        }
+        if (typeof builderSelectedItems !== 'undefined' && !builderSelectedItems[prodName]) {
+          builderSelectedItems[prodName] = {
+            selected: false,
+            qtd: 1,
+            unidade: it.unidade || 'un',
+            lojaNome: store,
+            preco: 0
+          };
+        }
       });
       if (typeof savePriceHistory === 'function') savePriceHistory();
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
-    }
-
-    // 3. Adiciona / Marca itens na Lista de Compras Ativa
-    try {
-      const activeItems = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
-      items.forEach((it, idx) => {
-        const pUnit = typeof it.preco === 'number' ? it.preco : (parseFloat(it.preco) || 0);
-        const pTotal = typeof it.total === 'number' ? it.total : (parseFloat(it.total) || 0);
-        const cleanName = (it.produto || '').toLowerCase().trim();
-        const existing = activeItems.find(a => (a.nome || '').toLowerCase().trim().includes(cleanName) || cleanName.includes((a.nome || '').toLowerCase().trim()));
-        if (existing) {
-          existing.status = 'no_carrinho';
-          existing.qtdComprada = it.qtd || existing.qtdDesejada || 1;
-          existing.precoUnitario = pUnit > 0 ? pUnit : pTotal;
-          existing.valorTotal = pTotal;
-        } else {
-          activeItems.push({
-            id: 'item_nfce_' + Date.now() + '_' + idx,
-            nome: it.produto || 'Produto NFC-e',
-            qtdDesejada: it.qtd || 1,
-            unidade: it.unidade || 'UN',
-            marca: store,
-            status: 'no_carrinho',
-            qtdComprada: it.qtd || 1,
-            precoUnitario: pUnit > 0 ? pUnit : pTotal,
-            valorTotal: pTotal,
-            pedidoPor: 'NFC-e'
-          });
-        }
-      });
-      if (typeof saveActiveShoppingItems === 'function') saveActiveShoppingItems(activeItems);
       if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
       if (typeof updateBuilderSummaryUI === 'function') updateBuilderSummaryUI();
-    } catch (err) {
-      console.warn('Aviso ao sincronizar lista ativa de compras:', err);
     }
   }
 
@@ -40588,10 +40788,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ? transactions
         : (Array.isArray(window.transactions) ? window.transactions : ((typeof isCurrentUserMaster === 'function' && isCurrentUserMaster()) ? INITIAL_TRANSACTIONS : []));
 
-      let txs = allTxs.filter(t => isTxInCycle(t, currentCycle));
-      if (txs.length === 0 && allTxs.length > 0) {
-        txs = allTxs.slice(0, 30);
-      }
+      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
+        ? window.appCyclesData[window.currentActiveCycleKey].tag
+        : currentCycle;
+      let txs = allTxs.filter(t => isTxInCycle(t, activeCycleTag));
 
       // Card Resumo no Topo de Transações (Total Gasto, Entradas e Saldo)
       const totalReceitas = txs.filter(t => t.tipo === 'Receita').reduce((a, t) => a + (parseFloat(t.valor) || 0), 0);
@@ -40648,7 +40848,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       for (const [dateStr, items] of Object.entries(groups)) {
         html += `
           <div>
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">${dateStr}</span>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5 px-1">${window.formatDateBR ? window.formatDateBR(dateStr) : dateStr}</span>
             <div class="space-y-1.5">
         `;
 
@@ -40722,6 +40922,1036 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 })();
 </script>
 
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
+  <!-- ========================================================================= -->
+  <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🛡️</span><span>Garantias de Produtos</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Controle o tempo restante de garantia, fabricante, loja e garantia estendida</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="openSectionLampInsight('garantias')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Garantias de Produtos">
+          <span>💡</span>
+        </button>
+        <button type="button" onclick="toggleAddWarrantyForm()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-sm cursor-pointer active:scale-95">
+          + Produto
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+      <!-- Resumo de Garantias -->
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Ativas</span>
+          <strong id="warrantyStatActive" class="text-base font-black text-emerald-600">0</strong>
+        </div>
+        <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Vencendo (30d)</span>
+          <strong id="warrantyStatExpiring" class="text-base font-black text-amber-600">0</strong>
+        </div>
+        <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Estendidas</span>
+          <strong id="warrantyStatExtended" class="text-base font-black text-blue-600">0</strong>
+        </div>
+      </div>
+
+      <!-- Formulário de Cadastro de Garantia -->
+      <div id="boxAddWarrantyForm" class="hidden bg-white rounded-3xl p-4 border border-amber-300 shadow-md space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h4 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
+            <span>🛡️</span> <span id="warrantyFormTitle">Cadastrar Garantia de Produto</span>
+          </h4>
+          <button type="button" onclick="toggleAddWarrantyForm(false)" class="text-slate-400 hover:text-slate-700 font-bold text-xs cursor-pointer">Fechar</button>
+        </div>
+        <form onsubmit="handleSaveProductWarranty(event)" class="space-y-2.5">
+          <input type="hidden" id="inputWarrantyId" value="">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Produto / Modelo *</label>
+              <input type="text" id="inputWarrantyProduct" required placeholder="Ex: Smart TV 55 Samsung, Geladeira Brastemp..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Loja onde comprou *</label>
+              <input type="text" id="inputWarrantyStore" required placeholder="Ex: Fast Shop, Amazon, Magazine Luiza..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-900">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Data da Compra *</label>
+              <input type="date" id="inputWarrantyDate" required class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Valor Pago (R$)</label>
+              <input type="number" step="0.01" id="inputWarrantyValue" placeholder="2500.00" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-mono font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Nº Nota Fiscal</label>
+              <input type="text" id="inputWarrantyNf" placeholder="Ex: NF 045892" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Origem da Garantia *</label>
+              <select id="inputWarrantyOrigin" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+                <option value="Fabricante">🏭 Garantia do Fabricante</option>
+                <option value="Loja">🏬 Garantia da Loja</option>
+                <option value="Fabricante + Loja">🛡️ Fabricante + Loja</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Prazo Base (Meses) *</label>
+              <select id="inputWarrantyBaseMonths" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+                <option value="3">3 meses (90 dias legal)</option>
+                <option value="6">6 meses</option>
+                <option value="12" selected>12 meses (1 ano)</option>
+                <option value="24">24 meses (2 anos)</option>
+                <option value="36">36 meses (3 anos)</option>
+                <option value="60">60 meses (5 anos)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-black text-slate-900 block">Possui Garantia Estendida?</span>
+                <span class="text-[10px] text-slate-500">Apólice adicional contratada na loja ou seguradora</span>
+              </div>
+              <select id="inputWarrantyHasExtended" onchange="document.getElementById('boxExtendedWarrantyMonths').classList.toggle('hidden', this.value !== 'sim')" class="px-3 py-1.5 rounded-xl border border-blue-300 bg-white font-black text-blue-900">
+                <option value="nao">Não possui</option>
+                <option value="sim">✓ Sim, possui Garantia Estendida</option>
+              </select>
+            </div>
+            <div id="boxExtendedWarrantyMonths" class="hidden grid grid-cols-2 gap-2 pt-1">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Meses Extras de Garantia Estendida</label>
+                <select id="inputWarrantyExtendedMonths" class="w-full px-2.5 py-1.5 rounded-xl border border-blue-300 bg-white font-bold text-slate-900">
+                  <option value="12">+ 12 meses (1 ano extra)</option>
+                  <option value="24">+ 24 meses (2 anos extras)</option>
+                  <option value="36">+ 36 meses (3 anos extras)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Seguradora / Observação</label>
+                <input type="text" id="inputWarrantyNotes" placeholder="Ex: Zurich Seguros, cobertura total" class="w-full px-2.5 py-1.5 rounded-xl border border-blue-300 bg-white text-slate-900">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-1">
+            <button type="button" onclick="toggleAddWarrantyForm(false)" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold cursor-pointer">Cancelar</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-sm cursor-pointer">✓ Salvar Garantia</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Lista de Garantias Cadastradas -->
+      <div id="productWarrantiesListContainer" class="space-y-2.5"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
+  <!-- ========================================================================= -->
+  <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+            <span>🧒</span><span>Crianças, Notas &amp; Educação</span>
+          </h2>
+          <p class="text-[11px] text-blue-200">Boletim escolar dos filhos integrado às despesas com educação</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="openSectionLampInsight('criancas')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Crianças & Educação">
+          <span>💡</span>
+        </button>
+        <button type="button" onclick="toggleAddKidForm()" class="px-2.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-400 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95">
+          + Filho(a)
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+      <!-- Carrossel de Filhos -->
+      <div id="kidsSelectorPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+
+      <!-- Formulário Cadastrar Filho(a) -->
+      <div id="boxAddKidForm" class="hidden bg-white rounded-3xl p-4 border border-pink-300 shadow-md space-y-2.5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h4 class="font-black text-sm text-slate-900">🧒 Cadastrar Filho(a)</h4>
+          <button type="button" onclick="toggleAddKidForm(false)" class="text-slate-400 hover:text-slate-700 font-bold text-xs cursor-pointer">Fechar</button>
+        </div>
+        <form onsubmit="handleSaveKidProfile(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <input type="text" id="inputKidName" required placeholder="Nome do Filho(a) *" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+          <input type="text" id="inputKidSchool" placeholder="Escola / Colégio (Ex: Etapa, Objetivo...)" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+          <div class="flex items-center gap-2">
+            <input type="text" id="inputKidGradeYear" placeholder="Série/Ano (Ex: 6º Ano)" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black cursor-pointer">Salvar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Card Boletim & Notas Escolares -->
+      <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
+              <span>📝</span> <span id="kidsActiveGradesTitle">Boletim &amp; Notas Escolares</span>
+            </h3>
+            <p class="text-[11px] text-slate-500" id="kidsActiveSchoolSub">Acompanhe o desempenho por matéria e bimestre</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] font-bold uppercase text-slate-400 block">Média Geral</span>
+            <strong id="kidsOverallAverageBadge" class="text-sm font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">-</strong>
+          </div>
+        </div>
+
+        <!-- Adicionar Nota Rápida -->
+        <form onsubmit="handleSaveKidGrade(event)" class="grid grid-cols-2 sm:grid-cols-5 gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <input type="text" id="inputKidSubject" required placeholder="Matéria (Ex: Matemática)" class="col-span-2 sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-900">
+          <select id="inputKidBimester" class="px-2 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-900">
+            <option value="1º Bim">1º Bimestre</option>
+            <option value="2º Bim">2º Bimestre</option>
+            <option value="3º Bim">3º Bimestre</option>
+            <option value="4º Bim">4º Bimestre</option>
+            <option value="Final">Nota Final</option>
+          </select>
+          <input type="number" step="0.1" min="0" max="10" id="inputKidScore" required placeholder="Nota (0 a 10)" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-black text-slate-900">
+          <button type="submit" class="col-span-2 sm:col-span-1 py-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black cursor-pointer">+ Lançar Nota</button>
+        </form>
+
+        <!-- Lista de Notas -->
+        <div id="kidsGradesListContainer" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Card Integração Financeira: Gastos com Educação & Filhos -->
+      <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
+              <span>🎓</span> <span>Gastos com Educação &amp; Filhos no Ciclo</span>
+            </h3>
+            <p class="text-[11px] text-slate-500">Integrado automaticamente às Transações do ciclo selecionado</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] font-bold uppercase text-slate-400 block">Total no Ciclo</span>
+            <strong id="kidsEducationTotalSpent" class="text-sm font-black font-mono text-rose-600">R$ 0,00</strong>
+          </div>
+        </div>
+
+        <!-- Formulário Lançar Despesa Escolar Direto nas Transações -->
+        <form onsubmit="handleSaveKidEducationExpense(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 p-2.5 rounded-2xl bg-indigo-50/60 border border-indigo-200">
+          <input type="text" id="inputKidExpDesc" required placeholder="Ex: Mensalidade Escolar, Material, Uniforme..." class="sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-bold text-slate-900">
+          <input type="number" step="0.01" id="inputKidExpVal" required placeholder="Valor (R$)" class="px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-mono font-bold text-slate-900">
+          <button type="submit" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black cursor-pointer">+ Lançar Gasto</button>
+        </form>
+
+        <div id="kidsEducationTransactionsList" class="space-y-1.5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL GLOBAL DE INSIGHTS DA LÂMPADA (💡) POR SEÇÃO                        -->
+  <!-- ========================================================================= -->
+  <div id="modalSectionLampInsight" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[3900] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeSectionLampInsight()">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-amber-300/60 space-y-3.5 text-xs">
+      <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shadow-xs">💡</div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 block">Dica &amp; Insight Inteligente</span>
+            <h3 id="lampInsightModalTitle" class="font-black text-sm sm:text-base text-slate-900 dark:text-white">Insight da Seção</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeSectionLampInsight()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold cursor-pointer">✕</button>
+      </div>
+      <div id="lampInsightModalBody" class="space-y-2.5 text-slate-700 dark:text-slate-300 leading-relaxed"></div>
+      <div class="pt-2 flex justify-end">
+        <button type="button" onclick="closeSectionLampInsight()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-sm cursor-pointer">Entendi, obrigado! ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ============================================================================
+  // V2.1.118: GARANTIAS DE PRODUTOS, CRIANÇAS & NOTAS, INSIGHTS (💡),
+  //           INCLUIR ITEM DO HISTÓRICO NA LISTA E SANITIZAÇÃO DE CONTAS NOVAS
+  // ============================================================================
+  (function() {
+    // 1. Incluir item do Histórico de Preços na Lista de Compras (com R$ 0,00 para seleção)
+    window.includeHistoryItemInShoppingList = function(prodName, storeName) {
+      if (!prodName) return;
+      if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
+        if (!customBuilderProducts.some(cp => (cp.produto || '').toLowerCase() === prodName.toLowerCase())) {
+          customBuilderProducts.push({ produto: prodName });
+        }
+      }
+      if (typeof builderSelectedItems !== 'undefined') {
+        builderSelectedItems[prodName] = {
+          selected: true,
+          qtd: (builderSelectedItems[prodName] && builderSelectedItems[prodName].qtd) || 1,
+          unidade: 'un',
+          lojaNome: storeName || 'Supermercado',
+          preco: 0
+        };
+      }
+      if (typeof renderShoppingListBuilder === 'function') renderShoppingListBuilder();
+      if (typeof updateBuilderSummaryUI === 'function') updateBuilderSummaryUI();
+      if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🛒 "${prodName}" incluído na Lista de Compras!`, false);
+      }
+    };
+
+    // 2. Renderização Dinâmica do Comparativo de Mercados
+    window.renderComparativoMercadosDynamic = function() {
+      const body = document.getElementById('comparativoMercadosDynamicBody');
+      if (!body) return;
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const hist = (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) ? priceHistory : [];
+
+      if (hist.length === 0 && !isMaster) {
+        body.innerHTML = `
+          <div class="bg-white rounded-3xl p-6 text-center shadow-sm border border-slate-200/80 space-y-2">
+            <span class="text-3xl block">📊</span>
+            <h3 class="font-black text-sm text-slate-900">Comparativo de Supermercados</h3>
+            <p class="text-xs text-slate-500">Escaneie o QR Code das suas Notas Fiscais ou registre itens no Histórico de Preços para comparar qual supermercado está mais barato para sua família!</p>
+          </div>
+        `;
+        return;
+      }
+
+      if (hist.length > 0) {
+        const byStore = {};
+        const byProd = {};
+        let grandTotal = 0;
+        hist.forEach(item => {
+          const st = item.estabelecimento || 'Supermercado';
+          const val = parseFloat(item.valorTotal || item.preco) || 0;
+          const unit = parseFloat(item.preco) || 0;
+          grandTotal += val;
+          if (!byStore[st]) byStore[st] = { count: 0, total: 0 };
+          byStore[st].count += 1;
+          byStore[st].total += val;
+          const pName = (item.produto || '').trim();
+          if (pName && unit > 0) {
+            if (!byProd[pName] || unit < byProd[pName].preco) {
+              byProd[pName] = { preco: unit, loja: st, data: item.data };
+            }
+          }
+        });
+
+        const sortedStores = Object.entries(byStore).sort((a, b) => b[1].total - a[1].total);
+        const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-rose-500', 'bg-indigo-500'];
+        const rankingRows = sortedStores.map(([stName, info], idx) => {
+          const pct = grandTotal > 0 ? Math.round((info.total / grandTotal) * 100) : 0;
+          const barColor = colors[idx % colors.length];
+          return `
+            <div>
+              <div class="flex items-center justify-between font-bold mb-1">
+                <span class="text-slate-800">🏪 ${escapeHtml(stName)} (${info.count} itens)</span>
+                <span class="text-slate-900 font-black">${formatBRL(info.total)} <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full ${barColor} rounded-full" style="width: ${Math.max(4, pct)}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const bestDeals = Object.entries(byProd).slice(0, 12).map(([prod, best]) => `
+          <div class="flex items-center justify-between py-2 border-b border-slate-100 last:border-none text-xs">
+            <div class="min-w-0 pr-2">
+              <strong class="text-slate-800 block truncate">${escapeHtml(prod)}</strong>
+              <span class="text-[10px] text-slate-500">Menor preço em: <b class="text-emerald-700">${escapeHtml(best.loja)}</b></span>
+            </div>
+            <span class="font-mono font-black text-emerald-600 flex-shrink-0">${formatBRL(best.preco)}</span>
+          </div>
+        `).join('');
+
+        body.innerHTML = `
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Mapeado no Histórico</span>
+              <span class="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">${hist.length} itens</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <h3 class="text-2xl font-black text-slate-900">${formatBRL(grandTotal)}</h3>
+              <span class="text-[11px] text-slate-500 font-semibold">${sortedStores.length} supermercado(s)</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-600">Participação por Supermercado</h4>
+            <div class="space-y-3 text-xs">${rankingRows}</div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-2">
+            <h4 class="font-black text-xs uppercase tracking-wider text-slate-600">🏆 Onde Comprar Mais Barato (Por Produto)</h4>
+            <div>${bestDeals}</div>
+          </div>
+        `;
+      }
+    };
+
+    // 3. Sanitização de nomes de Responsável em Contas Novas (Remove Rodrigo / Márcia de selects estáticos)
+    window.sanitizeNonMasterOwnerSelects = function() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      if (isMaster) return;
+
+      const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+      const dynMembers = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+
+      const selectIds = ['editTxResponsavel', 'newCardOwner', 'inputBillResponsavel', 'newMedResponsavel', 'quickPetResponsavel'];
+      selectIds.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const opts = [
+          `<option value="Comum">👥 Comum (Família)</option>`,
+          `<option value="${escapeHtml(myName)}">👤 ${escapeHtml(myName)}</option>`,
+          ...dynMembers.map(m => `<option value="${escapeHtml(m.nome)}">${m.avatar || '👤'} ${escapeHtml(m.nome)}</option>`)
+        ];
+        sel.innerHTML = opts.join('');
+      });
+
+      const pickerText = document.getElementById('btnPickerText_newTxResponsavel');
+      const hiddenResp = document.getElementById('newTxResponsavel');
+      if (hiddenResp && (hiddenResp.value === 'Rodrigo' || hiddenResp.value === 'Márcia')) {
+        hiddenResp.value = myName;
+        if (pickerText) pickerText.textContent = `👤 ${myName}`;
+      }
+
+      const bRodrigo = document.getElementById('btnEditOwnerRodrigo');
+      const bMarcia = document.getElementById('btnEditOwnerMarcia');
+      if (bRodrigo) {
+        bRodrigo.textContent = `👤 ${myName}`;
+        bRodrigo.setAttribute('onclick', `setEditMedOwner('${myName.replace(/'/g, "\'")}')`);
+      }
+      if (bMarcia) {
+        if (dynMembers.length > 0) {
+          bMarcia.textContent = `👤 ${dynMembers[0].nome}`;
+          bMarcia.setAttribute('onclick', `setEditMedOwner('${dynMembers[0].nome.replace(/'/g, "\'")}')`);
+          bMarcia.style.display = '';
+        } else {
+          bMarcia.style.display = 'none';
+        }
+      }
+    };
+
+    // 4. Módulo Garantias de Produtos (modalProductWarranties)
+    const STARTER_WARRANTIES = [
+      {
+        id: 'war_exemplo_1',
+        product: 'Smart TV 55" 4K (Exemplo)',
+        store: 'Magazine Exemplo',
+        purchaseDate: '2026-04-15',
+        value: 2690.00,
+        nf: 'NF-001294',
+        origin: 'Fabricante + Loja',
+        baseMonths: 12,
+        hasExtended: true,
+        extendedMonths: 12,
+        notes: 'Garantia de fábrica (12m) + Garantia Estendida (12m)'
+      }
+    ];
+
+    window.getProductWarranties = function() {
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_product_warranties_v1') : 'ctrlpig_product_warranties_v1';
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(STARTER_WARRANTIES));
+    };
+
+    window.saveProductWarranties = function(list) {
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_product_warranties_v1') : 'ctrlpig_product_warranties_v1';
+      localStorage.setItem(key, JSON.stringify(list));
+      window.renderProductWarrantiesList();
+    };
+
+    window.openProductWarrantiesModal = function() {
+      const m = document.getElementById('modalProductWarranties');
+      if (m) {
+        if (m.parentElement !== document.body) document.body.appendChild(m);
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+        const dtInput = document.getElementById('inputWarrantyDate');
+        if (dtInput && !dtInput.value) dtInput.value = new Date().toISOString().split('T')[0];
+        window.renderProductWarrantiesList();
+        if (window.lucide) lucide.createIcons();
+      }
+    };
+
+    window.closeProductWarrantiesModal = function() {
+      const m = document.getElementById('modalProductWarranties');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+    };
+
+    window.toggleAddWarrantyForm = function(forceShow) {
+      const box = document.getElementById('boxAddWarrantyForm');
+      if (!box) return;
+      const show = typeof forceShow === 'boolean' ? forceShow : box.classList.contains('hidden');
+      box.classList.toggle('hidden', !show);
+      if (show) {
+        const dtInput = document.getElementById('inputWarrantyDate');
+        if (dtInput && !dtInput.value) dtInput.value = new Date().toISOString().split('T')[0];
+      }
+    };
+
+    window.handleSaveProductWarranty = function(e) {
+      if (e) e.preventDefault();
+      const id = document.getElementById('inputWarrantyId')?.value || ('war_' + Date.now());
+      const product = (document.getElementById('inputWarrantyProduct')?.value || '').trim();
+      const store = (document.getElementById('inputWarrantyStore')?.value || '').trim();
+      const purchaseDate = document.getElementById('inputWarrantyDate')?.value || new Date().toISOString().split('T')[0];
+      const value = parseFloat(document.getElementById('inputWarrantyValue')?.value) || 0;
+      const nf = (document.getElementById('inputWarrantyNf')?.value || '').trim();
+      const origin = document.getElementById('inputWarrantyOrigin')?.value || 'Fabricante';
+      const baseMonths = parseInt(document.getElementById('inputWarrantyBaseMonths')?.value, 10) || 12;
+      const hasExtended = document.getElementById('inputWarrantyHasExtended')?.value === 'sim';
+      const extendedMonths = hasExtended ? (parseInt(document.getElementById('inputWarrantyExtendedMonths')?.value, 10) || 12) : 0;
+      const notes = (document.getElementById('inputWarrantyNotes')?.value || '').trim();
+
+      if (!product) return;
+      const list = window.getProductWarranties().filter(w => w.id !== id);
+      list.unshift({ id, product, store, purchaseDate, value, nf, origin, baseMonths, hasExtended, extendedMonths, notes });
+      window.saveProductWarranties(list);
+      document.getElementById('inputWarrantyId').value = '';
+      document.getElementById('inputWarrantyProduct').value = '';
+      document.getElementById('inputWarrantyStore').value = '';
+      document.getElementById('inputWarrantyValue').value = '';
+      document.getElementById('inputWarrantyNf').value = '';
+      document.getElementById('inputWarrantyNotes').value = '';
+      window.toggleAddWarrantyForm(false);
+      if (typeof showToastUndo === 'function') showToastUndo(`🛡️ Garantia de "${product}" salva com sucesso!`, false);
+    };
+
+    window.deleteProductWarranty = function(id) {
+      const list = window.getProductWarranties().filter(w => w.id !== id);
+      window.saveProductWarranties(list);
+      if (typeof showToastUndo === 'function') showToastUndo('Garantia removida.', false);
+    };
+
+    window.renderProductWarrantiesList = function() {
+      const container = document.getElementById('productWarrantiesListContainer');
+      if (!container) return;
+      const list = window.getProductWarranties();
+      const now = new Date();
+
+      let activeCount = 0;
+      let expiringCount = 0;
+      let extendedCount = 0;
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-slate-500 border border-slate-200">Nenhum produto cadastrado. Toque em <b>"+ Produto"</b> no topo para controlar suas garantias!</div>`;
+      } else {
+        container.innerHTML = list.map(w => {
+          const totalMonths = (parseInt(w.baseMonths, 10) || 12) + (w.hasExtended ? (parseInt(w.extendedMonths, 10) || 0) : 0);
+          if (w.hasExtended) extendedCount++;
+
+          const start = new Date((w.purchaseDate || '2026-01-01') + 'T12:00:00');
+          const end = new Date(start);
+          end.setMonth(end.getMonth() + totalMonths);
+
+          const totalDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+          const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+          const pctRemaining = Math.max(0, Math.min(100, Math.round((daysLeft / totalDays) * 100)));
+
+          let statusBadge = '';
+          let barColor = 'bg-emerald-500';
+          if (daysLeft < 0) {
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-black text-[10px]">Vencida há ${Math.abs(daysLeft)}d</span>`;
+            barColor = 'bg-slate-400';
+          } else if (daysLeft <= 30) {
+            activeCount++;
+            expiringCount++;
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] animate-pulse">⚠️ Vence em ${daysLeft} dias</span>`;
+            barColor = 'bg-amber-500';
+          } else {
+            activeCount++;
+            const monthsLeft = Math.floor(daysLeft / 30);
+            const remDays = daysLeft % 30;
+            const timeLabel = monthsLeft > 0 ? `${monthsLeft}m e ${remDays}d restantes` : `${daysLeft} dias restantes`;
+            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px]">✓ ${timeLabel}</span>`;
+          }
+
+          const endStr = `${String(end.getDate()).padStart(2, '0')}/${String(end.getMonth() + 1).padStart(2, '0')}/${end.getFullYear()}`;
+          const startStr = window.formatDateBR ? window.formatDateBR(w.purchaseDate) : w.purchaseDate;
+
+          return `
+            <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                    <span class="px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-extrabold text-[10px]">🛡️ ${escapeHtml(w.origin || 'Fabricante')}</span>
+                    ${w.hasExtended ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 border border-purple-200 font-extrabold text-[10px]">✨ Estendida (+${w.extendedMonths}m)</span>` : `<span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-semibold text-[10px]">Sem Garantia Estendida</span>`}
+                    ${statusBadge}
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900">${escapeHtml(w.product)}</h4>
+                  <p class="text-[11px] text-slate-500">🏬 Loja: <strong>${escapeHtml(w.store || 'Não informada')}</strong> ${w.nf ? `• 🧾 ${escapeHtml(w.nf)}` : ''} ${w.value ? `• 💰 ${formatBRL(w.value)}` : ''}</p>
+                </div>
+                <button type="button" onclick="deleteProductWarranty('${w.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer" title="Excluir garantia">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-600">
+                  <span>📅 Compra: ${startStr}</span>
+                  <span>⏳ Válida até: <strong class="text-slate-900">${endStr}</strong> (${totalMonths} meses)</span>
+                </div>
+                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full ${barColor} rounded-full transition-all" style="width: ${pctRemaining}%"></div>
+                </div>
+              </div>
+              ${w.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-100">📝 ${escapeHtml(w.notes)}</p>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      const elAct = document.getElementById('warrantyStatActive');
+      const elExp = document.getElementById('warrantyStatExpiring');
+      const elExt = document.getElementById('warrantyStatExtended');
+      if (elAct) elAct.textContent = String(activeCount);
+      if (elExp) elExp.textContent = String(expiringCount);
+      if (elExt) elExt.textContent = String(extendedCount);
+      if (window.lucide) lucide.createIcons();
+    };
+
+    // 5. Módulo Crianças, Boletim Escolar & Gastos com Educação (modalKidsArea)
+    const STARTER_KIDS_DATA = [
+      {
+        id: 'kid_exemplo_1',
+        name: 'Lucas (Exemplo)',
+        school: 'Colégio Exemplo',
+        gradeYear: '5º Ano',
+        grades: [
+          { id: 'gr_1', subject: 'Matemática', bimester: '1º Bim', score: 9.2 },
+          { id: 'gr_2', subject: 'Português', bimester: '1º Bim', score: 8.5 },
+          { id: 'gr_3', subject: 'Ciências', bimester: '1º Bim', score: 9.0 }
+        ]
+      }
+    ];
+
+    window.getKidsList = function() {
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_kids_school_v1') : 'ctrlpig_kids_school_v1';
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(STARTER_KIDS_DATA));
+    };
+
+    window.saveKidsList = function(list) {
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_kids_school_v1') : 'ctrlpig_kids_school_v1';
+      localStorage.setItem(key, JSON.stringify(list));
+      window.renderKidsAreaUI();
+    };
+
+    window.activeKidId = null;
+
+    window.openKidsAreaModal = function() {
+      const m = document.getElementById('modalKidsArea');
+      if (m) {
+        if (m.parentElement !== document.body) document.body.appendChild(m);
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+        window.renderKidsAreaUI();
+        if (window.lucide) lucide.createIcons();
+      }
+    };
+
+    window.closeKidsAreaModal = function() {
+      const m = document.getElementById('modalKidsArea');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+    };
+
+    window.toggleAddKidForm = function(forceShow) {
+      const box = document.getElementById('boxAddKidForm');
+      if (!box) return;
+      const show = typeof forceShow === 'boolean' ? forceShow : box.classList.contains('hidden');
+      box.classList.toggle('hidden', !show);
+    };
+
+    window.selectActiveKid = function(kidId) {
+      window.activeKidId = kidId;
+      window.renderKidsAreaUI();
+    };
+
+    window.handleSaveKidProfile = function(e) {
+      if (e) e.preventDefault();
+      const name = (document.getElementById('inputKidName')?.value || '').trim();
+      const school = (document.getElementById('inputKidSchool')?.value || '').trim();
+      const gradeYear = (document.getElementById('inputKidGradeYear')?.value || '').trim();
+      if (!name) return;
+      const list = window.getKidsList();
+      const newKid = { id: 'kid_' + Date.now(), name, school, gradeYear, grades: [] };
+      list.push(newKid);
+      window.activeKidId = newKid.id;
+      window.saveKidsList(list);
+      document.getElementById('inputKidName').value = '';
+      document.getElementById('inputKidSchool').value = '';
+      document.getElementById('inputKidGradeYear').value = '';
+      window.toggleAddKidForm(false);
+      if (typeof showToastUndo === 'function') showToastUndo(`🧒 Perfil de "${name}" adicionado!`, false);
+    };
+
+    window.deleteKidProfile = function(kidId) {
+      let list = window.getKidsList().filter(k => k.id !== kidId);
+      const key = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_kids_school_v1') : 'ctrlpig_kids_school_v1';
+      localStorage.setItem(key, JSON.stringify(list));
+      window.activeKidId = list[0]?.id || null;
+      window.renderKidsAreaUI();
+      if (typeof showToastUndo === 'function') showToastUndo('Perfil removido.', false);
+    };
+
+    window.handleSaveKidGrade = function(e) {
+      if (e) e.preventDefault();
+      const subject = (document.getElementById('inputKidSubject')?.value || '').trim();
+      const bimester = document.getElementById('inputKidBimester')?.value || '1º Bim';
+      const score = parseFloat(document.getElementById('inputKidScore')?.value);
+      if (!subject || isNaN(score)) return;
+
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!Array.isArray(active.grades)) active.grades = [];
+      active.grades.unshift({ id: 'gr_' + Date.now(), subject, bimester, score });
+      window.saveKidsList(list);
+      document.getElementById('inputKidSubject').value = '';
+      document.getElementById('inputKidScore').value = '';
+      if (typeof showToastUndo === 'function') showToastUndo(`📝 Nota ${score.toFixed(1)} em ${subject} registrada!`, false);
+    };
+
+    window.deleteKidGrade = function(gradeId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active || !Array.isArray(active.grades)) return;
+      active.grades = active.grades.filter(g => g.id !== gradeId);
+      window.saveKidsList(list);
+    };
+
+    window.handleSaveKidEducationExpense = function(e) {
+      if (e) e.preventDefault();
+      const descRaw = (document.getElementById('inputKidExpDesc')?.value || '').trim();
+      const val = parseFloat(document.getElementById('inputKidExpVal')?.value) || 0;
+      if (!descRaw || val <= 0) return;
+
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      const kidTag = active ? ` (${active.name.replace(' (Exemplo)', '')})` : '';
+      const todayIso = new Date().toISOString().split('T')[0];
+      const cycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
+        ? window.appCyclesData[window.currentActiveCycleKey].tag
+        : (typeof currentCycle !== 'undefined' ? currentCycle : '05/Out a 04/Nov 2026');
+      const resp = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Comum';
+
+      const newTx = {
+        id: Date.now(),
+        data: todayIso,
+        ciclo: cycleTag,
+        tipo: 'Despesa Variável',
+        categoria: 'Educação',
+        descricao: `${descRaw}${kidTag}`,
+        valor: val,
+        responsavel: resp,
+        forma_pagamento: 'PIX',
+        status: 'Pago'
+      };
+
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        transactions.unshift(newTx);
+      }
+      if (Array.isArray(window.transactions) && window.transactions !== transactions) {
+        window.transactions.unshift(newTx);
+      }
+      if (typeof saveData === 'function') saveData();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+
+      document.getElementById('inputKidExpDesc').value = '';
+      document.getElementById('inputKidExpVal').value = '';
+      window.renderKidsAreaUI();
+      if (typeof showToastUndo === 'function') showToastUndo(`🎓 Gasto "${newTx.descricao}" integrado às Transações do ciclo!`, false);
+    };
+
+    window.renderKidsAreaUI = function() {
+      const pillsEl = document.getElementById('kidsSelectorPills');
+      const gradesEl = document.getElementById('kidsGradesListContainer');
+      const avgBadge = document.getElementById('kidsOverallAverageBadge');
+      const titleEl = document.getElementById('kidsActiveGradesTitle');
+      const subEl = document.getElementById('kidsActiveSchoolSub');
+      const eduListEl = document.getElementById('kidsEducationTransactionsList');
+      const eduTotalEl = document.getElementById('kidsEducationTotalSpent');
+      if (!pillsEl || !gradesEl) return;
+
+      const list = window.getKidsList();
+      if (!window.activeKidId || !list.some(k => k.id === window.activeKidId)) {
+        window.activeKidId = list[0]?.id || null;
+      }
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+
+      pillsEl.innerHTML = list.map(k => {
+        const isSel = active && k.id === active.id;
+        return `
+          <div class="inline-flex items-center gap-1 px-3 py-1.5 rounded-2xl text-xs font-black transition-all cursor-pointer ${isSel ? 'bg-pink-600 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200'}" onclick="selectActiveKid('${k.id}')">
+            <span>🧒 ${escapeHtml(k.name)}</span>
+            ${list.length > 1 ? `<button type="button" onclick="event.stopPropagation(); deleteKidProfile('${k.id}')" class="ml-1 text-[10px] opacity-75 hover:opacity-100">✕</button>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      if (active) {
+        if (titleEl) titleEl.textContent = `Boletim de ${active.name}`;
+        if (subEl) subEl.textContent = `${active.school || 'Escola não informada'} ${active.gradeYear ? `• ${active.gradeYear}` : ''}`;
+        const grades = Array.isArray(active.grades) ? active.grades : [];
+        if (grades.length === 0) {
+          if (avgBadge) {
+            avgBadge.textContent = 'Sem notas';
+            avgBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500';
+          }
+          gradesEl.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">Nenhuma nota cadastrada ainda para ${escapeHtml(active.name)}.</div>`;
+        } else {
+          const avg = grades.reduce((s, g) => s + (parseFloat(g.score) || 0), 0) / grades.length;
+          if (avgBadge) {
+            avgBadge.textContent = `Média: ${avg.toFixed(1)}`;
+            avgBadge.className = `text-xs font-black px-2.5 py-0.5 rounded-full ${avg >= 7 ? 'bg-emerald-100 text-emerald-800' : (avg >= 5 ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')}`;
+          }
+          gradesEl.innerHTML = grades.map(g => {
+            const sc = parseFloat(g.score) || 0;
+            const badgeCls = sc >= 7 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : (sc >= 5 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-rose-100 text-rose-800 border-rose-300');
+            return `
+              <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-lg bg-blue-100 text-blue-800 font-extrabold text-[10px]">${escapeHtml(g.bimester || '1º Bim')}</span>
+                  <strong class="text-xs font-black text-slate-800">${escapeHtml(g.subject)}</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full border font-mono font-black text-xs ${badgeCls}">Nota: ${sc.toFixed(1)}</span>
+                  <button type="button" onclick="deleteKidGrade('${g.id}')" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer" title="Excluir nota">✕</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Filtra transações de Educação / Escola / Filhos do ciclo ativo
+      const allTxs = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : (Array.isArray(window.transactions) ? window.transactions : []);
+      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
+        ? window.appCyclesData[window.currentActiveCycleKey].tag
+        : (typeof currentCycle !== 'undefined' ? currentCycle : '');
+      const cycleTxs = allTxs.filter(t => typeof isTxInCycle === 'function' ? isTxInCycle(t, activeCycleTag) : true);
+      const eduTxs = cycleTxs.filter(t => {
+        const c = (t.categoria || '').toLowerCase();
+        const d = (t.descricao || '').toLowerCase();
+        return c.includes('educa') || c.includes('escola') || c.includes('filh') || d.includes('escola') || d.includes('colégio') || d.includes('colegio') || d.includes('material escolar') || d.includes('uniforme') || d.includes('faculdade') || d.includes('curso');
+      });
+
+      const totalEdu = eduTxs.reduce((s, t) => s + (parseFloat(t.valor) || 0), 0);
+      if (eduTotalEl) eduTotalEl.textContent = formatBRL(totalEdu);
+      if (eduListEl) {
+        if (eduTxs.length === 0) {
+          eduListEl.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhuma despesa com educação/filhos registrada neste ciclo. Lance acima para integrar!</div>`;
+        } else {
+          eduListEl.innerHTML = eduTxs.map(t => `
+            <div class="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+              <div>
+                <strong class="text-xs font-extrabold text-slate-900 block">${escapeHtml(t.descricao || 'Educação')}</strong>
+                <span class="text-[10px] text-slate-500">📅 ${window.formatDateBR ? window.formatDateBR(t.data) : t.data} • 👤 ${escapeHtml(t.responsavel || 'Comum')}</span>
+              </div>
+              <span class="font-mono font-black text-xs text-rose-600">- ${formatBRL(t.valor)}</span>
+            </div>
+          `).join('');
+        }
+      }
+    };
+
+    // 6. Insights Inteligentes do Ícone de Lâmpada (💡) para TODAS as Seções
+    const SECTION_LAMP_INSIGHTS = {
+      transacoes: {
+        title: '📋 Insights de Lançamentos & Ciclo',
+        tips: [
+          '💡 <strong>Foco no Ciclo Selecionado:</strong> Apenas os lançamentos pertencentes ao período do ciclo ativo são exibidos aqui para manter seu fluxo de caixa fiel.',
+          '💡 <strong>Data Brasileira (DD/MM/AAAA):</strong> Seus gastos são agrupados cronologicamente para facilitar a conferência com seu extrato bancário.',
+          '💡 <strong>Quitação com 1 Toque:</strong> Nas despesas fixas, use o botão <b>"Quitar ⚡"</b> para atualizar o status imediatamente quando efetuar o pagamento.'
+        ]
+      },
+      familia: {
+        title: '👨‍👩‍👧‍👦 Insights do Hub Família & Vida',
+        tips: [
+          '💡 <strong>Gestão 360º da Casa:</strong> Centralize cartões, compras de supermercado, saúde, pets, garantias de eletrodomésticos e boletim escolar das crianças em um só lugar.',
+          '💡 <strong>Economia Invisível:</strong> Famílias que acompanham garantias vigentes e comparam preços de mercado economizam até 18% ao mês em gastos variáveis.'
+        ]
+      },
+      lista_compras: {
+        title: '🛒 Insights da Lista de Compras & Histórico QR Code',
+        tips: [
+          '💡 <strong>Lista Zerada para Planejamento:</strong> A aba <b>Montar Lista</b> inicia com valores zerados (R$ 0,00) para você escolher livremente o que precisa comprar.',
+          '💡 <strong>QR Code da Nota Fiscal → Histórico por Supermercado:</strong> Quando você escaneia uma nota fiscal, os produtos e seus preços individuais vão direto para o <b>Histórico de Preços</b> divididos por supermercado.',
+          '💡 <strong>Botão "+ Incluir na Lista":</strong> No Histórico de Preços, toque em <b>"+ Incluir na Lista"</b> nos itens desejados para disponibilizá-los imediatamente quando for enviar a lista para o Chat!'
+        ]
+      },
+      comparativo_mercados: {
+        title: '📊 Insights do Comparativo de Mercados',
+        tips: [
+          '💡 <strong>Atacado vs. Varejo:</strong> Comprar itens de limpeza, grãos e não-perecíveis em atacadistas gera economia média de 22% em relação às compras de reposição.',
+          '💡 <strong>Ranking Automático:</strong> Todo cupom fiscal lido via QR Code alimenta automaticamente o ranking de menor preço por produto.'
+        ]
+      },
+      cartoes: {
+        title: '💳 Insights de Cartões & Faturas',
+        tips: [
+          '💡 <strong>Melhor Dia de Compra:</strong> Concentre compras parceladas logo após o fechamento da fatura para ganhar até 40 dias de fôlego no fluxo de caixa.',
+          '💡 <strong>Limite Saudável:</strong> Tente manter o comprometimento somado das faturas abaixo de 30% da renda líquida do ciclo.'
+        ]
+      },
+      membros: {
+        title: '👥 Insights de Membros da Família',
+        tips: [
+          '💡 <strong>Divisão Transparente:</strong> Cada membro cadastrado aparece automaticamente nas opções de Responsável ao criar um novo lançamento.',
+          '💡 <strong>Plano Individual vs. Família:</strong> No painel do usuário você pode alternar entre uso individual (com gôndola rápida) ou compartilhado.'
+        ]
+      },
+      chat_familia: {
+        title: '💬 Insights do Chat & Gôndola de Compras',
+        tips: [
+          '💡 <strong>Sincronia no Mercado:</strong> Ao marcar os itens na aba <b>Lista de Compras (Gôndola)</b> e preencher o valor pago, o total do carrinho é somado ao vivo.',
+          '💡 <strong>Comando de Voz:</strong> Você pode ditar itens como <i>"2 litros de leite e 1 pacote de arroz"</i> para incluí-los automaticamente.'
+        ]
+      },
+      pets: {
+        title: '🐾 Insights de Saúde & Finanças Pet',
+        tips: [
+          '💡 <strong>Prevenção Economiza:</strong> Manter vacinas anuais (V10 e Antirrábica) e antipulgas em dia evita gastos emergenciais até 6x maiores em clínicas veterinárias.',
+          '💡 <strong>Compra Programada de Ração:</strong> Comprar pacotes maiores (10kg a 15kg) reduz o custo por quilo em até 35%.'
+        ]
+      },
+      saude: {
+        title: '💊 Insights de Saúde, Remédios & Academia',
+        tips: [
+          '💡 <strong>Alerta de Estoque (5 dias):</strong> O app avisa quando faltam 5 dias para um medicamento contínuo acabar, permitindo incluir na lista de compras com antecedência.',
+          '💡 <strong>Rotina de Hidratação e Treino:</strong> Bater a meta diária de água melhora a disposição e reduz gastos futuros com saúde.'
+        ]
+      },
+      veiculos: {
+        title: '🚗 Insights de Veículos & Manutenção',
+        tips: [
+          '💡 <strong>Reserva para IPVA e Seguro:</strong> Separe 1/12 do valor anual de IPVA + Seguro no Cofrinho para pagar à vista com desconto no início do ano.',
+          '💡 <strong>Manutenção Preventiva:</strong> Troca de óleo e calibragem no prazo reduzem o consumo de combustível em até 8%.'
+        ]
+      },
+      educacao: {
+        title: '🎓 Insights de Educação & Formação',
+        tips: [
+          '💡 <strong>Investimento com Retorno:</strong> Acompanhe o peso das mensalidades e cursos no orçamento mensal e planeje a compra de materiais fora do pico de janeiro.'
+        ]
+      },
+      prestadores: {
+        title: '🛠️ Insights de Prestadores de Confiança',
+        tips: [
+          '💡 <strong>Agenda Compartilhada:</strong> Salve eletricistas, encanadores e técnicos de confiança com avaliação e observações para acionar pelo WhatsApp em 1 toque.'
+        ]
+      },
+      garantias: {
+        title: '🛡️ Insights de Garantias de Produtos',
+        tips: [
+          '💡 <strong>Nunca Perca um Prazo de Reparo:</strong> Antes de pagar assistência técnica para TV, geladeira ou celular, confira aqui se a garantia do fabricante ou estendida ainda está ativa!',
+          '💡 <strong>Garantia Legal + Contratual:</strong> No Brasil, bens duráveis contam com 90 dias de garantia legal além da garantia contratual do fabricante e da apólice estendida.'
+        ]
+      },
+      criancas: {
+        title: '🧒 Insights de Crianças, Notas & Educação',
+        tips: [
+          '💡 <strong>Desempenho Escolar + Planejamento Financeiro:</strong> Acompanhar as notas bimestrais lado a lado com os investimentos em educação ajuda a identificar cedo se o filho precisa de reforço em alguma matéria.',
+          '💡 <strong>Integração Direta:</strong> Todo gasto escolar lançado aqui entra automaticamente nas Transações do ciclo atual sob a categoria Educação.'
+        ]
+      },
+      ciclos: {
+        title: '📅 Insights de Ciclos Financeiros',
+        tips: [
+          '💡 <strong>Visão Isolada por Mês:</strong> Ao selecionar um ciclo, apenas os lançamentos daquele período aparecem na tela de Transações.'
+        ]
+      },
+      perfil_financeiro: {
+        title: '🎯 Insights do Perfil Financeiro',
+        tips: [
+          '💡 <strong>App Sob Medida:</strong> Ative apenas os módulos que fazem sentido para a sua rotina atual e personalize o foco financeiro da família.'
+        ]
+      }
+    };
+
+    window.openSectionLampInsight = function(sectionKey) {
+      const modal = document.getElementById('modalSectionLampInsight');
+      const titleEl = document.getElementById('lampInsightModalTitle');
+      const bodyEl = document.getElementById('lampInsightModalBody');
+      if (!modal || !titleEl || !bodyEl) return;
+
+      const data = SECTION_LAMP_INSIGHTS[sectionKey] || SECTION_LAMP_INSIGHTS.familia;
+      titleEl.textContent = data.title;
+      bodyEl.innerHTML = data.tips.map(t => `
+        <div class="p-3 rounded-2xl bg-amber-50/70 dark:bg-slate-800 border border-amber-200/80 dark:border-slate-700 text-xs leading-relaxed">
+          ${t}
+        </div>
+      `).join('');
+
+      if (modal.parentElement !== document.body) document.body.appendChild(modal);
+      modal.style.zIndex = '3900';
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    };
+
+    window.closeSectionLampInsight = function() {
+      const modal = document.getElementById('modalSectionLampInsight');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        if (typeof window.sanitizeNonMasterOwnerSelects === 'function') {
+          window.sanitizeNonMasterOwnerSelects();
+        }
+      }, 400);
+    });
+  })();
+  </script>
 
 </body>
 </html>
