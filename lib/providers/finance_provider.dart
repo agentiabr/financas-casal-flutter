@@ -5,7 +5,6 @@ import '../models/credit_card_model.dart';
 import '../models/installment_model.dart';
 import '../models/piggy_model.dart';
 import '../models/cycle_model.dart';
-import '../models/initial_data.dart';
 import '../config/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,7 +32,7 @@ class FinanceProvider extends ChangeNotifier {
         : null;
     final isMaster = currentUserEmail == 'rodrigocardosocn@gmail.com';
     if (isMaster) {
-      _transactions = List.from(initialTransactionsList);
+      _transactions = [];
       _cards = [
         CreditCardModel(id: 1, nome: 'Nubank Rodrigo', titular: 'Rodrigo', final4: '8412', limite: 8000.00, cor: 'purple'),
         CreditCardModel(id: 2, nome: 'XP Márcia', titular: 'Márcia', final4: '1093', limite: 15000.00, cor: 'emerald'),
