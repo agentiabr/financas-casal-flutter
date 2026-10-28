@@ -620,7 +620,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
           ),
         ),
       ),
-    ).whenComplete(() => textController.dispose());
+    );
   }
 
   void _showProductBarcodeInfoDialog(String ean) {
@@ -804,7 +804,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
           ],
         ),
       ),
-    );
+    ).whenComplete(() => textController.dispose());
   }
 
   @override

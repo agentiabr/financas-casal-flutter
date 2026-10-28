@@ -236,7 +236,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     if (platform is AndroidWebViewController) {
       platform.setGeolocationPermissionsPromptCallbacks(
         onShowPrompt: (request) async {
-          return const GeolocationPermissionsResponse(
+          return GeolocationPermissionsResponse(
             allow: false,
             retain: true,
           );
