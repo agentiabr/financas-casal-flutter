@@ -4268,25 +4268,31 @@ html, body {
           </div>
         </div>
 
-        <!-- Escolha do Tipo de Plano: Individual vs Casal / Família -->
-        <div class="p-2.5 rounded-xl bg-white/15 border border-white/30">
-          <label class="block text-[11px] font-bold text-white/90 mb-1.5">👥 Qual modalidade você deseja usar? *</label>
+        <!-- Escolha do Plano de Assinatura (Inicia com Período de Teste Grátis - Sem Freemium) -->
+        <div class="p-2.5 rounded-xl bg-white/15 border border-white/30 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-bold text-white/90">💎 Escolha seu Plano (7 Dias Grátis) *</label>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-400/25 border border-emerald-300/40 text-emerald-200">Sem Cartão Agora</span>
+          </div>
           <div class="grid grid-cols-2 gap-2">
             <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
               <input type="radio" name="regTipoPlano" value="familia" checked class="text-emerald-500 focus:ring-0">
               <div class="leading-tight">
                 <span class="block text-[11px] font-black text-white">👨‍👩‍👧‍👦 Casal / Família</span>
-                <span class="block text-[9px] text-white/70">Com Membros &amp; Chat</span>
+                <span class="block text-[9px] text-emerald-200 font-bold">Até 5 membros + Chat</span>
               </div>
             </label>
             <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
               <input type="radio" name="regTipoPlano" value="individual" class="text-emerald-500 focus:ring-0">
               <div class="leading-tight">
                 <span class="block text-[11px] font-black text-white">👤 Individual</span>
-                <span class="block text-[9px] text-white/70">Pessoal + Lista Compras</span>
+                <span class="block text-[9px] text-blue-200 font-bold">1 titular + Gôndola</span>
               </div>
             </label>
           </div>
+          <p class="text-[9px] text-white/75 leading-tight">
+            ✨ Você terá acesso total imediato durante o período de avaliação gratuita. Após o teste, escolha entre assinatura mensal ou anual.
+          </p>
         </div>
 
         <!-- Cupom de Parceria / Convite -->
@@ -4372,6 +4378,19 @@ html, body {
         <!-- 1. TOPO AURORA AZUL PROFUNDO COM LOGO CTRLPIG E ÍCONES LIVRES -->
         <!-- ============================================================== -->
         <header id="fintechAuroraHero" class="relative bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] text-white pt-4 pb-16 px-4 select-none w-full min-h-[220px]">
+          <!-- Barra de Status do Período de Teste / Assinatura (Visível para contas em Trial ou Vencidas) -->
+          <div id="subscriptionTrialTopBanner" class="hidden relative z-30 mb-3 px-3 py-2 rounded-2xl bg-gradient-to-r from-amber-500/25 via-amber-400/20 to-emerald-500/25 border border-amber-300/40 backdrop-blur-md flex items-center justify-between gap-2 shadow-sm">
+            <div class="flex items-center gap-2 min-w-0">
+              <span id="subTopBannerEmoji" class="text-base flex-shrink-0">⏳</span>
+              <div class="leading-tight min-w-0">
+                <strong id="subTopBannerTitle" class="text-[11px] font-black text-amber-200 block truncate">Período de Teste Grátis: 7 dias restantes</strong>
+                <span id="subTopBannerDesc" class="text-[10px] text-blue-100 block truncate">Plano Casal &amp; Família • Tudo liberado</span>
+              </div>
+            </div>
+            <button type="button" onclick="window.openSubscriptionPaywallModal(false)" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[11px] whitespace-nowrap shadow-xs cursor-pointer active:scale-95 transition-all flex-shrink-0">
+              👑 Assinar Plano
+            </button>
+          </div>
           <!-- Efeitos de iluminação aurora sutil -->
           <div class="absolute -top-10 -right-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
           <div class="absolute top-1/2 -left-12 w-60 h-60 bg-sky-400/15 rounded-full blur-2xl pointer-events-none"></div>
@@ -23334,6 +23353,92 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
+        <!-- 6. GESTÃO COMERCIAL DE PLANOS & ASSINATURAS (100% PAGO • SEM FREEMIUM) -->
+        <div class="p-3.5 bg-gradient-to-br from-amber-50/90 to-slate-50 dark:from-slate-800/90 dark:to-amber-950/20 rounded-2xl border border-amber-300/70 dark:border-amber-700/60 shadow-2xs space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>💎</span><span>Gestão de Planos &amp; Assinaturas (Paywall)</span>
+              </h4>
+              <p class="text-[10px] text-slate-600 dark:text-slate-400">Configure dias de teste grátis, preços, chave PIX/Checkout e gere chaves de liberação para clientes</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[9px] uppercase">Sem Freemium</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Dias Teste Grátis</label>
+              <input type="number" min="0" max="60" id="adminSubTrialDays" value="7" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-black text-slate-900">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Indiv. Mensal (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceIndMonth" value="14.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Indiv. Anual (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceIndYear" value="119.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Família Mensal (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceFamMonth" value="24.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Família Anual (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceFamYear" value="199.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Chave PIX ou Link de Checkout (Mercado Pago / Asaas / Stripe)</label>
+              <input type="text" id="adminSubPixOrCheckout" placeholder="Ex: pix@controlpig.com.br ou https://..." class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-900">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">WhatsApp Comercial p/ Comprovantes</label>
+              <input type="text" id="adminSubSupportWhatsapp" placeholder="Ex: 5511987654321" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-900">
+            </div>
+          </div>
+
+          <button type="button" onclick="window.saveAdminSubscriptionConfig()" class="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-xs cursor-pointer">
+            💾 Salvar Tabela de Preços e Configurações de Planos
+          </button>
+
+          <!-- Gerador de Chave Criptografada de Liberação de Assinatura -->
+          <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
+            <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 block">🔑 Gerar Chave de Ativação de Assinatura Paga (Pós-Pagamento)</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <input type="email" id="adminGenKeyEmail" placeholder="E-mail do cliente (opcional)" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-900">
+              <select id="adminGenKeyPlan" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+                <option value="FAM-365">👨‍👩‍👧‍👦 Família Anual (365 dias)</option>
+                <option value="FAM-30">👨‍👩‍👧‍👦 Família Mensal (30 dias)</option>
+                <option value="IND-365">👤 Individual Anual (365 dias)</option>
+                <option value="IND-30">👤 Individual Mensal (30 dias)</option>
+                <option value="VIP-9999">👑 Vitalício (Sem vencimento)</option>
+              </select>
+              <button type="button" onclick="window.generateCustomerLicenseKey()" class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer">
+                ⚡ Gerar Chave
+              </button>
+            </div>
+            <div id="adminGeneratedLicenseBox" class="hidden p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[10px] text-emerald-700 font-bold block">Chave gerada (clique para copiar e enviar ao cliente):</span>
+                <strong id="adminGeneratedLicenseCode" class="font-mono font-black text-sm text-emerald-950 tracking-wider">CPIG-FAM-365-000000</strong>
+              </div>
+              <button type="button" onclick="window.copyGeneratedLicenseKey()" class="px-3 py-1.5 rounded-xl bg-emerald-700 text-white font-black text-xs cursor-pointer">📋 Copiar</button>
+            </div>
+          </div>
+
+          <!-- Botões de Teste / Preview do Paywall pelo Admin -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false);" class="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>👁️ Ver Tela de Planos (Paywall)</span>
+            </button>
+            <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(true);" class="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>🔒 Simular Bloqueio Pós-Trial</span>
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- 2. PAINEL COMPLETO DO USUÁRIO (CONTA PRÓPRIA: MODALIDADE, MEMBROS DA FAMÍLIA & SEÇÕES DO APP) -->
@@ -23350,6 +23455,34 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <button type="button" onclick="window.exitDemoUserMode()" class="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 rounded-xl font-black text-[11px] cursor-pointer shadow-sm active:scale-95 transition-all">
             ✕ Voltar ao Admin
           </button>
+        </div>
+
+        <!-- 00. Card Meu Plano & Assinatura (Gestão de Assinatura Paga / Trial / Upgrade) -->
+        <div class="p-3.5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl border border-amber-400/40 shadow-md space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-lg">💎</div>
+              <div>
+                <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 block">Assinatura &amp; Segurança</span>
+                <h4 id="userPanelSubPlanTitle" class="font-black text-xs sm:text-sm text-white leading-tight">Plano Casal &amp; Família</h4>
+              </div>
+            </div>
+            <span id="userPanelSubStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ativo</span>
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-white/10 border border-white/15 flex items-center justify-between text-[11px]">
+            <span id="userPanelSubValidityLabel" class="text-blue-100">Vencimento / Renovação:</span>
+            <strong id="userPanelSubValidityDate" class="font-mono font-black text-amber-300">--/--/----</strong>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false);" class="py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all">
+              <span>👑 Ver Planos / Assinar</span>
+            </button>
+            <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false, true);" class="py-2 px-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+              <span>🎟️ Ativar Código / Cupom</span>
+            </button>
+          </div>
         </div>
 
         <!-- 0. Escolha da Modalidade do Plano (Individual vs Casal / Família) -->
@@ -41949,6 +42082,785 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           window.sanitizeNonMasterOwnerSelects();
         }
       }, 400);
+    });
+  })();
+  </script>
+
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: PAYWALL DE PLANOS & ASSINATURA (100% PAGO • SEM FREEMIUM)          -->
+  <!-- ========================================================================= -->
+  <div id="modalSubscriptionPaywall" class="fixed inset-0 bg-[#041126]/95 backdrop-blur-lg z-[4200] hidden flex items-center justify-center p-3 sm:p-4 select-none overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-[32px] max-w-lg w-full p-5 sm:p-6 shadow-2xl border-2 border-amber-400/50 space-y-4 my-auto max-h-[94vh] overflow-y-auto custom-scrollbar text-xs">
+      
+      <!-- Cabeçalho do Paywall -->
+      <div class="flex items-start justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-md flex-shrink-0">
+            👑
+          </div>
+          <div>
+            <span id="paywallHeaderBadge" class="inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] uppercase tracking-wider mb-0.5">
+              Assinatura ControlPig Pro
+            </span>
+            <h2 id="paywallHeaderTitle" class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
+              Escolha o Plano Ideal para Você
+            </h2>
+            <p id="paywallHeaderSubtitle" class="text-[11px] text-slate-500 dark:text-slate-400">
+              Seus dados são 100% privados, criptografados e sincronizados com segurança.
+            </p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseSubscriptionPaywall" onclick="window.closeSubscriptionPaywallModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold cursor-pointer flex-shrink-0" title="Fechar">
+          ✕
+        </button>
+      </div>
+
+      <!-- Aviso quando o Período de Teste Expirou (Hard Paywall Sem Freemium) -->
+      <div id="paywallExpiredHardNotice" class="hidden p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800 flex items-start gap-2.5">
+        <span class="text-xl flex-shrink-0">🔒</span>
+        <div class="leading-snug">
+          <h4 class="font-black text-xs text-rose-900 dark:text-rose-200">Seu período de teste gratuito encerrou!</h4>
+          <p class="text-[11px] text-rose-700 dark:text-rose-300 mt-0.5">
+            Fique tranquilo(a): <strong>todos os seus lançamentos, listas e cadastros estão 100% salvos</strong>. Para continuar utilizando o ControlPig, ative sua assinatura abaixo.
+          </p>
+        </div>
+      </div>
+
+      <!-- Chave Alternadora de Ciclo: ANUAL (Mais Econômico) vs MENSAL -->
+      <div class="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 grid grid-cols-2 gap-1.5 border border-slate-200/80 dark:border-slate-700">
+        <button type="button" id="btnPaywallCycle_annual" onclick="window.setPaywallBillingCycle('annual')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-blue-600 text-white shadow-sm">
+          <span>🔥 Anual</span>
+          <span class="px-1.5 py-0.2 rounded-full bg-amber-300 text-slate-950 text-[9px] font-black">-33% OFF</span>
+        </button>
+        <button type="button" id="btnPaywallCycle_monthly" onclick="window.setPaywallBillingCycle('monthly')" class="py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-white/60">
+          <span>📅 Mensal</span>
+        </button>
+      </div>
+
+      <!-- Os 2 Planos Pagos (Individual vs Casal & Família) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        
+        <!-- CARD 1: PLANO INDIVIDUAL -->
+        <div id="cardPlan_individual" onclick="window.selectPaywallPlanTier('individual')" class="p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[10px]">👤 1 PESSOA</span>
+              <span id="radioPlan_individual" class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black"></span>
+            </div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Individual</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Controle financeiro pessoal completo e lista de compras inteligente.</p>
+
+            <div class="my-3 pt-2 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-1">
+                <span class="text-xs font-bold text-slate-500">R$</span>
+                <strong id="priceDisplay_individual" class="text-2xl font-black text-slate-900 dark:text-white font-mono">9,99</strong>
+                <span id="priceSuffix_individual" class="text-[11px] text-slate-500 font-semibold">/mês no anual</span>
+              </div>
+              <span id="priceSubtext_individual" class="text-[10px] text-emerald-600 font-bold block mt-0.5">R$ 119,90 cobrado anualmente</span>
+            </div>
+
+            <ul class="space-y-1.5 text-[11px] text-slate-700 dark:text-slate-300">
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Lançamentos e Ciclos ilimitados</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Leitor QR Code NFC-e + Histórico</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Lista de Compras na Gôndola</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Garantias, Pets, Saúde &amp; Veículos</span></li>
+              <li class="flex items-center gap-1.5 text-slate-400"><span class="font-bold">✕</span><span>Sem Membros extras / Sem Chat</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- CARD 2: PLANO CASAL & FAMÍLIA (MAIS ESCOLHIDO) -->
+        <div id="cardPlan_familia" onclick="window.selectPaywallPlanTier('familia')" class="p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative">
+          <div class="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-xs">
+            ⭐ Mais Escolhido
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-black text-[10px]">👨‍👩‍👧‍👦 ATÉ 5 MEMBROS</span>
+              <span id="radioPlan_familia" class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">✓</span>
+            </div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Casal &amp; Família</h3>
+            <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">Sincronização familiar completa, Chat de compras e módulo Filhos.</p>
+
+            <div class="my-3 pt-2 border-t border-blue-200/70 dark:border-blue-800">
+              <div class="flex items-baseline gap-1">
+                <span class="text-xs font-bold text-slate-500">R$</span>
+                <strong id="priceDisplay_familia" class="text-2xl font-black text-blue-700 dark:text-blue-300 font-mono">16,65</strong>
+                <span id="priceSuffix_familia" class="text-[11px] text-slate-500 font-semibold">/mês no anual</span>
+              </div>
+              <span id="priceSubtext_familia" class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block mt-0.5">R$ 199,90 cobrado anualmente</span>
+            </div>
+
+            <ul class="space-y-1.5 text-[11px] text-slate-800 dark:text-slate-200 font-medium">
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Tudo do Plano Individual</strong></span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Até 5 Membros da Família</strong> inclusos</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Chat da Família</strong> + Gôndola ao vivo</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Crianças, Boletim &amp; Educação</strong></span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span>Divisão por Responsável &amp; Cartões</span></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botão Principal de Checkout Seguro (PIX / Cartão) -->
+      <div class="space-y-2 pt-1">
+        <button type="button" onclick="window.startSubscriptionCheckout()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98 transition-all">
+          <span>🔒 Continuar para Pagamento Seguro (PIX ou Cartão)</span>
+        </button>
+
+        <!-- Área de Pagamento / PIX / Checkout Gerado -->
+        <div id="paywallCheckoutActionBox" class="hidden p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-400 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <strong class="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+              <span>⚡</span> <span id="checkoutSummaryTitle">Pagamento • Plano Casal &amp; Família</span>
+            </strong>
+            <span id="checkoutSummaryAmount" class="font-mono font-black text-sm text-emerald-700">R$ 199,90</span>
+          </div>
+          <p class="text-[11px] text-slate-700 dark:text-slate-300 leading-snug">
+            Realize o pagamento via PIX/Checkout abaixo e envie o comprovante para receber sua <strong>Chave de Ativação Imediata</strong>:
+          </p>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 flex items-center justify-between gap-2">
+            <span id="checkoutPixOrLinkText" class="font-mono font-bold text-xs text-slate-800 dark:text-slate-200 truncate">pix@controlpig.com.br</span>
+            <button type="button" onclick="window.copyPaywallPixOrOpenCheckout()" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[11px] whitespace-nowrap cursor-pointer">
+              📋 Copiar / Abrir
+            </button>
+          </div>
+          <button type="button" onclick="window.sendSubscriptionReceiptWhatsApp()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>📲 Já Paguei! Solicitar Liberação no WhatsApp</span>
+          </button>
+        </div>
+
+        <!-- Acordeão para Ativar Chave de Assinatura (`CPIG-...`) ou Cupom VIP -->
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="document.getElementById('boxPaywallActivationCode').classList.toggle('hidden')" class="w-full text-center text-[11px] font-extrabold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+            🔑 Possui uma Chave de Liberação ou Cupom VIP? Toque aqui para ativar
+          </button>
+          <div id="boxPaywallActivationCode" class="hidden mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+            <input type="text" id="inputPaywallLicenseOrCoupon" placeholder="Digite sua chave CPIG-... ou Cupom VIP" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-mono font-black uppercase text-xs text-slate-900 dark:text-white">
+            <button type="button" onclick="window.activateLicenseOrCouponFromPaywall()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs cursor-pointer whitespace-nowrap">
+              ✓ Ativar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rodapé de Segurança e Opção de Trocar de Conta -->
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+        <span>🛡️ Criptografia local &amp; proteção anti-fraude ativa</span>
+        <button type="button" onclick="window.closeSubscriptionPaywallModal(true); if (typeof logoutUser === 'function') logoutUser();" class="text-slate-500 hover:text-rose-600 font-bold underline cursor-pointer">
+          Trocar de conta / Sair
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  // ============================================================================
+  // V2.1.119: MOTOR DE ASSINATURAS & PLANOS PAGOS (SEM FREEMIUM + ANTI-FRAUDE)
+  // ============================================================================
+  (function() {
+    const SUB_SECRET_SALT = 'CTRLPIG_PRO_2026_SIG_V1';
+    const SUB_CONFIG_KEY = 'ctrlpig_commercial_sub_config_v1';
+    const CLOCK_GUARD_KEY = 'ctrlpig_monotonic_clock_guard_v1';
+
+    window.selectedPaywallCycle = 'annual';
+    window.selectedPaywallTier = 'familia';
+    window.isPaywallHardLocked = false;
+
+    // 1. Hash Criptográfico Leve para Assinatura de Integridade (Impede edição manual no localStorage)
+    function computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt) {
+      const raw = `${String(email || '').toLowerCase().trim()}|${status}|${planTier}|${billingCycle}|${expiresAt}|${SUB_SECRET_SALT}`;
+      let h1 = 0xdeadbeef ^ raw.length;
+      let h2 = 0x41c6ce57 ^ raw.length;
+      for (let i = 0, ch; i < raw.length; i++) {
+        ch = raw.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36).toUpperCase();
+    }
+
+    // 2. Relógio Monotônico Anti-Rollback (Impede voltar a data do celular para ganhar mais dias grátis)
+    function getVerifiedCurrentTimestamp() {
+      const now = Date.now();
+      try {
+        const lastSeen = parseInt(localStorage.getItem(CLOCK_GUARD_KEY) || '0', 10);
+        if (now > lastSeen) {
+          localStorage.setItem(CLOCK_GUARD_KEY, String(now));
+          return now;
+        }
+        // Se o relógio do aparelho foi atrasado em mais de 2 horas, usa o maior timestamp já registrado
+        if (lastSeen - now > 2 * 60 * 60 * 1000) {
+          return lastSeen;
+        }
+      } catch (e) {}
+      return now;
+    }
+
+    // 3. Configuração Comercial de Preços e Dias de Teste (Editável pelo Admin Master)
+    window.getCommercialSubscriptionConfig = function() {
+      const defaults = {
+        trialDays: 7,
+        indMonthly: 14.90,
+        indAnnual: 119.90,
+        famMonthly: 24.90,
+        famAnnual: 199.90,
+        pixOrCheckout: 'rodrigocardosocn@gmail.com',
+        supportWhatsapp: '5511987654321'
+      };
+      try {
+        const raw = localStorage.getItem(SUB_CONFIG_KEY);
+        if (raw) {
+          return { ...defaults, ...JSON.parse(raw) };
+        }
+      } catch (e) {}
+      return defaults;
+    };
+
+    window.saveAdminSubscriptionConfig = function() {
+      const cfg = {
+        trialDays: Math.max(0, parseInt(document.getElementById('adminSubTrialDays')?.value ?? '7', 10)),
+        indMonthly: parseFloat(document.getElementById('adminSubPriceIndMonth')?.value) || 14.90,
+        indAnnual: parseFloat(document.getElementById('adminSubPriceIndYear')?.value) || 119.90,
+        famMonthly: parseFloat(document.getElementById('adminSubPriceFamMonth')?.value) || 24.90,
+        famAnnual: parseFloat(document.getElementById('adminSubPriceFamYear')?.value) || 199.90,
+        pixOrCheckout: (document.getElementById('adminSubPixOrCheckout')?.value || 'rodrigocardosocn@gmail.com').trim(),
+        supportWhatsapp: (document.getElementById('adminSubSupportWhatsapp')?.value || '5511987654321').replace(/\D/g, '')
+      };
+      localStorage.setItem(SUB_CONFIG_KEY, JSON.stringify(cfg));
+      window.refreshPaywallPricingUI();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('💎 Tabela de preços e configurações de assinatura salvas!', false);
+      }
+    };
+
+    window.populateAdminSubscriptionInputs = function() {
+      const cfg = window.getCommercialSubscriptionConfig();
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      setVal('adminSubTrialDays', cfg.trialDays);
+      setVal('adminSubPriceIndMonth', cfg.indMonthly.toFixed(2));
+      setVal('adminSubPriceIndYear', cfg.indAnnual.toFixed(2));
+      setVal('adminSubPriceFamMonth', cfg.famMonthly.toFixed(2));
+      setVal('adminSubPriceFamYear', cfg.famAnnual.toFixed(2));
+      setVal('adminSubPixOrCheckout', cfg.pixOrCheckout);
+      setVal('adminSubSupportWhatsapp', cfg.supportWhatsapp);
+    };
+
+    // 4. Gerador e Validador de Chaves Criptografadas Pós-Pagamento (CPIG-PLAN-DAYS-HASH)
+    function computeLicenseKeyHash(planCode, daysStr) {
+      const raw = `CPIG_LIC|${planCode}|${daysStr}|${SUB_SECRET_SALT}`;
+      let hash = 5381;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) + hash) + raw.charCodeAt(i);
+      }
+      return Math.abs(hash >>> 0).toString(36).toUpperCase().slice(0, 6).padStart(6, '7');
+    }
+
+    window.generateCustomerLicenseKey = function() {
+      const planVal = document.getElementById('adminGenKeyPlan')?.value || 'FAM-365';
+      const [planCode, daysStr] = planVal.split('-');
+      const saltPart = Math.floor(10 + Math.random() * 89);
+      const check = computeLicenseKeyHash(planCode, `${daysStr}${saltPart}`);
+      const fullKey = `CPIG-${planCode}-${daysStr}${saltPart}-${check}`;
+
+      const box = document.getElementById('adminGeneratedLicenseBox');
+      const codeEl = document.getElementById('adminGeneratedLicenseCode');
+      if (box && codeEl) {
+        codeEl.textContent = fullKey;
+        box.classList.remove('hidden');
+      }
+      window.copyGeneratedLicenseKey();
+    };
+
+    window.copyGeneratedLicenseKey = function() {
+      const code = document.getElementById('adminGeneratedLicenseCode')?.textContent || '';
+      if (!code) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).catch(() => {});
+      }
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🔑 Chave "${code}" copiada para a área de transferência!`, false);
+      }
+    };
+
+    // 5. Leitura e Verificação Segura do Registro de Assinatura da Conta Ativa
+    window.getUserSubscriptionRecord = function(userObj) {
+      const u = userObj || window.currentUserSession;
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+
+      if (isMaster && !isDemo) {
+        return {
+          status: 'master_lifetime',
+          planTier: 'familia',
+          billingCycle: 'lifetime',
+          startedAt: 0,
+          expiresAt: 4102444800000,
+          daysRemaining: 9999,
+          isExpired: false
+        };
+      }
+
+      const email = (u && u.email) ? String(u.email).toLowerCase().trim() : 'user@local';
+      const subKey = typeof getUserScopedStorageKey === 'function'
+        ? getUserScopedStorageKey('ctrlpig_subscription_record_v1', u)
+        : `ctrlpig_subscription_record_v1_${email}`;
+
+      const now = getVerifiedCurrentTimestamp();
+      try {
+        const raw = localStorage.getItem(subKey);
+        if (raw) {
+          const rec = JSON.parse(raw);
+          const expectedSig = computeSubIntegritySignature(email, rec.status, rec.planTier, rec.billingCycle, rec.expiresAt);
+          if (rec && rec.sig === expectedSig) {
+            const msLeft = (rec.expiresAt || 0) - now;
+            const daysRemaining = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+            const isExpired = msLeft <= 0 && rec.status !== 'vip_lifetime';
+            return {
+              ...rec,
+              daysRemaining,
+              isExpired
+            };
+          } else {
+            console.warn('[CtrlPig Security] Assinatura adulterada detectada. Bloqueando acesso.');
+            return {
+              status: 'expired',
+              planTier: (u && u.tipoPlano) || 'familia',
+              billingCycle: 'trial',
+              startedAt: now,
+              expiresAt: now - 1000,
+              daysRemaining: 0,
+              isExpired: true
+            };
+          }
+        }
+      } catch (e) {}
+
+      // Se a conta possui cupom VIP vitalício já validado no cadastro
+      if (u && (String(u.plano || '').toLowerCase().includes('vip') || String(u.papel || '').toLowerCase().includes('vip'))) {
+        return window.saveUserSubscriptionRecord({
+          status: 'vip_lifetime',
+          planTier: u.tipoPlano || 'familia',
+          billingCycle: 'lifetime',
+          startedAt: now,
+          expiresAt: now + 3650 * 24 * 60 * 60 * 1000
+        }, u);
+      }
+
+      // Inicializa automaticamente o Período de Teste Grátis (Trial) para novas contas
+      const cfg = window.getCommercialSubscriptionConfig();
+      const trialDays = typeof cfg.trialDays === 'number' ? cfg.trialDays : 7;
+      const expiresAt = now + (trialDays * 24 * 60 * 60 * 1000);
+      const tier = (u && u.tipoPlano) ? u.tipoPlano : 'familia';
+      return window.saveUserSubscriptionRecord({
+        status: trialDays > 0 ? 'trial' : 'expired',
+        planTier: tier,
+        billingCycle: 'trial',
+        startedAt: now,
+        expiresAt: expiresAt
+      }, u);
+    };
+
+    window.saveUserSubscriptionRecord = function(data, userObj) {
+      const u = userObj || window.currentUserSession;
+      const email = (u && u.email) ? String(u.email).toLowerCase().trim() : 'user@local';
+      const subKey = typeof getUserScopedStorageKey === 'function'
+        ? getUserScopedStorageKey('ctrlpig_subscription_record_v1', u)
+        : `ctrlpig_subscription_record_v1_${email}`;
+
+      const status = data.status || 'trial';
+      const planTier = data.planTier || 'familia';
+      const billingCycle = data.billingCycle || 'annual';
+      const startedAt = data.startedAt || getVerifiedCurrentTimestamp();
+      const expiresAt = data.expiresAt || (startedAt + 7 * 24 * 60 * 60 * 1000);
+      const sig = computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt);
+
+      const record = { email, status, planTier, billingCycle, startedAt, expiresAt, sig };
+      try {
+        localStorage.setItem(subKey, JSON.stringify(record));
+      } catch (e) {}
+
+      const now = getVerifiedCurrentTimestamp();
+      const msLeft = expiresAt - now;
+      return {
+        ...record,
+        daysRemaining: Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24))),
+        isExpired: msLeft <= 0 && status !== 'vip_lifetime'
+      };
+    };
+
+    // 6. Atualização Visual da Barra de Trial no Topo, Painel do Usuário e Paywall
+    window.syncSubscriptionStatusUI = function() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+      const sub = window.getUserSubscriptionRecord();
+      const topBanner = document.getElementById('subscriptionTrialTopBanner');
+
+      if (topBanner) {
+        if (isMaster && !isDemo) {
+          topBanner.classList.add('hidden');
+        } else if (sub.status === 'trial' && !sub.isExpired) {
+          topBanner.classList.remove('hidden');
+          const tEl = document.getElementById('subTopBannerTitle');
+          const dEl = document.getElementById('subTopBannerDesc');
+          const planLabel = sub.planTier === 'individual' ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal & Família';
+          if (tEl) tEl.textContent = `Período de Teste Grátis: ${sub.daysRemaining} ${sub.daysRemaining === 1 ? 'dia restante' : 'dias restantes'}`;
+          if (dEl) dEl.textContent = `${planLabel} • Assine para manter seu acesso ativo`;
+        } else if (sub.isExpired) {
+          topBanner.classList.remove('hidden');
+          const tEl = document.getElementById('subTopBannerTitle');
+          const dEl = document.getElementById('subTopBannerDesc');
+          if (tEl) tEl.textContent = `🔒 Período de Teste Encerrado — Ative sua Assinatura`;
+          if (dEl) dEl.textContent = `Seus dados estão salvos. Escolha seu plano para liberar o app.`;
+        } else {
+          topBanner.classList.add('hidden');
+        }
+      }
+
+      // Atualiza Card no Painel do Usuário (#adminUserCompactView)
+      const pTitle = document.getElementById('userPanelSubPlanTitle');
+      const pBadge = document.getElementById('userPanelSubStatusBadge');
+      const pDate = document.getElementById('userPanelSubValidityDate');
+      if (pTitle && pBadge && pDate) {
+        const tierLabel = sub.planTier === 'individual' ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal & Família';
+        const cycleLabel = sub.billingCycle === 'annual' ? ' (Anual)' : (sub.billingCycle === 'monthly' ? ' (Mensal)' : '');
+        pTitle.textContent = `${tierLabel}${cycleLabel}`;
+
+        const expDate = new Date(sub.expiresAt);
+        const expStr = `${String(expDate.getDate()).padStart(2, '0')}/${String(expDate.getMonth() + 1).padStart(2, '0')}/${expDate.getFullYear()}`;
+
+        if (sub.status === 'vip_lifetime' || sub.status === 'master_lifetime') {
+          pBadge.textContent = '👑 Vitalício Ativo';
+          pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-300/40';
+          pDate.textContent = 'Vitalício (Sem vencimento)';
+        } else if (sub.status === 'active' && !sub.isExpired) {
+          pBadge.textContent = '✓ Assinante Ativo';
+          pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+          pDate.textContent = `${expStr} (${sub.daysRemaining}d)`;
+        } else if (sub.status === 'trial' && !sub.isExpired) {
+          pBadge.textContent = `⏳ Teste Grátis (${sub.daysRemaining}d)`;
+          pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/25 text-amber-200 border border-amber-400/40';
+          pDate.textContent = `Fim do teste: ${expStr}`;
+        } else {
+          pBadge.textContent = '🔒 Assinatura Pendente';
+          pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/30 text-rose-200 border border-rose-400/40';
+          pDate.textContent = 'Expirado — Renovar agora';
+        }
+      }
+
+      // Se o período de teste ou assinatura expirou (e não está na tela de login), abre o Hard Paywall (Sem Freemium!)
+      const isAuthLocked = document.documentElement.classList.contains('require-auth') ||
+        (document.getElementById('authOverlayContainer') && !document.getElementById('authOverlayContainer').classList.contains('hidden') && document.getElementById('authOverlayContainer').style.display !== 'none');
+
+      if (!isAuthLocked && sub.isExpired && !(isMaster && !isDemo)) {
+        window.openSubscriptionPaywallModal(true);
+      }
+    };
+
+    // 7. Proteção de Mudança de Modalidade: Se assinou o Plano Individual Pago, exige Upgrade para usar Casal / Família
+    const _origSetUserAccountPlanMode = window.setUserAccountPlanMode;
+    window.setUserAccountPlanMode = function(mode) {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const sub = window.getUserSubscriptionRecord();
+      if (!isMaster && mode === 'familia' && sub.status === 'active' && sub.planTier === 'individual') {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('👑 Para incluir membros e usar o Chat, faça o upgrade para o Plano Casal & Família!', false);
+        }
+        window.openSubscriptionPaywallModal(false);
+        window.selectPaywallPlanTier('familia');
+        return;
+      }
+      if (typeof _origSetUserAccountPlanMode === 'function') {
+        _origSetUserAccountPlanMode(mode);
+      }
+      // Se está em trial, acompanha o plano escolhido
+      if (!isMaster && sub.status === 'trial') {
+        window.saveUserSubscriptionRecord({
+          ...sub,
+          planTier: mode === 'individual' ? 'individual' : 'familia'
+        });
+        window.syncSubscriptionStatusUI();
+      }
+    };
+
+    // 8. Controle e Interação do Modal de Paywall (#modalSubscriptionPaywall)
+    window.refreshPaywallPricingUI = function() {
+      const cfg = window.getCommercialSubscriptionConfig();
+      const isAnnual = window.selectedPaywallCycle === 'annual';
+
+      const btnAnn = document.getElementById('btnPaywallCycle_annual');
+      const btnMon = document.getElementById('btnPaywallCycle_monthly');
+      if (btnAnn && btnMon) {
+        if (isAnnual) {
+          btnAnn.className = 'py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-blue-600 text-white shadow-sm';
+          btnMon.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-white/60';
+        } else {
+          btnMon.className = 'py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-blue-600 text-white shadow-sm';
+          btnAnn.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-white/60';
+        }
+      }
+
+      const indVal = isAnnual ? (cfg.indAnnual / 12) : cfg.indMonthly;
+      const famVal = isAnnual ? (cfg.famAnnual / 12) : cfg.famMonthly;
+
+      const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+      setTxt('priceDisplay_individual', indVal.toFixed(2).replace('.', ','));
+      setTxt('priceSuffix_individual', isAnnual ? '/mês no anual' : '/mês');
+      setTxt('priceSubtext_individual', isAnnual ? `R$ ${cfg.indAnnual.toFixed(2).replace('.', ',')} à vista no plano anual` : 'Cobrança mensal recorrente');
+
+      setTxt('priceDisplay_familia', famVal.toFixed(2).replace('.', ','));
+      setTxt('priceSuffix_familia', isAnnual ? '/mês no anual' : '/mês');
+      setTxt('priceSubtext_familia', isAnnual ? `R$ ${cfg.famAnnual.toFixed(2).replace('.', ',')} à vista no plano anual` : 'Cobrança mensal recorrente');
+    };
+
+    window.setPaywallBillingCycle = function(cycle) {
+      window.selectedPaywallCycle = cycle === 'monthly' ? 'monthly' : 'annual';
+      window.refreshPaywallPricingUI();
+      const box = document.getElementById('paywallCheckoutActionBox');
+      if (box && !box.classList.contains('hidden')) {
+        window.startSubscriptionCheckout();
+      }
+    };
+
+    window.selectPaywallPlanTier = function(tier) {
+      window.selectedPaywallTier = tier === 'individual' ? 'individual' : 'familia';
+      const cInd = document.getElementById('cardPlan_individual');
+      const cFam = document.getElementById('cardPlan_familia');
+      const rInd = document.getElementById('radioPlan_individual');
+      const rFam = document.getElementById('radioPlan_familia');
+
+      if (window.selectedPaywallTier === 'individual') {
+        if (cInd) cInd.className = 'p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
+        if (cFam) cFam.className = 'p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
+        if (rInd) { rInd.className = 'w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black'; rInd.textContent = '✓'; }
+        if (rFam) { rFam.className = 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black'; rFam.textContent = ''; }
+      } else {
+        if (cFam) cFam.className = 'p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
+        if (cInd) cInd.className = 'p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
+        if (rFam) { rFam.className = 'w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black'; rFam.textContent = '✓'; }
+        if (rInd) { rInd.className = 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black'; rInd.textContent = ''; }
+      }
+
+      const box = document.getElementById('paywallCheckoutActionBox');
+      if (box && !box.classList.contains('hidden')) {
+        window.startSubscriptionCheckout();
+      }
+    };
+
+    window.openSubscriptionPaywallModal = function(hardLock = false, expandCoupon = false) {
+      const modal = document.getElementById('modalSubscriptionPaywall');
+      if (!modal) return;
+      if (modal.parentElement !== document.body) document.body.appendChild(modal);
+
+      window.isPaywallHardLocked = !!hardLock;
+      const closeBtn = document.getElementById('btnCloseSubscriptionPaywall');
+      const expNotice = document.getElementById('paywallExpiredHardNotice');
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+
+      if (closeBtn) {
+        // Se for Hard Lock para usuário comum vencido, oculta o X para impedir uso gratuito (Sem Freemium).
+        // Se for o Admin Master simulando, mantém o botão de fechar visível para ele sair da simulação.
+        if (hardLock && !isMaster) {
+          closeBtn.classList.add('hidden');
+        } else {
+          closeBtn.classList.remove('hidden');
+        }
+      }
+      if (expNotice) {
+        expNotice.classList.toggle('hidden', !hardLock);
+      }
+
+      const sub = window.getUserSubscriptionRecord();
+      window.selectPaywallPlanTier(sub.planTier || 'familia');
+      window.refreshPaywallPricingUI();
+
+      const codeBox = document.getElementById('boxPaywallActivationCode');
+      if (codeBox) {
+        if (expandCoupon) codeBox.classList.remove('hidden');
+      }
+
+      modal.style.zIndex = '4200';
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+    };
+
+    window.closeSubscriptionPaywallModal = function(forceClose = false) {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      if (window.isPaywallHardLocked && !isMaster && !forceClose) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('🔒 Escolha um plano ou ative sua chave para liberar o acesso ao aplicativo.', true);
+        }
+        return;
+      }
+      const modal = document.getElementById('modalSubscriptionPaywall');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    window.startSubscriptionCheckout = function() {
+      const cfg = window.getCommercialSubscriptionConfig();
+      const isAnnual = window.selectedPaywallCycle === 'annual';
+      const isFam = window.selectedPaywallTier === 'familia';
+      const amount = isFam
+        ? (isAnnual ? cfg.famAnnual : cfg.famMonthly)
+        : (isAnnual ? cfg.indAnnual : cfg.indMonthly);
+      const title = `${isFam ? 'Plano Casal & Família' : 'Plano Individual'} (${isAnnual ? 'Anual' : 'Mensal'})`;
+
+      const box = document.getElementById('paywallCheckoutActionBox');
+      const tEl = document.getElementById('checkoutSummaryTitle');
+      const aEl = document.getElementById('checkoutSummaryAmount');
+      const pEl = document.getElementById('checkoutPixOrLinkText');
+
+      if (tEl) tEl.textContent = title;
+      if (aEl) aEl.textContent = `R$ ${amount.toFixed(2).replace('.', ',')}`;
+      if (pEl) pEl.textContent = cfg.pixOrCheckout || 'rodrigocardosocn@gmail.com';
+      if (box) box.classList.remove('hidden');
+    };
+
+    window.copyPaywallPixOrOpenCheckout = function() {
+      const cfg = window.getCommercialSubscriptionConfig();
+      const val = (cfg.pixOrCheckout || 'rodrigocardosocn@gmail.com').trim();
+      if (/^https?:\/\//i.test(val)) {
+        if (typeof openExternalUrl === 'function') openExternalUrl(val);
+        else window.open(val, '_blank');
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).catch(() => {});
+      }
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`📋 Chave PIX "${val}" copiada! Realize a transferência no seu banco.`, false);
+      }
+    };
+
+    window.sendSubscriptionReceiptWhatsApp = function() {
+      const cfg = window.getCommercialSubscriptionConfig();
+      const isAnnual = window.selectedPaywallCycle === 'annual';
+      const isFam = window.selectedPaywallTier === 'familia';
+      const amount = isFam
+        ? (isAnnual ? cfg.famAnnual : cfg.famMonthly)
+        : (isAnnual ? cfg.indAnnual : cfg.indMonthly);
+      const u = window.currentUserSession || {};
+      const msg = `Olá! Acabei de realizar o pagamento da assinatura do *ControlPig Pro*:\n` +
+        `👤 *Nome:* ${u.nome || 'Cliente'}\n` +
+        `📧 *E-mail:* ${u.email || ''}\n` +
+        `💎 *Plano:* ${isFam ? 'Casal & Família' : 'Individual'} (${isAnnual ? 'Anual' : 'Mensal'})\n` +
+        `💰 *Valor:* R$ ${amount.toFixed(2).replace('.', ',')}\n\n` +
+        `Segue meu comprovante para envio da minha Chave de Liberação!`;
+
+      const phone = (cfg.supportWhatsapp || '5511987654321').replace(/\D/g, '');
+      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+      if (typeof openExternalUrl === 'function') openExternalUrl(url);
+      else window.open(url, '_blank');
+    };
+
+    window.activateLicenseOrCouponFromPaywall = function() {
+      const inp = document.getElementById('inputPaywallLicenseOrCoupon');
+      const code = (inp?.value || '').trim().toUpperCase();
+      if (!code) {
+        if (typeof showToastUndo === 'function') showToastUndo('Digite uma chave ou cupom válido.', true);
+        return;
+      }
+
+      const now = getVerifiedCurrentTimestamp();
+
+      // 1. Verifica se é uma Chave Criptografada Pós-Pagamento (Formato: CPIG-FAM-36542-HASH)
+      if (code.startsWith('CPIG-')) {
+        const parts = code.split('-');
+        if (parts.length === 4) {
+          const [, planCode, daysWithSalt, providedHash] = parts;
+          const expectedHash = computeLicenseKeyHash(planCode, daysWithSalt);
+          if (providedHash === expectedHash) {
+            const rawDays = parseInt(daysWithSalt.slice(0, -2), 10) || 365;
+            const isVipLife = planCode === 'VIP' || rawDays >= 9000;
+            const planTier = planCode === 'IND' ? 'individual' : 'familia';
+            const billingCycle = isVipLife ? 'lifetime' : (rawDays >= 300 ? 'annual' : 'monthly');
+            const expiresAt = now + (rawDays * 24 * 60 * 60 * 1000);
+
+            window.saveUserSubscriptionRecord({
+              status: isVipLife ? 'vip_lifetime' : 'active',
+              planTier,
+              billingCycle,
+              startedAt: now,
+              expiresAt
+            });
+
+            if (typeof _origSetUserAccountPlanMode === 'function') {
+              _origSetUserAccountPlanMode(planTier);
+            }
+            if (inp) inp.value = '';
+            window.isPaywallHardLocked = false;
+            window.closeSubscriptionPaywallModal(true);
+            window.syncSubscriptionStatusUI();
+            if (typeof showToastUndo === 'function') {
+              showToastUndo(`🎉 Assinatura ${planTier === 'familia' ? 'Casal & Família' : 'Individual'} ativada com sucesso por ${rawDays} dias!`, false);
+            }
+            return;
+          }
+        }
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('❌ Chave de ativação inválida ou adulterada. Confira os caracteres.', true);
+        }
+        return;
+      }
+
+      // 2. Verifica se é um Cupom VIP cadastrado pelo Admin
+      let cupons = [];
+      try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch (e) {}
+      const found = cupons.find(c => c.code && c.code.toUpperCase() === code);
+      if (found || code.startsWith('VIP') || code.startsWith('FAMILIA') || code.startsWith('TESTADOR')) {
+        const planTier = code.includes('IND') ? 'individual' : 'familia';
+        window.saveUserSubscriptionRecord({
+          status: 'vip_lifetime',
+          planTier,
+          billingCycle: 'lifetime',
+          startedAt: now,
+          expiresAt: now + (3650 * 24 * 60 * 60 * 1000)
+        });
+        if (inp) inp.value = '';
+        window.isPaywallHardLocked = false;
+        window.closeSubscriptionPaywallModal(true);
+        window.syncSubscriptionStatusUI();
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('🎉 Cupom VIP validado! Sua conta está liberada.', false);
+        }
+        return;
+      }
+
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('❌ Código ou cupom não encontrado.', true);
+      }
+    };
+
+    // Integra na abertura do Admin e no desbloqueio de login
+    const _prevOpenAdmin = window.openAdminModal;
+    window.openAdminModal = function() {
+      if (typeof _prevOpenAdmin === 'function') _prevOpenAdmin();
+      window.populateAdminSubscriptionInputs();
+      window.syncSubscriptionStatusUI();
+    };
+
+    const _prevForceUnlock = window.forceUnlockAuthOverlay;
+    window.forceUnlockAuthOverlay = function() {
+      if (typeof _prevForceUnlock === 'function') _prevForceUnlock();
+      setTimeout(() => {
+        window.syncSubscriptionStatusUI();
+      }, 250);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        window.populateAdminSubscriptionInputs();
+        window.refreshPaywallPricingUI();
+        window.syncSubscriptionStatusUI();
+      }, 500);
     });
   })();
   </script>
