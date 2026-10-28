@@ -22,6 +22,8 @@ import '../models/transaction_model.dart';
 import '../providers/finance_provider.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'onboarding_survey_screen.dart';
+import '../services/native_channel_service.dart';
+import '../services/external_launcher_service.dart';
 
 class DashboardContainerScreen extends StatefulWidget {
   const DashboardContainerScreen({super.key});
@@ -74,8 +76,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
   Future<void> _checkPendingNativeMedTaken() async {
     try {
-      final res = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-          .invokeMethod('consumePendingMedTaken');
+      final res = await NativeChannelService.consumePendingMedTaken();
       if (res != null && res is Map) {
         final title = res['title']?.toString() ?? '';
         final slot = res['slot']?.toString() ?? '';
@@ -109,8 +110,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
   Future<void> _checkPendingShoppingAcceptance() async {
     try {
-      final res = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-          .invokeMethod('consumePendingShoppingAcceptance');
+      final res = await NativeChannelService.consumePendingShoppingAcceptance();
       if (res != null && res is Map) {
         final acceptedBy = res['acceptedBy']?.toString() ?? '';
         final requestedBy = res['requestedBy']?.toString() ?? '';
@@ -278,38 +278,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     Future.delayed(const Duration(seconds: 4), () {
       _isPickingExternalMedia = false;
     });
-    try {
-      final parsedUri = Uri.tryParse(url);
-      if (parsedUri != null &&
-          (parsedUri.host.contains('wa.me') ||
-           parsedUri.host.contains('whatsapp.com') ||
-           parsedUri.scheme == 'whatsapp')) {
-        String text = parsedUri.queryParameters['text'] ?? '';
-        String phone = parsedUri.queryParameters['phone'] ?? '';
-        if (phone.isEmpty && parsedUri.pathSegments.isNotEmpty) {
-          final first = parsedUri.pathSegments.first;
-          if (RegExp(r'^\d+$').hasMatch(first)) {
-            phone = first;
-          }
-        }
-        await _shareWhatsAppText(text, phone: phone);
-        return;
-      }
-
-      final uri = Uri.parse(url);
-      bool ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!ok) {
-        ok = await launchUrl(uri, mode: LaunchMode.platformDefault);
-      }
-      if (!ok) {
-        debugPrint('Não foi possível abrir externamente: $url');
-      }
-    } catch (e) {
-      debugPrint('Erro ao abrir link externo: $e');
-      try {
-        await launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
-      } catch (_) {}
-    }
+    await ExternalLauncherService.openExternalUrl(url);
   }
 
   Future<void> _shareWhatsAppText(String text, {String? phone}) async {
@@ -317,43 +286,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     Future.delayed(const Duration(seconds: 4), () {
       _isPickingExternalMedia = false;
     });
-    try {
-      String cleanPhone = (phone ?? '').replaceAll(RegExp(r'\D'), '');
-      if (cleanPhone.isNotEmpty && !cleanPhone.startsWith('55') && cleanPhone.length >= 10 && cleanPhone.length <= 11) {
-        cleanPhone = '55$cleanPhone';
-      }
-
-      final Map<String, String> queryParams = {'text': text};
-      if (cleanPhone.isNotEmpty) {
-        queryParams['phone'] = cleanPhone;
-      }
-
-      // Constrói URI nativa whatsapp://send diretamente com UTF-8 limpo
-      final Uri waUri = Uri(
-        scheme: 'whatsapp',
-        host: 'send',
-        queryParameters: queryParams,
-      );
-
-      bool ok = await launchUrl(waUri, mode: LaunchMode.externalApplication);
-      if (!ok) {
-        final Uri webUri = Uri.https(
-          'api.whatsapp.com',
-          '/send',
-          queryParams,
-        );
-        await launchUrl(webUri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
-      debugPrint("Erro ao compartilhar no WhatsApp: $e");
-    }
+    await ExternalLauncherService.shareWhatsAppText(text, phone: phone);
   }
 
   Future<void> _pickContactFromPhone() async {
     _isPickingExternalMedia = true;
     try {
-      final contact = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-          .invokeMapMethod<String, dynamic>('pickContact');
+      final contact = await NativeChannelService.pickContact();
       if (contact != null) {
         final name = (contact['name'] as String? ?? '').trim();
         final phone = (contact['phone'] as String? ?? '').trim();
@@ -441,12 +380,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           if (forceWithoutHeadphones) {
             _speakNativeTTS(text);
           } else {
-            bool hasHeadphones = false;
-            try {
-              hasHeadphones = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                      .invokeMethod<bool>('isHeadphonesConnected') ??
-                  false;
-            } catch (_) {}
+            final hasHeadphones = await NativeChannelService.isHeadphonesConnected();
             if (hasHeadphones) {
               _speakNativeTTS(text);
             } else {
@@ -461,16 +395,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'speak_alarm') {
         final text = data['text'] as String? ?? '';
         final alarmStyle = data['alarmStyle'] as String? ?? 'female';
-        bool audioEnabled = true;
-        try {
-          audioEnabled = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                  .invokeMethod<bool>('getMedAudioEnabled') ??
-              true;
-        } catch (_) {}
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('setAlarmStyle', {'style': alarmStyle});
-        } catch (_) {}
+        final audioEnabled = await NativeChannelService.getMedAudioEnabled();
+        await NativeChannelService.setAlarmStyle(alarmStyle);
         if (alarmStyle == 'vibrate') {
           try {
             HapticFeedback.vibrate();
@@ -481,27 +407,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           // Unifica a fala e o alarme no motor nativo para garantir voz feminina única e sem sobreposição
           try {
             _flutterTts?.stop();
-            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                .invokeMethod('speakAlarmNative', {'text': text});
+            await NativeChannelService.speakAlarmNative(text);
           } catch (_) {
             _speakNativeTTS(text, alarmStyle: 'female');
           }
         }
       } else if (action == 'set_med_audio_enabled') {
         final enabled = data['enabled'] as bool? ?? true;
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('setMedAudioEnabled', {'enabled': enabled});
-        } catch (e) {
-          debugPrint('Aviso ao sincronizar audio de remedios no nativo: $e');
-        }
+        await NativeChannelService.setMedAudioEnabled(enabled);
       } else if (action == 'check_headphones') {
-        bool hasHeadphones = false;
-        try {
-          hasHeadphones = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                  .invokeMethod<bool>('isHeadphonesConnected') ??
-              false;
-        } catch (_) {}
+        final hasHeadphones = await NativeChannelService.isHeadphonesConnected();
         _controller.runJavaScript("""
           if (typeof window.onNativeHeadphonesStatus === 'function') {
             window.onNativeHeadphonesStatus($hasHeadphones);
@@ -529,16 +444,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         """);
       } else if (action == 'set_med_speak_name_disabled') {
         final disabled = data['disabled'] as bool? ?? false;
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('setMedSpeakNameDisabled', {'disabled': disabled});
-        } catch (_) {}
+        await NativeChannelService.setMedSpeakNameDisabled(disabled);
       } else if (action == 'set_alarm_style') {
         final style = data['style'] as String? ?? 'female';
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('setAlarmStyle', {'style': style});
-        } catch (_) {}
+        await NativeChannelService.setAlarmStyle(style);
       } else if (action == 'show_notification' || action == 'show_standard_notification') {
         final title = data['title'] as String? ?? 'ControlPig';
         final body = data['body'] as String? ?? '';
@@ -548,27 +457,21 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         final id = data['id'] is int
             ? data['id'] as int
             : (DateTime.now().millisecondsSinceEpoch % 100000);
-        try {
-          if (action == 'show_standard_notification' || type == 'auth' || type == 'general') {
-            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                .invokeMethod('showStandardNotification', {
-              'title': title,
-              'body': body,
-              'id': id,
-            });
-          } else {
-            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                .invokeMethod('showNotification', {
-              'title': title,
-              'body': body,
-              'speech': speech,
-              'slot': slot,
-              'type': type,
-              'id': id,
-            });
-          }
-        } catch (e) {
-          debugPrint('Aviso ao disparar notificação nativa: $e');
+        if (action == 'show_standard_notification' || type == 'auth' || type == 'general') {
+          await NativeChannelService.showStandardNotification(
+            title: title,
+            body: body,
+            id: id,
+          );
+        } else {
+          await NativeChannelService.showNotification(
+            title: title,
+            body: body,
+            speech: speech,
+            slot: slot,
+            type: type,
+            id: id,
+          );
         }
       } else if (action == 'show_shopping_notification') {
         final title = data['title'] as String? ?? '🛒 Lista de Compras';
@@ -578,18 +481,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         final id = data['id'] is int
             ? data['id'] as int
             : (DateTime.now().millisecondsSinceEpoch % 100000);
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('showShoppingNotification', {
-            'title': title,
-            'body': body,
-            'sender': sender,
-            'partner': partner,
-            'id': id,
-          });
-        } catch (e) {
-          debugPrint('Aviso ao disparar notificação de compras nativa: $e');
-        }
+        await NativeChannelService.showShoppingNotification(
+          title: title,
+          body: body,
+          sender: sender,
+          partner: partner,
+          id: id,
+        );
       } else if (action == 'schedule_med_alarms') {
         final rawAlarms = data['alarms'];
         if (rawAlarms is List) {
@@ -597,12 +495,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
               .whereType<Map>()
               .map((m) => Map<String, dynamic>.from(m))
               .toList();
-          try {
-            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                .invokeMethod('scheduleMedAlarms', {'alarms': alarms});
-          } catch (e) {
-            debugPrint('Aviso ao agendar alarmes nativos: $e');
-          }
+          await NativeChannelService.scheduleMedAlarms(alarms);
         }
       } else if (action == 'schedule_pet_alarms') {
         final rawAlarms = data['alarms'];
@@ -611,12 +504,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
               .whereType<Map>()
               .map((m) => Map<String, dynamic>.from(m))
               .toList();
-          try {
-            await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                .invokeMethod('schedulePetAlarms', {'alarms': alarms});
-          } catch (e) {
-            debugPrint('Aviso ao agendar alarmes de pet nativos: $e');
-          }
+          await NativeChannelService.schedulePetAlarms(alarms);
         }
       } else if (action == 'open_app_settings') {
         _isPickingExternalMedia = true;
@@ -634,18 +522,10 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         """);
       } else if (action == 'stop_speak') {
         _flutterTts?.stop();
-        try {
-          await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('stopNativeAlarm');
-        } catch (_) {}
+        await NativeChannelService.stopNativeAlarm();
       } else if (action == 'update_launcher_icon') {
         final isPositive = data['isPositive'] as bool? ?? true;
-        try {
-          const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-              .invokeMethod('setLauncherIcon', {'isPositive': isPositive});
-        } catch (e) {
-          debugPrint('Aviso ao atualizar ícone dinâmico do launcher: $e');
-        }
+        await NativeChannelService.setLauncherIcon(isPositive);
       } else if (action == 'request_camera_permission') {
         var status = await Permission.camera.status;
         if (!status.isGranted) {
@@ -715,21 +595,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'save_image') {
         final base64Data = data['base64Data'] as String? ?? '';
         final filename = data['filename'] as String? ?? 'qrcode_coleira_pet.png';
-        try {
-          final ok = await const MethodChannel('com.antigravity.ctrlpig/launcher_icon')
-                  .invokeMethod<bool>('saveImage', {
-                'base64Data': base64Data,
-                'filename': filename,
-              }) ??
-              false;
-          _controller.runJavaScript("""
-            if (typeof window.onNativeImageSaved === 'function') {
-              window.onNativeImageSaved($ok);
-            }
-          """);
-        } catch (e) {
-          debugPrint('Aviso ao salvar imagem via MethodChannel: $e');
-        }
+        final ok = await NativeChannelService.saveImage(
+          base64Data: base64Data,
+          filename: filename,
+        );
+        _controller.runJavaScript("""
+          if (typeof window.onNativeImageSaved === 'function') {
+            window.onNativeImageSaved($ok);
+          }
+        """);
       } else if (action == 'authenticate_biometric' || action == 'authenticate_biometrics') {
         _isPickingExternalMedia = true;
         await _authenticateBiometric();
