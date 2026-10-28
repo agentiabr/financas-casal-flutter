@@ -192,4 +192,16 @@ class SpeechService extends ChangeNotifier {
       tipo: tipo,
     );
   }
+
+  @override
+  void dispose() {
+    _manualSessionActive = false;
+    _isListening = false;
+    _activeOnResult = null;
+    try {
+      _speech.cancel();
+      _speech.stop();
+    } catch (_) {}
+    super.dispose();
+  }
 }

@@ -17,10 +17,6 @@
     <!-- Armazenamento legado estrito para Android 10 ou inferior -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
-    <!-- Permissões de GPS e Geolocalização para Identificação de Estabelecimentos -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <!-- Recursos de Hardware de Câmera para Leitura de QR Code e Cupom Fiscal -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />

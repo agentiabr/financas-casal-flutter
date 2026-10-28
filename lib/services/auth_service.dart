@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/supabase_config.dart';
@@ -14,13 +15,22 @@ class AuthService extends ChangeNotifier {
   bool get isAuthenticated => currentUser != null;
   bool get isLoading => _isLoading;
 
+  StreamSubscription<AuthState>? _authSubscription;
+
   void _initAuthListener() {
     if (SupabaseConfig.isConfigured) {
-      SupabaseConfig.client.auth.onAuthStateChange.listen((data) {
+      _authSubscription = SupabaseConfig.client.auth.onAuthStateChange.listen((data) {
         _currentUser = data.session?.user;
         notifyListeners();
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    _authSubscription = null;
+    super.dispose();
   }
 
   // 1. Login com E-mail e Senha

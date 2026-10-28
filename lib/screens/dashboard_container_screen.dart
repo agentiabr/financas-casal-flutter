@@ -231,14 +231,13 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         onMessageReceived: _handleJavaScriptMessage,
       );
 
-    // Habilita permissão de geolocalização nativa e câmera no WebView Android
+    // Habilita configurações nativas no WebView Android sem solicitar permissão de GPS desnecessária
     final platform = _controller.platform;
     if (platform is AndroidWebViewController) {
       platform.setGeolocationPermissionsPromptCallbacks(
         onShowPrompt: (request) async {
-          final status = await Permission.location.request();
-          return GeolocationPermissionsResponse(
-            allow: status.isGranted,
+          return const GeolocationPermissionsResponse(
+            allow: false,
             retain: true,
           );
         },
@@ -523,17 +522,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       } else if (action == 'request_location_permission') {
-        var status = await Permission.location.status;
-        if (!status.isGranted) {
-          status = await Permission.location.request();
-        }
-        final granted = status.isGranted;
-        if (!granted) {
-          await openAppSettings();
-        }
         _controller.runJavaScript("""
           if (typeof window.onNativeLocationPermissionResult === 'function') {
-            window.onNativeLocationPermissionResult($granted);
+            window.onNativeLocationPermissionResult(false);
           }
         """);
       } else if (action == 'set_med_speak_name_disabled') {
@@ -961,7 +952,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           );
         },
       ),
-    );
+    ).whenComplete(() => codeCtrl.dispose());
   }
 
   Future<void> _startNativeVoiceRecording() async {

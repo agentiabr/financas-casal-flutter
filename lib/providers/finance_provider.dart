@@ -225,11 +225,12 @@ class FinanceProvider extends ChangeNotifier {
   }
 
   Timer? _realtimeDebounceTimer;
+  RealtimeChannel? _realtimeChannel;
 
   void _subscribeRealtime() {
     if (!SupabaseConfig.isConfigured) return;
     try {
-      SupabaseConfig.client
+      _realtimeChannel = SupabaseConfig.client
           .channel('public:transactions')
           .onPostgresChanges(
             event: PostgresChangeEvent.all,
@@ -252,6 +253,12 @@ class FinanceProvider extends ChangeNotifier {
   @override
   void dispose() {
     _realtimeDebounceTimer?.cancel();
+    if (_realtimeChannel != null && SupabaseConfig.isConfigured) {
+      try {
+        SupabaseConfig.client.removeChannel(_realtimeChannel!);
+        _realtimeChannel = null;
+      } catch (_) {}
+    }
     super.dispose();
   }
 }
