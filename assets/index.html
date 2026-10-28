@@ -4359,7 +4359,7 @@ html, body {
                 <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071933]"></span>
               </div>
               <div class="flex flex-col text-left leading-tight">
-                <span id="headerUserName" class="text-base font-black text-white tracking-tight">Rodrigo</span>
+                <span id="headerUserName" class="text-base font-black text-white tracking-tight">Usuário</span>
                 <span id="headerUserRoleBadge" class="text-[10px] text-blue-200 font-semibold tracking-wider uppercase">GESTOR FAMILIAR</span>
               </div>
             </div>
@@ -4652,7 +4652,7 @@ html, body {
             </div>
           </div>
 
-          <!-- CAIXA: GASTOS POR MEMBRO DA FAMÍLIA (RODRIGO VS MÁRCIA) -->
+          <!-- CAIXA: GASTOS POR MEMBRO DA FAMÍLIA (DINÂMICO) -->
           <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5">
@@ -4661,34 +4661,8 @@ html, body {
               <span id="labelTotalMembrosGasto" class="text-xs font-black text-slate-700">Total do Ciclo</span>
             </div>
 
-            <div class="space-y-3">
-              <!-- Rodrigo -->
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs">👨</span>
-                    <span class="font-extrabold text-slate-800">Rodrigo</span>
-                  </div>
-                  <span id="valGastoMembroRodrigo" class="font-black text-blue-700">R$ 0,00 (0%)</span>
-                </div>
-                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div id="barGastoMembroRodrigo" class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
-
-              <!-- Márcia -->
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1">
-                  <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-xs">👩</span>
-                    <span class="font-extrabold text-slate-800">Márcia</span>
-                  </div>
-                  <span id="valGastoMembroMarcia" class="font-black text-rose-600">R$ 0,00 (0%)</span>
-                </div>
-                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div id="barGastoMembroMarcia" class="h-full bg-rose-500 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
+            <div class="space-y-3" id="dashboardFamilyMembersSpendingList">
+              <p class="py-3 text-center text-xs text-slate-500">Nenhum gasto registrado neste ciclo.</p>
             </div>
           </div>
 
@@ -4742,32 +4716,8 @@ html, body {
               </button>
             </div>
 
-            <div class="space-y-2.5">
-              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
-                    🛒
-                  </div>
-                  <div>
-                    <span class="text-xs font-bold text-slate-900 block leading-tight">Supermercado Pão de Açúcar</span>
-                    <span class="text-[10px] text-slate-500">Hoje • Alimentação</span>
-                  </div>
-                </div>
-                <span class="text-xs font-black text-rose-600">- R$ 342,80</span>
-              </div>
-
-              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
-                    💼
-                  </div>
-                  <div>
-                    <span class="text-xs font-bold text-slate-900 block leading-tight">Salário Rodrigo</span>
-                    <span class="text-[10px] text-slate-500">Ontem • Receita Fixa</span>
-                  </div>
-                </div>
-                <span class="text-xs font-black text-emerald-600">+ R$ 6.200,00</span>
-              </div>
+            <div class="space-y-2.5" id="dashboardRecentTransactionsList">
+              <p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>
             </div>
           </div>
 
@@ -6756,27 +6706,30 @@ html, body {
       if (!user) {
         try { user = JSON.parse(localStorage.getItem('financas_auth_user') || 'null'); } catch(_) {}
       }
-      if (!user || !user.email) {
-        // Se não há usuário logado explícito, por padrão de compatibilidade histórica é Master
-        const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
-        if (!isLoggedOut && !localStorage.getItem('financas_cadastros_usuarios')) return true;
-        return false;
-      }
+      if (!user || !user.email) return false;
       const email = String(user.email).toLowerCase().trim();
       return email === 'rodrigocardosocn@gmail.com';
     }
     window.isCurrentUserMaster = isCurrentUserMaster;
 
-    function getUserTransactionsStorageKey(user) {
+    function getUserScopedStorageKey(prefix, user) {
       const u = user || window.currentUserSession;
-      if (!u || !u.email) return 'financas_transacoes_v4';
+      if (!u || !u.email) return prefix;
       const email = (u.email || '').toLowerCase().trim();
-      if (email === 'rodrigocardosocn@gmail.com') {
-        return 'financas_transacoes_v4';
-      }
-      return 'financas_transacoes_v4_' + email.replace(/[^a-z0-9]/g, '_');
+      if (email === 'rodrigocardosocn@gmail.com') return prefix;
+      return prefix + '_' + email.replace(/[^a-z0-9]/g, '_');
+    }
+    window.getUserScopedStorageKey = getUserScopedStorageKey;
+
+    function getUserTransactionsStorageKey(user) {
+      return getUserScopedStorageKey('financas_transacoes_v4', user);
     }
     window.getUserTransactionsStorageKey = getUserTransactionsStorageKey;
+
+    function getUserCardsStorageKey(user) {
+      return getUserScopedStorageKey('financas_credit_cards', user);
+    }
+    window.getUserCardsStorageKey = getUserCardsStorageKey;
 
     function saveTransactionsToLocalStorage() {
       const key = getUserTransactionsStorageKey();
@@ -7127,29 +7080,41 @@ html, body {
         } catch(e) {}
       }
 
-      // Lixeira
-      const savedTrash = localStorage.getItem('financas_trash_transactions');
+      // Lixeira (escopada por usuário)
+      const trashKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_trash_transactions') : 'financas_trash_transactions';
+      const savedTrash = localStorage.getItem(trashKey);
       if (savedTrash) {
         try { trashTransactions = JSON.parse(savedTrash); } catch(e) { trashTransactions = []; }
+      } else {
+        trashTransactions = [];
       }
       updateTrashBadge();
 
-      // Múltiplos Cofrinhos
-      const savedPiggies = localStorage.getItem('financas_piggies_list');
+      // Múltiplos Cofrinhos (escopada por usuário)
+      const piggiesKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_piggies_list') : 'financas_piggies_list';
+      const savedPiggies = localStorage.getItem(piggiesKey);
       if (savedPiggies) {
         try { piggies = JSON.parse(savedPiggies); } catch(e) {}
+      } else {
+        piggies = [];
       }
 
-      // Conferência de Saldo no Banco
-      const savedBankCheck = localStorage.getItem('financas_bank_check_data');
+      // Conferência de Saldo no Banco (escopada por usuário)
+      const bankCheckKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_bank_check_data') : 'financas_bank_check_data';
+      const savedBankCheck = localStorage.getItem(bankCheckKey);
       if (savedBankCheck) {
         try { bankCheckData = JSON.parse(savedBankCheck); } catch(e) {}
+      } else {
+        bankCheckData = {};
       }
 
-      // Cartões
-      const savedCards = localStorage.getItem('financas_credit_cards');
+      // Cartões de Crédito (escopados por usuário - isolamento total de novas contas)
+      const cardsKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey() : 'financas_credit_cards';
+      const savedCards = localStorage.getItem(cardsKey);
       if (savedCards) {
         try { creditCards = JSON.parse(savedCards); } catch(e) {}
+      } else {
+        creditCards = [];
       }
       if (!Array.isArray(creditCards) || creditCards.length === 0) {
         creditCards = [];
@@ -8335,7 +8300,7 @@ html, body {
       }
       let allSource = (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0)
         ? transactions
-        : (Array.isArray(window.transactions) ? window.transactions : INITIAL_TRANSACTIONS);
+        : (Array.isArray(window.transactions) ? window.transactions : ((typeof isCurrentUserMaster === 'function' && isCurrentUserMaster()) ? INITIAL_TRANSACTIONS : []));
 
       let list = allSource.filter(t => isTxInCycle(t, currentCycle));
       if (list.length === 0 && allSource.length > 0) {
@@ -9172,7 +9137,7 @@ html, body {
                       ✨ Modelo de Exemplo
                     </span>
                   </div>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rodrigo & Márcia</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${(window.currentUserSession && window.currentUserSession.nome) ? escapeHtml(window.currentUserSession.nome) : 'Meu Cartão'}</span>
                   <h4 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
                     <span>Nubank / Itaú / Seu Cartão</span>
                   </h4>
@@ -9323,7 +9288,8 @@ html, body {
 
       const newId = 'card_' + Date.now();
       creditCards.push({ id: newId, nome, titular, limite, digitos, cor });
-      localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
+      const cdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey() : 'financas_credit_cards';
+      localStorage.setItem(cdKey, JSON.stringify(creditCards));
 
       document.getElementById('newCardName').value = '';
       document.getElementById('newCardDigits').value = '';
@@ -9336,7 +9302,8 @@ html, body {
 
     function deleteCreditCard(cardId) {
       creditCards = creditCards.filter(c => c.id !== cardId);
-      localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
+      const cdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey() : 'financas_credit_cards';
+      localStorage.setItem(cdKey, JSON.stringify(creditCards));
       renderManageCardsList();
       populateCardSelectOptions();
       renderCreditCards();
@@ -9898,10 +9865,126 @@ html, body {
       renderInstallments();
       renderTransactionsTable();
       updateCharts();
+      renderFamilyMembersSpending(activeTxs);
+      refreshHomeRecentTransactions(activeTxs);
       if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
       if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
     }
+    function refreshHomeRecentTransactions(activeTxs) {
+      const container = document.getElementById('dashboardRecentTransactionsList');
+      if (!container) return;
+      const txs = (Array.isArray(activeTxs) && activeTxs.length > 0)
+        ? activeTxs
+        : ((Array.isArray(transactions) && transactions.length > 0) ? transactions.filter(t => isTxInCycle(t, currentCycle)) : []);
+
+      if (!txs || txs.length === 0) {
+        container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
+        return;
+      }
+
+      const sorted = [...txs].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 5);
+
+      const getCatIcon = (cat, tipo) => {
+        if (tipo === 'Receita') return { icon: '💼', bg: 'bg-emerald-100 text-emerald-700' };
+        const c = (cat || '').toLowerCase();
+        if (c.includes('supermercado') || c.includes('alimento') || c.includes('shake')) return { icon: '🛒', bg: 'bg-amber-100 text-amber-700' };
+        if (c.includes('farm') || c.includes('saúde') || c.includes('medic')) return { icon: '💊', bg: 'bg-rose-100 text-rose-700' };
+        if (c.includes('pet') || c.includes('ração')) return { icon: '🐾', bg: 'bg-indigo-100 text-indigo-700' };
+        if (c.includes('transporte') || c.includes('combustível') || c.includes('carro')) return { icon: '🚗', bg: 'bg-blue-100 text-blue-700' };
+        if (c.includes('moradia') || c.includes('condom') || c.includes('luz') || c.includes('aluguel')) return { icon: '🏠', bg: 'bg-purple-100 text-purple-700' };
+        return { icon: '💳', bg: 'bg-slate-100 text-slate-700' };
+      };
+
+      container.innerHTML = sorted.map(t => {
+        const isRec = t.tipo === 'Receita';
+        const info = getCatIcon(t.categoria, t.tipo);
+        const valFormatted = formatBRL(parseFloat(t.valor) || 0);
+        const sign = isRec ? '+ ' : '- ';
+        const color = isRec ? 'text-emerald-600' : 'text-rose-600';
+        const dataStr = t.data ? t.data.split('-').reverse().slice(0, 2).join('/') : '';
+        return `
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100/70 transition-all cursor-pointer" onclick="openEditTxModal(${t.id})">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl ${info.bg} flex items-center justify-center font-bold text-sm flex-shrink-0">
+                ${info.icon}
+              </div>
+              <div class="min-w-0">
+                <span class="text-xs font-bold text-slate-900 block leading-tight truncate">${escapeHtml(t.descricao || 'Lançamento')}</span>
+                <span class="text-[10px] text-slate-500">${dataStr ? dataStr + ' • ' : ''}${escapeHtml(t.categoria || 'Geral')}</span>
+              </div>
+            </div>
+            <span class="text-xs font-black ${color} flex-shrink-0 ml-2">${sign}${valFormatted}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFamilyMembersSpending(activeTxs) {
+      const container = document.getElementById('dashboardFamilyMembersSpendingList');
+      if (!container) return;
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+
+      let members = [];
+      if (isMaster) {
+        members.push({ id: 'rodrigo', nome: 'Rodrigo', avatar: '👨', color: 'blue' });
+        members.push({ id: 'marcia', nome: 'Márcia', avatar: '👩', color: 'rose' });
+        din.forEach((m, idx) => {
+          members.push({ id: m.id, nome: m.nome, avatar: m.avatar || '👤', color: idx % 2 === 0 ? 'emerald' : 'purple' });
+        });
+      } else {
+        const uNome = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
+        const uAvatar = (window.currentUserSession && window.currentUserSession.avatar) || '👤';
+        members.push({ id: 'titular', nome: uNome, avatar: uAvatar, color: 'blue' });
+        din.forEach((m, idx) => {
+          members.push({ id: m.id, nome: m.nome, avatar: m.avatar || '👤', color: idx % 2 === 0 ? 'rose' : 'emerald' });
+        });
+      }
+
+      const txs = Array.isArray(activeTxs) ? activeTxs : [];
+      const despesasTxs = txs.filter(t => t && t.tipo !== 'Receita');
+      const totalDespesas = despesasTxs.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
+
+      const colorMap = {
+        blue: { bg: 'bg-blue-100', bar: 'bg-blue-600', text: 'text-blue-700' },
+        rose: { bg: 'bg-rose-100', bar: 'bg-rose-500', text: 'text-rose-600' },
+        emerald: { bg: 'bg-emerald-100', bar: 'bg-emerald-600', text: 'text-emerald-600' },
+        purple: { bg: 'bg-purple-100', bar: 'bg-purple-600', text: 'text-purple-600' }
+      };
+
+      container.innerHTML = members.map(m => {
+        const cStyle = colorMap[m.color] || colorMap.blue;
+        const mSpending = despesasTxs.filter(t => {
+          const resp = (t.responsavel || '').toLowerCase().trim();
+          const target = m.nome.toLowerCase().trim();
+          if (resp === target) return true;
+          if (m.id === 'rodrigo' && resp === 'rodrigo') return true;
+          if (m.id === 'marcia' && (resp === 'márcia' || resp === 'marcia')) return true;
+          if (m.id === 'titular' && (resp === 'titular' || resp === 'comum' || resp === target)) return true;
+          return false;
+        }).reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
+
+        const pct = totalDespesas > 0 ? Math.round((mSpending / totalDespesas) * 100) : 0;
+        const valFmt = formatBRL(mSpending);
+
+        return `
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full ${cStyle.bg} flex items-center justify-center text-xs">${m.avatar}</span>
+                <span class="font-extrabold text-slate-800">${escapeHtml(m.nome)}</span>
+              </div>
+              <span class="font-black ${cStyle.text}">${valFmt} (${pct}%)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full ${cStyle.bar} rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
 
     function updateCharts() {
       const activeTxs = transactions.filter(t => t.ciclo === currentCycle && t.tipo !== 'Receita');
@@ -14729,10 +14812,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
     function logoutUser() {
       currentUserSession = null;
       window.currentUserSession = null;
+      transactions = [];
+      window.transactions = [];
+      creditCards = [];
+      piggies = [];
+      trashTransactions = [];
       localStorage.removeItem('financas_auth_user');
       localStorage.removeItem('financas_usuario_ativo');
       localStorage.setItem('financas_auth_logged_out', 'true');
       sessionStorage.removeItem('pigctrl_session_authenticated');
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_signout' }));
@@ -14769,8 +14858,13 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         // Usuário padrão / sócio / família: ACESSO EXCLUSIVO AO PAINEL DO USUÁRIO
         if (masterView) masterView.classList.add('hidden');
         if (userView) userView.classList.remove('hidden');
-        if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Usuário';
+        if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Membro da Família';
         if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
+        const demoBanner = document.getElementById('adminUserDemoBanner');
+        if (demoBanner) {
+          if (isDemo) demoBanner.classList.remove('hidden');
+          else demoBanner.classList.add('hidden');
+        }
         if (typeof window.renderAdminUserCompactModulesToggle === 'function') {
           window.renderAdminUserCompactModulesToggle();
         }
@@ -15163,10 +15257,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     function getDynamicFamilyMembers() {
       try {
-        return JSON.parse(localStorage.getItem('financas_membros_familia') || '[]');
+        const k = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_membros_familia') : 'financas_membros_familia';
+        return JSON.parse(localStorage.getItem(k) || '[]');
       } catch(e) {
         return [];
       }
+    }
+
+    function saveDynamicFamilyMembers(membros) {
+      const k = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_membros_familia') : 'financas_membros_familia';
+      try { localStorage.setItem(k, JSON.stringify(membros)); } catch(e) {}
     }
 
     function renderDynamicFamilyMembers() {
@@ -15588,7 +15688,11 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       const limitNotice = document.getElementById('formAddUserLimitReached');
 
       const din = getDynamicFamilyMembers();
-      const totalPreenchidas = 2 + din.length;
+      const isMasterUser = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const titularNome = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
+      const titularAvatar = (window.currentUserSession && window.currentUserSession.avatar) || '👤';
+      const baseCount = isMasterUser ? 2 : 1;
+      const totalPreenchidas = baseCount + din.length;
 
       if (badgeCount) {
         badgeCount.textContent = `${totalPreenchidas} de 5 preenchidas`;
@@ -15596,47 +15700,77 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
       // 1. Grade Visual dos 5 Slots
       if (slotsGrid) {
-        let gridHtml = `
-          <!-- Vaga 1: Rodrigo -->
-          <div class="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 border border-blue-300 dark:border-blue-700">
-            <span class="block text-sm">👨</span>
-            <span class="truncate block font-black">Rodrigo</span>
-            <span class="text-[8px] opacity-75">Titular</span>
-          </div>
+        let gridHtml = '';
+        if (isMasterUser) {
+          gridHtml += `
+            <!-- Vaga 1: Rodrigo -->
+            <div class="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 border border-blue-300 dark:border-blue-700">
+              <span class="block text-sm">👨</span>
+              <span class="truncate block font-black">Rodrigo</span>
+              <span class="text-[8px] opacity-75">Titular</span>
+            </div>
 
-          <!-- Vaga 2: Márcia -->
-          <div class="p-1.5 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-900 dark:text-rose-200 border border-rose-300 dark:border-rose-700">
-            <span class="block text-sm">👩</span>
-            <span class="truncate block font-black">Márcia</span>
-            <span class="text-[8px] opacity-75">Casal</span>
-          </div>
-        `;
-
-        // Slots 3, 4 e 5 (Gratuitos)
-        for (let i = 0; i < 3; i++) {
-          if (din[i]) {
-            gridHtml += `
-              <div class="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
-                <span class="block text-sm">${din[i].avatar || '👤'}</span>
-                <span class="truncate block font-black">${escapeHtml(din[i].nome)}</span>
-                <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
-              </div>
-            `;
-          } else {
-            gridHtml += `
-              <div class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-dashed border-slate-300 dark:border-slate-700">
-                <span class="block text-sm">➕</span>
-                <span class="truncate block font-bold">Livre</span>
-                <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
-              </div>
-            `;
+            <!-- Vaga 2: Márcia -->
+            <div class="p-1.5 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-900 dark:text-rose-200 border border-rose-300 dark:border-rose-700">
+              <span class="block text-sm">👩</span>
+              <span class="truncate block font-black">Márcia</span>
+              <span class="text-[8px] opacity-75">Casal</span>
+            </div>
+          `;
+          for (let i = 0; i < 3; i++) {
+            if (din[i]) {
+              gridHtml += `
+                <div class="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                  <span class="block text-sm">${din[i].avatar || '👤'}</span>
+                  <span class="truncate block font-black">${escapeHtml(din[i].nome)}</span>
+                  <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
+                </div>
+              `;
+            } else {
+              gridHtml += `
+                <div class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-dashed border-slate-300 dark:border-slate-700">
+                  <span class="block text-sm">➕</span>
+                  <span class="truncate block font-bold">Livre</span>
+                  <span class="text-[8px] opacity-75">Vaga ${3 + i}</span>
+                </div>
+              `;
+            }
+          }
+        } else {
+          // Conta de novo usuário/família: Vaga 1 é o Titular logado
+          gridHtml += `
+            <div class="p-1.5 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-200 border border-blue-300 dark:border-blue-700">
+              <span class="block text-sm">${titularAvatar}</span>
+              <span class="truncate block font-black">${escapeHtml(titularNome.split(' ')[0])}</span>
+              <span class="text-[8px] opacity-75">Titular</span>
+            </div>
+          `;
+          for (let i = 0; i < 4; i++) {
+            if (din[i]) {
+              gridHtml += `
+                <div class="p-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                  <span class="block text-sm">${din[i].avatar || '👤'}</span>
+                  <span class="truncate block font-black">${escapeHtml(din[i].nome)}</span>
+                  <span class="text-[8px] opacity-75">Vaga ${2 + i}</span>
+                </div>
+              `;
+            } else {
+              gridHtml += `
+                <div class="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-dashed border-slate-300 dark:border-slate-700">
+                  <span class="block text-sm">➕</span>
+                  <span class="truncate block font-bold">Livre</span>
+                  <span class="text-[8px] opacity-75">Vaga ${2 + i}</span>
+                </div>
+              `;
+            }
           }
         }
         slotsGrid.innerHTML = gridHtml;
       }
 
       // 2. Trava de limite de 5 vagas
-      if (din.length >= 3) {
+      const maxDyn = isMasterUser ? 3 : 4;
+      if (din.length >= maxDyn) {
         if (formFields) formFields.classList.add('hidden');
         if (limitNotice) limitNotice.classList.remove('hidden');
       } else {
@@ -15647,29 +15781,45 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       // 3. Lista detalhada de membros
       if (!listEl) return;
 
-      let html = `
-        <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-extrabold">👨</div>
-            <div>
-              <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Rodrigo</span>
-              <span class="block text-[10px] text-slate-500">Administrador Master (Titular)</span>
+      let html = '';
+      if (isMasterUser) {
+        html += `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-extrabold">👨</div>
+              <div>
+                <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Rodrigo</span>
+                <span class="block text-[10px] text-slate-500">Administrador Master (Titular)</span>
+              </div>
             </div>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Vaga 1 (Casal)</span>
           </div>
-          <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Vaga 1 (Casal)</span>
-        </div>
 
-        <div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-sm font-extrabold">👩</div>
-            <div>
-              <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Márcia</span>
-              <span class="block text-[10px] text-slate-500">Administradora (Cônjuge)</span>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center text-sm font-extrabold">👩</div>
+              <div>
+                <span class="block text-xs font-black text-slate-800 dark:text-slate-200">Márcia</span>
+                <span class="block text-[10px] text-slate-500">Administradora (Cônjuge)</span>
+              </div>
             </div>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 font-bold">Vaga 2 (Casal)</span>
           </div>
-          <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 font-bold">Vaga 2 (Casal)</span>
-        </div>
-      `;
+        `;
+      } else {
+        html += `
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-extrabold">${titularAvatar}</div>
+              <div>
+                <span class="block text-xs font-black text-slate-800 dark:text-slate-200">${escapeHtml(titularNome)}</span>
+                <span class="block text-[10px] text-slate-500">Titular da Conta</span>
+              </div>
+            </div>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold">Vaga 1 (Titular)</span>
+          </div>
+        `;
+      }
 
       din.forEach((m, idx) => {
         html += `
@@ -23050,12 +23200,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
       </div>
-    </div>
 
-      <!-- 2. PAINEL COMPACTO DO USUÁRIO (VISÃO CONVIDADO / DEMONSTRAÇÃO) -->
+      <!-- 2. PAINEL COMPACTO DO USUÁRIO (VISÃO CONVIDADO / FAMÍLIA) -->
       <div id="adminUserCompactView" class="mt-4 space-y-3.5 hidden">
         <!-- Banner de Status Modo Usuário -->
-        <div class="p-3 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-between gap-2">
+        <div id="adminUserDemoBanner" class="p-3 bg-amber-500/15 border border-amber-500/40 rounded-2xl flex items-center justify-between gap-2 hidden">
           <div class="flex items-center gap-2">
             <span class="text-xl">👤</span>
             <div>
@@ -23132,6 +23281,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
       </div>
     </div>
+  </div>
 
       <!-- ============================================================== -->
   <!-- MODAL: SAIR / FEEDBACK BETA / DESCONECTAR DA CONTA                -->
@@ -27721,7 +27871,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         card.vencimento = vencimento;
       }
 
-      localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
+      const editCdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey() : 'financas_credit_cards';
+      localStorage.setItem(editCdKey, JSON.stringify(creditCards));
       closeEditCreditCardModal();
       renderCreditCards();
       if (typeof updateDashboard === 'function') updateDashboard();
@@ -27734,7 +27885,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (!confirm(`Deseja realmente apagar o cartão "${card.nome}" da carteira?`)) return;
 
       creditCards = creditCards.filter(c => c.id !== cardId);
-      localStorage.setItem('financas_credit_cards', JSON.stringify(creditCards));
+      const delCdKey = typeof getUserCardsStorageKey === 'function' ? getUserCardsStorageKey() : 'financas_credit_cards';
+      localStorage.setItem(delCdKey, JSON.stringify(creditCards));
       renderCreditCards();
       if (typeof updateDashboard === 'function') updateDashboard();
       showToastUndo(`Cartão "${card.nome}" removido.`, false);
@@ -28947,6 +29099,9 @@ Frase falada: "${spokenText}"`;
     if (localStorage.getItem('ctrlpig_demo_user_mode') === 'true') {
       console.log('[CtrlPig] Modo demo ativo: bloqueando envio de snapshot para a nuvem');
       return;
+    }
+    if (typeof isCurrentUserMaster === 'function' && !isCurrentUserMaster()) {
+      return; // Apenas Rodrigo Cardoso salva snapshot na row master 999999
     }
     try {
       const cleanTxs = (Array.isArray(transactions) ? transactions : [])
@@ -33376,6 +33531,9 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   // Verifica automaticamente a cada 20 segundos se o parceiro(a) enviou uma nova Lista de Compras na nuvem
   window.checkIncomingCloudShoppingNotification = async function() {
+    if (typeof isCurrentUserMaster === 'function' && !isCurrentUserMaster()) {
+      return; // Impede vazamento da lista de compras do Rodrigo/Márcia para novas contas
+    }
     try {
       const resp = await fetch(`${SUPABASE_URL_V206}/rest/v1/transactions?id=eq.${SNAPSHOT_ROW_ID_V206}&select=descricao`, {
         method: 'GET',
@@ -37852,7 +38010,7 @@ window.openHealthMedsModal = function() {
         if (uKey) {
           try { uTxs = JSON.parse(localStorage.getItem(uKey) || '[]'); } catch(_) {}
         }
-        if (!uTxs.length && Array.isArray(window.transactions)) uTxs = window.transactions;
+        // Isolamento estrito de conta: nova conta inicia com 0 lançamentos
         return uTxs;
       }
 
@@ -39990,7 +40148,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       let allTxs = (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0)
         ? transactions
-        : (Array.isArray(window.transactions) ? window.transactions : INITIAL_TRANSACTIONS);
+        : (Array.isArray(window.transactions) ? window.transactions : ((typeof isCurrentUserMaster === 'function' && isCurrentUserMaster()) ? INITIAL_TRANSACTIONS : []));
 
       let txs = allTxs.filter(t => isTxInCycle(t, currentCycle));
       if (txs.length === 0 && allTxs.length > 0) {
