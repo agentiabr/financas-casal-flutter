@@ -37739,23 +37739,44 @@ window.openHealthMedsModal = function() {
           <p class="text-[11px] text-blue-200">Histórico de meses e fechamentos</p>
         </div>
       </div>
-      <button type="button" onclick="openSectionLampInsight('ciclos')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Ciclos Financeiros">
-        <span>💡</span>
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="openSectionLampInsight('ciclos')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Ciclos Financeiros">
+          <span>💡</span>
+        </button>
+        <button type="button" onclick="toggleCyclesTrashSection()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-rose-300 hover:text-white transition-all relative cursor-pointer active:scale-95" title="Lixeira de Ciclos (Restaurar ciclos excluídos)">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span id="cyclesTrashCountBadge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-[#071933]">0</span>
+        </button>
+      </div>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
-        <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
-        <button type="button" onclick="openCreateNewCycleModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-[11px] border border-slate-200/80 dark:border-slate-700/80 transition-all active:scale-95 cursor-pointer shadow-2xs" title="Iniciar novo ciclo mensal">
-          <i data-lucide="plus" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"></i>
-          <span>Novo Ciclo</span>
-        </button>
-      </div>
+          <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
+          <button type="button" onclick="openCreateNewCycleModal()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition-all active:scale-95 cursor-pointer shadow-xs" title="Iniciar novo ciclo mensal">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Novo Ciclo</span>
+          </button>
+        </div>
         <div id="cyclesListContainer" class="space-y-2">
           <!-- Injetado dinamicamente via renderCyclesList() -->
         </div>
+      </div>
+
+      <!-- LIXEIRA DE CICLOS (OPÇÃO DE RESTAURAR CICLOS DELETADOS) -->
+      <div id="cyclesTrashCardContainer" class="hidden bg-white rounded-3xl p-4 shadow-sm border-2 border-rose-200/90 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🗑️</span>
+            <div>
+              <h4 class="font-black text-xs uppercase tracking-wider text-rose-700">Lixeira de Ciclos</h4>
+              <p class="text-[10px] text-slate-500">Restaure ciclos excluídos com todos os seus lançamentos</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleCyclesTrashSection(false)" class="text-[11px] font-bold text-slate-400 hover:text-slate-700 cursor-pointer">Fechar</button>
+        </div>
+        <div id="cyclesTrashListContainer" class="space-y-2"></div>
       </div>
     </div>
   </div>
@@ -37777,48 +37798,18 @@ window.openHealthMedsModal = function() {
       <form onsubmit="handleSaveNewCycle(event)" class="space-y-3.5 text-xs">
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Mês do Ciclo *</label>
-            <select id="selectStandardCycleMonth" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
-              <option value="0">Janeiro</option>
-              <option value="1">Fevereiro</option>
-              <option value="2">Março</option>
-              <option value="3">Abril</option>
-              <option value="4">Maio</option>
-              <option value="5">Junho</option>
-              <option value="6">Julho</option>
-              <option value="7">Agosto</option>
-              <option value="8">Setembro</option>
-              <option value="9">Outubro</option>
-              <option value="10" selected>Novembro</option>
-              <option value="11">Dezembro</option>
-            </select>
+            <label class="font-bold text-slate-700 block mb-1">Data de Início *</label>
+            <input type="date" id="inputStandardCycleStartDate" required value="2026-11-05" onchange="onStandardCycleStartChanged()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
           </div>
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Ano *</label>
-            <select id="selectStandardCycleYear" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
-              <option value="2026" selected>2026</option>
-              <option value="2027">2027</option>
-              <option value="2028">2028</option>
-            </select>
+            <label class="font-bold text-slate-700 block mb-1">Data de Término *</label>
+            <input type="date" id="inputStandardCycleEndDate" required value="2026-12-04" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Dia de Início do Ciclo *</label>
-            <select id="selectStandardCycleStartDay" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
-              <option value="1">Dia 01 (01 a fim do mês)</option>
-              <option value="5" selected>Dia 05 (05 a 04 do mês seg.)</option>
-              <option value="10">Dia 10 (10 a 09 do mês seg.)</option>
-              <option value="15">Dia 15 (15 a 14 do mês seg.)</option>
-              <option value="20">Dia 20 (20 a 19 do mês seg.)</option>
-              <option value="25">Dia 25 (25 a 24 do mês seg.)</option>
-            </select>
-          </div>
-          <div>
-            <label class="font-bold text-slate-700 block mb-1">Meta / Teto (Opcional)</label>
-            <input type="text" id="inputNewCycleBudget" placeholder="Ex: R$ 5.500,00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-semibold text-slate-900">
-          </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Meta / Teto de Gastos (Opcional)</label>
+          <input type="text" id="inputNewCycleBudget" placeholder="Ex: R$ 5.500,00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-semibold text-slate-900">
         </div>
 
         <!-- Prévia Visual Padronizada (Bloqueada contra nomes aleatórios) -->
@@ -38388,40 +38379,70 @@ window.openHealthMedsModal = function() {
     return String(tagStr).replace(/\s*-\s*\d{4}$/, '').replace(/\s+\d{4}$/, '').trim();
   };
 
-  window.computeStandardCycleData = function(monthIdx, yearNum, startDayNum) {
-    const m = Math.max(0, Math.min(11, parseInt(monthIdx, 10) || 0));
-    const y = parseInt(yearNum, 10) || 2026;
-    const d = parseInt(startDayNum, 10) || 5;
-    const monthName = MONTHS_FULL_PT[m];
-    const mShort = MONTHS_SHORT_PT[m];
-    const name = `${monthName} ${y}`;
+  window.computeStandardCycleFromDates = function(startIso, endIso) {
+    const parseIso = (iso, fallback) => {
+      const parts = String(iso || fallback).split('-');
+      if (parts.length !== 3) return { y: 2026, m: 10, d: 5 };
+      return {
+        y: parseInt(parts[0], 10) || 2026,
+        m: Math.max(0, Math.min(11, (parseInt(parts[1], 10) || 11) - 1)),
+        d: Math.max(1, Math.min(31, parseInt(parts[2], 10) || 5))
+      };
+    };
+    const s = parseIso(startIso, '2026-11-05');
+    const e = parseIso(endIso, '2026-12-04');
 
-    let subtitle = '';
-    let fullTag = '';
-    if (d === 1) {
-      const lastDay = new Date(y, m + 1, 0).getDate();
-      const ddEnd = String(lastDay).padStart(2, '0');
-      subtitle = `01/${mShort} a ${ddEnd}/${mShort}`;
-      fullTag = `${subtitle} - ${y}`;
-    } else {
-      const nextM = (m + 1) % 12;
-      const nextY = m === 11 ? y + 1 : y;
-      const nextMShort = MONTHS_SHORT_PT[nextM];
-      const ddStart = String(d).padStart(2, '0');
-      const ddEnd = String(d - 1).padStart(2, '0');
-      subtitle = `${ddStart}/${mShort} a ${ddEnd}/${nextMShort}`;
-      fullTag = `${subtitle} - ${nextY}`;
+    const monthName = MONTHS_FULL_PT[s.m];
+    const sShort = MONTHS_SHORT_PT[s.m];
+    const eShort = MONTHS_SHORT_PT[e.m];
+    const ddStart = String(s.d).padStart(2, '0');
+    const ddEnd = String(e.d).padStart(2, '0');
+
+    const name = `${monthName} ${s.y}`;
+    const subtitle = `${ddStart}/${sShort} a ${ddEnd}/${eShort}`;
+    const fullTag = `${subtitle} - ${e.y}`;
+    const key = `${sShort.toLowerCase()}_${s.y}_${ddStart}_${ddEnd}${eShort.toLowerCase()}`;
+    return {
+      key,
+      name,
+      subtitle,
+      tag: fullTag,
+      startIso: `${s.y}-${String(s.m + 1).padStart(2, '0')}-${ddStart}`,
+      endIso: `${e.y}-${String(e.m + 1).padStart(2, '0')}-${ddEnd}`,
+      yearNum: s.y,
+      monthNum: s.m + 1
+    };
+  };
+
+  window.onStandardCycleStartChanged = function() {
+    const startEl = document.getElementById('inputStandardCycleStartDate');
+    const endEl = document.getElementById('inputStandardCycleEndDate');
+    if (startEl && endEl && startEl.value) {
+      const parts = startEl.value.split('-');
+      if (parts.length === 3) {
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        let targetDate;
+        if (d === 1) {
+          targetDate = new Date(y, m + 1, 0);
+        } else {
+          targetDate = new Date(y, m + 1, d - 1);
+        }
+        const ey = targetDate.getFullYear();
+        const em = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const ed = String(targetDate.getDate()).padStart(2, '0');
+        endEl.value = `${ey}-${em}-${ed}`;
+      }
     }
-    const key = `${mShort.toLowerCase()}_${y}_d${d}`;
-    return { key, name, subtitle, tag: fullTag };
+    window.updateStandardCyclePreview();
   };
 
   window.updateStandardCyclePreview = function() {
-    const mEl = document.getElementById('selectStandardCycleMonth');
-    const yEl = document.getElementById('selectStandardCycleYear');
-    const dEl = document.getElementById('selectStandardCycleStartDay');
-    if (!mEl || !yEl || !dEl) return;
-    const info = window.computeStandardCycleData(mEl.value, yEl.value, dEl.value);
+    const startEl = document.getElementById('inputStandardCycleStartDate');
+    const endEl = document.getElementById('inputStandardCycleEndDate');
+    if (!startEl || !endEl) return;
+    const info = window.computeStandardCycleFromDates(startEl.value, endEl.value);
     const titlePrev = document.getElementById('previewStandardCycleTitle');
     const subPrev = document.getElementById('previewStandardCycleSub');
     const nameInp = document.getElementById('inputNewCycleName');
@@ -38434,12 +38455,33 @@ window.openHealthMedsModal = function() {
     if (endInp) endInp.value = info.subtitle.split(' a ')[1] || '';
   };
 
+  window.getTrashedCyclesMap = function() {
+    try {
+      const raw = localStorage.getItem('ctrlpig_trashed_cycles_v1');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch (e) {}
+    return {};
+  };
+
+  window.saveTrashedCyclesMap = function(mapObj) {
+    try {
+      localStorage.setItem('ctrlpig_trashed_cycles_v1', JSON.stringify(mapObj || {}));
+    } catch (e) {}
+  };
+
   // Carrega ciclos customizados salvos no localStorage
   try {
     const savedCustomCycles = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
     if (savedCustomCycles && typeof savedCustomCycles === 'object') {
       Object.assign(window.appCyclesData, savedCustomCycles);
     }
+    const trashedMap = window.getTrashedCyclesMap();
+    Object.keys(trashedMap).forEach(tk => {
+      delete window.appCyclesData[tk];
+    });
   } catch (e) {}
 
   // 1. Alternância de Ciclo e Recálculo Global
@@ -38474,7 +38516,99 @@ window.openHealthMedsModal = function() {
     }
   };
 
-  // 2. Renderizar Lista de Ciclos no Modal (Padronizado: Mês Ano em cima e xx/Mmm a xx/Mmm abaixo)
+  window.toggleCyclesTrashSection = function(forceShow) {
+    const box = document.getElementById('cyclesTrashCardContainer');
+    if (!box) return;
+    const show = typeof forceShow === 'boolean' ? forceShow : box.classList.contains('hidden');
+    box.classList.toggle('hidden', !show);
+    if (show) {
+      window.renderCyclesList();
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  window.moveCycleToTrash = function(cycleKey) {
+    const c = window.appCyclesData[cycleKey];
+    if (!c) return;
+    const allRemainingKeys = Object.keys(window.appCyclesData).filter(k => k !== cycleKey);
+    if (allRemainingKeys.length === 0) {
+      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Mantenha pelo menos 1 ciclo ativo no aplicativo.', false);
+      return;
+    }
+
+    const trashedMap = window.getTrashedCyclesMap();
+    trashedMap[cycleKey] = { ...c, deletedAt: new Date().toISOString() };
+    window.saveTrashedCyclesMap(trashedMap);
+
+    delete window.appCyclesData[cycleKey];
+    try {
+      const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+      if (savedCustom[cycleKey]) {
+        delete savedCustom[cycleKey];
+        localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustom));
+      }
+    } catch (e) {}
+
+    if (window.currentActiveCycleKey === cycleKey) {
+      const nextKey = allRemainingKeys[0];
+      window.currentActiveCycleKey = nextKey;
+      localStorage.setItem('ctrlpig_active_cycle', nextKey);
+      const nextC = window.appCyclesData[nextKey];
+      if (nextC) {
+        window.transactions = nextC.transactions;
+        const heroTitle = document.getElementById('heroCycleTitle');
+        const heroTag = document.getElementById('heroCycleTag');
+        if (heroTitle) heroTitle.textContent = nextC.name || 'Outubro 2026';
+        if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(nextC.subtitle || nextC.tag);
+        if (typeof updateMetrics === 'function') updateMetrics();
+        if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+      }
+    }
+
+    window.renderCyclesList();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`🗑️ Ciclo "${c.name}" movido para a Lixeira de Ciclos!`, false);
+    }
+  };
+
+  window.restoreCycleFromTrash = function(cycleKey) {
+    const trashedMap = window.getTrashedCyclesMap();
+    const restored = trashedMap[cycleKey];
+    if (!restored) return;
+    delete restored.deletedAt;
+    window.appCyclesData[cycleKey] = restored;
+
+    delete trashedMap[cycleKey];
+    window.saveTrashedCyclesMap(trashedMap);
+
+    const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
+    if (!baseKeys.includes(cycleKey)) {
+      try {
+        const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+        savedCustom[cycleKey] = restored;
+        localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustom));
+      } catch (e) {}
+    }
+
+    window.renderCyclesList();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`♻️ Ciclo "${restored.name}" restaurado com sucesso!`, false);
+    }
+  };
+
+  window.permanentlyDeleteCycleFromTrash = function(cycleKey) {
+    const trashedMap = window.getTrashedCyclesMap();
+    if (!trashedMap[cycleKey]) return;
+    const name = trashedMap[cycleKey].name || cycleKey;
+    delete trashedMap[cycleKey];
+    window.saveTrashedCyclesMap(trashedMap);
+    window.renderCyclesList();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Ciclo "${name}" excluído permanentemente.`, false);
+    }
+  };
+
+  // 2. Renderizar Lista de Ciclos no Modal + Lixeira de Ciclos
   window.renderCyclesList = function() {
     const container = document.getElementById('cyclesListContainer');
     if (!container) return;
@@ -38482,7 +38616,7 @@ window.openHealthMedsModal = function() {
     const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
     const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
     const customKeys = Object.keys(window.appCyclesData || {}).filter(k => !baseKeys.includes(k));
-    const allKeys = isMaster ? [...customKeys.reverse(), ...baseKeys] : (customKeys.length > 0 ? [...customKeys.reverse(), 'out_2026'] : ['out_2026']);
+    const allKeys = (isMaster ? [...customKeys.reverse(), ...baseKeys] : (customKeys.length > 0 ? [...customKeys.reverse(), 'out_2026'] : ['out_2026'])).filter(k => !!window.appCyclesData[k]);
 
     let html = '';
     allKeys.forEach(k => {
@@ -38495,24 +38629,69 @@ window.openHealthMedsModal = function() {
       const shortSub = window.formatCycleShortSubtitle(c.subtitle || c.tag);
 
       html += `
-        <div onclick="setActiveCycle('${k}')" class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${isCurrent ? 'bg-blue-50/80 border-blue-500 shadow-xs' : 'bg-slate-50 border-slate-200/70 hover:border-blue-300'}">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl ${isCurrent ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700'} flex items-center justify-center font-black text-sm">
+        <div onclick="setActiveCycle('${k}')" class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-2 ${isCurrent ? 'bg-blue-50/80 border-blue-500 shadow-xs' : 'bg-slate-50 border-slate-200/70 hover:border-blue-300'}">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl ${isCurrent ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700'} flex items-center justify-center font-black text-sm flex-shrink-0">
               ${isCurrent ? '✓' : '📅'}
             </div>
-            <div>
-              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block leading-tight">${c.name}</strong>
+            <div class="min-w-0">
+              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block leading-tight truncate">${c.name}</strong>
               <span class="text-[11px] text-slate-500 font-semibold block mt-0.5">${shortSub}</span>
             </div>
           </div>
-          <div class="text-right">
-            <span class="text-xs font-black block text-rose-600">- R$ ${desp.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-            <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${rec.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+          <div class="flex items-center gap-2.5 flex-shrink-0">
+            <div class="text-right">
+              <span class="text-xs font-black block text-rose-600">- R$ ${desp.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+              <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${rec.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            </div>
+            <button type="button" onclick="event.stopPropagation(); moveCycleToTrash('${k}')" class="w-8 h-8 rounded-xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200/80 flex items-center justify-center transition-colors cursor-pointer" title="Mover ciclo para a Lixeira">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
         </div>
       `;
     });
     container.innerHTML = html;
+
+    // Atualiza Lixeira de Ciclos
+    const trashedMap = window.getTrashedCyclesMap();
+    const trashedKeys = Object.keys(trashedMap);
+    const trashBadge = document.getElementById('cyclesTrashCountBadge');
+    const trashListEl = document.getElementById('cyclesTrashListContainer');
+    const trashCardEl = document.getElementById('cyclesTrashCardContainer');
+
+    if (trashBadge) {
+      trashBadge.textContent = String(trashedKeys.length);
+      trashBadge.classList.toggle('hidden', trashedKeys.length === 0);
+    }
+    if (trashListEl) {
+      if (trashedKeys.length === 0) {
+        trashListEl.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">A lixeira de ciclos está vazia.</div>`;
+      } else {
+        if (trashCardEl) trashCardEl.classList.remove('hidden');
+        trashListEl.innerHTML = trashedKeys.map(tk => {
+          const tc = trashedMap[tk];
+          const shortSub = window.formatCycleShortSubtitle(tc.subtitle || tc.tag);
+          return `
+            <div class="p-3 rounded-2xl bg-rose-50/40 border border-rose-200 flex items-center justify-between gap-2">
+              <div>
+                <strong class="text-xs font-black text-slate-900 block leading-tight">${tc.name}</strong>
+                <span class="text-[10px] text-slate-500 font-semibold block mt-0.5">${shortSub}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="restoreCycleFromTrash('${tk}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] shadow-2xs cursor-pointer active:scale-95 flex items-center gap-1">
+                  <span>♻️ Restaurar</span>
+                </button>
+                <button type="button" onclick="permanentlyDeleteCycleFromTrash('${tk}')" class="p-1.5 rounded-xl bg-white hover:bg-rose-100 text-rose-600 border border-rose-200 cursor-pointer" title="Excluir definitivamente">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+    if (window.lucide) lucide.createIcons();
   };
 
   window.openSelectCycleModal = function() {
@@ -38554,15 +38733,13 @@ window.openHealthMedsModal = function() {
   };
   window.handleSaveNewCycle = function(e) {
     e.preventDefault();
-    const mEl = document.getElementById('selectStandardCycleMonth');
-    const yEl = document.getElementById('selectStandardCycleYear');
-    const dEl = document.getElementById('selectStandardCycleStartDay');
+    const startEl = document.getElementById('inputStandardCycleStartDate');
+    const endEl = document.getElementById('inputStandardCycleEndDate');
     const copyFixas = document.getElementById('checkNewCycleCopyFixas')?.checked !== false;
 
-    const info = window.computeStandardCycleData(
-      mEl ? mEl.value : 10,
-      yEl ? yEl.value : 2026,
-      dEl ? dEl.value : 5
+    const info = window.computeStandardCycleFromDates(
+      startEl ? startEl.value : '2026-11-05',
+      endEl ? endEl.value : '2026-12-04'
     );
 
     const prevCycle = window.appCyclesData[window.currentActiveCycleKey];
@@ -38570,8 +38747,8 @@ window.openHealthMedsModal = function() {
     const newTxs = [];
 
     if (copyFixas && prevTxs.length > 0) {
-      const mNum = String((parseInt(mEl ? mEl.value : 10, 10) || 0) + 1).padStart(2, '0');
-      const yNum = String(parseInt(yEl ? yEl.value : 2026, 10) || 2026);
+      const mNum = String(info.monthNum || 11).padStart(2, '0');
+      const yNum = String(info.yearNum || 2026);
       prevTxs.filter(t => t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia').forEach((f, idx) => {
         const origDay = (f.data && f.data.split('-')[2]) ? f.data.split('-')[2] : '05';
         newTxs.push({
