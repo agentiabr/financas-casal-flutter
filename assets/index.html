@@ -4464,10 +4464,13 @@ html, body {
               
               <!-- Pílula do Ciclo Vigente -->
               <div class="relative inline-block mt-3">
-                <button type="button" onclick="openSelectCycleModal()" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-bold transition-all shadow-md cursor-pointer">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-300 flex-shrink-0"></i>
-                  <span id="heroCycleTag" class="text-xs font-extrabold text-white whitespace-nowrap">05/Out a 04/Nov - 2026</span>
-                  <i data-lucide="chevron-down" class="w-3 h-3 text-white/70"></i>
+                <button type="button" onclick="openSelectCycleModal()" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 text-white transition-all shadow-md cursor-pointer text-left">
+                  <i data-lucide="calendar" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
+                  <div class="flex flex-col items-start leading-tight">
+                    <span id="heroCycleTitle" class="text-xs font-black text-white whitespace-nowrap">Outubro 2026</span>
+                    <span id="heroCycleTag" class="text-[10px] font-bold text-blue-200 whitespace-nowrap">05/Out a 04/Nov</span>
+                  </div>
+                  <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-white/70"></i>
                 </button>
               </div>
             </div>
@@ -4922,7 +4925,7 @@ html, body {
       <!-- ============================================================ -->
       <!-- TELA 3: FAMÍLIA & VIDA (CARD ORIGINAL + 10 CARDS 2x5 SEM SCROLL) -->
       <!-- ============================================================ -->
-      <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] overflow-hidden" style="height: calc(100dvh - 64px); max-height: calc(100dvh - 64px);">
+      <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] overflow-hidden" style="height: calc(100dvh - 82px); max-height: calc(100dvh - 82px);">
         
         <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
         <div class="px-4 pt-2 pb-1 flex items-center justify-between text-white flex-shrink-0 relative z-30">
@@ -4965,15 +4968,15 @@ html, body {
           </div>
 
           <!-- CAIXA ARREDONDADA PREENCHENDO ATÉ EMBAIXO SEM ULTRAPASSAR E SEM GERAR SCROLL -->
-          <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-8 pb-2.5 shadow-inner">
+          <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-7 pb-3.5 shadow-inner">
             
-            <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
+            <div class="flex items-center justify-between mb-1 flex-shrink-0">
               <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
               <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
             </div>
 
-            <!-- GRADE 2 COLUNAS x 5 LINHAS (CARDS MAIS QUADRADOS OCUPANDO ATÉ EMBAIXO SEM SCROLL) -->
-            <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-2">
+            <!-- GRADE 2 COLUNAS x 5 LINHAS (CARDS MAIS QUADRADOS OCUPANDO ATÉ EMBAIXO SEM SCROLL E SEM CORTAR NO RODAPÉ) -->
+            <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-1.5">
               
               <!-- 1. Educação -->
               <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
@@ -8181,7 +8184,7 @@ html, body {
       if (heroMiniDiasEl) heroMiniDiasEl.textContent = `${dias} dias`;
     }
 
-    function openNewCycleModal() {
+    function openNewCycleModal() { if (typeof window.openCreateNewCycleModal === "function") { window.openCreateNewCycleModal(); return; }
       document.getElementById('modalNewCycle').classList.remove('hidden');
       document.getElementById('autoCycleNameDisplay').value = '05/Nov a 04/Dez 2026';
       document.getElementById('customStartDate').value = '2026-11-05';
@@ -8417,6 +8420,9 @@ html, body {
       else if (fComp === 'extrato_banco') list = list.filter(t => t.origem_comprovante === 'extrato_banco');
 
       list.sort((a, b) => {
+        const isFixA = (a.tipo === 'Despesa Fixa' || a.categoria === 'Fixa' || a.categoria === 'Moradia') ? 0 : 1;
+        const isFixB = (b.tipo === 'Despesa Fixa' || b.categoria === 'Fixa' || b.categoria === 'Moradia') ? 0 : 1;
+        if (isFixA !== isFixB) return isFixA - isFixB;
         if (currentSortColumn === 'tipo') {
           const orderMap = { 'Receita': 1, 'Despesa Fixa': 2, 'Despesa Variável': 3 };
           const ordA = orderMap[a.tipo] || 4;
@@ -15243,7 +15249,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
     // ==========================================
     // NOVO CICLO MENSAL (PRÓXIMO PERÍODO)
     // ==========================================
-    function openNewCycleModal() {
+    function openNewCycleModal() { if (typeof window.openCreateNewCycleModal === "function") { window.openCreateNewCycleModal(); return; }
       const modal = document.getElementById('modalNewCycle');
       if (!modal) return;
       // Calcula o próximo ciclo sugerido
@@ -24085,30 +24091,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS (PADRÃO MUNDO PET) -->
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
 
-    <!-- Barra Dinâmica: Avatar do Usuário Ativo (À Esquerda) e Seletor de Destinatário (À Direita) -->
-    <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 overflow-x-auto flex-shrink-0 select-none">
-      <!-- Usuário Ativo (À Esquerda) -->
-      <div class="flex items-center gap-2 flex-shrink-0 pr-2 border-r border-slate-200 dark:border-slate-750">
-        <div id="chatActiveUserAvatar" class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-sm shadow-2xs">
-          👨
-        </div>
-        <div class="flex flex-col">
-          <span id="chatActiveUserName" class="text-[11px] font-black text-slate-900 dark:text-white leading-none">Rodrigo</span>
-          <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold leading-none mt-0.5">Você</span>
-        </div>
-      </div>
-
-      <!-- Seletor de Destinatário da Mensagem (Centro / Direita) -->
-      <div class="flex items-center gap-1.5 flex-shrink-0" id="chatRecipientSelector">
-        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-0.5">Para:</span>
-        <button type="button" onclick="setChatRecipient('marcia')" id="btnRecipient_marcia" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👩</span> <span>Márcia</span>
+    <!-- Barra Dinâmica Alinhada à Esquerda: Para: Todos / Titular / Membros -->
+    <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-start gap-2 overflow-x-auto flex-shrink-0 select-none text-left">
+      <!-- Seletor de Destinatário da Mensagem Alinhado à Esquerda -->
+      <div class="flex items-center justify-start gap-1.5 flex-shrink-0 text-left" id="chatRecipientSelector">
+        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider mr-0.5">Para:</span>
+        <button type="button" onclick="setChatRecipient('todos')" id="btnRecipient_todos" class="px-3 py-1 rounded-full text-xs font-extrabold transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
+          <span>👥</span> <span>Todos</span>
         </button>
         <button type="button" onclick="setChatRecipient('rodrigo')" id="btnRecipient_rodrigo" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👨</span> <span>Rodrigo</span>
+          <span>👨</span> <span>Rodrigo (Titular)</span>
         </button>
-        <button type="button" onclick="setChatRecipient('todos')" id="btnRecipient_todos" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👥</span> <span>Todos</span>
+        <button type="button" onclick="setChatRecipient('marcia')" id="btnRecipient_marcia" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
+          <span>👩</span> <span>Márcia</span>
         </button>
       </div>
     </div>
@@ -34532,7 +34527,8 @@ window.syncIndividualAndFamilyModeUI = function() {
                         `<button type="button" onclick="selectChatRecipient('${titular.replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">👤 ${titular}</button>`,
                         ...din.map(m => `<button type="button" onclick="selectChatRecipient('${(m.nome || '').replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">${m.avatar || '👤'} ${m.nome}</button>`)
                     ].join('');
-                    recBar.innerHTML = `<span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">Para:</span>` + btnsHtml;
+                    recBar.className = 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-start gap-1.5 overflow-x-auto flex-shrink-0 select-none text-left';
+                    recBar.innerHTML = `<span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex-shrink-0 mr-0.5">Para:</span>` + btnsHtml;
                 }
             }
         }
@@ -37764,39 +37760,94 @@ window.openHealthMedsModal = function() {
     </div>
   </div>
 
-  <!-- MODAL: CRIAR NOVO CICLO -->
+  <!-- MODAL: CRIAR NOVO CICLO PADRONIZADO (SEM NOMES ALEATÓRIOS) -->
   <div id="modalCreateNewCycle" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-slate-200 space-y-4">
       <div class="flex items-center justify-between pb-2 border-b border-slate-100">
         <div class="flex items-center gap-2">
           <span class="text-xl">📅</span>
-          <h3 class="font-black text-base text-slate-900">Iniciar Novo Ciclo</h3>
+          <div>
+            <h3 class="font-black text-base text-slate-900 leading-tight">Iniciar Novo Ciclo</h3>
+            <p class="text-[11px] text-slate-500">Formatação oficial padronizada do ControlPig</p>
+          </div>
         </div>
-        <button type="button" onclick="closeCreateNewCycleModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">✕</button>
+        <button type="button" onclick="closeCreateNewCycleModal()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
       </div>
 
-      <form onsubmit="handleSaveNewCycle(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">Nome do Ciclo / Mês de Referência</label>
-          <input type="text" id="inputNewCycleName" placeholder="Ex: Novembro 2026" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
+      <form onsubmit="handleSaveNewCycle(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Data Início</label>
-            <input type="date" id="inputNewCycleStart" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+            <label class="font-bold text-slate-700 block mb-1">Mês do Ciclo *</label>
+            <select id="selectStandardCycleMonth" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
+              <option value="0">Janeiro</option>
+              <option value="1">Fevereiro</option>
+              <option value="2">Março</option>
+              <option value="3">Abril</option>
+              <option value="4">Maio</option>
+              <option value="5">Junho</option>
+              <option value="6">Julho</option>
+              <option value="7">Agosto</option>
+              <option value="8">Setembro</option>
+              <option value="9">Outubro</option>
+              <option value="10" selected>Novembro</option>
+              <option value="11">Dezembro</option>
+            </select>
           </div>
           <div>
-            <label class="font-bold text-slate-700 block mb-1">Data Término</label>
-            <input type="date" id="inputNewCycleEnd" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+            <label class="font-bold text-slate-700 block mb-1">Ano *</label>
+            <select id="selectStandardCycleYear" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+            </select>
           </div>
         </div>
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">Teto / Meta de Gastos (Opcional)</label>
-          <input type="text" id="inputNewCycleBudget" placeholder="Ex: R$ 5.500,00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Dia de Início do Ciclo *</label>
+            <select id="selectStandardCycleStartDay" onchange="updateStandardCyclePreview()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-black text-slate-900 cursor-pointer">
+              <option value="1">Dia 01 (01 a fim do mês)</option>
+              <option value="5" selected>Dia 05 (05 a 04 do mês seg.)</option>
+              <option value="10">Dia 10 (10 a 09 do mês seg.)</option>
+              <option value="15">Dia 15 (15 a 14 do mês seg.)</option>
+              <option value="20">Dia 20 (20 a 19 do mês seg.)</option>
+              <option value="25">Dia 25 (25 a 24 do mês seg.)</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Meta / Teto (Opcional)</label>
+            <input type="text" id="inputNewCycleBudget" placeholder="Ex: R$ 5.500,00" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-semibold text-slate-900">
+          </div>
         </div>
-        <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeCreateNewCycleModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black shadow-md">Criar Ciclo</button>
+
+        <!-- Prévia Visual Padronizada (Bloqueada contra nomes aleatórios) -->
+        <div class="p-3.5 rounded-2xl bg-blue-50/90 border-2 border-blue-200 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
+              📅
+            </div>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 block">Formato Padrão do Ciclo</span>
+              <strong id="previewStandardCycleTitle" class="text-sm font-black text-slate-900 block leading-tight">Novembro 2026</strong>
+              <span id="previewStandardCycleSub" class="text-xs font-bold text-slate-500 block mt-0.5">05/Nov a 04/Dez</span>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black text-[10px]">Padronizado ✓</span>
+        </div>
+
+        <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
+          <input type="checkbox" id="checkNewCycleCopyFixas" checked class="w-4 h-4 rounded text-blue-600">
+          <span class="text-[11px] font-bold text-slate-700">Manter Gastos Fixos recorrentes no topo do novo ciclo</span>
+        </label>
+
+        <input type="hidden" id="inputNewCycleName" value="Novembro 2026">
+        <input type="hidden" id="inputNewCycleStart" value="05/Nov">
+        <input type="hidden" id="inputNewCycleEnd" value="04/Dez">
+
+        <div class="pt-1 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeCreateNewCycleModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black shadow-md cursor-pointer">Criar Ciclo</button>
         </div>
       </form>
     </div>
@@ -38328,6 +38379,69 @@ window.openHealthMedsModal = function() {
   // Ciclo Ativo Atual
   window.currentActiveCycleKey = localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
 
+  const MONTHS_FULL_PT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Mai', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  MONTHS_FULL_PT[4] = 'Maio';
+  const MONTHS_SHORT_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+  window.formatCycleShortSubtitle = function(tagStr) {
+    if (!tagStr) return '05/Out a 04/Nov';
+    return String(tagStr).replace(/\s*-\s*\d{4}$/, '').replace(/\s+\d{4}$/, '').trim();
+  };
+
+  window.computeStandardCycleData = function(monthIdx, yearNum, startDayNum) {
+    const m = Math.max(0, Math.min(11, parseInt(monthIdx, 10) || 0));
+    const y = parseInt(yearNum, 10) || 2026;
+    const d = parseInt(startDayNum, 10) || 5;
+    const monthName = MONTHS_FULL_PT[m];
+    const mShort = MONTHS_SHORT_PT[m];
+    const name = `${monthName} ${y}`;
+
+    let subtitle = '';
+    let fullTag = '';
+    if (d === 1) {
+      const lastDay = new Date(y, m + 1, 0).getDate();
+      const ddEnd = String(lastDay).padStart(2, '0');
+      subtitle = `01/${mShort} a ${ddEnd}/${mShort}`;
+      fullTag = `${subtitle} - ${y}`;
+    } else {
+      const nextM = (m + 1) % 12;
+      const nextY = m === 11 ? y + 1 : y;
+      const nextMShort = MONTHS_SHORT_PT[nextM];
+      const ddStart = String(d).padStart(2, '0');
+      const ddEnd = String(d - 1).padStart(2, '0');
+      subtitle = `${ddStart}/${mShort} a ${ddEnd}/${nextMShort}`;
+      fullTag = `${subtitle} - ${nextY}`;
+    }
+    const key = `${mShort.toLowerCase()}_${y}_d${d}`;
+    return { key, name, subtitle, tag: fullTag };
+  };
+
+  window.updateStandardCyclePreview = function() {
+    const mEl = document.getElementById('selectStandardCycleMonth');
+    const yEl = document.getElementById('selectStandardCycleYear');
+    const dEl = document.getElementById('selectStandardCycleStartDay');
+    if (!mEl || !yEl || !dEl) return;
+    const info = window.computeStandardCycleData(mEl.value, yEl.value, dEl.value);
+    const titlePrev = document.getElementById('previewStandardCycleTitle');
+    const subPrev = document.getElementById('previewStandardCycleSub');
+    const nameInp = document.getElementById('inputNewCycleName');
+    const startInp = document.getElementById('inputNewCycleStart');
+    const endInp = document.getElementById('inputNewCycleEnd');
+    if (titlePrev) titlePrev.textContent = info.name;
+    if (subPrev) subPrev.textContent = info.subtitle;
+    if (nameInp) nameInp.value = info.name;
+    if (startInp) startInp.value = info.subtitle.split(' a ')[0] || '';
+    if (endInp) endInp.value = info.subtitle.split(' a ')[1] || '';
+  };
+
+  // Carrega ciclos customizados salvos no localStorage
+  try {
+    const savedCustomCycles = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+    if (savedCustomCycles && typeof savedCustomCycles === 'object') {
+      Object.assign(window.appCyclesData, savedCustomCycles);
+    }
+  } catch (e) {}
+
   // 1. Alternância de Ciclo e Recálculo Global
   window.setActiveCycle = function(cycleKey) {
     if (!window.appCyclesData[cycleKey]) return;
@@ -38343,9 +38457,11 @@ window.openHealthMedsModal = function() {
       window.syncApprovedDesignWithAppData();
     }
 
-    // Atualiza tag do ciclo no cabeçalho
+    // Atualiza título (Ex: Novembro 2026) e subtítulo (Ex: 05/Nov a 04/Dez) no cabeçalho
+    const heroTitle = document.getElementById('heroCycleTitle');
     const heroTag = document.getElementById('heroCycleTag');
-    if (heroTag) heroTag.textContent = cycle.tag;
+    if (heroTitle) heroTitle.textContent = cycle.name || 'Outubro 2026';
+    if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag);
 
     // Atualiza métricas e dashboard
     if (typeof updateMetrics === 'function') updateMetrics();
@@ -38354,46 +38470,30 @@ window.openHealthMedsModal = function() {
     // Fecha modal
     window.closeSelectCycleModal();
     if (typeof showToastUndo === 'function') {
-      showToastUndo(`Ciclo ativo: ${cycle.name}`, false);
+      showToastUndo(`📅 Ciclo ativo: ${cycle.name} (${window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag)})`, false);
     }
   };
 
-  // 2. Renderizar Lista de Ciclos no Modal
+  // 2. Renderizar Lista de Ciclos no Modal (Padronizado: Mês Ano em cima e xx/Mmm a xx/Mmm abaixo)
   window.renderCyclesList = function() {
     const container = document.getElementById('cyclesListContainer');
     if (!container) return;
     
     const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
-    if (!isMaster) {
-      const uTxs = Array.isArray(window.transactions) ? window.transactions : (Array.isArray(transactions) ? transactions : []);
-      const rec = uTxs.filter(t => t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
-      const desp = uTxs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
-      container.innerHTML = `
-        <div class="p-3.5 rounded-2xl border bg-blue-50/80 border-blue-500 shadow-xs flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm">
-              ✓
-            </div>
-            <div>
-              <strong class="text-sm font-black text-blue-900 block">Ciclo Atual</strong>
-              <span class="text-[11px] text-slate-500 font-semibold">05/Out a 04/Nov 2026</span>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="text-xs font-black block text-rose-600">- R$ ${desp.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-            <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${rec.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-          </div>
-        </div>
-      `;
-      return;
-    }
-    
+    const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
+    const customKeys = Object.keys(window.appCyclesData || {}).filter(k => !baseKeys.includes(k));
+    const allKeys = isMaster ? [...customKeys.reverse(), ...baseKeys] : (customKeys.length > 0 ? [...customKeys.reverse(), 'out_2026'] : ['out_2026']);
+
     let html = '';
-    const keys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
-    keys.forEach(k => {
+    allKeys.forEach(k => {
       const c = window.appCyclesData[k];
       if (!c) return;
       const isCurrent = (k === window.currentActiveCycleKey);
+      const txs = Array.isArray(c.transactions) ? c.transactions : [];
+      const rec = txs.length > 0 ? txs.filter(t => t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0) : (Number(c.totalReceitas) || 0);
+      const desp = txs.length > 0 ? txs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0) : (Number(c.totalDespesas) || 0);
+      const shortSub = window.formatCycleShortSubtitle(c.subtitle || c.tag);
+
       html += `
         <div onclick="setActiveCycle('${k}')" class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${isCurrent ? 'bg-blue-50/80 border-blue-500 shadow-xs' : 'bg-slate-50 border-slate-200/70 hover:border-blue-300'}">
           <div class="flex items-center gap-3">
@@ -38401,13 +38501,13 @@ window.openHealthMedsModal = function() {
               ${isCurrent ? '✓' : '📅'}
             </div>
             <div>
-              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block">${c.name}</strong>
-              <span class="text-[11px] text-slate-500 font-semibold">${c.tag}</span>
+              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block leading-tight">${c.name}</strong>
+              <span class="text-[11px] text-slate-500 font-semibold block mt-0.5">${shortSub}</span>
             </div>
           </div>
           <div class="text-right">
-            <span class="text-xs font-black block text-rose-600">- R$ ${c.totalDespesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-            <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${c.totalReceitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            <span class="text-xs font-black block text-rose-600">- R$ ${desp.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            <span class="text-[10px] text-emerald-600 font-bold">+ R$ ${rec.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
           </div>
         </div>
       `;
@@ -38434,7 +38534,7 @@ window.openHealthMedsModal = function() {
     }
   };
 
-  // Criar Novo Ciclo
+  // Criar Novo Ciclo Padronizado
   window.openCreateNewCycleModal = function() {
     window.ensureModalsOnBody();
     const m = document.getElementById('modalCreateNewCycle');
@@ -38442,6 +38542,7 @@ window.openHealthMedsModal = function() {
       if (m.parentElement !== document.body) document.body.appendChild(m);
       m.classList.remove('hidden');
       m.style.display = 'flex';
+      window.updateStandardCyclePreview();
     }
   };
   window.closeCreateNewCycleModal = function() {
@@ -38453,24 +38554,58 @@ window.openHealthMedsModal = function() {
   };
   window.handleSaveNewCycle = function(e) {
     e.preventDefault();
-    const name = document.getElementById('inputNewCycleName').value.trim();
-    const start = document.getElementById('inputNewCycleStart').value;
-    const end = document.getElementById('inputNewCycleEnd').value;
-    const budget = document.getElementById('inputNewCycleBudget').value;
+    const mEl = document.getElementById('selectStandardCycleMonth');
+    const yEl = document.getElementById('selectStandardCycleYear');
+    const dEl = document.getElementById('selectStandardCycleStartDay');
+    const copyFixas = document.getElementById('checkNewCycleCopyFixas')?.checked !== false;
 
-    const key = 'ciclo_' + Date.now();
-    window.appCyclesData[key] = {
-      key: key,
-      name: name,
-      tag: `${start} a ${end}`,
+    const info = window.computeStandardCycleData(
+      mEl ? mEl.value : 10,
+      yEl ? yEl.value : 2026,
+      dEl ? dEl.value : 5
+    );
+
+    const prevCycle = window.appCyclesData[window.currentActiveCycleKey];
+    const prevTxs = (prevCycle && Array.isArray(prevCycle.transactions)) ? prevCycle.transactions : [];
+    const newTxs = [];
+
+    if (copyFixas && prevTxs.length > 0) {
+      const mNum = String((parseInt(mEl ? mEl.value : 10, 10) || 0) + 1).padStart(2, '0');
+      const yNum = String(parseInt(yEl ? yEl.value : 2026, 10) || 2026);
+      prevTxs.filter(t => t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia').forEach((f, idx) => {
+        const origDay = (f.data && f.data.split('-')[2]) ? f.data.split('-')[2] : '05';
+        newTxs.push({
+          ...f,
+          id: Date.now() + idx,
+          data: `${yNum}-${mNum}-${origDay}`,
+          ciclo: info.tag,
+          status: 'Pendente'
+        });
+      });
+    }
+
+    const totalDesp = newTxs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+
+    window.appCyclesData[info.key] = {
+      key: info.key,
+      name: info.name,
+      subtitle: info.subtitle,
+      tag: info.tag,
       salario: 0,
       extras: 0,
       totalReceitas: 0,
-      totalDespesas: 0,
-      transactions: []
+      totalDespesas: totalDesp,
+      transactions: newTxs
     };
+
+    try {
+      const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+      savedCustom[info.key] = window.appCyclesData[info.key];
+      localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustom));
+    } catch (err) {}
+
     window.closeCreateNewCycleModal();
-    window.setActiveCycle(key);
+    window.setActiveCycle(info.key);
   };
 
   // 3. Olhinho: Alternância de Ícones Eye / Eye-Off e Ocultação EXCLUSIVA do Saldo Atual
@@ -41019,16 +41154,90 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         return;
       }
 
-      const sorted = [...filtered].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+      const isTxFixedExpense = (t) => t && (t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia');
+      const fixedItems = filtered.filter(t => isTxFixedExpense(t)).sort((a, b) => {
+        const pA = (a.status === 'Pago' || a.status === 'Recebido') ? 1 : 0;
+        const pB = (b.status === 'Pago' || b.status === 'Recebido') ? 1 : 0;
+        if (pA !== pB) return pA - pB;
+        return new Date(b.data || 0) - new Date(a.data || 0);
+      });
+      const otherItems = filtered.filter(t => !isTxFixedExpense(t)).sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
+      const renderSingleTxCard = (t) => {
+        const isRec = t.tipo === 'Receita';
+        const isFixa = isTxFixedExpense(t);
+        const isPago = t.status === 'Pago' || t.status === 'Recebido';
+        const valNum = parseFloat(t.valor) || 0;
+        const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
+        const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
+        const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
+        const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${t.responsavel}</span>` : '';
+        const fixedPinBadge = isFixa ? `<span class="text-[9px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded">📌 Fixo</span>` : '';
+        const btnQuitar = isFixa ? `
+          <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'}" title="Clique para alterar status">
+            ${isPago ? 'Pago ✓' : 'Quitar ⚡'}
+          </button>
+        ` : '';
+
+        return `
+          <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1.5" data-tx-id="${t.id}">
+            <div class="swipe-tx-card relative bg-white rounded-2xl p-3 shadow-xs border ${isFixa ? 'border-blue-200/90' : 'border-slate-200/70'} flex items-center justify-between cursor-pointer hover:border-blue-400 z-10 transition-transform duration-100 ease-out will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
+                  ${meta.emoji}
+                </div>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
+                  <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
+                    ${fixedPinBadge}
+                    ${memberBadge}
+                    ${btnQuitar}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <span class="font-black text-xs ${valColor}">${valFormatted}</span>
+                <button type="button" onclick="event.stopPropagation(); if (typeof window.deleteTxWithAnimation === 'function') { window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container')); } else if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      let html = '';
+
+      // 1. BLOCO FIXO NO TOPO: GASTOS FIXOS DO CICLO
+      if (fixedItems.length > 0) {
+        const totalFixos = fixedItems.reduce((acc, t) => acc + (parseFloat(t.valor) || 0), 0);
+        const totalFixosFmt = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? formatBRL(totalFixos, 'despesa') : 'R$ ' + totalFixos.toFixed(2));
+        html += `
+          <div class="bg-blue-50/90 border-2 border-blue-200 rounded-3xl p-3 shadow-xs mb-3">
+            <div class="flex items-center justify-between mb-2 px-1">
+              <div class="flex items-center gap-1.5">
+                <span class="text-sm">📌</span>
+                <span class="text-[11px] font-black text-blue-900 uppercase tracking-wider">Gastos Fixos (Fixo no Topo)</span>
+              </div>
+              <span class="text-[11px] font-black text-blue-800 bg-white px-2.5 py-0.5 rounded-full border border-blue-200">${fixedItems.length} itens • ${totalFixosFmt}</span>
+            </div>
+            <div class="space-y-1.5">
+              ${fixedItems.map(t => renderSingleTxCard(t)).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. DEMAIS LANÇAMENTOS AGRUPADOS POR DATA
       const groups = {};
-      sorted.forEach(t => {
+      otherItems.forEach(t => {
         const d = t.data || 'Outros';
         if (!groups[d]) groups[d] = [];
         groups[d].push(t);
       });
 
-      let html = '';
       for (const [dateStr, items] of Object.entries(groups)) {
         html += `
           <div>
@@ -41128,13 +41337,16 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <button type="button" onclick="openSectionLampInsight('garantias')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Garantias de Produtos">
           <span>💡</span>
         </button>
-        <button type="button" onclick="toggleAddWarrantyForm()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-sm cursor-pointer active:scale-95">
-          + Produto
-        </button>
       </div>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias Vigentes</span>
+        <button type="button" onclick="toggleAddWarrantyForm()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-sm cursor-pointer active:scale-95">
+          + Cadastrar Produto
+        </button>
+      </div>
       <!-- Resumo de Garantias -->
       <div class="grid grid-cols-3 gap-2">
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
@@ -41265,18 +41477,24 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </div>
       </div>
       <div class="flex items-center gap-1.5">
+        <button type="button" onclick="triggerKidsExtraAlarmsSummary()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-amber-300 transition-all cursor-pointer active:scale-95 relative" title="Lembretes e Alarmes de Atividades Extras">
+          <span>🔔</span>
+          <span id="kidsHeaderAlarmBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-black flex items-center justify-center border border-[#071933]">0</span>
+        </button>
         <button type="button" onclick="openSectionLampInsight('criancas')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Crianças & Educação">
           <span>💡</span>
-        </button>
-        <button type="button" onclick="toggleAddKidForm()" class="px-2.5 py-1.5 rounded-xl bg-pink-500 hover:bg-pink-400 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95">
-          + Filho(a)
         </button>
       </div>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
-      <!-- Carrossel de Filhos -->
-      <div id="kidsSelectorPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+      <!-- Barra Superior Interna: Carrossel de Filhos + Botão Cadastrar Filho(a) -->
+      <div class="flex items-center justify-between gap-2">
+        <div id="kidsSelectorPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 flex-1"></div>
+        <button type="button" onclick="toggleAddKidForm()" class="px-3 py-1.5 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs shadow-xs cursor-pointer active:scale-95 flex-shrink-0">
+          + Filho(a)
+        </button>
+      </div>
 
       <!-- Formulário Cadastrar Filho(a) -->
       <div id="boxAddKidForm" class="hidden bg-white rounded-3xl p-4 border border-pink-300 shadow-md space-y-2.5">
@@ -41325,6 +41543,60 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
         <!-- Lista de Notas -->
         <div id="kidsGradesListContainer" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Card Controle de Horários de Atividades Extras & Alarmes (Natação, Xadrez, Inglês, etc.) -->
+      <div id="cardKidsExtraActivities" class="bg-white rounded-3xl p-4 border border-purple-200/90 shadow-xs space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
+              <span>🏊‍♂️</span> <span>Horários de Atividades Extras &amp; Lembretes</span>
+            </h3>
+            <p class="text-[11px] text-slate-500">Natação, xadrez, idiomas, esportes e música com alarme programável</p>
+          </div>
+          <span id="kidsActiveAlarmsCountBadge" class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 font-black text-[10px] whitespace-nowrap">🔔 0 alarmes</span>
+        </div>
+
+        <!-- Sugestões Rápidas de Atividades Extras -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
+          <button type="button" onclick="fillKidExtraActivityQuick('🏊 Natação')" class="px-2.5 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🏊 Natação</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('♟️ Xadrez')" class="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">♟️ Xadrez</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🇬🇧 Inglês')" class="px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🇬🇧 Inglês</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('⚽ Futsal / Futebol')" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">⚽ Futsal</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🥋 Judô / Karatê')" class="px-2.5 py-1 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🥋 Judô</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🎹 Música / Violão')" class="px-2.5 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🎹 Música</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('📚 Reforço Escolar')" class="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">📚 Reforço</button>
+        </div>
+
+        <!-- Formulário para Adicionar Horário de Atividade Extra -->
+        <form onsubmit="handleSaveKidExtraActivity(event)" class="grid grid-cols-2 sm:grid-cols-6 gap-2 p-3 rounded-2xl bg-purple-50/60 border border-purple-200/80">
+          <input type="text" id="inputKidActivityName" required placeholder="Atividade (Ex: Natação, Xadrez...)" class="col-span-2 sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900">
+          <select id="inputKidActivityDays" class="px-2 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900">
+            <option value="Seg e Qua">Seg e Qua</option>
+            <option value="Ter e Qui">Ter e Qui</option>
+            <option value="Qua e Sex">Qua e Sex</option>
+            <option value="Seg, Qua e Sex">Seg, Qua e Sex</option>
+            <option value="Seg a Sex">Seg a Sex</option>
+            <option value="Toda Segunda">Toda Segunda</option>
+            <option value="Toda Terça">Toda Terça</option>
+            <option value="Toda Quarta">Toda Quarta</option>
+            <option value="Toda Quinta">Toda Quinta</option>
+            <option value="Toda Sexta">Toda Sexta</option>
+            <option value="Todo Sábado">Todo Sábado</option>
+          </select>
+          <input type="time" id="inputKidActivityTime" required value="15:00" class="px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-mono font-black text-slate-900">
+          <select id="inputKidActivityReminderMins" class="px-2 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900" title="Antecedência do alarme">
+            <option value="15">🔔 15 min antes</option>
+            <option value="30">🔔 30 min antes</option>
+            <option value="60">🔔 1h antes</option>
+            <option value="0">🔔 No horário exato</option>
+          </select>
+          <button type="submit" class="col-span-2 sm:col-span-1 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black shadow-xs cursor-pointer active:scale-95">+ Agendar</button>
+        </form>
+
+        <!-- Lista de Atividades Extras e Alarmes -->
+        <div id="kidsExtraActivitiesListContainer" class="space-y-2"></div>
       </div>
 
       <!-- Card Integração Financeira: Gastos com Educação & Filhos -->
@@ -41741,6 +42013,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           { id: 'gr_1', subject: 'Matemática', bimester: '1º Bim', score: 9.2 },
           { id: 'gr_2', subject: 'Português', bimester: '1º Bim', score: 8.5 },
           { id: 'gr_3', subject: 'Ciências', bimester: '1º Bim', score: 9.0 }
+        ],
+        extraActivities: [
+          { id: 'act_1', name: '🏊 Natação', days: 'Ter e Qui', time: '15:30', reminderMins: 30, alarmActive: true },
+          { id: 'act_2', name: '♟️ Xadrez', days: 'Seg e Qua', time: '14:00', reminderMins: 15, alarmActive: true }
         ]
       }
     ];
@@ -41847,6 +42123,75 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (!active || !Array.isArray(active.grades)) return;
       active.grades = active.grades.filter(g => g.id !== gradeId);
       window.saveKidsList(list);
+    };
+
+    window.fillKidExtraActivityQuick = function(label) {
+      const inp = document.getElementById('inputKidActivityName');
+      if (inp) {
+        inp.value = label;
+        inp.focus();
+      }
+    };
+
+    window.handleSaveKidExtraActivity = function(e) {
+      if (e) e.preventDefault();
+      const name = (document.getElementById('inputKidActivityName')?.value || '').trim();
+      const days = document.getElementById('inputKidActivityDays')?.value || 'Ter e Qui';
+      const time = document.getElementById('inputKidActivityTime')?.value || '15:00';
+      const reminderMins = parseInt(document.getElementById('inputKidActivityReminderMins')?.value || '15', 10);
+      if (!name || !time) return;
+
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!Array.isArray(active.extraActivities)) active.extraActivities = [];
+      active.extraActivities.push({
+        id: 'act_' + Date.now(),
+        name,
+        days,
+        time,
+        reminderMins,
+        alarmActive: true
+      });
+      window.saveKidsList(list);
+      const nameInp = document.getElementById('inputKidActivityName');
+      if (nameInp) nameInp.value = '';
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🔔 Atividade "${name}" (${days} às ${time}) agendada com alarme!`, false);
+      }
+    };
+
+    window.toggleKidExtraActivityAlarm = function(actId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active || !Array.isArray(active.extraActivities)) return;
+      const item = active.extraActivities.find(a => a.id === actId);
+      if (!item) return;
+      item.alarmActive = !item.alarmActive;
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(item.alarmActive ? `🔔 Alarme ativado para ${item.name} às ${item.time}!` : `🔕 Alarme desativado para ${item.name}.`, false);
+      }
+    };
+
+    window.deleteKidExtraActivity = function(actId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active || !Array.isArray(active.extraActivities)) return;
+      active.extraActivities = active.extraActivities.filter(a => a.id !== actId);
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') showToastUndo('Horário de atividade removido.', false);
+    };
+
+    window.triggerKidsExtraAlarmsSummary = function() {
+      const el = document.getElementById('cardKidsExtraActivities');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      const acts = (active && Array.isArray(active.extraActivities)) ? active.extraActivities.filter(a => a.alarmActive) : [];
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(acts.length > 0 ? `🔔 ${acts.length} alarme(s) ativo(s) para ${active.name}: ${acts.map(a => a.name + ' (' + a.time + ')').join(', ')}` : '🔕 Nenhum alarme de atividade extra ativo no momento.', false);
+      }
     };
 
     window.handleSaveKidEducationExpense = function(e) {
@@ -41981,6 +42326,54 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               <span class="font-mono font-black text-xs text-rose-600">- ${formatBRL(t.valor)}</span>
             </div>
           `).join('');
+        }
+      }
+
+      // Renderiza Horários de Atividades Extras & Alarmes
+      const actsCont = document.getElementById('kidsExtraActivitiesListContainer');
+      const alarmsBadge = document.getElementById('kidsActiveAlarmsCountBadge');
+      const headerAlarmBadge = document.getElementById('kidsHeaderAlarmBadge');
+      if (actsCont && active) {
+        if (!Array.isArray(active.extraActivities)) {
+          active.extraActivities = [
+            { id: 'act_def_1', name: '🏊 Natação', days: 'Ter e Qui', time: '15:30', reminderMins: 30, alarmActive: true },
+            { id: 'act_def_2', name: '♟️ Xadrez', days: 'Seg e Qua', time: '14:00', reminderMins: 15, alarmActive: true }
+          ];
+        }
+        const acts = active.extraActivities;
+        const activeAlarmsCount = acts.filter(a => a.alarmActive).length;
+        if (alarmsBadge) {
+          alarmsBadge.textContent = `🔔 ${activeAlarmsCount} alarme${activeAlarmsCount === 1 ? '' : 's'} ativo${activeAlarmsCount === 1 ? '' : 's'}`;
+        }
+        if (headerAlarmBadge) {
+          headerAlarmBadge.textContent = String(activeAlarmsCount);
+          headerAlarmBadge.classList.toggle('hidden', activeAlarmsCount === 0);
+        }
+
+        if (acts.length === 0) {
+          actsCont.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhuma atividade extra (natação, xadrez, inglês...) cadastrada para ${escapeHtml(active.name)}.</div>`;
+        } else {
+          actsCont.innerHTML = acts.map(a => {
+            const remLabel = Number(a.reminderMins) > 0 ? `${a.reminderMins} min antes` : 'No horário';
+            return `
+              <div class="p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${a.alarmActive ? 'bg-purple-50/50 border-purple-200' : 'bg-slate-50 border-slate-200/70 opacity-75'}">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <strong class="text-xs font-black text-slate-900">${escapeHtml(a.name)}</strong>
+                    <span class="px-2 py-0.5 rounded-lg bg-white border border-purple-200 text-purple-800 font-extrabold text-[10px]">📅 ${escapeHtml(a.days)}</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-800 font-mono font-black text-[10px]">⏰ ${escapeHtml(a.time)}</span>
+                  </div>
+                  <span class="text-[10px] text-slate-500 block mt-0.5">🧒 ${escapeHtml(active.name)} • Lembrete: <strong>${remLabel}</strong></span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <button type="button" onclick="toggleKidExtraActivityAlarm('${a.id}')" class="px-2.5 py-1 rounded-xl font-black text-[10px] border transition-all cursor-pointer flex items-center gap-1 ${a.alarmActive ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs' : 'bg-white text-slate-500 border-slate-300 hover:bg-slate-100'}" title="Ativar ou desativar alarme">
+                    <span>${a.alarmActive ? '🔔 Ativo' : '🔕 Off'}</span>
+                  </button>
+                  <button type="button" onclick="deleteKidExtraActivity('${a.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer" title="Remover horário">✕</button>
+                </div>
+              </div>
+            `;
+          }).join('');
         }
       }
     };
