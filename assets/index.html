@@ -4268,30 +4268,46 @@ html, body {
           </div>
         </div>
 
-        <!-- Escolha do Plano de Assinatura (Inicia com Período de Teste Grátis - Sem Freemium) -->
+        <!-- Escolha do Plano de Assinatura (3 Planos com 7 Dias Grátis - Sem Freemium) -->
         <div class="p-2.5 rounded-xl bg-white/15 border border-white/30 space-y-1.5">
           <div class="flex items-center justify-between">
             <label class="block text-[11px] font-bold text-white/90">💎 Escolha seu Plano (7 Dias Grátis) *</label>
-            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-400/25 border border-emerald-300/40 text-emerald-200">Sem Cartão Agora</span>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-400/25 border border-emerald-300/40 text-emerald-200">7 Dias Grátis</span>
           </div>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
-              <input type="radio" name="regTipoPlano" value="familia" checked class="text-emerald-500 focus:ring-0">
-              <div class="leading-tight">
-                <span class="block text-[11px] font-black text-white">👨‍👩‍👧‍👦 Casal / Família</span>
-                <span class="block text-[9px] text-emerald-200 font-bold">Até 5 membros + Chat</span>
+          <div class="grid grid-cols-3 gap-1.5">
+            <label class="flex flex-col justify-between p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
+              <div class="flex items-center gap-1">
+                <input type="radio" name="regTipoPlano" value="individual" class="text-emerald-500 focus:ring-0">
+                <span class="text-[10px] font-black text-white">👤 Solteiro</span>
+              </div>
+              <div class="mt-1 leading-tight">
+                <span class="block text-[10px] font-mono font-black text-amber-300">R$ 29,90/mês</span>
+                <span class="block text-[8px] text-white/75">1 usuário</span>
               </div>
             </label>
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
-              <input type="radio" name="regTipoPlano" value="individual" class="text-emerald-500 focus:ring-0">
-              <div class="leading-tight">
-                <span class="block text-[11px] font-black text-white">👤 Individual</span>
-                <span class="block text-[9px] text-blue-200 font-bold">1 titular + Gôndola</span>
+            <label class="flex flex-col justify-between p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
+              <div class="flex items-center gap-1">
+                <input type="radio" name="regTipoPlano" value="casal" checked class="text-emerald-500 focus:ring-0">
+                <span class="text-[10px] font-black text-white">💑 Casal</span>
+              </div>
+              <div class="mt-1 leading-tight">
+                <span class="block text-[10px] font-mono font-black text-emerald-300">R$ 49,90/mês</span>
+                <span class="block text-[8px] text-white/75">2 pessoas + Chat</span>
+              </div>
+            </label>
+            <label class="flex flex-col justify-between p-2 rounded-xl bg-black/25 border border-white/30 cursor-pointer hover:bg-black/35 transition-all">
+              <div class="flex items-center gap-1">
+                <input type="radio" name="regTipoPlano" value="familia" class="text-emerald-500 focus:ring-0">
+                <span class="text-[10px] font-black text-white">👨‍👩‍👧‍👦 Família</span>
+              </div>
+              <div class="mt-1 leading-tight">
+                <span class="block text-[10px] font-mono font-black text-sky-300">R$ 69,90/mês</span>
+                <span class="block text-[8px] text-white/75">Até 5 (+R$9,90 extra)</span>
               </div>
             </label>
           </div>
           <p class="text-[9px] text-white/75 leading-tight">
-            ✨ Você terá acesso total imediato durante o período de avaliação gratuita. Após o teste, escolha entre assinatura mensal ou anual.
+            ✨ Aproveite 7 dias grátis com acesso total. Após o período de teste, o plano escolhido mantém sua conta ativa.
           </p>
         </div>
 
@@ -4906,12 +4922,12 @@ html, body {
       </section>
 
       <!-- ============================================================ -->
-      <!-- TELA 3: FAMÍLIA & VIDA (10 MÓDULOS COMPACTOS SEM SCROLL)     -->
+      <!-- TELA 3: FAMÍLIA & VIDA (CARD ORIGINAL + 10 CARDS 2x5 SEM SCROLL) -->
       <!-- ============================================================ -->
-      <section id="screen_familia" class="w-full flex-1 hidden flex flex-col bg-[#071933]">
+      <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] overflow-hidden" style="height: calc(100dvh - 64px); max-height: calc(100dvh - 64px);">
         
         <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
-        <div class="px-4 pt-2.5 pb-1.5 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+        <div class="px-4 pt-2 pb-1 flex items-center justify-between text-white flex-shrink-0 relative z-30">
           <div class="flex items-center gap-2.5">
             <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -4925,156 +4941,160 @@ html, body {
           </div>
         </div>
 
-        <div class="flex-1 flex flex-col relative overflow-hidden">
+        <div class="flex-1 min-h-0 flex flex-col relative overflow-hidden">
           
-          <!-- BANNER HERO COMPACTO COM O PIGGY -->
-          <div class="px-4 pt-0.5 relative z-20">
-            <div class="relative overflow-hidden rounded-2xl px-3.5 py-2.5 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-lg">
-              <div class="relative z-10 flex items-center justify-between gap-2">
-                <div class="max-w-[75%]">
-                  <h3 class="font-black text-sm text-white leading-tight">
+          <!-- BANNER HERO NO TAMANHO ORIGINAL COM O PIGGY -->
+          <div class="px-5 pt-1 relative z-20 flex-shrink-0">
+            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
+              <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div class="relative z-10 flex items-center justify-between gap-3">
+                <div class="max-w-[65%]">
+                  <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
                     Espaço Família &amp; Vida
                   </h3>
-                  <p class="text-[11px] text-blue-100 mt-0.5 leading-tight">
-                    Rotina, filhos, garantias, saúde e cuidados em 10 módulos integrados.
+                  <p class="text-xs text-blue-100 mt-1 leading-snug">
+                    Rotina, filhos, garantias, saúde e cuidados compartilhados em 10 módulos integrados.
                   </p>
                 </div>
-                <div class="w-14 flex-shrink-0 flex items-center justify-center">
-                  <img src="images/mascote_oficial_mentor.png" onerror="this.src='assets/images/mascote_oficial_mentor.png'" alt="Mascote Oficial" class="w-full h-auto max-h-[54px] object-contain drop-shadow-md">
+
+                <!-- Mascote Porquinho Robô 3D sorrindo no tamanho original -->
+                <div class="w-28 sm:w-32 flex-shrink-0 flex items-center justify-center">
+                  <img src="images/mascote_oficial_mentor.png" onerror="this.src='assets/images/mascote_oficial_mentor.png'" alt="Mascote Oficial" class="w-full h-auto max-h-[112px] object-contain drop-shadow-xl hover:scale-105 transition-transform">
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- CAIXA ARREDONDADA COMPACTA COM OS 10 CARDS VISÍVEIS SEM PRECISAR DE SCROLL -->
-          <div class="flex-1 bg-[#DFEAF7] rounded-t-[28px] -mt-4 relative z-10 flex flex-col overflow-y-auto px-4 pt-6 pb-3 space-y-2 shadow-inner">
+          <!-- CAIXA ARREDONDADA PREENCHENDO ATÉ EMBAIXO SEM ULTRAPASSAR E SEM GERAR SCROLL -->
+          <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-8 pb-2.5 shadow-inner">
             
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
               <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
-              <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">10 disponíveis</span>
+              <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
             </div>
 
-            <!-- GRADE COMPACTA DE 10 MÓDULOS (2x5) -->
-            <div class="grid grid-cols-2 gap-2 pb-2">
+            <!-- GRADE 2 COLUNAS x 5 LINHAS (CARDS MAIS QUADRADOS OCUPANDO ATÉ EMBAIXO SEM SCROLL) -->
+            <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-2">
               
               <!-- 1. Educação -->
-              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base flex-shrink-0">🎓</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Educação</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Cursos e formação</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Educação</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Cursos e formação</p>
+                </div>
               </div>
 
               <!-- 2. Lista de Compras -->
-              <div onclick="openShoppingListModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="openShoppingListModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛒</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Lista de Compras</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Mercado e histórico</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Lista de Compras</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Mercado e histórico</p>
+                </div>
               </div>
 
               <!-- 3. Pets e Vacinas -->
-              <div onclick="openPetAreaModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="openPetAreaModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-base flex-shrink-0">🐾</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Pets e Vacinas</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Cuidados e gastos</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Pets e Vacinas</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Cuidados e gastos</p>
+                </div>
               </div>
 
               <!-- 4. Vida Saudável -->
-              <div onclick="openHealthMedsModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="openHealthMedsModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base flex-shrink-0">❤️</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Vida Saudável</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Rotina e remédios</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Vida Saudável</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Rotina e remédios</p>
+                </div>
               </div>
 
               <!-- 5. Transporte & Manutenção -->
-              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base flex-shrink-0">🚗</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Transporte</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Veículos e revisão</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Transporte</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Veículos e revisão</p>
+                </div>
               </div>
 
               <!-- 6. Meus Prestadores -->
-              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">🔧</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Prestadores</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Contatos úteis</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Prestadores</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Contatos úteis</p>
+                </div>
               </div>
 
               <!-- 7. Cofrinho e Metas -->
-              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base flex-shrink-0">🐷</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cofrinho e Metas</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Sonhos e reservas</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cofrinho e Metas</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Sonhos e reservas</p>
+                </div>
               </div>
 
               <!-- 8. Cartões -->
-              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-slate-200/80 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">💳</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cartões</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Limites e faturas</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cartões</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Limites e faturas</p>
+                </div>
               </div>
 
-              <!-- 9. Garantias de Produtos (NOVO) -->
-              <div onclick="openProductWarrantiesModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-emerald-200/90 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <!-- 9. Garantias de Produtos -->
+              <div onclick="openProductWarrantiesModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-emerald-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛡️</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Prazos de produtos</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Prazos de produtos</p>
+                </div>
               </div>
 
-              <!-- 10. Crianças & Escola (NOVO) -->
-              <div onclick="openKidsAreaModal()" class="bg-white rounded-2xl px-3 py-2 shadow-xs border border-purple-200/90 flex items-center justify-between gap-2 h-[54px] cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center gap-2.5 min-w-0">
+              <!-- 10. Crianças & Escola -->
+              <div onclick="openKidsAreaModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-purple-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base flex-shrink-0">🧒</div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Crianças &amp; Notas</h4>
-                    <p class="text-[10px] text-slate-400 truncate">Boletim e gastos</p>
-                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
+                <div class="min-w-0">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Crianças &amp; Notas</h4>
+                  <p class="text-[10px] text-slate-400 truncate leading-tight">Boletim e gastos</p>
+                </div>
               </div>
 
             </div>
@@ -23353,67 +23373,120 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
-        <!-- 6. GESTÃO COMERCIAL DE PLANOS & ASSINATURAS (100% PAGO • SEM FREEMIUM) -->
-        <div class="p-3.5 bg-gradient-to-br from-amber-50/90 to-slate-50 dark:from-slate-800/90 dark:to-amber-950/20 rounded-2xl border border-amber-300/70 dark:border-amber-700/60 shadow-2xs space-y-3">
+        <!-- 6. GESTÃO COMERCIAL DE PLANOS, PREÇOS & DASHBOARD DE ASSINANTES (TEMPO REAL) -->
+        <div class="p-3.5 bg-gradient-to-br from-amber-50/90 to-slate-50 dark:from-slate-800/90 dark:to-amber-950/20 rounded-2xl border border-amber-300/70 dark:border-amber-700/60 shadow-2xs space-y-3.5">
           <div class="flex items-center justify-between">
             <div>
               <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>💎</span><span>Gestão de Planos &amp; Assinaturas (Paywall)</span>
+                <span>💎</span><span>Dashboard de Assinaturas &amp; Gestão de Planos</span>
               </h4>
-              <p class="text-[10px] text-slate-600 dark:text-slate-400">Configure dias de teste grátis, preços, chave PIX/Checkout e gere chaves de liberação para clientes</p>
+              <p class="text-[10px] text-slate-600 dark:text-slate-400">Acompanhe quem está nos 7 dias grátis, quem entrou no plano pago automaticamente e gerencie exceções</p>
             </div>
-            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[9px] uppercase">Sem Freemium</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[9px] uppercase">Automático</span>
           </div>
 
+          <!-- DASHBOARD DE ASSINANTES (7 DIAS GRÁTIS VS PLANO PAGO) -->
+          <div class="p-3 rounded-2xl bg-slate-900 text-white space-y-3 border border-slate-700 shadow-inner">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                <span>📊</span><span>Visão Geral de Assinantes em Tempo Real</span>
+              </span>
+              <button type="button" onclick="window.renderAdminSubscribersDashboard()" class="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] font-bold text-blue-200 cursor-pointer">
+                🔄 Atualizar
+              </button>
+            </div>
+
+            <!-- KPIs: Total, Em 7 Dias Grátis, No Plano Pago, Receita Mensal (MRR) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+              <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                <span class="text-[9px] font-bold uppercase text-slate-400 block">⏳ Em 7 Dias Grátis</span>
+                <strong id="kpiSubTrialCount" class="text-base font-black text-amber-300 font-mono">0</strong>
+                <span class="text-[9px] text-slate-400 block">em avaliação</span>
+              </div>
+              <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                <span class="text-[9px] font-bold uppercase text-slate-400 block">✅ No Plano Pago</span>
+                <strong id="kpiSubPaidCount" class="text-base font-black text-emerald-400 font-mono">0</strong>
+                <span class="text-[9px] text-slate-400 block">assinantes ativos</span>
+              </div>
+              <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                <span class="text-[9px] font-bold uppercase text-slate-400 block">💰 Receita / Mês</span>
+                <strong id="kpiSubMrrValue" class="text-base font-black text-sky-300 font-mono">R$ 0,00</strong>
+                <span class="text-[9px] text-slate-400 block">recorrência ativa</span>
+              </div>
+              <div class="p-2 rounded-xl bg-white/5 border border-white/10">
+                <span class="text-[9px] font-bold uppercase text-slate-400 block">🔒 Trial Vencido</span>
+                <strong id="kpiSubExpiredCount" class="text-base font-black text-rose-400 font-mono">0</strong>
+                <span class="text-[9px] text-slate-400 block">no Paywall</span>
+              </div>
+            </div>
+
+            <!-- Filtros da Lista de Assinantes -->
+            <div class="flex items-center justify-between gap-1.5 flex-wrap pt-1 border-t border-white/10">
+              <div class="flex items-center gap-1">
+                <button type="button" id="btnSubFilter_all" onclick="window.setAdminSubFilter('all')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-black text-[10px] cursor-pointer">Todos</button>
+                <button type="button" id="btnSubFilter_trial" onclick="window.setAdminSubFilter('trial')" class="px-2.5 py-1 rounded-lg bg-white/10 text-slate-300 font-bold text-[10px] cursor-pointer">⏳ 7 Dias Grátis</button>
+                <button type="button" id="btnSubFilter_active" onclick="window.setAdminSubFilter('active')" class="px-2.5 py-1 rounded-lg bg-white/10 text-slate-300 font-bold text-[10px] cursor-pointer">✅ Plano Pago</button>
+                <button type="button" id="btnSubFilter_expired" onclick="window.setAdminSubFilter('expired')" class="px-2.5 py-1 rounded-lg bg-white/10 text-slate-300 font-bold text-[10px] cursor-pointer">🔒 Bloqueados</button>
+              </div>
+              <span class="text-[9px] text-slate-400">Ativação paga automática • Use os botões apenas para exceções</span>
+            </div>
+
+            <!-- Lista de Assinantes / Contas Cadastradas -->
+            <div id="adminSubscribersListContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+              <!-- Preenchido dinamicamente por renderAdminSubscribersDashboard() -->
+            </div>
+          </div>
+
+          <!-- Configuração de Preços Oficiais dos 3 Planos + Membro Adicional -->
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
             <div>
               <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Dias Teste Grátis</label>
               <input type="number" min="0" max="60" id="adminSubTrialDays" value="7" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-black text-slate-900">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Indiv. Mensal (R$)</label>
-              <input type="number" step="0.01" id="adminSubPriceIndMonth" value="14.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">👤 Solteiro (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceIndMonth" value="29.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Indiv. Anual (R$)</label>
-              <input type="number" step="0.01" id="adminSubPriceIndYear" value="119.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">💑 Casal 2p (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceCoupleMonth" value="49.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Família Mensal (R$)</label>
-              <input type="number" step="0.01" id="adminSubPriceFamMonth" value="24.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">👨‍👩‍👧‍👦 Família 5p (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceFamMonth" value="69.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Família Anual (R$)</label>
-              <input type="number" step="0.01" id="adminSubPriceFamYear" value="199.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">➕ Membro Extra (R$)</label>
+              <input type="number" step="0.01" id="adminSubPriceExtraMember" value="9.90" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-slate-900">
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Chave PIX ou Link de Checkout (Mercado Pago / Asaas / Stripe)</label>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">Chave PIX ou Link de Checkout Automático</label>
               <input type="text" id="adminSubPixOrCheckout" placeholder="Ex: pix@controlpig.com.br ou https://..." class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-900">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">WhatsApp Comercial p/ Comprovantes</label>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 mb-0.5">WhatsApp Comercial p/ Suporte</label>
               <input type="text" id="adminSubSupportWhatsapp" placeholder="Ex: 5511987654321" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-900">
             </div>
           </div>
 
           <button type="button" onclick="window.saveAdminSubscriptionConfig()" class="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-xs cursor-pointer">
-            💾 Salvar Tabela de Preços e Configurações de Planos
+            💾 Salvar Tabela de Preços (R$ 29,90 / R$ 49,90 / R$ 69,90 + R$ 9,90)
           </button>
 
           <!-- Gerador de Chave Criptografada de Liberação de Assinatura -->
           <div class="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
-            <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 block">🔑 Gerar Chave de Ativação de Assinatura Paga (Pós-Pagamento)</span>
+            <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 block">🔑 Gerar Chave de Cortesia / Liberação Manual (Opcional)</span>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <input type="email" id="adminGenKeyEmail" placeholder="E-mail do cliente (opcional)" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-900">
               <select id="adminGenKeyPlan" class="px-2.5 py-1.5 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+                <option value="IND-30">👤 Solteiro Mensal (R$ 29,90)</option>
+                <option value="CAS-30">💑 Casal Mensal (R$ 49,90)</option>
+                <option value="FAM-30" selected>👨‍👩‍👧‍👦 Família Mensal (R$ 69,90)</option>
                 <option value="FAM-365">👨‍👩‍👧‍👦 Família Anual (365 dias)</option>
-                <option value="FAM-30">👨‍👩‍👧‍👦 Família Mensal (30 dias)</option>
-                <option value="IND-365">👤 Individual Anual (365 dias)</option>
-                <option value="IND-30">👤 Individual Mensal (30 dias)</option>
-                <option value="VIP-9999">👑 Vitalício (Sem vencimento)</option>
+                <option value="VIP-9999">👑 Cortesia Vitalícia (VIP)</option>
               </select>
               <button type="button" onclick="window.generateCustomerLicenseKey()" class="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer">
                 ⚡ Gerar Chave
@@ -23421,8 +23494,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             </div>
             <div id="adminGeneratedLicenseBox" class="hidden p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-between gap-2">
               <div>
-                <span class="text-[10px] text-emerald-700 font-bold block">Chave gerada (clique para copiar e enviar ao cliente):</span>
-                <strong id="adminGeneratedLicenseCode" class="font-mono font-black text-sm text-emerald-950 tracking-wider">CPIG-FAM-365-000000</strong>
+                <span class="text-[10px] text-emerald-700 font-bold block">Chave gerada (clique para copiar):</span>
+                <strong id="adminGeneratedLicenseCode" class="font-mono font-black text-sm text-emerald-950 tracking-wider">CPIG-FAM-30-000000</strong>
               </div>
               <button type="button" onclick="window.copyGeneratedLicenseKey()" class="px-3 py-1.5 rounded-xl bg-emerald-700 text-white font-black text-xs cursor-pointer">📋 Copiar</button>
             </div>
@@ -23431,10 +23504,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <!-- Botões de Teste / Preview do Paywall pelo Admin -->
           <div class="grid grid-cols-2 gap-2 pt-1">
             <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false);" class="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>👁️ Ver Tela de Planos (Paywall)</span>
+              <span>👁️ Ver Tela dos 3 Planos (Paywall)</span>
             </button>
             <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(true);" class="py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-[11px] flex items-center justify-center gap-1.5 cursor-pointer">
-              <span>🔒 Simular Bloqueio Pós-Trial</span>
+              <span>🔒 Simular Bloqueio Pós-7 Dias</span>
             </button>
           </div>
         </div>
@@ -23463,21 +23536,21 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="flex items-center gap-2">
               <div class="w-9 h-9 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-lg">💎</div>
               <div>
-                <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 block">Assinatura &amp; Segurança</span>
-                <h4 id="userPanelSubPlanTitle" class="font-black text-xs sm:text-sm text-white leading-tight">Plano Casal &amp; Família</h4>
+                <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 block">Meu Plano &amp; Assinatura</span>
+                <h4 id="userPanelSubPlanTitle" class="font-black text-xs sm:text-sm text-white leading-tight">Plano Casal (R$ 49,90/mês)</h4>
               </div>
             </div>
             <span id="userPanelSubStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ativo</span>
           </div>
 
           <div class="p-2.5 rounded-xl bg-white/10 border border-white/15 flex items-center justify-between text-[11px]">
-            <span id="userPanelSubValidityLabel" class="text-blue-100">Vencimento / Renovação:</span>
+            <span id="userPanelSubValidityLabel" class="text-blue-100">Status / Renovação:</span>
             <strong id="userPanelSubValidityDate" class="font-mono font-black text-amber-300">--/--/----</strong>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
             <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false);" class="py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all">
-              <span>👑 Ver Planos / Assinar</span>
+              <span>👑 Ver Planos / Mudar</span>
             </button>
             <button type="button" onclick="closeAdminModal(); window.openSubscriptionPaywallModal(false, true);" class="py-2 px-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
               <span>🎟️ Ativar Código / Cupom</span>
@@ -23485,25 +23558,29 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           </div>
         </div>
 
-        <!-- 0. Escolha da Modalidade do Plano (Individual vs Casal / Família) -->
+        <!-- 0. Escolha da Modalidade do Plano (Solteiro vs Casal vs Família) -->
         <div class="p-3.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xs">
           <div class="flex items-center justify-between mb-1.5">
             <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
               <span>🪪</span><span>Modalidade da Minha Conta</span>
             </h4>
-            <span id="adminUserCurrentPlanBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Plano Casal / Família</span>
+            <span id="adminUserCurrentPlanBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">💑 Plano Casal</span>
           </div>
           <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
-            Escolha se deseja usar o aplicativo no modo <strong>Casal / Família</strong> (com inclusão de membros e Chat) ou no modo <strong>Individual</strong> (sem chat, com Lista de Compras e Histórico de Preços).
+            Escolha sua modalidade: <strong>Solteiro</strong> (1 pessoa, R$ 29,90), <strong>Casal</strong> (2 pessoas + Chat, R$ 49,90) ou <strong>Família</strong> (até 5 pessoas + R$ 9,90 por membro adicional, R$ 69,90).
           </p>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="btnUserPlanMode_familia" onclick="window.setUserAccountPlanMode('familia')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer">
-              <span>👨‍👩‍👧‍👦</span>
-              <span>Casal / Família</span>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" id="btnUserPlanMode_individual" onclick="window.setUserAccountPlanMode('individual')" class="py-2 px-2 rounded-xl font-black text-[11px] flex flex-col items-center justify-center gap-0.5 border transition-all cursor-pointer">
+              <span>👤 Solteiro</span>
+              <span class="text-[9px] font-mono opacity-80">R$ 29,90 • 1p</span>
             </button>
-            <button type="button" id="btnUserPlanMode_individual" onclick="window.setUserAccountPlanMode('individual')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 border transition-all cursor-pointer">
-              <span>👤</span>
-              <span>Individual</span>
+            <button type="button" id="btnUserPlanMode_casal" onclick="window.setUserAccountPlanMode('casal')" class="py-2 px-2 rounded-xl font-black text-[11px] flex flex-col items-center justify-center gap-0.5 border transition-all cursor-pointer">
+              <span>💑 Casal</span>
+              <span class="text-[9px] font-mono opacity-80">R$ 49,90 • 2p</span>
+            </button>
+            <button type="button" id="btnUserPlanMode_familia" onclick="window.setUserAccountPlanMode('familia')" class="py-2 px-2 rounded-xl font-black text-[11px] flex flex-col items-center justify-center gap-0.5 border transition-all cursor-pointer">
+              <span>👨‍👩‍👧‍👦 Família</span>
+              <span class="text-[9px] font-mono opacity-80">R$ 69,90 • 5p+</span>
             </button>
           </div>
         </div>
@@ -42088,26 +42165,26 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
 
   <!-- ========================================================================= -->
-  <!-- MODAL: PAYWALL DE PLANOS & ASSINATURA (100% PAGO • SEM FREEMIUM)          -->
+  <!-- MODAL: PAYWALL DE PLANOS & ASSINATURA (3 PLANOS OFICIAIS + MEMBRO EXTRA)  -->
   <!-- ========================================================================= -->
   <div id="modalSubscriptionPaywall" class="fixed inset-0 bg-[#041126]/95 backdrop-blur-lg z-[4200] hidden flex items-center justify-center p-3 sm:p-4 select-none overflow-y-auto">
-    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-[32px] max-w-lg w-full p-5 sm:p-6 shadow-2xl border-2 border-amber-400/50 space-y-4 my-auto max-h-[94vh] overflow-y-auto custom-scrollbar text-xs">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-[32px] max-w-2xl w-full p-4 sm:p-6 shadow-2xl border-2 border-amber-400/50 space-y-3.5 my-auto max-h-[95vh] overflow-y-auto custom-scrollbar text-xs">
       
       <!-- Cabeçalho do Paywall -->
-      <div class="flex items-start justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+      <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 flex items-center justify-center text-2xl font-black shadow-md flex-shrink-0">
             👑
           </div>
           <div>
             <span id="paywallHeaderBadge" class="inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] uppercase tracking-wider mb-0.5">
-              Assinatura ControlPig Pro
+              Assinatura ControlPig Pro • 7 Dias Grátis
             </span>
             <h2 id="paywallHeaderTitle" class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
               Escolha o Plano Ideal para Você
             </h2>
             <p id="paywallHeaderSubtitle" class="text-[11px] text-slate-500 dark:text-slate-400">
-              Seus dados são 100% privados, criptografados e sincronizados com segurança.
+              Solteiro, Casal ou Família — 100% dos recursos com proteção e sincronização em tempo real.
             </p>
           </div>
         </div>
@@ -42120,122 +42197,169 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       <div id="paywallExpiredHardNotice" class="hidden p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800 flex items-start gap-2.5">
         <span class="text-xl flex-shrink-0">🔒</span>
         <div class="leading-snug">
-          <h4 class="font-black text-xs text-rose-900 dark:text-rose-200">Seu período de teste gratuito encerrou!</h4>
+          <h4 class="font-black text-xs text-rose-900 dark:text-rose-200">Seu período de 7 dias grátis encerrou!</h4>
           <p class="text-[11px] text-rose-700 dark:text-rose-300 mt-0.5">
-            Fique tranquilo(a): <strong>todos os seus lançamentos, listas e cadastros estão 100% salvos</strong>. Para continuar utilizando o ControlPig, ative sua assinatura abaixo.
+            Fique tranquilo(a): <strong>todos os seus lançamentos, notas fiscais e listas estão 100% salvos</strong>. Escolha um dos 3 planos abaixo para liberar seu acesso imediatamente.
           </p>
         </div>
       </div>
 
-      <!-- Chave Alternadora de Ciclo: ANUAL (Mais Econômico) vs MENSAL -->
+      <!-- Chave Alternadora de Ciclo: MENSAL vs ANUAL -->
       <div class="p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 grid grid-cols-2 gap-1.5 border border-slate-200/80 dark:border-slate-700">
-        <button type="button" id="btnPaywallCycle_annual" onclick="window.setPaywallBillingCycle('annual')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-blue-600 text-white shadow-sm">
-          <span>🔥 Anual</span>
-          <span class="px-1.5 py-0.2 rounded-full bg-amber-300 text-slate-950 text-[9px] font-black">-33% OFF</span>
+        <button type="button" id="btnPaywallCycle_monthly" onclick="window.setPaywallBillingCycle('monthly')" class="py-2 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-blue-600 text-white shadow-sm">
+          <span>📅 Assinatura Mensal</span>
         </button>
-        <button type="button" id="btnPaywallCycle_monthly" onclick="window.setPaywallBillingCycle('monthly')" class="py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-white/60">
-          <span>📅 Mensal</span>
+        <button type="button" id="btnPaywallCycle_annual" onclick="window.setPaywallBillingCycle('annual')" class="py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-white/60">
+          <span>🔥 Anual</span>
+          <span class="px-1.5 py-0.2 rounded-full bg-amber-300 text-slate-950 text-[9px] font-black">-20% OFF</span>
         </button>
       </div>
 
-      <!-- Os 2 Planos Pagos (Individual vs Casal & Família) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <!-- OS 3 PLANOS OFICIAIS (SOLTEIRO R$ 29,90 | CASAL R$ 49,90 | FAMÍLIA R$ 69,90) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
         
-        <!-- CARD 1: PLANO INDIVIDUAL -->
-        <div id="cardPlan_individual" onclick="window.selectPaywallPlanTier('individual')" class="p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative">
+        <!-- 1. PLANO SOLTEIRO (INDIVIDUAL) -->
+        <div id="cardPlan_individual" onclick="window.selectPaywallPlanTier('individual')" class="p-3.5 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-2.5 relative">
           <div>
             <div class="flex items-center justify-between mb-1">
-              <span class="px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[10px]">👤 1 PESSOA</span>
+              <span class="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[9px]">👤 1 USUÁRIO</span>
               <span id="radioPlan_individual" class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black"></span>
             </div>
-            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Individual</h3>
-            <p class="text-[11px] text-slate-500 mt-0.5">Controle financeiro pessoal completo e lista de compras inteligente.</p>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">Solteiro (Individual)</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">Gestão financeira pessoal e lista de compras com histórico de preços.</p>
 
-            <div class="my-3 pt-2 border-t border-slate-200/70 dark:border-slate-700">
+            <div class="my-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-700">
               <div class="flex items-baseline gap-1">
-                <span class="text-xs font-bold text-slate-500">R$</span>
-                <strong id="priceDisplay_individual" class="text-2xl font-black text-slate-900 dark:text-white font-mono">9,99</strong>
-                <span id="priceSuffix_individual" class="text-[11px] text-slate-500 font-semibold">/mês no anual</span>
+                <span class="text-[11px] font-bold text-slate-500">R$</span>
+                <strong id="priceDisplay_individual" class="text-xl font-black text-slate-900 dark:text-white font-mono">29,90</strong>
+                <span id="priceSuffix_individual" class="text-[10px] text-slate-500 font-semibold">/mês</span>
               </div>
-              <span id="priceSubtext_individual" class="text-[10px] text-emerald-600 font-bold block mt-0.5">R$ 119,90 cobrado anualmente</span>
+              <span id="priceSubtext_individual" class="text-[9px] text-emerald-600 font-bold block mt-0.5">7 dias grátis para novos usuários</span>
             </div>
 
-            <ul class="space-y-1.5 text-[11px] text-slate-700 dark:text-slate-300">
-              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Lançamentos e Ciclos ilimitados</span></li>
-              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Leitor QR Code NFC-e + Histórico</span></li>
-              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Lista de Compras na Gôndola</span></li>
-              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Garantias, Pets, Saúde &amp; Veículos</span></li>
-              <li class="flex items-center gap-1.5 text-slate-400"><span class="font-bold">✕</span><span>Sem Membros extras / Sem Chat</span></li>
+            <ul class="space-y-1 text-[10px] text-slate-700 dark:text-slate-300">
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span><strong>1 Usuário</strong> (Titular)</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Lista de Compras &amp; Comparador</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Leitor QR Code NFC-e + Garantias</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Pets, Saúde, Veículos &amp; Metas</span></li>
+              <li class="flex items-center gap-1.5 text-slate-400"><span class="font-bold">✕</span><span>Sem Chat / Sem membros extras</span></li>
             </ul>
           </div>
         </div>
 
-        <!-- CARD 2: PLANO CASAL & FAMÍLIA (MAIS ESCOLHIDO) -->
-        <div id="cardPlan_familia" onclick="window.selectPaywallPlanTier('familia')" class="p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative">
-          <div class="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-xs">
-            ⭐ Mais Escolhido
+        <!-- 2. PLANO CASAL (2 PESSOAS) -->
+        <div id="cardPlan_casal" onclick="window.selectPaywallPlanTier('casal')" class="p-3.5 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-2.5 relative">
+          <div class="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-[8px] uppercase tracking-wider shadow-xs">
+            💑 Ideal p/ Casais
           </div>
           <div>
             <div class="flex items-center justify-between mb-1">
-              <span class="px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-black text-[10px]">👨‍👩‍👧‍👦 ATÉ 5 MEMBROS</span>
-              <span id="radioPlan_familia" class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">✓</span>
+              <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white font-black text-[9px]">💑 2 PESSOAS</span>
+              <span id="radioPlan_casal" class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">✓</span>
             </div>
-            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Casal &amp; Família</h3>
-            <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">Sincronização familiar completa, Chat de compras e módulo Filhos.</p>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Casal</h3>
+            <p class="text-[10px] text-slate-600 dark:text-slate-300 mt-0.5">Finanças a dois sincronizadas em tempo real com Chat e Gôndola.</p>
 
-            <div class="my-3 pt-2 border-t border-blue-200/70 dark:border-blue-800">
+            <div class="my-2.5 pt-2 border-t border-blue-200/70 dark:border-blue-800">
               <div class="flex items-baseline gap-1">
-                <span class="text-xs font-bold text-slate-500">R$</span>
-                <strong id="priceDisplay_familia" class="text-2xl font-black text-blue-700 dark:text-blue-300 font-mono">16,65</strong>
-                <span id="priceSuffix_familia" class="text-[11px] text-slate-500 font-semibold">/mês no anual</span>
+                <span class="text-[11px] font-bold text-slate-500">R$</span>
+                <strong id="priceDisplay_casal" class="text-xl font-black text-blue-700 dark:text-blue-300 font-mono">49,90</strong>
+                <span id="priceSuffix_casal" class="text-[10px] text-slate-500 font-semibold">/mês</span>
               </div>
-              <span id="priceSubtext_familia" class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block mt-0.5">R$ 199,90 cobrado anualmente</span>
+              <span id="priceSubtext_casal" class="text-[9px] text-emerald-700 dark:text-emerald-400 font-bold block mt-0.5">7 dias grátis • 2 pessoas inclusas</span>
             </div>
 
-            <ul class="space-y-1.5 text-[11px] text-slate-800 dark:text-slate-200 font-medium">
-              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Tudo do Plano Individual</strong></span></li>
-              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Até 5 Membros da Família</strong> inclusos</span></li>
-              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Chat da Família</strong> + Gôndola ao vivo</span></li>
-              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Crianças, Boletim &amp; Educação</strong></span></li>
-              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span>Divisão por Responsável &amp; Cartões</span></li>
+            <ul class="space-y-1 text-[10px] text-slate-800 dark:text-slate-200 font-medium">
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Até 2 Usuários</strong> (Você + Parceiro)</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span><strong>Chat do Casal</strong> + Gôndola ao vivo</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span>Divisão de gastos por Responsável</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-blue-600 font-black">✓</span><span>Cartões, Garantias &amp; Comparador</span></li>
+              <li class="flex items-center gap-1.5 text-slate-400"><span class="font-bold">•</span><span>Para 3 ou mais pessoas: Plano Família</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. PLANO FAMÍLIA (ATÉ 5 PESSOAS + ADICIONAL R$ 9,90) -->
+        <div id="cardPlan_familia" onclick="window.selectPaywallPlanTier('familia')" class="p-3.5 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-2.5 relative">
+          <div class="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[8px] uppercase tracking-wider shadow-xs">
+            ⭐ Completo Família
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-black text-[9px]">👨‍👩‍👧‍👦 ATÉ 5 + EXTRAS</span>
+              <span id="radioPlan_familia" class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black"></span>
+            </div>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white">Plano Família</h3>
+            <p class="text-[10px] text-slate-600 dark:text-slate-300 mt-0.5">Até 5 membros inclusos + opção de incluir membros extras por R$ 9,90.</p>
+
+            <div class="my-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-700">
+              <div class="flex items-baseline gap-1">
+                <span class="text-[11px] font-bold text-slate-500">R$</span>
+                <strong id="priceDisplay_familia" class="text-xl font-black text-slate-900 dark:text-white font-mono">69,90</strong>
+                <span id="priceSuffix_familia" class="text-[10px] text-slate-500 font-semibold">/mês</span>
+              </div>
+              <span id="priceSubtext_familia" class="text-[9px] text-emerald-700 dark:text-emerald-400 font-bold block mt-0.5">Até 5 pessoas (+R$ 9,90/membro extra)</span>
+            </div>
+
+            <ul class="space-y-1 text-[10px] text-slate-800 dark:text-slate-200 font-medium">
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span><strong>Até 5 Usuários</strong> inclusos no plano</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span><strong>+ R$ 9,90/mês</strong> por membro adicional</span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span><strong>Crianças, Notas &amp; Educação</strong></span></li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-600 font-black">✓</span><span>Chat Familiar + Todos os 10 módulos</span></li>
             </ul>
           </div>
         </div>
 
       </div>
 
-      <!-- Botão Principal de Checkout Seguro (PIX / Cartão) -->
+      <!-- Seletor de Membros Adicionais (Visível quando o Plano Família está selecionado) -->
+      <div id="boxPaywallExtraMembers" class="hidden p-3 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex items-center justify-between gap-2">
+        <div>
+          <span class="font-black text-xs text-indigo-950 dark:text-indigo-200 block">➕ Deseja incluir mais de 5 membros na Família?</span>
+          <span class="text-[10px] text-indigo-700 dark:text-indigo-300">O plano Família já inclui <strong>5 usuários</strong>. Cada membro adicional custa apenas <strong id="labelExtraMemberUnitPrice">+ R$ 9,90/mês</strong>.</span>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button type="button" onclick="window.adjustPaywallExtraMembers(-1)" class="w-7 h-7 rounded-xl bg-white dark:bg-slate-800 border border-indigo-300 font-black text-sm text-indigo-700 flex items-center justify-center cursor-pointer">-</button>
+          <div class="text-center min-w-[54px]">
+            <strong id="paywallExtraMembersCount" class="font-mono font-black text-sm text-indigo-950 dark:text-white block">0 extras</strong>
+            <span id="paywallTotalSlotsLabel" class="text-[9px] font-bold text-indigo-600 block">5 vagas</span>
+          </div>
+          <button type="button" onclick="window.adjustPaywallExtraMembers(1)" class="w-7 h-7 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center cursor-pointer">+</button>
+        </div>
+      </div>
+
+      <!-- Botão Principal de Assinatura Automática / Checkout -->
       <div class="space-y-2 pt-1">
         <button type="button" onclick="window.startSubscriptionCheckout()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98 transition-all">
-          <span>🔒 Continuar para Pagamento Seguro (PIX ou Cartão)</span>
+          <span>🔒 Assinar Plano Selecionado Agora</span>
         </button>
 
-        <!-- Área de Pagamento / PIX / Checkout Gerado -->
+        <!-- Área de Pagamento / Ativação Automática -->
         <div id="paywallCheckoutActionBox" class="hidden p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-400 space-y-2.5">
           <div class="flex items-center justify-between">
             <strong class="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-              <span>⚡</span> <span id="checkoutSummaryTitle">Pagamento • Plano Casal &amp; Família</span>
+              <span>⚡</span> <span id="checkoutSummaryTitle">Plano Casal (Mensal)</span>
             </strong>
-            <span id="checkoutSummaryAmount" class="font-mono font-black text-sm text-emerald-700">R$ 199,90</span>
+            <span id="checkoutSummaryAmount" class="font-mono font-black text-sm text-emerald-700">R$ 49,90</span>
           </div>
           <p class="text-[11px] text-slate-700 dark:text-slate-300 leading-snug">
-            Realize o pagamento via PIX/Checkout abaixo e envie o comprovante para receber sua <strong>Chave de Ativação Imediata</strong>:
+            Assim que o pagamento é confirmado na Loja / Checkout, seu plano é <strong>ativado automaticamente</strong> sem precisar aguardar liberação manual:
           </p>
-          <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 flex items-center justify-between gap-2">
-            <span id="checkoutPixOrLinkText" class="font-mono font-bold text-xs text-slate-800 dark:text-slate-200 truncate">pix@controlpig.com.br</span>
-            <button type="button" onclick="window.copyPaywallPixOrOpenCheckout()" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-black text-[11px] whitespace-nowrap cursor-pointer">
-              📋 Copiar / Abrir
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button type="button" onclick="window.confirmAutomaticStoreSubscription()" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+              <span>✅ Confirmar Assinatura Automática</span>
+            </button>
+            <button type="button" onclick="window.copyPaywallPixOrOpenCheckout()" class="py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-300 text-emerald-800 dark:text-emerald-300 font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>📋 Copiar PIX / Abrir Link</span>
             </button>
           </div>
-          <button type="button" onclick="window.sendSubscriptionReceiptWhatsApp()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer">
-            <span>📲 Já Paguei! Solicitar Liberação no WhatsApp</span>
-          </button>
+          <span id="checkoutPixOrLinkText" class="hidden"></span>
         </div>
 
         <!-- Acordeão para Ativar Chave de Assinatura (`CPIG-...`) ou Cupom VIP -->
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
           <button type="button" onclick="document.getElementById('boxPaywallActivationCode').classList.toggle('hidden')" class="w-full text-center text-[11px] font-extrabold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-            🔑 Possui uma Chave de Liberação ou Cupom VIP? Toque aqui para ativar
+            🔑 Possui um Código de Liberação ou Cupom VIP? Toque aqui para ativar
           </button>
           <div id="boxPaywallActivationCode" class="hidden mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-2">
             <input type="text" id="inputPaywallLicenseOrCoupon" placeholder="Digite sua chave CPIG-... ou Cupom VIP" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-mono font-black uppercase text-xs text-slate-900 dark:text-white">
@@ -42259,20 +42383,66 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
   <script>
   // ============================================================================
-  // V2.1.119: MOTOR DE ASSINATURAS & PLANOS PAGOS (SEM FREEMIUM + ANTI-FRAUDE)
+  // V2.1.120: MOTOR DE 3 PLANOS (R$ 29,90 | R$ 49,90 | R$ 69,90 + R$ 9,90 EXTRA)
+  // + ATIVAÇÃO AUTOMÁTICA + DASHBOARD DE ASSINANTES EM TEMPO REAL NO ADMIN
   // ============================================================================
   (function() {
     const SUB_SECRET_SALT = 'CTRLPIG_PRO_2026_SIG_V1';
-    const SUB_CONFIG_KEY = 'ctrlpig_commercial_sub_config_v1';
+    const SUB_CONFIG_KEY = 'ctrlpig_commercial_sub_config_v2';
+    const SUB_REGISTRY_KEY = 'ctrlpig_subscribers_registry_v1';
     const CLOCK_GUARD_KEY = 'ctrlpig_monotonic_clock_guard_v1';
 
-    window.selectedPaywallCycle = 'annual';
-    window.selectedPaywallTier = 'familia';
+    window.selectedPaywallCycle = 'monthly';
+    window.selectedPaywallTier = 'casal';
+    window.selectedPaywallExtraMembers = 0;
     window.isPaywallHardLocked = false;
+    window.currentAdminSubFilter = 'all';
 
-    // 1. Hash Criptográfico Leve para Assinatura de Integridade (Impede edição manual no localStorage)
-    function computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt) {
-      const raw = `${String(email || '').toLowerCase().trim()}|${status}|${planTier}|${billingCycle}|${expiresAt}|${SUB_SECRET_SALT}`;
+    function formatBRDateFromTs(ts) {
+      if (!ts) return '--/--/----';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '--/--/----';
+      return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+
+    function getPlanMeta(tier, extraMembers = 0, cfg = null) {
+      const c = cfg || window.getCommercialSubscriptionConfig();
+      const extras = Math.max(0, parseInt(extraMembers, 10) || 0);
+      if (tier === 'individual') {
+        return {
+          code: 'individual',
+          name: '👤 Plano Solteiro (Individual)',
+          shortName: '👤 Solteiro',
+          maxMembers: 1,
+          monthlyPrice: c.indMonthly,
+          annualPrice: c.indAnnual
+        };
+      }
+      if (tier === 'casal') {
+        return {
+          code: 'casal',
+          name: '💑 Plano Casal (2 Pessoas)',
+          shortName: '💑 Casal (2p)',
+          maxMembers: 2,
+          monthlyPrice: c.coupleMonthly,
+          annualPrice: c.coupleAnnual
+        };
+      }
+      const extraCostMonth = extras * c.extraMemberPrice;
+      return {
+        code: 'familia',
+        name: extras > 0 ? `👨‍👩‍👧‍👦 Plano Família (${5 + extras} Pessoas)` : '👨‍👩‍👧‍👦 Plano Família (Até 5 Pessoas)',
+        shortName: extras > 0 ? `👨‍👩‍👧‍👦 Família (${5 + extras}p)` : '👨‍👩‍👧‍👦 Família (5p)',
+        maxMembers: 5 + extras,
+        monthlyPrice: c.famMonthly + extraCostMonth,
+        annualPrice: c.famAnnual + (extraCostMonth * 12 * 0.8)
+      };
+    }
+    window.getControlPigPlanMeta = getPlanMeta;
+
+    // 1. Hash Criptográfico de Integridade
+    function computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt, extraMembers = 0) {
+      const raw = `${String(email || '').toLowerCase().trim()}|${status}|${planTier}|${billingCycle}|${expiresAt}|${extraMembers || 0}|${SUB_SECRET_SALT}`;
       let h1 = 0xdeadbeef ^ raw.length;
       let h2 = 0x41c6ce57 ^ raw.length;
       for (let i = 0, ch; i < raw.length; i++) {
@@ -42285,7 +42455,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36).toUpperCase();
     }
 
-    // 2. Relógio Monotônico Anti-Rollback (Impede voltar a data do celular para ganhar mais dias grátis)
+    // 2. Relógio Monotônico Anti-Rollback
     function getVerifiedCurrentTimestamp() {
       const now = Date.now();
       try {
@@ -42294,7 +42464,6 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           localStorage.setItem(CLOCK_GUARD_KEY, String(now));
           return now;
         }
-        // Se o relógio do aparelho foi atrasado em mais de 2 horas, usa o maior timestamp já registrado
         if (lastSeen - now > 2 * 60 * 60 * 1000) {
           return lastSeen;
         }
@@ -42302,14 +42471,17 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       return now;
     }
 
-    // 3. Configuração Comercial de Preços e Dias de Teste (Editável pelo Admin Master)
+    // 3. Configuração Comercial Oficial (Solteiro R$ 29,90 | Casal R$ 49,90 | Família R$ 69,90 + Extra R$ 9,90)
     window.getCommercialSubscriptionConfig = function() {
       const defaults = {
         trialDays: 7,
-        indMonthly: 14.90,
-        indAnnual: 119.90,
-        famMonthly: 24.90,
-        famAnnual: 199.90,
+        indMonthly: 29.90,
+        indAnnual: 287.00,
+        coupleMonthly: 49.90,
+        coupleAnnual: 479.00,
+        famMonthly: 69.90,
+        famAnnual: 671.00,
+        extraMemberPrice: 9.90,
         pixOrCheckout: 'rodrigocardosocn@gmail.com',
         supportWhatsapp: '5511987654321'
       };
@@ -42323,19 +42495,27 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     window.saveAdminSubscriptionConfig = function() {
+      const indM = parseFloat(document.getElementById('adminSubPriceIndMonth')?.value) || 29.90;
+      const copM = parseFloat(document.getElementById('adminSubPriceCoupleMonth')?.value) || 49.90;
+      const famM = parseFloat(document.getElementById('adminSubPriceFamMonth')?.value) || 69.90;
+      const extM = parseFloat(document.getElementById('adminSubPriceExtraMember')?.value) || 9.90;
       const cfg = {
         trialDays: Math.max(0, parseInt(document.getElementById('adminSubTrialDays')?.value ?? '7', 10)),
-        indMonthly: parseFloat(document.getElementById('adminSubPriceIndMonth')?.value) || 14.90,
-        indAnnual: parseFloat(document.getElementById('adminSubPriceIndYear')?.value) || 119.90,
-        famMonthly: parseFloat(document.getElementById('adminSubPriceFamMonth')?.value) || 24.90,
-        famAnnual: parseFloat(document.getElementById('adminSubPriceFamYear')?.value) || 199.90,
+        indMonthly: indM,
+        indAnnual: Math.round(indM * 12 * 0.8 * 100) / 100,
+        coupleMonthly: copM,
+        coupleAnnual: Math.round(copM * 12 * 0.8 * 100) / 100,
+        famMonthly: famM,
+        famAnnual: Math.round(famM * 12 * 0.8 * 100) / 100,
+        extraMemberPrice: extM,
         pixOrCheckout: (document.getElementById('adminSubPixOrCheckout')?.value || 'rodrigocardosocn@gmail.com').trim(),
         supportWhatsapp: (document.getElementById('adminSubSupportWhatsapp')?.value || '5511987654321').replace(/\D/g, '')
       };
       localStorage.setItem(SUB_CONFIG_KEY, JSON.stringify(cfg));
       window.refreshPaywallPricingUI();
+      window.renderAdminSubscribersDashboard();
       if (typeof showToastUndo === 'function') {
-        showToastUndo('💎 Tabela de preços e configurações de assinatura salvas!', false);
+        showToastUndo('💎 Tabela de preços (R$ 29,90 / R$ 49,90 / R$ 69,90 + R$ 9,90) salva!', false);
       }
     };
 
@@ -42344,14 +42524,277 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
       setVal('adminSubTrialDays', cfg.trialDays);
       setVal('adminSubPriceIndMonth', cfg.indMonthly.toFixed(2));
-      setVal('adminSubPriceIndYear', cfg.indAnnual.toFixed(2));
+      setVal('adminSubPriceCoupleMonth', cfg.coupleMonthly.toFixed(2));
       setVal('adminSubPriceFamMonth', cfg.famMonthly.toFixed(2));
-      setVal('adminSubPriceFamYear', cfg.famAnnual.toFixed(2));
+      setVal('adminSubPriceExtraMember', cfg.extraMemberPrice.toFixed(2));
       setVal('adminSubPixOrCheckout', cfg.pixOrCheckout);
       setVal('adminSubSupportWhatsapp', cfg.supportWhatsapp);
     };
 
-    // 4. Gerador e Validador de Chaves Criptografadas Pós-Pagamento (CPIG-PLAN-DAYS-HASH)
+    // 4. Diretório Central de Assinantes para o Dashboard do Admin Master
+    window.getSubscribersRegistry = function() {
+      let reg = {};
+      try {
+        reg = JSON.parse(localStorage.getItem(SUB_REGISTRY_KEY) || '{}') || {};
+      } catch (e) { reg = {}; }
+
+      // Garante que todos os usuários cadastrados em financas_cadastros_usuarios apareçam no Dashboard
+      try {
+        const cadastros = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]');
+        const now = getVerifiedCurrentTimestamp();
+        cadastros.forEach(c => {
+          const email = String(c.email || '').toLowerCase().trim();
+          if (!email || email === 'rodrigocardosocn@gmail.com') return;
+          if (!reg[email]) {
+            const subKey = `ctrlpig_subscription_record_v1_${email}`;
+            let subRec = null;
+            try { subRec = JSON.parse(localStorage.getItem(subKey) || 'null'); } catch (e) {}
+            const createdTs = c.criadoEm ? new Date(c.criadoEm).getTime() : now;
+            const tier = c.tipoPlano || (subRec && subRec.planTier) || 'casal';
+            reg[email] = {
+              email,
+              nome: c.nome || email.split('@')[0],
+              whatsapp: c.whatsapp || '',
+              status: (subRec && subRec.status) || 'trial',
+              planTier: tier,
+              billingCycle: (subRec && subRec.billingCycle) || 'monthly',
+              extraMembers: (subRec && subRec.extraMembers) || 0,
+              trialStartedAt: (subRec && subRec.trialStartedAt) || (subRec && subRec.startedAt) || createdTs,
+              paidActivatedAt: (subRec && subRec.paidActivatedAt) || null,
+              expiresAt: (subRec && subRec.expiresAt) || (createdTs + 7 * 24 * 60 * 60 * 1000)
+            };
+          }
+        });
+      } catch (e) {}
+      return reg;
+    };
+
+    window.upsertSubscriberInRegistry = function(entry) {
+      if (!entry || !entry.email) return;
+      const email = String(entry.email).toLowerCase().trim();
+      if (email === 'rodrigocardosocn@gmail.com' || email === 'user@local') return;
+      const reg = window.getSubscribersRegistry();
+      const prev = reg[email] || {};
+      reg[email] = {
+        ...prev,
+        ...entry,
+        email,
+        updatedAt: getVerifiedCurrentTimestamp()
+      };
+      try {
+        localStorage.setItem(SUB_REGISTRY_KEY, JSON.stringify(reg));
+      } catch (e) {}
+      // Sincroniza em background com Supabase couple_sync se disponível
+      try {
+        if (window.supabaseClient) {
+          window.supabaseClient.from('couple_sync').upsert({
+            id: 'ctrlpig_subscribers_registry_v1',
+            state_json: reg,
+            updated_at: new Date().toISOString()
+          }).then(() => {}).catch(() => {});
+        }
+      } catch (e) {}
+    };
+
+    window.setAdminSubFilter = function(filter) {
+      window.currentAdminSubFilter = filter || 'all';
+      ['all', 'trial', 'active', 'expired'].forEach(f => {
+        const btn = document.getElementById(`btnSubFilter_${f}`);
+        if (btn) {
+          btn.className = (f === window.currentAdminSubFilter)
+            ? 'px-2.5 py-1 rounded-lg bg-blue-600 text-white font-black text-[10px] cursor-pointer'
+            : 'px-2.5 py-1 rounded-lg bg-white/10 text-slate-300 font-bold text-[10px] cursor-pointer';
+        }
+      });
+      window.renderAdminSubscribersDashboard();
+    };
+
+    // Ações de Exceção em 1 Clique no Dashboard do Admin (+7 Dias Grátis, Bloquear, Ativar Pago)
+    window.adminExtendUserTrial7Days = function(email) {
+      const targetEmail = String(email || '').toLowerCase().trim();
+      if (!targetEmail) return;
+      const reg = window.getSubscribersRegistry();
+      const item = reg[targetEmail];
+      const now = getVerifiedCurrentTimestamp();
+      const baseExp = (item && item.expiresAt && item.expiresAt > now) ? item.expiresAt : now;
+      const newExp = baseExp + (7 * 24 * 60 * 60 * 1000);
+      const status = (item && item.status === 'active') ? 'active' : 'trial';
+      const tier = (item && item.planTier) || 'casal';
+      const cycle = (item && item.billingCycle) || 'monthly';
+      const extras = (item && item.extraMembers) || 0;
+      const sig = computeSubIntegritySignature(targetEmail, status, tier, cycle, newExp, extras);
+
+      const rec = {
+        email: targetEmail,
+        status,
+        planTier: tier,
+        billingCycle: cycle,
+        extraMembers: extras,
+        startedAt: (item && item.trialStartedAt) || now,
+        trialStartedAt: (item && item.trialStartedAt) || now,
+        paidActivatedAt: item ? item.paidActivatedAt : null,
+        expiresAt: newExp,
+        sig
+      };
+      localStorage.setItem(`ctrlpig_subscription_record_v1_${targetEmail}`, JSON.stringify(rec));
+      window.upsertSubscriberInRegistry({
+        ...item,
+        email: targetEmail,
+        status,
+        expiresAt: newExp
+      });
+      window.renderAdminSubscribersDashboard();
+      window.syncSubscriptionStatusUI();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🎁 +7 dias grátis concedidos para ${item?.nome || targetEmail}!`, false);
+      }
+    };
+
+    window.adminToggleBlockSubscriber = function(email, shouldBlock) {
+      const targetEmail = String(email || '').toLowerCase().trim();
+      if (!targetEmail) return;
+      const reg = window.getSubscribersRegistry();
+      const item = reg[targetEmail] || { email: targetEmail, nome: targetEmail };
+      const now = getVerifiedCurrentTimestamp();
+      const newStatus = shouldBlock ? 'blocked' : 'active';
+      const newExp = shouldBlock ? (now - 1000) : (now + 30 * 24 * 60 * 60 * 1000);
+      const tier = item.planTier || 'casal';
+      const cycle = item.billingCycle || 'monthly';
+      const extras = item.extraMembers || 0;
+      const sig = computeSubIntegritySignature(targetEmail, newStatus, tier, cycle, newExp, extras);
+
+      const rec = {
+        email: targetEmail,
+        status: newStatus,
+        planTier: tier,
+        billingCycle: cycle,
+        extraMembers: extras,
+        startedAt: item.trialStartedAt || now,
+        trialStartedAt: item.trialStartedAt || now,
+        paidActivatedAt: shouldBlock ? item.paidActivatedAt : (item.paidActivatedAt || now),
+        expiresAt: newExp,
+        sig
+      };
+      localStorage.setItem(`ctrlpig_subscription_record_v1_${targetEmail}`, JSON.stringify(rec));
+      window.upsertSubscriberInRegistry({
+        ...item,
+        email: targetEmail,
+        status: newStatus,
+        paidActivatedAt: rec.paidActivatedAt,
+        expiresAt: newExp
+      });
+      window.renderAdminSubscribersDashboard();
+      window.syncSubscriptionStatusUI();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(shouldBlock ? `🚫 Conta "${item.nome || targetEmail}" bloqueada no Paywall.` : `✅ Conta "${item.nome || targetEmail}" liberada por 30 dias!`, false);
+      }
+    };
+
+    window.renderAdminSubscribersDashboard = function() {
+      const listEl = document.getElementById('adminSubscribersListContainer');
+      if (!listEl) return;
+      const reg = window.getSubscribersRegistry();
+      const cfg = window.getCommercialSubscriptionConfig();
+      const now = getVerifiedCurrentTimestamp();
+      const entries = Object.values(reg).sort((a, b) => (b.updatedAt || b.trialStartedAt || 0) - (a.updatedAt || a.trialStartedAt || 0));
+
+      let trialCount = 0;
+      let paidCount = 0;
+      let expiredCount = 0;
+      let mrrTotal = 0;
+
+      const enriched = entries.map(item => {
+        const msLeft = (item.expiresAt || 0) - now;
+        const daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+        const isExp = item.status === 'blocked' || (msLeft <= 0 && item.status !== 'vip_lifetime');
+        const effectiveStatus = isExp ? (item.status === 'blocked' ? 'blocked' : 'expired') : item.status;
+        const meta = getPlanMeta(item.planTier || 'casal', item.extraMembers || 0, cfg);
+
+        if (effectiveStatus === 'trial') {
+          trialCount++;
+        } else if (effectiveStatus === 'active' || effectiveStatus === 'vip_lifetime') {
+          paidCount++;
+          if (effectiveStatus === 'active') {
+            mrrTotal += meta.monthlyPrice;
+          }
+        } else {
+          expiredCount++;
+        }
+        return { ...item, daysLeft, isExp, effectiveStatus, meta };
+      });
+
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setTxt('kpiSubTrialCount', String(trialCount));
+      setTxt('kpiSubPaidCount', String(paidCount));
+      setTxt('kpiSubMrrValue', `R$ ${mrrTotal.toFixed(2).replace('.', ',')}`);
+      setTxt('kpiSubExpiredCount', String(expiredCount));
+
+      const filtered = enriched.filter(item => {
+        if (window.currentAdminSubFilter === 'trial') return item.effectiveStatus === 'trial';
+        if (window.currentAdminSubFilter === 'active') return item.effectiveStatus === 'active' || item.effectiveStatus === 'vip_lifetime';
+        if (window.currentAdminSubFilter === 'expired') return item.effectiveStatus === 'expired' || item.effectiveStatus === 'blocked';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center text-slate-400 text-[11px]">
+            Nenhuma conta encontrada neste filtro. Assim que novos usuários criarem conta (7 dias grátis) ou assinarem um plano, eles aparecerão automaticamente aqui!
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(item => {
+        let badgeHtml = '';
+        if (item.effectiveStatus === 'trial') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-black text-[9px]">⏳ 7 Dias Grátis (${item.daysLeft}d restantes)</span>`;
+        } else if (item.effectiveStatus === 'active') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-black text-[9px]">✅ Plano Pago (${item.daysLeft}d)</span>`;
+        } else if (item.effectiveStatus === 'vip_lifetime') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-200 border border-purple-400/40 font-black text-[9px]">💎 Cortesia / VIP</span>`;
+        } else if (item.effectiveStatus === 'blocked') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-rose-600/30 text-rose-200 border border-rose-400/50 font-black text-[9px]">🚫 Bloqueado pelo Admin</span>`;
+        } else {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300 border border-rose-400/40 font-black text-[9px]">🔒 7 Dias Vencidos</span>`;
+        }
+
+        const trialDateStr = formatBRDateFromTs(item.trialStartedAt);
+        const paidDateStr = item.paidActivatedAt ? formatBRDateFromTs(item.paidActivatedAt) : 'Ainda em Teste Grátis';
+        const expDateStr = formatBRDateFromTs(item.expiresAt);
+        const priceStr = `R$ ${item.meta.monthlyPrice.toFixed(2).replace('.', ',')}/mês`;
+        const safeEmail = String(item.email || '').replace(/'/g, "\'");
+
+        return `
+          <div class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all">
+            <div class="space-y-0.5 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <strong class="text-xs font-black text-white truncate">${item.nome || item.email}</strong>
+                ${badgeHtml}
+                <span class="px-2 py-0.2 rounded-md bg-blue-500/20 text-blue-200 font-mono font-bold text-[9px]">${item.meta.shortName} • ${priceStr}</span>
+              </div>
+              <div class="text-[10px] text-slate-300 font-mono truncate">${item.email}</div>
+              <div class="flex items-center gap-3 text-[9px] text-slate-400 flex-wrap">
+                <span>📅 Início 7 Dias: <strong class="text-slate-200">${trialDateStr}</strong></span>
+                <span>💳 Entrada no Pago: <strong class="text-emerald-300">${paidDateStr}</strong></span>
+                <span>⏳ Vencimento: <strong class="text-amber-200">${expDateStr}</strong></span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button type="button" onclick="window.adminExtendUserTrial7Days('${safeEmail}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/40 font-black text-[10px] cursor-pointer whitespace-nowrap" title="Conceder +7 dias grátis">
+                🎁 +7 Dias
+              </button>
+              ${item.effectiveStatus === 'blocked' || item.effectiveStatus === 'expired'
+                ? `<button type="button" onclick="window.adminToggleBlockSubscriber('${safeEmail}', false)" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-200 border border-emerald-400/40 font-black text-[10px] cursor-pointer whitespace-nowrap">🔓 Liberar</button>`
+                : `<button type="button" onclick="window.adminToggleBlockSubscriber('${safeEmail}', true)" class="px-2.5 py-1.5 rounded-lg bg-rose-500/25 hover:bg-rose-500/35 text-rose-200 border border-rose-400/40 font-black text-[10px] cursor-pointer whitespace-nowrap">🚫 Bloquear</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    // 5. Gerador e Validador de Chaves Criptografadas (CPIG-PLAN-DAYS-HASH)
     function computeLicenseKeyHash(planCode, daysStr) {
       const raw = `CPIG_LIC|${planCode}|${daysStr}|${SUB_SECRET_SALT}`;
       let hash = 5381;
@@ -42362,7 +42805,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     }
 
     window.generateCustomerLicenseKey = function() {
-      const planVal = document.getElementById('adminGenKeyPlan')?.value || 'FAM-365';
+      const planVal = document.getElementById('adminGenKeyPlan')?.value || 'FAM-30';
       const [planCode, daysStr] = planVal.split('-');
       const saltPart = Math.floor(10 + Math.random() * 89);
       const check = computeLicenseKeyHash(planCode, `${daysStr}${saltPart}`);
@@ -42384,11 +42827,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         navigator.clipboard.writeText(code).catch(() => {});
       }
       if (typeof showToastUndo === 'function') {
-        showToastUndo(`🔑 Chave "${code}" copiada para a área de transferência!`, false);
+        showToastUndo(`🔑 Chave "${code}" copiada!`, false);
       }
     };
 
-    // 5. Leitura e Verificação Segura do Registro de Assinatura da Conta Ativa
+    // 6. Leitura e Gravação Segura do Registro de Assinatura da Conta Ativa
     window.getUserSubscriptionRecord = function(userObj) {
       const u = userObj || window.currentUserSession;
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
@@ -42399,7 +42842,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           status: 'master_lifetime',
           planTier: 'familia',
           billingCycle: 'lifetime',
+          extraMembers: 5,
           startedAt: 0,
+          trialStartedAt: 0,
+          paidActivatedAt: 0,
           expiresAt: 4102444800000,
           daysRemaining: 9999,
           isExpired: false
@@ -42416,22 +42862,24 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         const raw = localStorage.getItem(subKey);
         if (raw) {
           const rec = JSON.parse(raw);
-          const expectedSig = computeSubIntegritySignature(email, rec.status, rec.planTier, rec.billingCycle, rec.expiresAt);
+          const extras = rec.extraMembers || 0;
+          const expectedSig = computeSubIntegritySignature(email, rec.status, rec.planTier, rec.billingCycle, rec.expiresAt, extras);
           if (rec && rec.sig === expectedSig) {
             const msLeft = (rec.expiresAt || 0) - now;
             const daysRemaining = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
-            const isExpired = msLeft <= 0 && rec.status !== 'vip_lifetime';
+            const isExpired = rec.status === 'blocked' || (msLeft <= 0 && rec.status !== 'vip_lifetime');
             return {
               ...rec,
+              extraMembers: extras,
               daysRemaining,
               isExpired
             };
           } else {
-            console.warn('[CtrlPig Security] Assinatura adulterada detectada. Bloqueando acesso.');
             return {
               status: 'expired',
-              planTier: (u && u.tipoPlano) || 'familia',
-              billingCycle: 'trial',
+              planTier: (u && u.tipoPlano) || 'casal',
+              billingCycle: 'monthly',
+              extraMembers: 0,
               startedAt: now,
               expiresAt: now - 1000,
               daysRemaining: 0,
@@ -42441,27 +42889,31 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         }
       } catch (e) {}
 
-      // Se a conta possui cupom VIP vitalício já validado no cadastro
       if (u && (String(u.plano || '').toLowerCase().includes('vip') || String(u.papel || '').toLowerCase().includes('vip'))) {
         return window.saveUserSubscriptionRecord({
           status: 'vip_lifetime',
           planTier: u.tipoPlano || 'familia',
           billingCycle: 'lifetime',
+          extraMembers: 0,
           startedAt: now,
+          trialStartedAt: now,
+          paidActivatedAt: now,
           expiresAt: now + 3650 * 24 * 60 * 60 * 1000
         }, u);
       }
 
-      // Inicializa automaticamente o Período de Teste Grátis (Trial) para novas contas
       const cfg = window.getCommercialSubscriptionConfig();
       const trialDays = typeof cfg.trialDays === 'number' ? cfg.trialDays : 7;
       const expiresAt = now + (trialDays * 24 * 60 * 60 * 1000);
-      const tier = (u && u.tipoPlano) ? u.tipoPlano : 'familia';
+      const tier = (u && u.tipoPlano) ? u.tipoPlano : 'casal';
       return window.saveUserSubscriptionRecord({
         status: trialDays > 0 ? 'trial' : 'expired',
         planTier: tier,
-        billingCycle: 'trial',
+        billingCycle: 'monthly',
+        extraMembers: 0,
         startedAt: now,
+        trialStartedAt: now,
+        paidActivatedAt: null,
         expiresAt: expiresAt
       }, u);
     };
@@ -42473,32 +42925,64 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ? getUserScopedStorageKey('ctrlpig_subscription_record_v1', u)
         : `ctrlpig_subscription_record_v1_${email}`;
 
+      const now = getVerifiedCurrentTimestamp();
       const status = data.status || 'trial';
-      const planTier = data.planTier || 'familia';
-      const billingCycle = data.billingCycle || 'annual';
-      const startedAt = data.startedAt || getVerifiedCurrentTimestamp();
+      const planTier = data.planTier || 'casal';
+      const billingCycle = data.billingCycle || 'monthly';
+      const extraMembers = Math.max(0, parseInt(data.extraMembers, 10) || 0);
+      const startedAt = data.startedAt || now;
+      const trialStartedAt = data.trialStartedAt || startedAt;
+      const paidActivatedAt = status === 'active' ? (data.paidActivatedAt || now) : (data.paidActivatedAt || null);
       const expiresAt = data.expiresAt || (startedAt + 7 * 24 * 60 * 60 * 1000);
-      const sig = computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt);
+      const sig = computeSubIntegritySignature(email, status, planTier, billingCycle, expiresAt, extraMembers);
 
-      const record = { email, status, planTier, billingCycle, startedAt, expiresAt, sig };
+      const record = {
+        email,
+        status,
+        planTier,
+        billingCycle,
+        extraMembers,
+        startedAt,
+        trialStartedAt,
+        paidActivatedAt,
+        expiresAt,
+        sig
+      };
       try {
         localStorage.setItem(subKey, JSON.stringify(record));
       } catch (e) {}
 
-      const now = getVerifiedCurrentTimestamp();
+      // Registra automaticamente no Diretório de Assinantes do Admin Master
+      if (email && email !== 'user@local' && email !== 'rodrigocardosocn@gmail.com') {
+        window.upsertSubscriberInRegistry({
+          email,
+          nome: (u && u.nome) || email.split('@')[0],
+          whatsapp: (u && u.whatsapp) || '',
+          status,
+          planTier,
+          billingCycle,
+          extraMembers,
+          trialStartedAt,
+          paidActivatedAt,
+          expiresAt
+        });
+      }
+
       const msLeft = expiresAt - now;
       return {
         ...record,
         daysRemaining: Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24))),
-        isExpired: msLeft <= 0 && status !== 'vip_lifetime'
+        isExpired: status === 'blocked' || (msLeft <= 0 && status !== 'vip_lifetime')
       };
     };
 
-    // 6. Atualização Visual da Barra de Trial no Topo, Painel do Usuário e Paywall
+    // 7. Sincronização de Status Visual (Topo, Painel do Usuário, Limite de Membros e Hard Paywall)
     window.syncSubscriptionStatusUI = function() {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
       const sub = window.getUserSubscriptionRecord();
+      const cfg = window.getCommercialSubscriptionConfig();
+      const meta = getPlanMeta(sub.planTier, sub.extraMembers, cfg);
       const topBanner = document.getElementById('subscriptionTrialTopBanner');
 
       if (topBanner) {
@@ -42508,52 +42992,45 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           topBanner.classList.remove('hidden');
           const tEl = document.getElementById('subTopBannerTitle');
           const dEl = document.getElementById('subTopBannerDesc');
-          const planLabel = sub.planTier === 'individual' ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal & Família';
           if (tEl) tEl.textContent = `Período de Teste Grátis: ${sub.daysRemaining} ${sub.daysRemaining === 1 ? 'dia restante' : 'dias restantes'}`;
-          if (dEl) dEl.textContent = `${planLabel} • Assine para manter seu acesso ativo`;
+          if (dEl) dEl.textContent = `${meta.name} • R$ ${meta.monthlyPrice.toFixed(2).replace('.', ',')}/mês após o teste`;
         } else if (sub.isExpired) {
           topBanner.classList.remove('hidden');
           const tEl = document.getElementById('subTopBannerTitle');
           const dEl = document.getElementById('subTopBannerDesc');
-          if (tEl) tEl.textContent = `🔒 Período de Teste Encerrado — Ative sua Assinatura`;
-          if (dEl) dEl.textContent = `Seus dados estão salvos. Escolha seu plano para liberar o app.`;
+          if (tEl) tEl.textContent = `🔒 Período de Teste Encerrado — Ative seu Plano`;
+          if (dEl) dEl.textContent = `Seus dados estão salvos. Escolha Solteiro, Casal ou Família.`;
         } else {
           topBanner.classList.add('hidden');
         }
       }
 
-      // Atualiza Card no Painel do Usuário (#adminUserCompactView)
       const pTitle = document.getElementById('userPanelSubPlanTitle');
       const pBadge = document.getElementById('userPanelSubStatusBadge');
       const pDate = document.getElementById('userPanelSubValidityDate');
       if (pTitle && pBadge && pDate) {
-        const tierLabel = sub.planTier === 'individual' ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal & Família';
-        const cycleLabel = sub.billingCycle === 'annual' ? ' (Anual)' : (sub.billingCycle === 'monthly' ? ' (Mensal)' : '');
-        pTitle.textContent = `${tierLabel}${cycleLabel}`;
-
-        const expDate = new Date(sub.expiresAt);
-        const expStr = `${String(expDate.getDate()).padStart(2, '0')}/${String(expDate.getMonth() + 1).padStart(2, '0')}/${expDate.getFullYear()}`;
+        pTitle.textContent = `${meta.name} • R$ ${meta.monthlyPrice.toFixed(2).replace('.', ',')}/mês`;
+        const expStr = formatBRDateFromTs(sub.expiresAt);
 
         if (sub.status === 'vip_lifetime' || sub.status === 'master_lifetime') {
           pBadge.textContent = '👑 Vitalício Ativo';
           pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-300/40';
           pDate.textContent = 'Vitalício (Sem vencimento)';
         } else if (sub.status === 'active' && !sub.isExpired) {
-          pBadge.textContent = '✓ Assinante Ativo';
+          pBadge.textContent = '✓ Plano Pago Ativo';
           pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
-          pDate.textContent = `${expStr} (${sub.daysRemaining}d)`;
+          pDate.textContent = `Renovação: ${expStr} (${sub.daysRemaining}d)`;
         } else if (sub.status === 'trial' && !sub.isExpired) {
-          pBadge.textContent = `⏳ Teste Grátis (${sub.daysRemaining}d)`;
+          pBadge.textContent = `⏳ 7 Dias Grátis (${sub.daysRemaining}d)`;
           pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/25 text-amber-200 border border-amber-400/40';
-          pDate.textContent = `Fim do teste: ${expStr}`;
+          pDate.textContent = `Fim dos 7 dias grátis: ${expStr}`;
         } else {
           pBadge.textContent = '🔒 Assinatura Pendente';
           pBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/30 text-rose-200 border border-rose-400/40';
-          pDate.textContent = 'Expirado — Renovar agora';
+          pDate.textContent = 'Expirado — Ativar Plano';
         }
       }
 
-      // Se o período de teste ou assinatura expirou (e não está na tela de login), abre o Hard Paywall (Sem Freemium!)
       const isAuthLocked = document.documentElement.classList.contains('require-auth') ||
         (document.getElementById('authOverlayContainer') && !document.getElementById('authOverlayContainer').classList.contains('hidden') && document.getElementById('authOverlayContainer').style.display !== 'none');
 
@@ -42562,36 +43039,265 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
     };
 
-    // 7. Proteção de Mudança de Modalidade: Se assinou o Plano Individual Pago, exige Upgrade para usar Casal / Família
-    const _origSetUserAccountPlanMode = window.setUserAccountPlanMode;
+    // 8. Suporte aos 3 Planos na Modalidade da Conta (individual | casal | familia)
     window.setUserAccountPlanMode = function(mode) {
+      const validMode = (mode === 'individual' || mode === 'casal' || mode === 'familia') ? mode : 'casal';
+      const isIndiv = (validMode === 'individual');
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const sub = window.getUserSubscriptionRecord();
-      if (!isMaster && mode === 'familia' && sub.status === 'active' && sub.planTier === 'individual') {
+
+      // Se já é assinante pago de um plano menor e tenta subir para Casal ou Família, solicita Upgrade
+      const tierRank = { individual: 1, casal: 2, familia: 3 };
+      if (!isMaster && sub.status === 'active' && (tierRank[validMode] > tierRank[sub.planTier || 'casal'])) {
+        const targetMeta = getPlanMeta(validMode, 0);
         if (typeof showToastUndo === 'function') {
-          showToastUndo('👑 Para incluir membros e usar o Chat, faça o upgrade para o Plano Casal & Família!', false);
+          showToastUndo(`👑 Para usar o ${targetMeta.name}, faça o upgrade da sua assinatura!`, false);
         }
         window.openSubscriptionPaywallModal(false);
-        window.selectPaywallPlanTier('familia');
+        window.selectPaywallPlanTier(validMode);
         return;
       }
-      if (typeof _origSetUserAccountPlanMode === 'function') {
-        _origSetUserAccountPlanMode(mode);
+
+      const scopedKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('financas_modo_solteiro') : 'financas_modo_solteiro';
+      localStorage.setItem(scopedKey, isIndiv ? 'true' : 'false');
+      localStorage.setItem('financas_modo_solteiro', isIndiv ? 'true' : 'false');
+
+      const meta = getPlanMeta(validMode, sub.extraMembers || 0);
+      if (window.currentUserSession) {
+        window.currentUserSession.tipoPlano = validMode;
+        if (!window.currentUserSession.isMaster) {
+          window.currentUserSession.plano = meta.name;
+        }
+        try {
+          localStorage.setItem('financas_auth_user', JSON.stringify(window.currentUserSession));
+          let contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]');
+          const email = (window.currentUserSession.email || '').toLowerCase();
+          contas = contas.map(c => (c.email && c.email.toLowerCase() === email) ? { ...c, tipoPlano: validMode, plano: meta.name } : c);
+          localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
+        } catch (e) {}
       }
-      // Se está em trial, acompanha o plano escolhido
-      if (!isMaster && sub.status === 'trial') {
+
+      if (!isMaster) {
         window.saveUserSubscriptionRecord({
           ...sub,
-          planTier: mode === 'individual' ? 'individual' : 'familia'
+          planTier: validMode
         });
-        window.syncSubscriptionStatusUI();
+      }
+
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      window.syncIndividualAndFamilyModeUI();
+      window.syncSubscriptionStatusUI();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`${meta.name} selecionado com sucesso!`, false);
       }
     };
 
-    // 8. Controle e Interação do Modal de Paywall (#modalSubscriptionPaywall)
+    // Sobrescreve syncIndividualAndFamilyModeUI para destacar os 3 botões (Solteiro, Casal, Família) e vagas corretas
+    const _baseSyncModeUI = window.syncIndividualAndFamilyModeUI;
+    window.syncIndividualAndFamilyModeUI = function() {
+      if (typeof _baseSyncModeUI === 'function') _baseSyncModeUI();
+      const sub = window.getUserSubscriptionRecord();
+      const mode = (window.currentUserSession && window.currentUserSession.tipoPlano) || sub.planTier || (window.isUserInIndividualMode() ? 'individual' : 'casal');
+      const meta = getPlanMeta(mode, sub.extraMembers || 0);
+
+      const bInd = document.getElementById('btnUserPlanMode_individual');
+      const bCas = document.getElementById('btnUserPlanMode_casal');
+      const bFam = document.getElementById('btnUserPlanMode_familia');
+      const activeCls = 'py-2 px-2 rounded-xl font-black text-[11px] flex flex-col items-center justify-center gap-0.5 border transition-all cursor-pointer bg-indigo-600 text-white border-indigo-600 shadow-sm';
+      const idleCls = 'py-2 px-2 rounded-xl font-bold text-[11px] flex flex-col items-center justify-center gap-0.5 border transition-all cursor-pointer bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-200';
+
+      if (bInd) bInd.className = (mode === 'individual') ? activeCls.replace('bg-indigo-600', 'bg-emerald-600').replace('border-indigo-600', 'border-emerald-600') : idleCls;
+      if (bCas) bCas.className = (mode === 'casal') ? activeCls : idleCls;
+      if (bFam) bFam.className = (mode === 'familia') ? activeCls : idleCls;
+
+      const badgePlan = document.getElementById('adminUserCurrentPlanBadge');
+      if (badgePlan) badgePlan.textContent = meta.shortName;
+
+      const countBadge = document.getElementById('adminUserFamilyCountBadge');
+      if (countBadge && mode !== 'individual') {
+        const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+        countBadge.textContent = `${1 + din.length} de ${meta.maxMembers} vagas (${meta.shortName})`;
+      }
+    };
+
+    // 9. Controle de Limite de Membros por Plano (Solteiro = 1 | Casal = 2 | Família = 5 + Adicional R$ 9,90)
+    window.addExtraMemberSlotToSubscription = function() {
+      const sub = window.getUserSubscriptionRecord();
+      const cfg = window.getCommercialSubscriptionConfig();
+      const newExtras = (sub.extraMembers || 0) + 1;
+      window.saveUserSubscriptionRecord({
+        ...sub,
+        planTier: 'familia',
+        extraMembers: newExtras
+      });
+      window.syncSubscriptionStatusUI();
+      window.syncIndividualAndFamilyModeUI();
+      if (typeof renderFamilyMembersListInModal === 'function') renderFamilyMembersListInModal();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`➕ +1 vaga adicional contratada (+R$ ${cfg.extraMemberPrice.toFixed(2).replace('.', ',')}/mês)! Agora seu plano comporta ${5 + newExtras} membros.`, false);
+      }
+    };
+
+    const _origHandleAddUserSubmit = window.handleAddUserSubmit;
+    window.handleAddUserSubmit = function(e) {
+      if (e) e.preventDefault();
+      const editId = document.getElementById('editMemberId')?.value;
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+
+      if (!editId && (!isMaster || isDemo)) {
+        const sub = window.getUserSubscriptionRecord();
+        const mode = (window.currentUserSession && window.currentUserSession.tipoPlano) || sub.planTier || 'casal';
+        const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+        const totalAfterAdd = 1 + din.length + 1; // 1 titular + existentes + novo
+
+        if (mode === 'individual') {
+          if (typeof showToastUndo === 'function') {
+            showToastUndo('👤 O Plano Solteiro (R$ 29,90) é para 1 usuário. Mude para Casal (R$ 49,90) ou Família (R$ 69,90)!', true);
+          }
+          if (typeof closeAddUserModal === 'function') closeAddUserModal();
+          window.openSubscriptionPaywallModal(false);
+          window.selectPaywallPlanTier('casal');
+          return;
+        }
+
+        if (mode === 'casal' && totalAfterAdd > 2) {
+          if (typeof showToastUndo === 'function') {
+            showToastUndo('💑 O Plano Casal (R$ 49,90) comporta 2 pessoas. Para até 5 pessoas, ative o Plano Família (R$ 69,90)!', true);
+          }
+          if (typeof closeAddUserModal === 'function') closeAddUserModal();
+          window.openSubscriptionPaywallModal(false);
+          window.selectPaywallPlanTier('familia');
+          return;
+        }
+
+        const maxAllowed = 5 + (sub.extraMembers || 0);
+        if (mode === 'familia' && totalAfterAdd > maxAllowed) {
+          const cfg = window.getCommercialSubscriptionConfig();
+          if (confirm(`Seu Plano Família atual comporta ${maxAllowed} usuários.
+
+Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberPrice.toFixed(2).replace('.', ',')}/mês?`)) {
+            window.addExtraMemberSlotToSubscription();
+          } else {
+            return;
+          }
+        }
+      }
+
+      // Executa salvamento do membro permitindo mais de 5 membros quando contratado
+      const nomeInput = document.getElementById('newUserName');
+      const nome = nomeInput ? nomeInput.value.trim() : '';
+      const papelSel = document.getElementById('newUserRole');
+      const papel = papelSel ? papelSel.value : 'Filho(a)';
+      const avatarSel = document.getElementById('newUserAvatarSelect');
+      const avatar = avatarSel ? avatarSel.value : '👤';
+      const pinInput = document.getElementById('newUserPin');
+      const pin = pinInput && pinInput.value.trim() ? pinInput.value.trim() : '1234';
+
+      if (editId) {
+        if (typeof _origHandleAddUserSubmit === 'function') {
+          return _origHandleAddUserSubmit(e);
+        }
+      }
+
+      if (!nome) {
+        if (typeof showToastUndo === 'function') showToastUndo('Por favor, informe o nome do membro.', false);
+        return;
+      }
+
+      let membros = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+      const newMember = {
+        id: 'membro_' + Date.now(),
+        nome,
+        papel,
+        avatar,
+        pin,
+        criadoEm: new Date().toISOString()
+      };
+      membros.push(newMember);
+      if (typeof saveDynamicFamilyMembers === 'function') saveDynamicFamilyMembers(membros);
+      else localStorage.setItem('financas_membros_familia', JSON.stringify(membros));
+
+      if (typeof updateUserDropdowns === 'function') updateUserDropdowns(nome);
+      if (typeof loadUserCustomAssets === 'function') loadUserCustomAssets();
+      if (typeof renderFamilyMembersListInModal === 'function') renderFamilyMembersListInModal();
+      if (typeof renderDynamicFamilyMembers === 'function') renderDynamicFamilyMembers();
+      if (typeof renderAuthDynamicMembersLogin === 'function') renderAuthDynamicMembersLogin();
+      window.syncIndividualAndFamilyModeUI();
+
+      if (nomeInput) nomeInput.value = '';
+      if (pinInput) pinInput.value = '1234';
+      if (typeof showToastUndo === 'function') showToastUndo(`🎉 Membro "${nome}" incluído com sucesso!`, false);
+      if (typeof switchMemberModalTab === 'function') switchMemberModalTab('list');
+    };
+
+    // Atualiza o modal de membros para mostrar o limite correto (2 no Casal, 5+extras no Família) e botão de +R$ 9,90
+    const _origRenderFamilyMembersListInModal = window.renderFamilyMembersListInModal;
+    window.renderFamilyMembersListInModal = function() {
+      if (typeof _origRenderFamilyMembersListInModal === 'function') {
+        _origRenderFamilyMembersListInModal();
+      }
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+      if (isMaster && !isDemo) return;
+
+      const sub = window.getUserSubscriptionRecord();
+      const mode = (window.currentUserSession && window.currentUserSession.tipoPlano) || sub.planTier || 'casal';
+      const meta = getPlanMeta(mode, sub.extraMembers || 0);
+      const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+      const used = 1 + din.length;
+
+      const badgeCount = document.getElementById('badgeFamilySlotsCount');
+      if (badgeCount) {
+        badgeCount.textContent = `${used} de ${meta.maxMembers} preenchidas (${meta.shortName})`;
+      }
+
+      const formFields = document.getElementById('formAddUserFields');
+      const limitNotice = document.getElementById('formAddUserLimitReached');
+      if (formFields && limitNotice) {
+        if (used >= meta.maxMembers) {
+          formFields.classList.add('hidden');
+          limitNotice.classList.remove('hidden');
+          if (mode === 'casal') {
+            limitNotice.innerHTML = `
+              <p class="text-xs font-black text-amber-900 dark:text-amber-200">💑 Limite do Plano Casal atingido (2 pessoas)</p>
+              <p class="text-[11px] text-amber-800 dark:text-amber-300 mt-1 mb-2.5">Para incluir até 5 pessoas (ou mais), faça o upgrade para o <strong>Plano Família (R$ 69,90/mês)</strong>.</p>
+              <button type="button" onclick="closeAddUserModal(); window.openSubscriptionPaywallModal(false); window.selectPaywallPlanTier('familia');" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-black text-xs cursor-pointer">
+                👑 Mudar para Plano Família (Até 5 Pessoas)
+              </button>
+            `;
+          } else {
+            const cfg = window.getCommercialSubscriptionConfig();
+            limitNotice.innerHTML = `
+              <p class="text-xs font-black text-amber-900 dark:text-amber-200">👨‍👩‍👧‍👦 Todas as ${meta.maxMembers} vagas estão preenchidas!</p>
+              <p class="text-[11px] text-amber-800 dark:text-amber-300 mt-1 mb-2.5">No Plano Família você pode incluir quantos membros adicionais quiser por apenas <strong>+ R$ ${cfg.extraMemberPrice.toFixed(2).replace('.', ',')}/mês</strong> por membro.</p>
+              <button type="button" onclick="window.addExtraMemberSlotToSubscription()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-xs">
+                ➕ Liberar +1 Membro Adicional (+ R$ ${cfg.extraMemberPrice.toFixed(2).replace('.', ',')}/mês)
+              </button>
+            `;
+          }
+        } else {
+          formFields.classList.remove('hidden');
+          limitNotice.classList.add('hidden');
+        }
+      }
+    };
+
+    // 10. Interação do Modal de Paywall (3 Planos + Membros Extras)
+    window.adjustPaywallExtraMembers = function(delta) {
+      window.selectedPaywallExtraMembers = Math.max(0, Math.min(15, (window.selectedPaywallExtraMembers || 0) + delta));
+      window.refreshPaywallPricingUI();
+      const box = document.getElementById('paywallCheckoutActionBox');
+      if (box && !box.classList.contains('hidden')) {
+        window.startSubscriptionCheckout();
+      }
+    };
+
     window.refreshPaywallPricingUI = function() {
       const cfg = window.getCommercialSubscriptionConfig();
       const isAnnual = window.selectedPaywallCycle === 'annual';
+      const extras = window.selectedPaywallExtraMembers || 0;
 
       const btnAnn = document.getElementById('btnPaywallCycle_annual');
       const btnMon = document.getElementById('btnPaywallCycle_monthly');
@@ -42605,21 +43311,36 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         }
       }
 
-      const indVal = isAnnual ? (cfg.indAnnual / 12) : cfg.indMonthly;
-      const famVal = isAnnual ? (cfg.famAnnual / 12) : cfg.famMonthly;
+      const indMeta = getPlanMeta('individual', 0, cfg);
+      const casMeta = getPlanMeta('casal', 0, cfg);
+      const famMeta = getPlanMeta('familia', extras, cfg);
+
+      const indVal = isAnnual ? (indMeta.annualPrice / 12) : indMeta.monthlyPrice;
+      const casVal = isAnnual ? (casMeta.annualPrice / 12) : casMeta.monthlyPrice;
+      const famVal = isAnnual ? (famMeta.annualPrice / 12) : famMeta.monthlyPrice;
 
       const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
       setTxt('priceDisplay_individual', indVal.toFixed(2).replace('.', ','));
       setTxt('priceSuffix_individual', isAnnual ? '/mês no anual' : '/mês');
-      setTxt('priceSubtext_individual', isAnnual ? `R$ ${cfg.indAnnual.toFixed(2).replace('.', ',')} à vista no plano anual` : 'Cobrança mensal recorrente');
+      setTxt('priceSubtext_individual', isAnnual ? `R$ ${indMeta.annualPrice.toFixed(2).replace('.', ',')} / ano` : '1 usuário • 7 dias grátis');
+
+      setTxt('priceDisplay_casal', casVal.toFixed(2).replace('.', ','));
+      setTxt('priceSuffix_casal', isAnnual ? '/mês no anual' : '/mês');
+      setTxt('priceSubtext_casal', isAnnual ? `R$ ${casMeta.annualPrice.toFixed(2).replace('.', ',')} / ano` : '2 pessoas • 7 dias grátis');
 
       setTxt('priceDisplay_familia', famVal.toFixed(2).replace('.', ','));
       setTxt('priceSuffix_familia', isAnnual ? '/mês no anual' : '/mês');
-      setTxt('priceSubtext_familia', isAnnual ? `R$ ${cfg.famAnnual.toFixed(2).replace('.', ',')} à vista no plano anual` : 'Cobrança mensal recorrente');
+      setTxt('priceSubtext_familia', extras > 0
+        ? `Inclui ${5 + extras} pessoas (5 + ${extras} extra)`
+        : 'Até 5 pessoas (+R$ 9,90/membro extra)');
+
+      setTxt('labelExtraMemberUnitPrice', `+ R$ ${cfg.extraMemberPrice.toFixed(2).replace('.', ',')}/mês`);
+      setTxt('paywallExtraMembersCount', `${extras} ${extras === 1 ? 'extra' : 'extras'}`);
+      setTxt('paywallTotalSlotsLabel', `${5 + extras} pessoas no total`);
     };
 
     window.setPaywallBillingCycle = function(cycle) {
-      window.selectedPaywallCycle = cycle === 'monthly' ? 'monthly' : 'annual';
+      window.selectedPaywallCycle = cycle === 'annual' ? 'annual' : 'monthly';
       window.refreshPaywallPricingUI();
       const box = document.getElementById('paywallCheckoutActionBox');
       if (box && !box.classList.contains('hidden')) {
@@ -42628,23 +43349,30 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     window.selectPaywallPlanTier = function(tier) {
-      window.selectedPaywallTier = tier === 'individual' ? 'individual' : 'familia';
-      const cInd = document.getElementById('cardPlan_individual');
-      const cFam = document.getElementById('cardPlan_familia');
-      const rInd = document.getElementById('radioPlan_individual');
-      const rFam = document.getElementById('radioPlan_familia');
+      window.selectedPaywallTier = (tier === 'individual' || tier === 'casal' || tier === 'familia') ? tier : 'casal';
+      const tiers = ['individual', 'casal', 'familia'];
+      tiers.forEach(t => {
+        const card = document.getElementById(`cardPlan_${t}`);
+        const radio = document.getElementById(`radioPlan_${t}`);
+        const isSel = (t === window.selectedPaywallTier);
+        if (card) {
+          card.className = isSel
+            ? 'p-3.5 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-2.5 relative'
+            : 'p-3.5 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-2.5 relative';
+        }
+        if (radio) {
+          radio.className = isSel
+            ? 'w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black'
+            : 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black';
+          radio.textContent = isSel ? '✓' : '';
+        }
+      });
 
-      if (window.selectedPaywallTier === 'individual') {
-        if (cInd) cInd.className = 'p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
-        if (cFam) cFam.className = 'p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
-        if (rInd) { rInd.className = 'w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black'; rInd.textContent = '✓'; }
-        if (rFam) { rFam.className = 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black'; rFam.textContent = ''; }
-      } else {
-        if (cFam) cFam.className = 'p-4 rounded-3xl border-2 border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
-        if (cInd) cInd.className = 'p-4 rounded-3xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-blue-400 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative';
-        if (rFam) { rFam.className = 'w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black'; rFam.textContent = '✓'; }
-        if (rInd) { rInd.className = 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] font-black'; rInd.textContent = ''; }
+      const extraBox = document.getElementById('boxPaywallExtraMembers');
+      if (extraBox) {
+        extraBox.classList.toggle('hidden', window.selectedPaywallTier !== 'familia');
       }
+      window.refreshPaywallPricingUI();
 
       const box = document.getElementById('paywallCheckoutActionBox');
       if (box && !box.classList.contains('hidden')) {
@@ -42663,25 +43391,21 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
 
       if (closeBtn) {
-        // Se for Hard Lock para usuário comum vencido, oculta o X para impedir uso gratuito (Sem Freemium).
-        // Se for o Admin Master simulando, mantém o botão de fechar visível para ele sair da simulação.
-        if (hardLock && !isMaster) {
-          closeBtn.classList.add('hidden');
-        } else {
-          closeBtn.classList.remove('hidden');
-        }
+        if (hardLock && !isMaster) closeBtn.classList.add('hidden');
+        else closeBtn.classList.remove('hidden');
       }
       if (expNotice) {
         expNotice.classList.toggle('hidden', !hardLock);
       }
 
       const sub = window.getUserSubscriptionRecord();
-      window.selectPaywallPlanTier(sub.planTier || 'familia');
+      window.selectedPaywallExtraMembers = sub.extraMembers || 0;
+      window.selectPaywallPlanTier(sub.planTier || 'casal');
       window.refreshPaywallPricingUI();
 
       const codeBox = document.getElementById('boxPaywallActivationCode');
-      if (codeBox) {
-        if (expandCoupon) codeBox.classList.remove('hidden');
+      if (codeBox && expandCoupon) {
+        codeBox.classList.remove('hidden');
       }
 
       modal.style.zIndex = '4200';
@@ -42693,7 +43417,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       if (window.isPaywallHardLocked && !isMaster && !forceClose) {
         if (typeof showToastUndo === 'function') {
-          showToastUndo('🔒 Escolha um plano ou ative sua chave para liberar o acesso ao aplicativo.', true);
+          showToastUndo('🔒 Escolha um plano para liberar o acesso ao aplicativo.', true);
         }
         return;
       }
@@ -42707,11 +43431,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     window.startSubscriptionCheckout = function() {
       const cfg = window.getCommercialSubscriptionConfig();
       const isAnnual = window.selectedPaywallCycle === 'annual';
-      const isFam = window.selectedPaywallTier === 'familia';
-      const amount = isFam
-        ? (isAnnual ? cfg.famAnnual : cfg.famMonthly)
-        : (isAnnual ? cfg.indAnnual : cfg.indMonthly);
-      const title = `${isFam ? 'Plano Casal & Família' : 'Plano Individual'} (${isAnnual ? 'Anual' : 'Mensal'})`;
+      const tier = window.selectedPaywallTier || 'casal';
+      const extras = tier === 'familia' ? (window.selectedPaywallExtraMembers || 0) : 0;
+      const meta = getPlanMeta(tier, extras, cfg);
+      const amount = isAnnual ? meta.annualPrice : meta.monthlyPrice;
+      const title = `${meta.name} (${isAnnual ? 'Anual' : 'Mensal'})`;
 
       const box = document.getElementById('paywallCheckoutActionBox');
       const tEl = document.getElementById('checkoutSummaryTitle');
@@ -42722,6 +43446,38 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (aEl) aEl.textContent = `R$ ${amount.toFixed(2).replace('.', ',')}`;
       if (pEl) pEl.textContent = cfg.pixOrCheckout || 'rodrigocardosocn@gmail.com';
       if (box) box.classList.remove('hidden');
+    };
+
+    // Confirmação Automática da Assinatura (Play Store Billing / Webhook Automático)
+    window.confirmAutomaticStoreSubscription = function() {
+      const now = getVerifiedCurrentTimestamp();
+      const isAnnual = window.selectedPaywallCycle === 'annual';
+      const tier = window.selectedPaywallTier || 'casal';
+      const extras = tier === 'familia' ? (window.selectedPaywallExtraMembers || 0) : 0;
+      const days = isAnnual ? 365 : 30;
+      const prevSub = window.getUserSubscriptionRecord();
+
+      window.saveUserSubscriptionRecord({
+        status: 'active',
+        planTier: tier,
+        billingCycle: isAnnual ? 'annual' : 'monthly',
+        extraMembers: extras,
+        startedAt: prevSub.startedAt || now,
+        trialStartedAt: prevSub.trialStartedAt || prevSub.startedAt || now,
+        paidActivatedAt: now,
+        expiresAt: now + (days * 24 * 60 * 60 * 1000)
+      });
+
+      window.isPaywallHardLocked = false;
+      window.setUserAccountPlanMode(tier);
+      window.closeSubscriptionPaywallModal(true);
+      window.syncSubscriptionStatusUI();
+      window.renderAdminSubscribersDashboard();
+
+      const meta = getPlanMeta(tier, extras);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🎉 ${meta.name} ativado automaticamente!`, false);
+      }
     };
 
     window.copyPaywallPixOrOpenCheckout = function() {
@@ -42736,29 +43492,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         navigator.clipboard.writeText(val).catch(() => {});
       }
       if (typeof showToastUndo === 'function') {
-        showToastUndo(`📋 Chave PIX "${val}" copiada! Realize a transferência no seu banco.`, false);
+        showToastUndo(`📋 Chave PIX "${val}" copiada!`, false);
       }
-    };
-
-    window.sendSubscriptionReceiptWhatsApp = function() {
-      const cfg = window.getCommercialSubscriptionConfig();
-      const isAnnual = window.selectedPaywallCycle === 'annual';
-      const isFam = window.selectedPaywallTier === 'familia';
-      const amount = isFam
-        ? (isAnnual ? cfg.famAnnual : cfg.famMonthly)
-        : (isAnnual ? cfg.indAnnual : cfg.indMonthly);
-      const u = window.currentUserSession || {};
-      const msg = `Olá! Acabei de realizar o pagamento da assinatura do *ControlPig Pro*:\n` +
-        `👤 *Nome:* ${u.nome || 'Cliente'}\n` +
-        `📧 *E-mail:* ${u.email || ''}\n` +
-        `💎 *Plano:* ${isFam ? 'Casal & Família' : 'Individual'} (${isAnnual ? 'Anual' : 'Mensal'})\n` +
-        `💰 *Valor:* R$ ${amount.toFixed(2).replace('.', ',')}\n\n` +
-        `Segue meu comprovante para envio da minha Chave de Liberação!`;
-
-      const phone = (cfg.supportWhatsapp || '5511987654321').replace(/\D/g, '');
-      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
-      if (typeof openExternalUrl === 'function') openExternalUrl(url);
-      else window.open(url, '_blank');
     };
 
     window.activateLicenseOrCouponFromPaywall = function() {
@@ -42770,17 +43505,17 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
 
       const now = getVerifiedCurrentTimestamp();
+      const prevSub = window.getUserSubscriptionRecord();
 
-      // 1. Verifica se é uma Chave Criptografada Pós-Pagamento (Formato: CPIG-FAM-36542-HASH)
       if (code.startsWith('CPIG-')) {
         const parts = code.split('-');
         if (parts.length === 4) {
           const [, planCode, daysWithSalt, providedHash] = parts;
           const expectedHash = computeLicenseKeyHash(planCode, daysWithSalt);
           if (providedHash === expectedHash) {
-            const rawDays = parseInt(daysWithSalt.slice(0, -2), 10) || 365;
+            const rawDays = parseInt(daysWithSalt.slice(0, -2), 10) || 30;
             const isVipLife = planCode === 'VIP' || rawDays >= 9000;
-            const planTier = planCode === 'IND' ? 'individual' : 'familia';
+            const planTier = planCode === 'IND' ? 'individual' : (planCode === 'CAS' ? 'casal' : 'familia');
             const billingCycle = isVipLife ? 'lifetime' : (rawDays >= 300 ? 'annual' : 'monthly');
             const expiresAt = now + (rawDays * 24 * 60 * 60 * 1000);
 
@@ -42788,48 +43523,51 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               status: isVipLife ? 'vip_lifetime' : 'active',
               planTier,
               billingCycle,
-              startedAt: now,
+              extraMembers: prevSub.extraMembers || 0,
+              startedAt: prevSub.startedAt || now,
+              trialStartedAt: prevSub.trialStartedAt || now,
+              paidActivatedAt: now,
               expiresAt
             });
 
-            if (typeof _origSetUserAccountPlanMode === 'function') {
-              _origSetUserAccountPlanMode(planTier);
-            }
             if (inp) inp.value = '';
             window.isPaywallHardLocked = false;
+            window.setUserAccountPlanMode(planTier);
             window.closeSubscriptionPaywallModal(true);
             window.syncSubscriptionStatusUI();
-            if (typeof showToastUndo === 'function') {
-              showToastUndo(`🎉 Assinatura ${planTier === 'familia' ? 'Casal & Família' : 'Individual'} ativada com sucesso por ${rawDays} dias!`, false);
-            }
+            window.renderAdminSubscribersDashboard();
             return;
           }
         }
         if (typeof showToastUndo === 'function') {
-          showToastUndo('❌ Chave de ativação inválida ou adulterada. Confira os caracteres.', true);
+          showToastUndo('❌ Chave de ativação inválida.', true);
         }
         return;
       }
 
-      // 2. Verifica se é um Cupom VIP cadastrado pelo Admin
       let cupons = [];
       try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch (e) {}
       const found = cupons.find(c => c.code && c.code.toUpperCase() === code);
       if (found || code.startsWith('VIP') || code.startsWith('FAMILIA') || code.startsWith('TESTADOR')) {
-        const planTier = code.includes('IND') ? 'individual' : 'familia';
+        const planTier = code.includes('IND') ? 'individual' : (code.includes('CAS') ? 'casal' : 'familia');
         window.saveUserSubscriptionRecord({
           status: 'vip_lifetime',
           planTier,
           billingCycle: 'lifetime',
+          extraMembers: 0,
           startedAt: now,
+          trialStartedAt: now,
+          paidActivatedAt: now,
           expiresAt: now + (3650 * 24 * 60 * 60 * 1000)
         });
         if (inp) inp.value = '';
         window.isPaywallHardLocked = false;
+        window.setUserAccountPlanMode(planTier);
         window.closeSubscriptionPaywallModal(true);
         window.syncSubscriptionStatusUI();
+        window.renderAdminSubscribersDashboard();
         if (typeof showToastUndo === 'function') {
-          showToastUndo('🎉 Cupom VIP validado! Sua conta está liberada.', false);
+          showToastUndo('🎉 Cupom VIP ativado com sucesso!', false);
         }
         return;
       }
@@ -42839,12 +43577,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
     };
 
-    // Integra na abertura do Admin e no desbloqueio de login
     const _prevOpenAdmin = window.openAdminModal;
     window.openAdminModal = function() {
       if (typeof _prevOpenAdmin === 'function') _prevOpenAdmin();
       window.populateAdminSubscriptionInputs();
+      window.renderAdminSubscribersDashboard();
       window.syncSubscriptionStatusUI();
+      window.syncIndividualAndFamilyModeUI();
     };
 
     const _prevForceUnlock = window.forceUnlockAuthOverlay;
@@ -42852,6 +43591,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (typeof _prevForceUnlock === 'function') _prevForceUnlock();
       setTimeout(() => {
         window.syncSubscriptionStatusUI();
+        window.syncIndividualAndFamilyModeUI();
       }, 250);
     };
 
@@ -42860,6 +43600,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         window.populateAdminSubscriptionInputs();
         window.refreshPaywallPricingUI();
         window.syncSubscriptionStatusUI();
+        window.syncIndividualAndFamilyModeUI();
+        window.renderAdminSubscribersDashboard();
       }, 500);
     });
   })();
