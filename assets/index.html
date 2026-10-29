@@ -4164,6 +4164,11 @@ html, body {
       z-index: 3600 !important;
     }
     </style>
+<style id="ctrlpigGlobalFooterStyles">
+  /* v2.1.124 - Rodapé global inteligente */
+  nav.bottom-nav.cp-nav-over-modules { z-index: 1000001 !important; }
+  nav.bottom-nav.cp-nav-hidden { display: none !important; }
+</style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -6520,38 +6525,29 @@ html, body {
 
   <!-- MODAL: DETALHES DE COMPRAS PARCELADAS -->
   <div id="modalInstallmentsDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1050] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-none max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar text-xs border border-slate-300">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar text-xs border border-slate-200">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-        <div class="flex items-center gap-2">
-          <div class="p-2 bg-purple-100 text-purple-700 rounded-none">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="p-2 bg-purple-100 text-purple-700 rounded-xl flex-shrink-0">
             <i data-lucide="layers" class="w-5 h-5"></i>
           </div>
-          <h3 class="font-bold text-base text-slate-800">Detalhamento de Compras Parceladas</h3>
+          <h3 class="font-black text-sm sm:text-base text-slate-800 leading-tight">Detalhamento de Compras Parceladas</h3>
         </div>
         <button onclick="closeInstallmentsDetailModal()" class="p-1 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <div class="mt-4 overflow-x-auto custom-scrollbar">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-slate-300 text-slate-700 bg-slate-100 font-bold">
-              <th class="py-2.5 px-3">Item</th>
-              <th class="py-2.5 px-3">Cartão</th>
-              <th class="py-2.5 px-3">Parcela</th>
-              <th class="py-2.5 px-3 text-right">Valor Parcela</th>
-              <th class="py-2.5 px-3 text-right">Faltam</th>
-            </tr>
-          </thead>
-          <tbody id="installmentsDetailTableBody" class="divide-y divide-slate-200">
-            <!-- Renderizado via JS -->
-          </tbody>
-        </table>
+      <!-- Resumo rápido (Neste ciclo / Falta quitar / Progresso) -->
+      <div id="installmentsModalResumoHeader" class="mt-3"></div>
+
+      <!-- Lista em cards verticais (100% da largura, sem scroll lateral) -->
+      <div id="installmentsDetailCardsList" class="space-y-2.5">
+        <!-- Renderizado via JS -->
       </div>
 
       <div class="mt-4 pt-3 border-t border-slate-200 flex justify-end">
-        <button onclick="closeInstallmentsDetailModal()" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-none border border-slate-300">Fechar</button>
+        <button onclick="closeInstallmentsDetailModal()" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl border border-slate-200">Fechar</button>
       </div>
     </div>
   </div>
@@ -9635,7 +9631,7 @@ html, body {
     }
 
     function openInstallmentsDetailModal() {
-      const tbody = document.getElementById('installmentsDetailTableBody');
+      const cardsList = document.getElementById('installmentsDetailCardsList');
       const activeList = getActiveInstallments();
 
       const totalMes = activeList.reduce((acc, c) => acc + c.valor_parcela, 0);
@@ -9643,36 +9639,65 @@ html, body {
 
       const headerResumo = document.getElementById('installmentsModalResumoHeader');
       if (headerResumo) {
+        let totFin = 0, totPago = 0;
+        activeList.forEach(p => {
+          totFin += (p.valor_parcela || 0) * (p.total_parcelas || 0);
+          totPago += (p.valor_parcela || 0) * (p.parcela_atual || 0);
+        });
+        const progGeral = totFin > 0 ? Math.min(100, Math.round((totPago / totFin) * 100)) : 0;
         headerResumo.innerHTML = `
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3 text-xs">
-            <div class="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
-              <span class="text-[10px] text-blue-600 dark:text-blue-300 font-bold uppercase">Neste Mês</span>
-              <strong class="block text-sm font-black text-blue-800 dark:text-blue-100">${formatBRL(totalMes)}</strong>
+          <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+            <div class="p-2 rounded-2xl bg-purple-50 border border-purple-100 min-w-0">
+              <span class="text-[9px] text-purple-700 font-bold uppercase block leading-tight">Neste Ciclo</span>
+              <strong class="block text-xs sm:text-sm font-black text-purple-900 truncate">${formatBRL(totalMes)}</strong>
             </div>
-            <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800">
-              <span class="text-[10px] text-indigo-600 dark:text-indigo-300 font-bold uppercase">Falta Pagar Futuro</span>
-              <strong class="block text-sm font-black text-indigo-800 dark:text-indigo-100">${formatBRL(totalFuturo)}</strong>
+            <div class="p-2 rounded-2xl bg-indigo-50 border border-indigo-100 min-w-0">
+              <span class="text-[9px] text-indigo-700 font-bold uppercase block leading-tight">Falta Quitar</span>
+              <strong class="block text-xs sm:text-sm font-black text-indigo-900 truncate">${formatBRL(totalFuturo)}</strong>
             </div>
-            <div class="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 col-span-2 sm:col-span-1">
-              <span class="text-[10px] text-purple-600 dark:text-purple-300 font-bold uppercase">Total Financiado</span>
-              <strong class="block text-sm font-black text-purple-800 dark:text-purple-100">${formatBRL(totalMes + totalFuturo)}</strong>
+            <div class="p-2 rounded-2xl bg-emerald-50 border border-emerald-100 min-w-0">
+              <span class="text-[9px] text-emerald-700 font-bold uppercase block leading-tight">Progresso</span>
+              <strong class="block text-xs sm:text-sm font-black text-emerald-800">${progGeral}% pago</strong>
             </div>
           </div>
         `;
       }
 
-      if (tbody) {
-        tbody.innerHTML = activeList.map(p => {
-          return `
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-              <td class="py-2.5 px-3 font-bold text-slate-800 dark:text-slate-100">${p.descricaoClean}</td>
-              <td class="py-2.5 px-3 text-slate-500">${p.cartao_nome}</td>
-              <td class="py-2.5 px-3 font-semibold text-purple-600 dark:text-purple-400">${p.parcela_atual} de ${p.total_parcelas} (${p.percent_pago}%)</td>
-              <td class="py-2.5 px-3 text-right font-bold text-slate-800 dark:text-slate-100">${formatBRL(p.valor_parcela)}</td>
-              <td class="py-2.5 px-3 text-right font-bold text-indigo-600 dark:text-indigo-300">${formatBRL(p.total_falta_pagar)} (${p.faltam_parcelas}x)</td>
-            </tr>
-          `;
-        }).join('');
+      if (cardsList) {
+        if (activeList.length === 0) {
+          cardsList.innerHTML = '<p class="py-6 text-center text-xs text-slate-400">Nenhuma compra parcelada ativa no momento.</p>';
+        } else {
+          const esc = (v) => (typeof escapeHtml === 'function' ? escapeHtml(String(v ?? '')) : String(v ?? ''));
+          cardsList.innerHTML = activeList.map(p => {
+            const badge = p.faltam_parcelas === 0
+              ? '<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap">Última parcela! 🎉</span>'
+              : `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 whitespace-nowrap">${p.parcela_atual}/${p.total_parcelas}x • ${p.percent_pago}%</span>`;
+            return `
+              <div class="p-3 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-2 w-full min-w-0">
+                <div class="flex items-start justify-between gap-2 min-w-0">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-base flex-shrink-0">🛍️</span>
+                    <span class="font-black text-xs sm:text-sm text-slate-900 truncate" title="${esc(p.descricaoClean)}">${esc(p.descricaoClean)}</span>
+                  </div>
+                  <div class="flex-shrink-0">${badge}</div>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-gradient-to-r from-purple-600 to-indigo-600 h-1.5 rounded-full" style="width: ${p.percent_pago}%;"></div>
+                </div>
+                <div class="flex items-end justify-between gap-2 text-[11px] min-w-0">
+                  <div class="min-w-0 text-slate-500 font-medium leading-snug">
+                    <span class="block truncate">💳 ${esc(p.cartao_nome)}</span>
+                    <span class="block truncate">👤 ${esc(p.responsavel || 'Comum')}</span>
+                  </div>
+                  <div class="text-right flex-shrink-0 leading-snug">
+                    <span class="block font-black text-slate-900">${formatBRL(p.valor_parcela)}<span class="text-[10px] font-bold text-slate-400">/mês</span></span>
+                    <span class="block font-bold text-indigo-600">${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
       }
 
       document.getElementById('modalInstallmentsDetail').classList.remove('hidden');
@@ -10042,11 +10067,23 @@ html, body {
       const despesasTxs = txs.filter(t => t && t.tipo !== 'Receita');
       const totalDespesas = despesasTxs.reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
 
+      // Linha de gastos compartilhados (Comum / Ambos / Casal / Família)
+      const isSharedResp = (r) => ['', 'comum', 'ambos', 'casal', 'comum (casal)', 'comum (família)', 'comum (familia)', 'família', 'familia', 'todos'].includes(r);
+      const hasSharedRow = isMaster || din.length > 0;
+      if (hasSharedRow) {
+        const sharedLabel = (isMaster || din.length === 1) ? 'Ambos' : 'Todos (Compartilhado)';
+        const sharedAvatar = (isMaster || din.length === 1) ? '👫' : '👨‍👩‍👧';
+        members.push({ id: '__ambos__', nome: sharedLabel, avatar: sharedAvatar, color: 'amber' });
+      }
+      const lblTotal = document.getElementById('labelTotalMembrosGasto');
+      if (lblTotal) lblTotal.textContent = `Total: ${formatBRL(totalDespesas)}`;
+
       const colorMap = {
         blue: { bg: 'bg-blue-100', bar: 'bg-blue-600', text: 'text-blue-700' },
         rose: { bg: 'bg-rose-100', bar: 'bg-rose-500', text: 'text-rose-600' },
         emerald: { bg: 'bg-emerald-100', bar: 'bg-emerald-600', text: 'text-emerald-600' },
-        purple: { bg: 'bg-purple-100', bar: 'bg-purple-600', text: 'text-purple-600' }
+        purple: { bg: 'bg-purple-100', bar: 'bg-purple-600', text: 'text-purple-600' },
+        amber: { bg: 'bg-amber-100', bar: 'bg-amber-500', text: 'text-amber-700' }
       };
 
       container.innerHTML = members.map(m => {
@@ -10057,7 +10094,8 @@ html, body {
           if (resp === target) return true;
           if (m.id === 'rodrigo' && resp === 'rodrigo') return true;
           if (m.id === 'marcia' && (resp === 'márcia' || resp === 'marcia')) return true;
-          if (m.id === 'titular' && (resp === 'titular' || resp === 'comum' || resp === target)) return true;
+          if (m.id === 'titular' && (resp === 'titular' || resp === target || (!hasSharedRow && (resp === 'comum' || resp === 'ambos' || resp === '')))) return true;
+          if (m.id === '__ambos__' && isSharedResp(resp)) return true;
           return false;
         }).reduce((sum, t) => sum + (parseFloat(t.valor) || 0), 0);
 
@@ -44151,5 +44189,118 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
   })();
   </script>
 
+<script id="ctrlpigGlobalFooterManager">
+// ============================================================================
+// v2.1.124 - RODAPÉ GLOBAL INTELIGENTE (MODELO HÍBRIDO)
+// Visível em todas as telas e módulos; oculto no Chat, Login/Planos,
+// Scanner/Câmera, formulários/diálogos sobrepostos e com teclado aberto.
+// ============================================================================
+(function() {
+  const MODULE_PAGES = [
+    'modalShoppingListHistory', 'modalShoppingList', 'modalManageCards', 'modalPetArea',
+    'modalHealthMeds', 'modalVeiculosHub', 'modalEducacaoHub', 'modalServiceProviders',
+    'modalSelectCycle', 'modalUserProfileSurvey', 'modalComparativoMercados',
+    'modalProductWarranties', 'modalKidsArea'
+  ];
+  let keyboardOpen = false;
+  let scheduled = false;
+
+  function isShown(el) {
+    if (!el || el.classList.contains('hidden')) return false;
+    const cs = window.getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden';
+  }
+
+  function evaluate() {
+    scheduled = false;
+    const nav = document.querySelector('nav.bottom-nav');
+    if (!nav) return;
+    let moduleOpen = false;
+    let blockerOpen = false;
+
+    const auth = document.getElementById('authOverlayContainer');
+    if (isShown(auth)) blockerOpen = true;
+
+    if (!blockerOpen) {
+      const overlays = document.querySelectorAll('[id^="modal"]');
+      for (const el of overlays) {
+        if (!isShown(el)) continue;
+        const cs = window.getComputedStyle(el);
+        if (cs.position !== 'fixed') continue;
+        if (MODULE_PAGES.includes(el.id)) moduleOpen = true;
+        else { blockerOpen = true; break; }
+      }
+    }
+    if (!blockerOpen) {
+      const scan = document.querySelector('#qrScannerOverlay, #nfceScannerOverlay, #cameraScannerOverlay, .qr-scanner-overlay');
+      if (isShown(scan)) blockerOpen = true;
+    }
+
+    const hide = blockerOpen || keyboardOpen;
+    nav.classList.toggle('cp-nav-hidden', hide);
+    nav.classList.toggle('cp-nav-over-modules', !hide && moduleOpen);
+  }
+
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(evaluate);
+  }
+  window.refreshGlobalFooterVisibility = schedule;
+
+  // Fecha módulos abertos ao tocar em um item do rodapé (exceto o botão central +)
+  function closeOpenModules() {
+    MODULE_PAGES.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && isShown(el)) {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  function isTextField(t) {
+    if (!t) return false;
+    if (t.tagName === 'TEXTAREA' || t.isContentEditable) return true;
+    if (t.tagName === 'SELECT') return false;
+    if (t.tagName !== 'INPUT') return false;
+    const ty = (t.type || 'text').toLowerCase();
+    return !['checkbox', 'radio', 'button', 'submit', 'reset', 'file', 'range', 'color', 'hidden', 'date', 'time', 'month', 'week', 'datetime-local'].includes(ty);
+  }
+
+  function init() {
+    const nav = document.querySelector('nav.bottom-nav');
+    if (nav && !nav.dataset.cpFooterBound) {
+      nav.dataset.cpFooterBound = '1';
+      nav.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.bottom-nav-item');
+        if (btn) closeOpenModules();
+      }, true);
+    }
+
+    document.addEventListener('focusin', (e) => { if (isTextField(e.target)) { keyboardOpen = true; schedule(); } });
+    document.addEventListener('focusout', () => {
+      setTimeout(() => { keyboardOpen = isTextField(document.activeElement); schedule(); }, 120);
+    });
+    if (window.visualViewport) {
+      const baseH = window.innerHeight;
+      window.visualViewport.addEventListener('resize', () => {
+        const vvOpen = window.visualViewport.height < baseH * 0.72;
+        if (vvOpen !== keyboardOpen && (vvOpen || !isTextField(document.activeElement))) {
+          keyboardOpen = vvOpen;
+          schedule();
+        }
+      });
+    }
+
+    const obs = new MutationObserver(schedule);
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'], subtree: true, childList: true });
+    schedule();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+})();
+</script>
 </body>
 </html>

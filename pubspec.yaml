@@ -1,7 +1,7 @@
-name: financas_casal_flutter
-description: "Aplicativo de Finanças do Casal • Rodrigo & Márcia (Flutter + Supabase)"
+﻿name: financas_casal_flutter
+description: "Aplicativo de FinanÃ§as do Casal â€¢ Rodrigo & MÃ¡rcia (Flutter + Supabase)"
 publish_to: 'none'
-version: 2.1.123+200
+version: 2.1.124+201
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,11 +13,11 @@ dependencies:
   # Backend & Realtime
   supabase_flutter: ^2.8.0
 
-  # Reconhecimento e Síntese de Voz Nativa (Hardware do Celular)
+  # Reconhecimento e SÃ­ntese de Voz Nativa (Hardware do Celular)
   speech_to_text: ^7.0.0
   flutter_tts: ^4.2.2
 
-  # OCR de Cupom Fiscal com Inteligência Artificial On-Device
+  # OCR de Cupom Fiscal com InteligÃªncia Artificial On-Device
   google_mlkit_text_recognition: ^0.13.0
   image_picker: ^1.1.2
 
@@ -30,16 +30,16 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.3
   permission_handler: ^11.3.1
-  # Autenticação Biométrica e Face ID
+  # AutenticaÃ§Ã£o BiomÃ©trica e Face ID
   local_auth: ^2.3.0
 
-  # Leitura contínua e instantânea de QR Code via câmera nativa
+  # Leitura contÃ­nua e instantÃ¢nea de QR Code via cÃ¢mera nativa
   mobile_scanner: ^5.2.3
 
-  # Requisições HTTP SEFAZ no Dart (sem limitações de CORS da WebView)
+  # RequisiÃ§Ãµes HTTP SEFAZ no Dart (sem limitaÃ§Ãµes de CORS da WebView)
   http: ^1.2.2
 
-  # Parser HTML para extração dos portais SEFAZ (SP e Nacional)
+  # Parser HTML para extraÃ§Ã£o dos portais SEFAZ (SP e Nacional)
   html: ^0.15.4
 
   # Engine de Alta Fidelidade do Dashboard
