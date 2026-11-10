@@ -1,0 +1,46 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    - cron: '0 9 */3 * *'   # A cada 3 dias às 09:00 UTC (evita hibernação de 7 dias do plano Free)
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/supabase_keepalive.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Manter Supabase ativo (Keep-Alive)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extrair URL e Anon Key públicas do app e consultar banco
+        run: |
+          set -euo pipefail
+          SUPABASE_URL="https://ipwgvwmuhcfrdjkzzzdv.supabase.co"
+          ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwd2d2d211aGNmcmRqa3p6emR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MTYyMTcsImV4cCI6MjEwNzA5MjIxN30._X2iTDoaiwMBz8MU9MrFfOxYAn-JWkSrsegwj8Lts2k"
+
+          echo "1) Verificando Auth Health..."
+          curl -sS -f "$SUPABASE_URL/auth/v1/health" \
+            -H "apikey: $ANON_KEY"
+          echo ""
+
+          echo "2) Executando query PostgREST no banco para registrar atividade..."
+          HTTP_CODE=$(curl -sS -o /tmp/rest_out.txt -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/" \
+            -H "apikey: $ANON_KEY" \
+            -H "Authorization: Bearer $ANON_KEY")
+          echo "PostgREST root HTTP: $HTTP_CODE"
+
+          # Também consulta user_roles (ou rpc/is_master) se já criada pela migração
+          HTTP_RPC=$(curl -sS -o /tmp/rpc_out.txt -w "%{http_code}" \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/is_master" \
+            -H "apikey: $ANON_KEY" \
+            -H "Authorization: Bearer $ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "PostgREST RPC HTTP: $HTTP_RPC"
+          echo "Keep-alive concluído com sucesso em $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
