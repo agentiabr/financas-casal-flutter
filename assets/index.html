@@ -44403,6 +44403,15 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       const min = now - AUD_DAYS * 86400000;
       list = list.filter((x) => x && x.t >= min).slice(-AUD_MAX);
       writeJson(AUD_KEY, list);
+      const evName = String(event).slice(0, 40);
+      const evMeta = cleanMeta(meta);
+      try {
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'log_audit_event', event: evName, meta: evMeta }));
+        } else if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+          window.supabaseClient.from('audit_logs').insert({ event: evName, meta: evMeta }).then(function(){}).catch(function(){});
+        }
+      } catch (e2) {}
     } catch (e) { /* auditoria nunca pode quebrar o app */ }
   }
   function myAuditEvents(limit) {
@@ -44684,6 +44693,19 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     const c = Object.assign({}, getConsent() || {}, patch);
     writeJson(consentKey(), c);
     audit('consent_update', { keys: Object.keys(patch).join(',') });
+    try {
+      const ver = String((c && c.version) || LEGAL_CONFIG.version || '2026.11');
+      ['terms', 'privacy', 'kids', 'health', 'ai'].forEach(function(k) {
+        if (Object.prototype.hasOwnProperty.call(patch, k)) {
+          const g = !!patch[k];
+          if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'log_legal_consent', kind: k, version: ver, granted: g }));
+          } else if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+            window.supabaseClient.from('legal_consents').insert({ kind: k, version: ver, granted: g }).then(function(){}).catch(function(){});
+          }
+        }
+      });
+    } catch (e3) {}
     return c;
   }
   function recordBaseConsent() {
@@ -44694,6 +44716,14 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     delete c[type];
     writeJson(consentKey(), c);
     audit('consent_revoked', { type: type });
+    try {
+      const ver = String(LEGAL_CONFIG.version || '2026.11');
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'log_legal_consent', kind: String(type), version: ver, granted: false }));
+      } else if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+        window.supabaseClient.from('legal_consents').insert({ kind: String(type), version: ver, granted: false }).then(function(){}).catch(function(){});
+      }
+    } catch (e4) {}
   }
   const JIT = {
     kids: { title: 'Dados de crianças e adolescentes', text: 'Para cadastrar filhos (nome, idade, atividades) precisamos do consentimento específico de um dos pais ou responsável legal (LGPD art. 14). Os dados ficam no seu aparelho e, se a sincronização estiver ativa, na nuvem. Nunca usamos para publicidade. Você pode revogar quando quiser na Central de Privacidade.', btn: 'Sou pai/responsável e autorizo' },

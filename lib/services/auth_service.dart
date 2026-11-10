@@ -161,6 +161,46 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // 6. Sincronização de trilha de auditoria append-only na nuvem (public.audit_logs)
+  Future<void> logAuditEvent(String event, Map<String, dynamic> meta) async {
+    try {
+      final user = currentUser;
+      if (SupabaseConfig.isConfigured && user != null && event.isNotEmpty) {
+        final safeEvent = event.length > 60 ? event.substring(0, 60) : event;
+        await SupabaseConfig.client.from('audit_logs').insert({
+          'user_id': user.id,
+          'event': safeEvent,
+          'meta': meta,
+        });
+      }
+    } catch (e) {
+      debugPrint('Aviso ao sincronizar audit_logs no Supabase: $e');
+    }
+  }
+
+  // 7. Sincronização de comprovante de consentimento LGPD na nuvem (public.legal_consents)
+  Future<void> logLegalConsent({
+    required String kind,
+    required String version,
+    required bool granted,
+  }) async {
+    try {
+      final user = currentUser;
+      if (SupabaseConfig.isConfigured &&
+          user != null &&
+          const {'terms', 'privacy', 'kids', 'health', 'ai'}.contains(kind)) {
+        await SupabaseConfig.client.from('legal_consents').insert({
+          'user_id': user.id,
+          'kind': kind,
+          'version': version,
+          'granted': granted,
+        });
+      }
+    } catch (e) {
+      debugPrint('Aviso ao sincronizar legal_consents no Supabase: $e');
+    }
+  }
+
   // 4. Logout / Desconectar
   Future<void> signOut() async {
     if (SupabaseConfig.isConfigured) {

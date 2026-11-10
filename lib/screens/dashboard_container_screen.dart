@@ -174,7 +174,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.118+195';
+  static const String _kCurrentAppVersion = '2.1.126+203';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
@@ -706,6 +706,22 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeAccountDeleted($okDel, ${jsonEncode(err ?? '')});
           }
         """);
+      } else if (action == 'log_audit_event') {
+        final event = data['event'] as String? ?? '';
+        final rawMeta = data['meta'];
+        final meta = rawMeta is Map ? Map<String, dynamic>.from(rawMeta) : <String, dynamic>{};
+        final authService = Provider.of<AuthService>(context, listen: false);
+        unawaited(authService.logAuditEvent(event, meta));
+      } else if (action == 'log_legal_consent') {
+        final kind = data['kind'] as String? ?? '';
+        final version = data['version'] as String? ?? '2026.11';
+        final granted = data['granted'] as bool? ?? true;
+        final authService = Provider.of<AuthService>(context, listen: false);
+        unawaited(authService.logLegalConsent(
+          kind: kind,
+          version: version,
+          granted: granted,
+        ));
       } else if (action == 'save_text_file') {
         final content = data['content'] as String? ?? '';
         final filename = data['filename'] as String? ?? 'controlpig_dados.json';
