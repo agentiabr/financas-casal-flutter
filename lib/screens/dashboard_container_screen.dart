@@ -697,6 +697,29 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'auth_signout') {
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.signOut();
+      } else if (action == 'delete_account') {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final err = await authService.deleteAccount();
+        final okDel = err == null;
+        _controller.runJavaScript("""
+          if (typeof window.onNativeAccountDeleted === 'function') {
+            window.onNativeAccountDeleted($okDel, ${jsonEncode(err ?? '')});
+          }
+        """);
+      } else if (action == 'save_text_file') {
+        final content = data['content'] as String? ?? '';
+        final filename = data['filename'] as String? ?? 'controlpig_dados.json';
+        final mime = data['mimeType'] as String? ?? 'application/json';
+        final okSave = await NativeChannelService.saveTextFile(
+          content: content,
+          filename: filename,
+          mimeType: mime,
+        );
+        _controller.runJavaScript("""
+          if (typeof window.onNativeTextSaved === 'function') {
+            window.onNativeTextSaved($okSave, ${jsonEncode(filename)});
+          }
+        """);
       } else if (action == 'open_onboarding') {
         _isPickingExternalMedia = true;
         final profile = await Navigator.of(context).push<OnboardingProfileResult>(

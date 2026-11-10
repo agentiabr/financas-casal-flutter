@@ -175,6 +175,25 @@ class NativeChannelService {
     }
   }
 
+  /// Salva um arquivo de texto (ex.: exportação JSON de dados do usuário) em Downloads/ControlPig
+  static Future<bool> saveTextFile({
+    required String content,
+    required String filename,
+    String mimeType = 'application/json',
+  }) async {
+    try {
+      return await _channel.invokeMethod<bool>('saveTextFile', {
+            'content': content,
+            'filename': filename,
+            'mimeType': mimeType,
+          }) ??
+          false;
+    } catch (e) {
+      debugPrint('Aviso ao salvar arquivo nativo: $e');
+      return false;
+    }
+  }
+
   /// Abre o seletor nativo de contatos da agenda do Android
   static Future<Map<String, dynamic>?> pickContact() async {
     try {

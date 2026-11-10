@@ -145,6 +145,22 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  // 5. Exclusão definitiva da conta na nuvem (LGPD art. 18, VI)
+  // Chama a função RPC `delete_my_account` (ver supabase/migrations/20261109120000_security_compliance.sql).
+  Future<String?> deleteAccount() async {
+    try {
+      if (SupabaseConfig.isConfigured && SupabaseConfig.client.auth.currentUser != null) {
+        await SupabaseConfig.client.rpc('delete_my_account');
+        await SupabaseConfig.client.auth.signOut();
+      }
+      _currentUser = null;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      return 'Não foi possível excluir a conta na nuvem: $e';
+    }
+  }
+
   // 4. Logout / Desconectar
   Future<void> signOut() async {
     if (SupabaseConfig.isConfigured) {

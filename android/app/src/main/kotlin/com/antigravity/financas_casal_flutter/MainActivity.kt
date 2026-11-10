@@ -939,6 +939,39 @@ class MainActivity: FlutterFragmentActivity() {
                         result.error("SAVE_ERROR", e.message, null)
                     }
                 }
+                "saveTextFile" -> {
+                    val content = call.argument<String>("content") ?: ""
+                    val filename = call.argument<String>("filename") ?: "controlpig_dados.json"
+                    val mimeType = call.argument<String>("mimeType") ?: "application/json"
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                            val resolver = contentResolver
+                            val contentValues = android.content.ContentValues().apply {
+                                put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                                put(android.provider.MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/ControlPig")
+                                put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
+                            }
+                            val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                            if (uri != null) {
+                                resolver.openOutputStream(uri)?.use { out ->
+                                    out.write(content.toByteArray(Charsets.UTF_8))
+                                }
+                                contentValues.clear()
+                                contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+                                resolver.update(uri, contentValues, null, null)
+                                android.widget.Toast.makeText(this@MainActivity, "📥 Arquivo salvo em Downloads/ControlPig", android.widget.Toast.LENGTH_LONG).show()
+                                result.success(true)
+                            } else {
+                                result.success(false)
+                            }
+                        } else {
+                            result.success(false)
+                        }
+                    } catch (e: Exception) {
+                        result.error("SAVE_ERROR", e.message, null)
+                    }
+                }
                 else -> {
                     result.notImplemented()
                 }

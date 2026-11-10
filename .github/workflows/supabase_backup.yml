@@ -1,0 +1,53 @@
+name: Supabase Backup
+
+on:
+  schedule:
+    - cron: '0 6 * * 0'   # domingo 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    name: Dump do banco (pg_dump)
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: Verificar segredo
+        id: chk
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "SUPABASE_DB_URL não configurado: backup externo ignorado."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Instalar cliente PostgreSQL
+        if: steps.chk.outputs.run == 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y postgresql-client
+
+      - name: Gerar dump (schema public) e criptografar
+        if: steps.chk.outputs.run == 'true'
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          pg_dump "$SUPABASE_DB_URL" --schema=public --no-owner --no-privileges -Fc -f backup.dump
+          if [ -n "${BACKUP_PASSPHRASE:-}" ]; then
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" -c backup.dump
+            rm backup.dump
+          fi
+          ls -l
+
+      - name: Guardar artefato (30 dias)
+        if: steps.chk.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-${{ github.run_id }}
+          path: backup.dump*
+          retention-days: 30

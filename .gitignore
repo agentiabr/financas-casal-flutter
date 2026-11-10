@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.py
+!tools/*.py
 *.zip
 *.swp
 .DS_Store

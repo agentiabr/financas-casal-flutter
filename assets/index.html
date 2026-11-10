@@ -13,6 +13,7 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: file: https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com;">
   <!-- Diretivas Anti-Cache para Atualizações Instantâneas entre Versões -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -4267,7 +4268,7 @@ html, body {
           </div>
           <div>
             <label class="block text-[11px] font-bold text-white/90 mb-1">Senha *</label>
-            <input type="password" id="regSenha" required placeholder="Mínimo 6 dígitos" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
+            <input type="password" id="regSenha" required placeholder="Mín. 8, letras e números" class="w-full px-3 py-2 rounded-xl bg-white/25 border border-white/40 placeholder-white/60 text-white font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           </div>
         </div>
 
@@ -4320,6 +4321,8 @@ html, body {
           <input type="text" id="regCupomVip" placeholder="Insira seu código promocional" class="w-full px-3 py-1.5 uppercase font-mono rounded-lg bg-black/25 border border-white/30 placeholder-white/40 text-white font-bold text-xs focus:outline-none focus:ring-2 focus:ring-white">
           <span class="text-[10px] text-white/70 block mt-1">Possui um cupom de convite ou código de parceria? Digite aqui para ativar benefícios.</span>
         </div>
+
+        <label class="cp-consent-box"><input type="checkbox" id="regAcceptLegal"><span>Li e aceito os <button type="button" class="cp-link" onclick="CPSec.openDoc('terms')">Termos de Uso</button> e a <button type="button" class="cp-link" onclick="CPSec.openDoc('privacy')">Política de Privacidade</button>. *</span></label>
 
         <button type="submit" class="w-full py-3 mt-1 rounded-full bg-white text-blue-900 hover:bg-blue-50 font-black text-sm shadow-xl active:scale-98 transition-all flex items-center justify-center gap-2">
           <span>Cadastrar e Acessar</span>
@@ -4382,6 +4385,12 @@ html, body {
           Voltar para o Login
         </button>
       </form>
+
+      <div class="cp-auth-links">
+        <button type="button" class="cp-link" onclick="CPSec.openDoc('terms')">Termos de Uso</button> •
+        <button type="button" class="cp-link" onclick="CPSec.openDoc('privacy')">Política de Privacidade</button> •
+        <button type="button" class="cp-link" onclick="CPSec.openDoc('licenses')">Licenças</button>
+      </div>
 
     </div>
   </div>
@@ -7845,7 +7854,7 @@ html, body {
                   <span>Já depositou no seu cofrinho esse mês?</span>
                   <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300">Lembrete Mensal</span>
                 </h4>
-                <p class="text-[11px] text-pink-800 dark:text-pink-300 mt-0.5">Mantenha o foco financeiro depositando qualquer valor na sua meta <strong>"${targetPiggy.nome}"</strong> neste ciclo!</p>
+                <p class="text-[11px] text-pink-800 dark:text-pink-300 mt-0.5">Mantenha o foco financeiro depositando qualquer valor na sua meta <strong>"${escapeHtml(targetPiggy.nome)}"</strong> neste ciclo!</p>
               </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
@@ -7879,7 +7888,7 @@ html, body {
               <div class="flex items-center gap-2">
                 <span class="text-2xl">${p.icone || '🐷'}</span>
                 <div>
-                  <h4 class="font-bold text-slate-800 text-xs">${p.nome}</h4>
+                  <h4 class="font-bold text-slate-800 text-xs">${escapeHtml(p.nome)}</h4>
                   <span class="text-[10px] text-slate-400">Meta: ${formatBRL(p.target)}</span>
                 </div>
               </div>
@@ -8517,7 +8526,7 @@ html, body {
           descricao: `
             <td class="py-2.5 px-3">
               <div class="flex items-center gap-1.5">
-                <span class="font-bold text-slate-800 dark:text-slate-100">${t.descricao}</span>
+                <span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(t.descricao)}</span>
                 ${extratoTag}
               </div>
               ${prevExp ? `
@@ -8527,7 +8536,7 @@ html, body {
               ` : ''}
             </td>
           `,
-          categoria: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${t.categoria}</td>`,
+          categoria: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${escapeHtml(t.categoria)}</td>`,
           valor: `<td class="py-2.5 px-3 text-right whitespace-nowrap">${valorDisplay}</td>`,
           pagamento: `<td class="py-2.5 px-3 whitespace-nowrap">${pagBadge}</td>`,
           responsavel: `<td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${t.responsavel || 'Comum'}</td>`,
@@ -8571,7 +8580,7 @@ html, body {
             <div class="app-card rounded-xl p-3.5 flex flex-col justify-between space-y-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xs">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-[10px] text-slate-400 font-semibold">${formatDateBR(t.data)} • ${t.categoria}</span>
+                  <span class="text-[10px] text-slate-400 font-semibold">${formatDateBR(t.data)} • ${escapeHtml(t.categoria)}</span>
                   ${t.tipo === 'Despesa Fixa' ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">Fixa</span>' : ''}
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -8581,7 +8590,7 @@ html, body {
               </div>
               <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/60">
                 <div>
-                  <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs">${t.descricao}</h4>
+                  <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs">${escapeHtml(t.descricao)}</h4>
                   ${prevExp ? `
                     <div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium tracking-tight mt-0.5">
                       Paguei ${isMaskedInTable ? 'R$ •••••' : Number(prevExp.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} anteriormente${prevExp.ciclo && prevExp.ciclo !== t.ciclo ? ` <span class="opacity-75">(${prevExp.ciclo})</span>` : ''}
@@ -9134,7 +9143,7 @@ html, body {
         listEl.innerHTML = trashTransactions.map((item, idx) => `
           <div class="flex items-center justify-between p-2.5 rounded-none bg-slate-50 border border-slate-300">
             <div>
-              <div class="font-bold text-slate-800 text-xs">${item.tx.descricao}</div>
+              <div class="font-bold text-slate-800 text-xs">${escapeHtml(item.tx.descricao)}</div>
               <div class="text-[10px] text-slate-400">${formatDateBR(item.tx.data)} • ${item.tx.tipo} • ${formatBRL(item.tx.valor)}</div>
             </div>
             <button onclick="restoreFromTrash(${idx})" class="px-2.5 py-1 bg-slate-200 text-blue-700 hover:bg-slate-300 font-bold rounded-none text-xs border border-slate-300">
@@ -9300,7 +9309,7 @@ html, body {
             <div class="flex items-center justify-between">
               <div>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${c.titular}</span>
-                <h4 class="text-base font-bold tracking-tight">${c.nome}</h4>
+                <h4 class="text-base font-bold tracking-tight">${escapeHtml(c.nome)}</h4>
               </div>
               <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
                 <button type="button" onclick="openEditCreditCardModal('${c.id}')" class="p-1 rounded-lg bg-white/10 hover:bg-white/25 text-slate-300 hover:text-white text-[11px] transition-all cursor-pointer" title="Editar Limite e Datas">
@@ -9350,7 +9359,7 @@ html, body {
       listEl.innerHTML = creditCards.map(c => `
         <div class="flex items-center justify-between p-2.5 rounded-none bg-slate-50 border border-slate-300">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-800">${c.nome}</span>
+            <span class="text-xs font-bold text-slate-800">${escapeHtml(c.nome)}</span>
             <span class="text-[10px] text-slate-400">(${c.titular} • final ${c.digitos})</span>
           </div>
           <div class="flex items-center gap-2">
@@ -14149,45 +14158,43 @@ html, body {
       }
     }
 
-    function promptPasswordForMember(who) {
+    async function promptPasswordForMember(who) {
       const memberName = who === 'rodrigo' ? 'Rodrigo' : 'Márcia';
       const defaultEmail = who === 'rodrigo' ? 'rodrigocardosocn@gmail.com' : 'marcia@financas.casal';
-      
-      // Preenche o formulário de login e foca na senha para segurança
+
       const idInput = document.getElementById('loginIdentifier');
       const passInput = document.getElementById('loginPassword');
       if (idInput) idInput.value = defaultEmail;
-      if (passInput) {
-        passInput.value = '';
-        passInput.focus();
-      }
+      if (passInput) passInput.value = '';
 
-      const pass = prompt(`Segurança ControlPig • Digite a senha ou PIN de ${memberName}:`);
-      if (pass === null) {
+      const acc = CPSec.findAccount(defaultEmail) || (who === 'marcia' ? CPSec.findAccount('marcia@ctrlpig.app') : null);
+      if (!acc) {
+        showToastUndo(`Conta de ${memberName} não encontrada neste aparelho. Entre com e-mail e senha ou cadastre-se.`, false);
         window._pendingQuickLoginMember = null;
         return;
       }
+      if (CPSec.checkLocked(acc.email)) { window._pendingQuickLoginMember = null; return; }
 
-      // Validação de segurança: aceita a senha mestra ou senhas de membros locais
-      let contas = [];
-      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      const found = contas.find(c => c.email && c.email.toLowerCase() === defaultEmail.toLowerCase());
-      const hasCustomPass = found && found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
+      const pass = await CPSec.askPassword({ title: 'Segurança ControlPig', message: `Digite a senha de ${memberName}:` });
+      if (pass === null) { window._pendingQuickLoginMember = null; return; }
 
-      let isValid = false;
-      if (hasCustomPass) {
-        // Se a conta já possui senha personalizada ou redefinida, EXIGE ESTRITAMENTE a senha nova ativa!
-        // As senhas antigas são completamente rejeitadas.
-        isValid = (pass === found.senha);
-      } else {
-        // Primeiro acesso antes de qualquer alteração de senha:
-        isValid = (pass === 'PHNcnrj2013@' || pass === '1234' || (who === 'marcia' && pass === '123456'));
+      const r = await CPSec.verifyAccountPassword(acc, pass.trim());
+      if (r.firstAccess) {
+        const np = await CPSec.askNewPassword({ title: 'Primeiro acesso: crie sua senha', message: `A conta de ${memberName} ainda não tem senha. Defina uma senha segura.`, email: acc.email });
+        if (!np) { window._pendingQuickLoginMember = null; return; }
+        await CPSec.setAccountPassword(acc, np);
+        CPSec.audit('password_set', { who: acc.email, via: 'first_access' });
+        applyMemberSessionAndUnlock(who);
+        return;
       }
-
-      if (isValid) {
+      if (r.ok) {
+        CPSec.clearFailures(acc.email);
+        if (r.migrate) await CPSec.setAccountPassword(acc, pass.trim());
+        CPSec.audit('login_ok', { who: acc.email, via: 'member' });
         applyMemberSessionAndUnlock(who);
       } else {
-        showToastUndo('Senha incorreta! Digite a sua senha atual ou redefina na aba "Esqueceu?".', false);
+        CPSec.registerFailure(acc.email);
+        if (!CPSec.checkLocked(acc.email)) showToastUndo('Senha incorreta!', false);
         window._pendingQuickLoginMember = null;
       }
     }
@@ -14272,7 +14279,6 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
 
     window.onNativeAuthLoginResult = function(success, errorMessage, userData) {
       const idInput = (document.getElementById('loginIdentifier')?.value || '').trim();
-      const pass = (document.getElementById('loginPassword')?.value || '').trim();
 
       // Se o login local já desbloqueou a sessão, não reabre nem interfere
       if (sessionStorage.getItem('pigctrl_session_authenticated') === 'true') {
@@ -14298,6 +14304,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try {
           localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
         } catch(e) {}
+        CPSec.audit('login_ok', { who: currentUserSession.email, via: 'cloud' });
         loadData();
         if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
         if (typeof updateDashboard === 'function') updateDashboard();
@@ -14305,49 +14312,10 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         showToastUndo(`Login realizado com sucesso! Bem-vindo(a), ${currentUserSession.nome}! 🎉`, false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        // Fallback resiliente: o usuário NUNCA fica bloqueado
-        let contas = [];
-        try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-        const cleanId = idInput.replace(/\D/g, '');
-        let found = contas.find(c => (c.email && c.email.toLowerCase() === idInput.toLowerCase()) || (c.cpf && c.cpf.replace(/\D/g, '') === cleanId));
-
-        if (found) {
-          const hasCustomPass = found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
-          const passMatch = hasCustomPass ? (pass === found.senha) : (pass === 'PHNcnrj2013@' || pass === '1234');
-          if (passMatch) {
-            currentUserSession = found;
-            window.currentUserSession = currentUserSession;
-            try {
-              localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-            } catch(e) {}
-            window.forceUnlockAuthOverlay();
-            showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}!`, false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-          } else {
-            showToastUndo('Senha incorreta! Se esqueceu, clique em "Esqueceu?".', false);
-            return;
-          }
-        }
-
-        if (idInput && pass) {
-          currentUserSession = {
-            nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
-            email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
-            cpf: idInput,
-            whatsapp: '',
-            plano: 'CtrlPig Acesso Garantido'
-          };
-          window.currentUserSession = currentUserSession;
-          try {
-            localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          } catch(e) {}
-          window.forceUnlockAuthOverlay();
-          showToastUndo(`Acesso liberado! Seja bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-          showToastUndo('Verifique seu e-mail e senha para continuar.', false);
-        }
+        // Sem acesso garantido: falha de login na nuvem NÃO libera o aplicativo.
+        console.warn('Falha no login da nuvem:', errorMessage);
+        CPSec.audit('login_cloud_fail', {});
+        showToastUndo('Não foi possível entrar. Verifique e-mail e senha.', false);
       }
     };
 
@@ -14367,7 +14335,46 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       }
     };
 
-    function handleAuthLogin(e) {
+    function cpCompleteLogin(acc, pass) {
+      const lowerId = String(acc.email || '').toLowerCase();
+      const isMaster = lowerId === CPSec.MASTER_EMAIL;
+      const sess = CPSec.publicSession(acc);
+      sess.isMaster = isMaster;
+      if (isMaster) {
+        sess.nome = sess.nome || 'Rodrigo Cardoso';
+        sess.plano = 'Super Administrador Vitalício';
+        sess.papel = 'Super Administrador';
+      } else {
+        sess.papel = 'Membro da Família';
+        if (!sess.plano || String(sess.plano).includes('Admin')) sess.plano = 'Membro da Família';
+      }
+      currentUserSession = sess;
+      window.currentUserSession = sess;
+      try { localStorage.setItem('financas_auth_user', JSON.stringify(sess)); } catch(e) {}
+      CPSec.audit('login_ok', { who: sess.email });
+      loadData();
+      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      window.forceUnlockAuthOverlay();
+      if (isMaster) {
+        showToastUndo('Bem-vindo de volta, Rodrigo Cardoso! 🐷', false);
+        if (typeof window.unlockAppAndEnterDashboard === 'function') {
+          window.unlockAppAndEnterDashboard(sess);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else {
+        showToastUndo(`Login realizado com sucesso! Olá, ${sess.nome}! 🐷`, false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+        try {
+          window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: sess.email, password: pass }));
+        } catch(err) {}
+      }
+    }
+
+    async function handleAuthLogin(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
       const idInput = (document.getElementById('loginIdentifier')?.value || '').trim();
       const pass = (document.getElementById('loginPassword')?.value || '').trim();
@@ -14376,185 +14383,48 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         showToastUndo('Por favor, informe seu e-mail ou CPF.', false);
         return;
       }
-
       if (!pass) {
         showToastUndo('Por favor, digite a sua senha de acesso.', false);
         return;
       }
+      if (CPSec.checkLocked(idInput)) return;
 
-      const lowerId = idInput.toLowerCase();
-      const cleanId = idInput.replace(/\D/g, '');
-
-      // 1. Procura nas contas cadastradas/recuperadas locais primeiro
-      let contas = [];
-      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      let found = contas.find(c => 
-        (c.email && c.email.toLowerCase() === lowerId) || 
-        (cleanId && c.cpf && c.cpf.replace(/\D/g, '') === cleanId)
-      );
-
-      const hasCustomPass = found && found.senha && found.senha !== '__REMOVED_FOR_SECURITY__';
-
-      if (hasCustomPass) {
-        if (pass !== found.senha) {
-          showToastUndo('Senha incorreta! Digite a sua senha atual ou redefina na aba "Esqueceu?".', false);
-          return;
-        }
-      } else {
-        const isRodrigo = lowerId === 'rodrigocardosocn@gmail.com';
-        const isMarcia = lowerId === 'marcia@ctrlpig.app' || lowerId === 'marcia@financas.casal';
-        let passValida = false;
-
-        if (isRodrigo) {
-          passValida = (pass === 'PHNcnrj2013@' || pass === '1234');
-        } else if (isMarcia) {
-          passValida = (pass === '123456' || pass === '1234');
-        } else {
-          passValida = pass.length >= 4;
-        }
-
-        if (!passValida) {
-          showToastUndo('Senha incorreta! Clique na aba "Esqueceu?" para redefinir sua senha.', false);
-          return;
-        }
-      }
-
-      // 2. RECONHECIMENTO EXCLUSIVO DO ADMIN MASTER: Rodrigo Cardoso (apenas rodrigocardosocn@gmail.com)
-      if (lowerId === 'rodrigocardosocn@gmail.com') {
-        currentUserSession = found || {
-          nome: 'Rodrigo Cardoso',
-          email: 'rodrigocardosocn@gmail.com',
-          cpf: '123.456.789-00',
-          whatsapp: '(11) 98765-4321',
-          plano: 'Super Administrador Vitalício',
-          papel: 'Super Administrador',
-          isMaster: true
-        };
-        currentUserSession.isMaster = true;
-        currentUserSession.senha = pass;
-        window.currentUserSession = currentUserSession;
-        try {
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          if (!found) {
-            contas.push(currentUserSession);
-            localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
-          }
-        } catch(e) {}
-        loadData();
-        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
-        if (typeof updateDashboard === 'function') updateDashboard();
-        window.forceUnlockAuthOverlay();
-        showToastUndo('Bem-vindo de volta, Rodrigo Cardoso! 🐷', false);
-        if (typeof window.unlockAppAndEnterDashboard === 'function') {
-          window.unlockAppAndEnterDashboard(currentUserSession);
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-          try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: 'rodrigocardosocn@gmail.com', password: pass }));
-          } catch(err) {}
+      const acc = CPSec.findAccount(idInput);
+      if (!acc) {
+        CPSec.registerFailure(idInput);
+        if (!CPSec.checkLocked(idInput)) {
+          showToastUndo('E-mail/CPF ou senha incorretos. Se ainda não tem conta, toque em "Cadastrar".', false);
         }
         return;
       }
 
-      // 3. RECONHECIMENTO DE MÁRCIA (MEMBRO DA FAMÍLIA)
-      if (lowerId === 'marcia@ctrlpig.app' || lowerId === 'marcia@financas.casal') {
-        currentUserSession = found || {
-          nome: 'Márcia Oliveira',
-          email: 'marcia@ctrlpig.app',
-          cpf: '987.654.321-00',
-          whatsapp: '(11) 98765-4321',
-          plano: 'Membro da Família',
-          papel: 'Membro da Família',
-          isMaster: false
-        };
-        currentUserSession.isMaster = false;
-        currentUserSession.senha = pass;
-        window.currentUserSession = currentUserSession;
-        try {
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-          if (!found) {
-            contas.push(currentUserSession);
-            localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
-          }
-        } catch(e) {}
-        loadData();
-        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
-        if (typeof updateDashboard === 'function') updateDashboard();
-        window.forceUnlockAuthOverlay();
-        showToastUndo('Bem-vinda de volta, Márcia! 🌸', false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-          try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
-          } catch(err) {}
+      const r = await CPSec.verifyAccountPassword(acc, pass);
+      if (r.firstAccess) {
+        const np = await CPSec.askNewPassword({ title: 'Primeiro acesso: crie sua senha', message: 'Esta conta ainda não tem senha. Defina uma senha segura para continuar.', email: acc.email });
+        if (!np) return;
+        await CPSec.setAccountPassword(acc, np);
+        CPSec.audit('password_set', { who: acc.email, via: 'first_access' });
+        cpCompleteLogin(acc, np);
+        return;
+      }
+      if (!r.ok) {
+        const st = CPSec.registerFailure(idInput);
+        if (!CPSec.checkLocked(idInput)) {
+          const left = Math.max(0, 5 - (st.n || 0));
+          showToastUndo('E-mail/CPF ou senha incorretos.' + (left > 0 ? ` (${left} tentativa(s) restante(s))` : '') + ' Se esqueceu, use a aba "Esqueceu?".', false);
         }
         return;
       }
 
-      // 4. Se achou conta local cadastrada (NUNCA É ADMIN MASTER SE NÃO FOR RODRIGO)
-      if (found) {
-        const isMaster = (found.email || '').toLowerCase() === 'rodrigocardosocn@gmail.com';
-        found.isMaster = isMaster;
-        if (!isMaster) {
-          found.papel = 'Membro da Família';
-          if (!found.plano || found.plano.includes('Admin')) {
-            found.plano = 'Membro da Família';
-          }
-        }
-        currentUserSession = found;
-        currentUserSession.senha = pass;
-        window.currentUserSession = currentUserSession;
-        try {
-          localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-        } catch(e) {}
-        loadData();
-        if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
-        if (typeof updateDashboard === 'function') updateDashboard();
-        window.forceUnlockAuthOverlay();
-        showToastUndo(`Login realizado com sucesso! Olá, ${found.nome}! 🐷`, false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-          try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
-          } catch(err) {}
-        }
-        return;
+      CPSec.clearFailures(idInput);
+      if (r.migrate) {
+        await CPSec.setAccountPassword(acc, pass);
+        CPSec.audit('password_migrated', { who: acc.email });
       }
-
-      // 5. Acesso direto resiliente (NOVO USUÁRIO / SÓCIO - ISOLADO E COM CONTA LIMPA)
-      currentUserSession = {
-        nome: idInput.includes('@') ? idInput.split('@')[0] : idInput,
-        email: idInput.includes('@') ? idInput : `${cleanId || 'usuario'}@ctrlpig.app`,
-        cpf: idInput,
-        whatsapp: '',
-        senha: pass,
-        plano: 'Membro da Família',
-        papel: 'Membro da Família',
-        isMaster: false
-      };
-      window.currentUserSession = currentUserSession;
-      contas.push(currentUserSession);
-      try {
-        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
-        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      } catch(e) {}
-      loadData();
-      if (typeof updateHeaderUserName === 'function') updateHeaderUserName();
-      if (typeof updateDashboard === 'function') updateDashboard();
-      window.forceUnlockAuthOverlay();
-      showToastUndo(`Bem-vindo(a), ${currentUserSession.nome}! 🐷`, false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-        try {
-          window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_login', email: currentUserSession.email, password: pass }));
-        } catch(err) {}
-      }
+      cpCompleteLogin(acc, pass);
     }
 
-    function handleAuthRegister(e) {
+    async function handleAuthRegister(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
       const nome = (document.getElementById('regNome')?.value || '').trim();
       const email = (document.getElementById('regEmail')?.value || '').trim();
@@ -14567,6 +14437,16 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         showToastUndo('Por favor, preencha pelo menos Nome, E-mail e Senha.', false);
         return;
       }
+      const polErr = CPSec.passwordPolicyError(senha, email);
+      if (polErr) { showToastUndo(polErr, false); return; }
+      if (!document.getElementById('regAcceptLegal')?.checked) {
+        showToastUndo('Para criar a conta é preciso aceitar os Termos de Uso e a Política de Privacidade.', false);
+        return;
+      }
+      if (CPSec.findAccount(email)) {
+        showToastUndo('Já existe uma conta com este e-mail neste aparelho. Use a aba "Entrar" ou "Esqueceu?".', false);
+        return;
+      }
 
       let plano = 'Plano Padrão';
       let cupomValidado = false;
@@ -14575,16 +14455,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch(err) {}
         let cupomAtivo = cupons.find(c => c.code && c.code.toUpperCase() === cupom && c.status === 'Ativo');
         
-        // Aceitação resiliente de cupons VIP (locais ou pelo formato oficial do app: VIP-*, PROMO-*, TESTADOR-*, FAMILIA-*)
-        if (!cupomAtivo && (cupom.startsWith('VIP') || cupom.startsWith('PROMO') || cupom.startsWith('TESTADOR') || cupom.startsWith('FAMILIA') || cupom.length >= 4)) {
-          cupomAtivo = {
-            code: cupom,
-            tipo: cupom.includes('FAMILIA') ? 'compartilhada' : 'independente',
-            descontoPct: '100',
-            descricao: 'VIP Vitalício Gratuito (Cupom Ativado)',
-            status: 'Ativo'
-          };
-          cupons.push(cupomAtivo);
+        // Cupons só são aceitos se constarem no cadastro de cupons (sem aceitação automática por prefixo/tamanho).
+        if (!cupomAtivo) {
+          showToastUndo('Cupom não reconhecido. Sua conta será criada com o período grátis padrão.', false);
         }
 
         if (cupomAtivo) {
@@ -14601,12 +14474,13 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       const isMaster = email.toLowerCase() === 'rodrigocardosocn@gmail.com';
       const regTipoPlano = document.querySelector('input[name="regTipoPlano"]:checked')?.value || 'familia';
       const isIndividualPlan = !isMaster && regTipoPlano === 'individual';
+      const pwdRec = await CPSec.hashPassword(senha);
       const novoUsuario = {
         nome: nome,
         email: email,
         cpf: cpf,
         whatsapp: whatsapp,
-        senha: senha,
+        pwd: pwdRec,
         tipoPlano: isMaster ? 'familia' : regTipoPlano,
         plano: isMaster ? 'Super Administrador Vitalício' : (isIndividualPlan ? 'Plano Individual' : 'Plano Casal / Família'),
         papel: isMaster ? 'Super Administrador' : (cupomValidado ? 'Membro VIP' : (isIndividualPlan ? 'Titular Individual' : 'Titular da Família')),
@@ -14620,7 +14494,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       contas.push(novoUsuario);
       try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas)); } catch(err) {}
 
-      currentUserSession = novoUsuario;
+      currentUserSession = CPSec.publicSession(novoUsuario);
       window.currentUserSession = currentUserSession;
       try {
         localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
@@ -14675,6 +14549,8 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (typeof updateDashboard === 'function') updateDashboard();
 
       window.forceUnlockAuthOverlay();
+      CPSec.recordBaseConsent();
+      CPSec.audit('register', { who: email });
       showToastUndo(`Conta criada com sucesso! Seja bem-vindo(a), ${nome}! 🐷`, false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -14699,19 +14575,27 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         return;
       }
 
-      const code = String(Math.floor(100000 + Math.random() * 900000));
+      let prevOtp = null;
+      try { prevOtp = JSON.parse(sessionStorage.getItem('cp_recovery_otp_v2') || 'null'); } catch(e) {}
+      if (prevOtp && Date.now() - prevOtp.at < 60000) {
+        showToastUndo('Aguarde 1 minuto para solicitar um novo código.', false);
+        return;
+      }
+      const code = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
       try {
-        sessionStorage.setItem('ctrlpig_recovery_otp', code);
-        localStorage.setItem('ctrlpig_recovery_otp', code);
+        sessionStorage.setItem('cp_recovery_otp_v2', JSON.stringify({ code: code, at: Date.now(), exp: Date.now() + 600000, tries: 0 }));
+        localStorage.removeItem('ctrlpig_recovery_otp');
+        sessionStorage.removeItem('ctrlpig_recovery_otp');
       } catch(e) {}
+      CPSec.audit('recovery_code_sent', { who: ident });
 
-      // Exibe o banner do código gerado e preenche o campo para facilitar ou permitir conferência
+      // O código NÃO é exibido na tela nem preenchido automaticamente: chega só pela notificação/WhatsApp.
       const banner = document.getElementById('forgotOtpStatusBanner');
       const codeSpan = document.getElementById('forgotOtpGeneratedDisplay');
       const otpInput = document.getElementById('forgotOtpCode');
       if (banner) banner.classList.remove('hidden');
-      if (codeSpan) codeSpan.textContent = code;
-      if (otpInput) otpInput.value = code;
+      if (codeSpan) codeSpan.textContent = 'Código enviado';
+      if (otpInput) otpInput.value = '';
 
       // 1. Dispara Notificação Nativa com Fundo Branco assinada por "CtrlPig Controle Financeiro Inteligente"
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
@@ -14751,94 +14635,73 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         }
       }
 
-      showToastUndo(`Código ${code} enviado por CtrlPig Controle Financeiro Inteligente! 📲`, false);
+      showToastUndo('Código enviado! Confira a notificação do celular ou o WhatsApp. Ele vale por 10 minutos. 📲', false);
     };
 
-    function handleAuthForgot(e) {
+    async function handleAuthForgot(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
       const ident = (document.getElementById('forgotIdentifier')?.value || '').trim();
       const newPass = (document.getElementById('forgotNewPassword')?.value || '').trim();
       const typedOtp = (document.getElementById('forgotOtpCode')?.value || '').trim();
-      const savedOtp = sessionStorage.getItem('ctrlpig_recovery_otp') || localStorage.getItem('ctrlpig_recovery_otp') || '';
 
       if (!ident) {
-        showToastUndo('Informe seu e-mail, CPF ou WhatsApp cadastrado.', false);
+        showToastUndo('Informe seu e-mail ou CPF cadastrado.', false);
         return;
       }
+      if (CPSec.checkLocked('forgot:' + ident)) return;
 
-      if (!newPass) {
-        showToastUndo('Digite uma nova senha para redefinir seu acesso.', false);
+      let otp = null;
+      try { otp = JSON.parse(sessionStorage.getItem('cp_recovery_otp_v2') || 'null'); } catch(err) {}
+      if (!otp || Date.now() > otp.exp) {
+        showToastUndo('Solicite um novo código de acesso (ele vale por 10 minutos).', false);
         return;
       }
-
-      if (savedOtp && typedOtp && typedOtp !== savedOtp) {
-        showToastUndo('Código de acesso incorreto! Verifique o código de 6 dígitos.', false);
+      if (!typedOtp) {
+        showToastUndo('Digite o código de 6 dígitos que você recebeu.', false);
         return;
       }
-
-      // Procura conta local para atualizar a senha (inclusive Rodrigo ou Márcia)
-      let contas = [];
-      try { contas = JSON.parse(localStorage.getItem('financas_cadastros_usuarios') || '[]'); } catch(err) {}
-      const cleanId = ident.replace(/\D/g, '');
-      const lowerIdent = ident.toLowerCase();
-      let found = contas.find(c =>
-        (c.email && c.email.toLowerCase() === lowerIdent) ||
-        (c.cpf && cleanId && c.cpf.replace(/\D/g, '') === cleanId) ||
-        (c.nome && c.nome.toLowerCase() === lowerIdent)
-      );
-
-      if (found) {
-        found.senha = newPass;
-        if (lowerIdent.includes('rodrigo')) {
-          found.email = 'rodrigocardosocn@gmail.com';
+      if (typedOtp !== otp.code) {
+        otp.tries = (otp.tries || 0) + 1;
+        CPSec.registerFailure('forgot:' + ident);
+        if (otp.tries >= 5) {
+          sessionStorage.removeItem('cp_recovery_otp_v2');
+          showToastUndo('Código bloqueado por tentativas incorretas. Solicite um novo.', false);
+        } else {
+          try { sessionStorage.setItem('cp_recovery_otp_v2', JSON.stringify(otp)); } catch(err) {}
+          if (!CPSec.checkLocked('forgot:' + ident)) showToastUndo('Código de acesso incorreto! Verifique o código de 6 dígitos.', false);
         }
-      } else {
-        found = {
-          nome: lowerIdent.includes('rodrigo') ? 'Rodrigo Cardoso' : (ident.includes('@') ? ident.split('@')[0] : ident),
-          email: ident.includes('@') ? ident : (lowerIdent.includes('rodrigo') ? 'rodrigocardosocn@gmail.com' : `${cleanId || 'usuario'}@ctrlpig.app`),
-          cpf: cleanId.length === 11 ? ident : '123.456.789-00',
-          whatsapp: (document.getElementById('forgotWhatsappPhone')?.value || '(11) 98765-4321').trim(),
-          senha: newPass,
-          plano: 'Super Administrador Vitalício',
-          data_cadastro: new Date().toISOString()
-        };
-        contas.push(found);
+        return;
       }
-      try {
-        localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
-        sessionStorage.removeItem('ctrlpig_recovery_otp');
-        localStorage.removeItem('ctrlpig_recovery_otp');
-      } catch(e) {}
 
-      // AUTENTICA E DESBLOQUEIA IMEDIATAMENTE O APLICATIVO COM A NOVA SENHA
-      currentUserSession = found;
-      window.currentUserSession = currentUserSession;
-      try {
-        localStorage.setItem('financas_auth_user', JSON.stringify(currentUserSession));
-      } catch(e) {}
+      const acc = CPSec.findAccount(ident);
+      if (!acc) {
+        showToastUndo('Conta não encontrada. Verifique o e-mail ou CPF, ou cadastre-se.', false);
+        return;
+      }
+      const polErr = CPSec.passwordPolicyError(newPass, acc.email);
+      if (polErr) {
+        showToastUndo(polErr, false);
+        return;
+      }
 
-      // Atualiza também os campos da tela de login com a nova senha salva
-      const loginId = document.getElementById('loginIdentifier');
-      const loginP = document.getElementById('loginPassword');
-      if (loginId) loginId.value = found.email || ident;
-      if (loginP) loginP.value = newPass;
+      await CPSec.setAccountPassword(acc, newPass);
+      sessionStorage.removeItem('cp_recovery_otp_v2');
+      CPSec.clearFailures('forgot:' + ident);
+      CPSec.clearFailures(acc.email);
+      CPSec.audit('password_reset', { who: acc.email });
 
-      // Dispara confirmação nativa em nome do CtrlPig Controle Financeiro Inteligente (sem e-mail "Supabase")
       if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
         try {
           window.FlutterBridge.postMessage(JSON.stringify({
             action: 'show_notification',
             type: 'auth',
             title: '🐷 CtrlPig Controle Financeiro Inteligente',
-            body: `Sua nova senha foi ativada com sucesso, ${found.nome}!`,
+            body: `Sua nova senha foi ativada com sucesso, ${acc.nome || ''}!`,
             id: 94822
           }));
         } catch(err) {}
       }
-
-      window.forceUnlockAuthOverlay();
-      showToastUndo(`Nova senha salva e ativada! Bem-vindo(a), ${found.nome}! 🐷`, false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      cpCompleteLogin(acc, newPass);
     }
 
     function togglePasswordVisibility(inputId, iconId) {
@@ -14893,6 +14756,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (headerPlan) headerPlan.textContent = user.plano || 'Plano Ativo';
       if (passInp) passInp.value = '';
       if (passConfInp) passConfInp.value = '';
+      const __pa = document.getElementById('inputProfileSenhaAtual'); if (__pa) __pa.value = '';
       
       modal.classList.remove('hidden');
     }
@@ -14908,7 +14772,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       showToastUndo(`Avatar ${avatar} selecionado!`, false);
     }
 
-    function handleSaveUserProfile(e) {
+    async function handleSaveUserProfile(e) {
       if (e && typeof e.preventDefault === 'function') e.preventDefault();
       
       const nome = (document.getElementById('inputProfileNome')?.value || '').trim();
@@ -14923,10 +14787,30 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
           showToastUndo('A confirmação da senha não confere! Digite senhas idênticas.', false);
           return;
         }
-        if (novaSenha.length < 4) {
-          showToastUndo('A nova senha deve ter no mínimo 4 caracteres.', false);
+        const polErrP = CPSec.passwordPolicyError(novaSenha, (window.currentUserSession && window.currentUserSession.email) || '');
+        if (polErrP) {
+          showToastUndo(polErrP, false);
           return;
         }
+      }
+
+      let __newPwdRec = null;
+      if (novaSenha) {
+        const sessEmail = (window.currentUserSession && window.currentUserSession.email) || '';
+        const accP = CPSec.findAccount(sessEmail);
+        const atual = (document.getElementById('inputProfileSenhaAtual')?.value || '').trim();
+        if (accP && (accP.pwd || (accP.senha && accP.senha !== CPSec.PLACEHOLDER))) {
+          if (CPSec.checkLocked(sessEmail)) return;
+          const vr = await CPSec.verifyAccountPassword(accP, atual);
+          if (!vr.ok) {
+            CPSec.registerFailure(sessEmail);
+            showToastUndo('Senha atual incorreta.', false);
+            return;
+          }
+          CPSec.clearFailures(sessEmail);
+        }
+        __newPwdRec = await CPSec.hashPassword(novaSenha);
+        CPSec.audit('password_change', {});
       }
 
       let user = window.currentUserSession || {};
@@ -14935,11 +14819,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (idade) user.idade = idade;
       if (avatar) user.avatar = avatar;
       
-      if (novaSenha) {
-        user.senha = novaSenha;
-      }
-      
-      window.currentUserSession = user;
+      window.currentUserSession = CPSec.publicSession(user);
       
       // Atualiza ou insere na lista de contas cadastradas locais
       let contas = [];
@@ -14955,15 +14835,15 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       
       if (foundIndex >= 0) {
         contas[foundIndex] = { ...contas[foundIndex], ...user };
-        if (novaSenha) contas[foundIndex].senha = novaSenha;
+        if (__newPwdRec) { contas[foundIndex].pwd = __newPwdRec; delete contas[foundIndex].senha; }
       } else {
-        contas.push(user);
+        contas.push(Object.assign({}, user, __newPwdRec ? { pwd: __newPwdRec } : {}));
       }
       
       try {
         localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(contas));
-        localStorage.setItem('financas_auth_user', JSON.stringify(user));
-        localStorage.setItem('financas_usuario_ativo', JSON.stringify(user));
+        localStorage.setItem('financas_auth_user', JSON.stringify(CPSec.publicSession(user)));
+        localStorage.setItem('financas_usuario_ativo', JSON.stringify(CPSec.publicSession(user)));
       } catch(err) {}
 
       // Sincroniza via bridge com nativo se online
@@ -15506,7 +15386,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
                   </svg>
                 `}
               </div>
-              <span class="font-semibold text-[11px] text-white/95">${m.nome}</span>
+              <span class="font-semibold text-[11px] text-white/95">${escapeHtml(m.nome)}</span>
             </button>
           </div>
         `;
@@ -15664,7 +15544,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
             gridHtml += `
               <div class="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-200 flex flex-col items-center">
                 <span class="text-sm">${slot.icon}</span>
-                <span class="text-[9px] truncate max-w-full font-bold mt-0.5">${slot.name}</span>
+                <span class="text-[9px] truncate max-w-full font-bold mt-0.5">${escapeHtml(slot.name)}</span>
               </div>
             `;
           } else {
@@ -15739,7 +15619,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
               </div>
               <div>
                 <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-black text-slate-800 dark:text-slate-100">${m.nome}</span>
+                  <span class="text-xs font-black text-slate-800 dark:text-slate-100">${escapeHtml(m.nome)}</span>
                   <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 font-bold">${m.papel || 'Membro'}</span>
                 </div>
                 <span class="block text-[10px] text-slate-400">PIN: ${m.pin || '1234'}</span>
@@ -19478,9 +19358,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h5 class="font-extrabold text-sm text-white ${isPaid ? 'line-through text-slate-400' : ''}">${b.nome}</h5>
+                  <h5 class="font-extrabold text-sm text-white ${isPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(b.nome)}</h5>
                   ${statusBadge}
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${b.categoria}</span>
+                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${escapeHtml(b.categoria)}</span>
                 </div>
 
                 <div class="mt-1 flex items-center gap-3 text-xs text-slate-400 flex-wrap">
@@ -20785,7 +20665,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">${v.nome}</h4>
+                  <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">${escapeHtml(v.nome)}</h4>
                   <span class="text-[9px] font-black px-2 py-0.5 rounded-full border ${statusBadge}">${statusText}</span>
                 </div>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${v.descricao || ''}</p>
@@ -21742,7 +21622,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="grid grid-cols-2 gap-1.5 pt-1">
           ${catalog.map(st => `
             <button type="button" onclick="openExternalUrl('${st.getUrl(query)}')" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-850 hover:border-blue-400 flex items-center justify-between gap-1 cursor-pointer transition-all">
-              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md ${st.badgeBg} truncate">${st.name}</span>
+              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md ${st.badgeBg} truncate">${escapeHtml(st.name)}</span>
               <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 shrink-0">Ver preço <i data-lucide="external-link" class="w-3 h-3"></i></span>
             </button>`).join('')}
         </div>
@@ -22169,7 +22049,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                   ✓
                 </button>
                 <div class="min-w-0">
-                  <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500 dark:text-slate-400' : ''}">${m.nome}</div>
+                  <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500 dark:text-slate-400' : ''}">${escapeHtml(m.nome)}</div>
                   <div class="text-[10px] text-slate-500 dark:text-slate-400">${m.concentracao} • ${m.dosePorVez || 1} cp • <span class="text-sky-600 dark:text-sky-400 font-bold">${m.tipo}</span></div>
                 </div>
               </div>
@@ -22225,7 +22105,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                   ✓
                 </button>
                 <div class="min-w-0">
-                  <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500 dark:text-slate-400' : ''}">${m.nome}</div>
+                  <div class="font-extrabold text-xs text-slate-900 dark:text-white truncate ${isTakenIndividually ? 'line-through text-slate-500 dark:text-slate-400' : ''}">${escapeHtml(m.nome)}</div>
                   <div class="text-[10px] text-slate-500 dark:text-slate-400">${m.concentracao} • ${m.dosePorVez || 1} cp • <span class="text-indigo-600 dark:text-indigo-400 font-bold">${m.tipo}</span></div>
                 </div>
               </div>
@@ -22249,7 +22129,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="p-3 rounded-2xl border ${isLow ? 'border-amber-300 dark:border-amber-800 bg-amber-50/40 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850/60'} flex flex-col justify-between">
               <div>
                 <div class="flex items-start justify-between gap-1 mb-1">
-                  <h5 class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${m.nome}</h5>
+                  <h5 class="font-extrabold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(m.nome)}</h5>
                   <span class="text-[9px] font-black px-1.5 py-0.2 rounded-full ${isLow ? 'bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-100' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}">
                     ${isLow ? '⚠️ Estoque Baixo' : '✓ OK'}
                   </span>
@@ -22990,16 +22870,25 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
         <div class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <span class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Alteração de Senha (Opcional):</span>
+          <div>
+            <label class="block text-[10px] text-slate-400">Senha atual (obrigatória para trocar)</label>
+            <input type="password" id="inputProfileSenhaAtual" autocomplete="current-password" placeholder="Sua senha atual" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs">
+          </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] text-slate-400">Nova Senha</label>
-              <input type="password" id="inputProfileNovaSenha" placeholder="Mínimo 6 dígitos" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs">
+              <input type="password" id="inputProfileNovaSenha" placeholder="Mín. 8, letras e números" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs">
             </div>
             <div>
               <label class="block text-[10px] text-slate-400">Confirmar Senha</label>
               <input type="password" id="inputProfileConfirmaSenha" placeholder="Repita a senha" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs">
             </div>
           </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="CPSec.openPrivacyCenter()" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 cursor-pointer">🛡️ Central de Privacidade e Conta</button>
+          <p class="text-[10px] text-slate-500 mt-1 text-center">Termos, privacidade, exportar/excluir dados, cancelamento e reembolso.</p>
         </div>
 
         <!-- Opção de Biometria / Face ID -->
@@ -26074,7 +25963,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="text-base">${op.logo}</span>
-              <strong class="text-xs font-black">${op.name}</strong>
+              <strong class="text-xs font-black">${escapeHtml(op.name)}</strong>
             </div>
             <p class="text-[10px] opacity-80 truncate mt-0.5">${op.badge}</p>
           </div>
@@ -26148,7 +26037,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           listEl.innerHTML = vTxs.map(t => `
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
               <div class="min-w-0">
-                <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao}</div>
+                <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${escapeHtml(t.descricao)}</div>
                 <div class="text-[10px] text-slate-500 dark:text-slate-400">${formatDateBR(t.data)} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
               </div>
               <div class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">${formatBRL(t.valor)}</div>
@@ -26168,7 +26057,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           vList.innerHTML = vehicles.map((v, idx) => `
             <div class="flex items-center justify-between p-2 rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
               <div>
-                <span class="font-extrabold text-slate-900 dark:text-white">${v.tipo} ${v.nome}</span>
+                <span class="font-extrabold text-slate-900 dark:text-white">${v.tipo} ${escapeHtml(v.nome)}</span>
                 ${v.custoAnual ? `<span class="text-[10px] text-slate-500 ml-2">IPVA/Seguro Anual: <strong>${formatBRL(v.custoAnual)}</strong></span>` : ''}
               </div>
               <button type="button" onclick="deleteCustomVehicle(${idx})" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer font-bold" title="Remover">✕</button>
@@ -26224,7 +26113,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           listEl.innerHTML = eTxs.map(t => `
             <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
               <div class="min-w-0">
-                <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${t.descricao}</div>
+                <div class="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">${escapeHtml(t.descricao)}</div>
                 <div class="text-[10px] text-slate-500 dark:text-slate-400">${formatDateBR(t.data)} • Responsável: <strong>${t.responsavel || 'Comum'}</strong></div>
               </div>
               <div class="text-xs font-mono font-black text-rose-600 dark:text-rose-400">${formatBRL(t.valor)}</div>
@@ -26244,7 +26133,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           cList.innerHTML = courses.map((c, idx) => `
             <div class="flex items-center justify-between p-2 rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
               <div>
-                <span class="font-extrabold text-slate-900 dark:text-white">${c.tipo} ${c.nome}</span>
+                <span class="font-extrabold text-slate-900 dark:text-white">${c.tipo} ${escapeHtml(c.nome)}</span>
                 ${c.mensalidade ? `<span class="text-[10px] text-slate-500 ml-2">Mensalidade: <strong>${formatBRL(c.mensalidade)}</strong></span>` : ''}
               </div>
               <button type="button" onclick="deleteCustomEducation(${idx})" class="text-rose-500 hover:text-rose-700 p-1 cursor-pointer font-bold" title="Remover">✕</button>
@@ -28407,7 +28296,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         listEl.innerHTML = deleted.map(it => `
           <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
             <div>
-              <strong class="text-slate-800 dark:text-slate-100 text-xs block">${it.nome}</strong>
+              <strong class="text-slate-800 dark:text-slate-100 text-xs block">${escapeHtml(it.nome)}</strong>
               <span class="text-[10px] text-slate-500">${it.qtdDesejada || 1} ${it.unidade || 'un'} • ${it.estabelecimento || 'Mercado'}</span>
             </div>
             <button onclick="restoreShoppingItemFromTrash('${it.id}'); openTrashShoppingItemsModal();" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1 cursor-pointer">
@@ -29743,7 +29632,7 @@ Frase falada: "${spokenText}"`;
         serviceProviders: JSON.parse(localStorage.getItem('ctrlpig_service_providers_v1') || '[]'),
         dashboardVisibility: JSON.parse(localStorage.getItem('ctrlpig_dashboard_visibility_v1') || '{}'),
         foodBudgetCap: localStorage.getItem('financas_food_budget_cap') || '900',
-        geminiKey: localStorage.getItem('financas_gemini_api_key') || ''
+        geminiKey: ''
       };
 
       const rowBody = {
@@ -32033,7 +31922,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
                 <span class="inline-block px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-extrabold text-[10px] mb-1">
                   ${item.category || '🔧 Prestador'}
                 </span>
-                <h4 class="font-black text-sm text-slate-900 dark:text-white leading-tight">${item.name}</h4>
+                <h4 class="font-black text-sm text-slate-900 dark:text-white leading-tight">${escapeHtml(item.name)}</h4>
                 <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">
                   📞 ${item.phone} <span class="text-slate-400 mx-1">•</span> <span class="text-amber-600 dark:text-amber-400 font-semibold">${item.rating || ''}</span>
                 </div>
@@ -34563,7 +34452,7 @@ window.syncIndividualAndFamilyModeUI = function() {
                     const btnsHtml = [
                         `<button type="button" onclick="selectChatRecipient('Todos')" id="btnRecipient_Todos" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-2xs transition-all whitespace-nowrap cursor-pointer">👨‍👩‍👧‍👦 Todos</button>`,
                         `<button type="button" onclick="selectChatRecipient('${titular.replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">👤 ${titular}</button>`,
-                        ...din.map(m => `<button type="button" onclick="selectChatRecipient('${(m.nome || '').replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">${m.avatar || '👤'} ${m.nome}</button>`)
+                        ...din.map(m => `<button type="button" onclick="selectChatRecipient('${(m.nome || '').replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">${m.avatar || '👤'} ${escapeHtml(m.nome)}</button>`)
                     ].join('');
                     recBar.className = 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-start gap-1.5 overflow-x-auto flex-shrink-0 select-none text-left';
                     recBar.innerHTML = `<span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex-shrink-0 mr-0.5">Para:</span>` + btnsHtml;
@@ -34645,7 +34534,7 @@ window.renderAdminUserCompactModulesToggle = function() {
         return `
             <label class="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-blue-400 transition-all">
                 <div class="pr-2">
-                    <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">${m.name}</div>
+                    <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">${escapeHtml(m.name)}</div>
                     <div class="text-[10px] text-slate-500">${m.desc}</div>
                 </div>
                 <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="window.toggleUserAppModule('${m.id}', this.checked)" class="w-4 h-4 text-blue-600 rounded cursor-pointer">
@@ -36424,7 +36313,7 @@ window.renderFitnessExercises = function() {
   list.innerHTML = exercises.map((ex, idx) => `
     <div class="p-3 rounded-2xl bg-slate-900 border ${ex.done ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-slate-700/80'} flex items-center justify-between text-xs transition-all">
       <div class="min-w-0 pr-2">
-        <div class="font-extrabold ${ex.done ? 'line-through text-slate-400' : 'text-white'} truncate">${ex.nome}</div>
+        <div class="font-extrabold ${ex.done ? 'line-through text-slate-400' : 'text-white'} truncate">${escapeHtml(ex.nome)}</div>
         <div class="text-[10px] text-slate-400 mt-0.5">${ex.series} séries × ${ex.reps} reps • <strong class="text-sky-300">${ex.peso}</strong></div>
       </div>
       <button type="button" onclick="toggleFitnessExerciseDone(${idx})" class="px-2.5 py-1.5 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 ${ex.done ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'}">
@@ -38673,7 +38562,7 @@ window.openHealthMedsModal = function() {
               ${isCurrent ? '✓' : '📅'}
             </div>
             <div class="min-w-0">
-              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block leading-tight truncate">${c.name}</strong>
+              <strong class="text-sm font-black ${isCurrent ? 'text-blue-900' : 'text-slate-900'} block leading-tight truncate">${escapeHtml(c.name)}</strong>
               <span class="text-[11px] text-slate-500 font-semibold block mt-0.5">${shortSub}</span>
             </div>
           </div>
@@ -38713,7 +38602,7 @@ window.openHealthMedsModal = function() {
           return `
             <div class="p-3 rounded-2xl bg-rose-50/40 border border-rose-200 flex items-center justify-between gap-2">
               <div>
-                <strong class="text-xs font-black text-slate-900 block leading-tight">${tc.name}</strong>
+                <strong class="text-xs font-black text-slate-900 block leading-tight">${escapeHtml(tc.name)}</strong>
                 <span class="text-[10px] text-slate-500 font-semibold block mt-0.5">${shortSub}</span>
               </div>
               <div class="flex items-center gap-1.5">
@@ -41386,7 +41275,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
         const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
         const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
-        const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${t.responsavel}</span>` : '';
+        const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : '';
         const fixedPinBadge = isFixa ? `<span class="text-[9px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded">📌 Fixo</span>` : '';
         const btnQuitar = isFixa ? `
           <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'}" title="Clique para alterar status">
@@ -41468,7 +41357,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
           const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
           const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
-          const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${t.responsavel}</span>` : '';
+          const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : '';
           
           const btnQuitar = isFixa ? `
             <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'}" title="Clique para alterar status">
@@ -42952,9 +42841,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </div>
       </div>
 
+      <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] leading-snug text-slate-600 dark:text-slate-300">
+        <b>Resumo da contratação:</b> cobrança mensal conforme o plano (R$ 29,90 / 49,90 / 69,90; membro extra R$ 9,90), sem renovação automática em cartão — o acesso expira ao fim do período pago. <b>Arrependimento em 7 dias com reembolso integral</b> e cancelamento a qualquer momento em <button type="button" class="font-bold underline" onclick="CPSec.openPrivacyCenter()">Central de Privacidade e Conta</button>. Fornecedor: <span id="cpPaywallSupplier"></span>.
+      </div>
+
       <!-- Rodapé de Segurança e Opção de Trocar de Conta -->
       <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-        <span>🛡️ Criptografia local &amp; proteção anti-fraude ativa</span>
+        <span>🛡️ Senhas com hash seguro (PBKDF2) • <button type="button" class="underline" onclick="CPSec.openDoc('terms')">Termos</button> • <button type="button" class="underline" onclick="CPSec.openDoc('privacy')">Privacidade</button></span>
         <button type="button" onclick="window.closeSubscriptionPaywallModal(true); if (typeof logoutUser === 'function') logoutUser();" class="text-slate-500 hover:text-rose-600 font-bold underline cursor-pointer">
           Trocar de conta / Sair
         </button>
@@ -44130,7 +44023,7 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       let cupons = [];
       try { cupons = JSON.parse(localStorage.getItem('financas_cupons_vip') || '[]'); } catch (e) {}
       const found = cupons.find(c => c.code && c.code.toUpperCase() === code);
-      if (found || code.startsWith('VIP') || code.startsWith('FAMILIA') || code.startsWith('TESTADOR')) {
+      if (found) {
         const planTier = code.includes('IND') ? 'individual' : (code.includes('CAS') ? 'casal' : 'familia');
         window.saveUserSubscriptionRecord({
           status: 'vip_lifetime',
@@ -44300,6 +44193,895 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
+})();
+</script>
+<style id="cpSecStyles">
+  .cp-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(7,25,51,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .cp-card{background:#fff;color:#0f172a;width:100%;max-width:440px;max-height:92vh;overflow:auto;border-radius:22px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .cp-card.cp-wide{max-width:640px}
+  .cp-card h3{font-size:16px;font-weight:900;margin:0 0 6px}
+  .cp-card h4{font-size:13px;font-weight:900;margin:14px 0 4px;color:#0f172a}
+  .cp-card p,.cp-card li{font-size:12px;line-height:1.55;color:#334155;margin:4px 0}
+  .cp-card ul{padding-left:18px;margin:4px 0}
+  .cp-card table{width:100%;border-collapse:collapse;font-size:11px;margin:6px 0}
+  .cp-card th,.cp-card td{border:1px solid #e2e8f0;padding:5px 6px;text-align:left;vertical-align:top}
+  .cp-card th{background:#f1f5f9;font-weight:800}
+  .cp-input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:12px;border:1px solid #cbd5e1;font-size:14px;margin:6px 0;color:#0f172a;background:#fff}
+  .cp-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .cp-btn{flex:1;min-width:120px;padding:11px 12px;border-radius:12px;border:0;font-weight:800;font-size:13px;cursor:pointer;background:#e2e8f0;color:#0f172a}
+  .cp-btn.cp-primary{background:#2563eb;color:#fff}
+  .cp-btn.cp-danger{background:#dc2626;color:#fff}
+  .cp-btn.cp-ghost{background:#f1f5f9;color:#0f172a;text-align:left;font-weight:700}
+  .cp-btn[disabled]{opacity:.45;cursor:not-allowed}
+  .cp-err{color:#dc2626;font-size:12px;font-weight:700;min-height:16px;margin-top:2px}
+  .cp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+  .cp-x{border:0;background:#f1f5f9;border-radius:999px;width:30px;height:30px;font-size:16px;cursor:pointer}
+  .cp-badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:#dbeafe;color:#1e40af}
+  .cp-link{color:#93c5fd;text-decoration:underline;cursor:pointer;background:none;border:0;padding:0;font:inherit}
+  .cp-auth-links{margin-top:10px;text-align:center;font-size:10.5px;color:rgba(255,255,255,.8)}
+  .cp-consent-box{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);font-size:10.5px;color:#fff;line-height:1.4}
+  .cp-consent-box input{margin-top:2px;flex:0 0 auto}
+  .cp-note{font-size:11px;color:#64748b}
+</style>
+<script id="ctrlpigSecurityCompliance">
+// ============================================================================
+// v2.1.125 - SEGURANÇA, PRIVACIDADE (LGPD) E CONFORMIDADE
+// Auth com hash PBKDF2 + bloqueio por tentativas, auditoria, consentimentos,
+// Central de Privacidade (exportar/excluir), documentos legais, cobrança e IA.
+// ============================================================================
+(function() {
+  'use strict';
+  if (window.CPSec) return;
+
+  const MASTER_EMAIL = 'rodrigocardosocn@gmail.com';
+  const PLACEHOLDER = '__REMOVED_FOR_SECURITY__';
+
+  // Dados do fornecedor (CDC / Decreto 7.962/2013 / LGPD art. 41). Preencha doc e endereco.
+  const LEGAL_CONFIG = window.LEGAL_CONFIG = {
+    version: '2026-11-09',
+    product: 'ControlPig (CtrlPig)',
+    nome: 'Rodrigo Cardoso',
+    doc: '',          // CPF ou CNPJ do fornecedor
+    endereco: '',     // Endereço completo do fornecedor
+    email: 'rodrigocardosocn@gmail.com',
+    encarregado: 'Rodrigo Cardoso',
+    encarregadoEmail: 'rodrigocardosocn@gmail.com'
+  };
+
+  // ---------------------------------------------------------------- utilitários
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function readJson(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function writeJson(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  function toast(m) { if (typeof window.showToastUndo === 'function') window.showToastUndo(m, false); }
+  function slug(email) { return String(email || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '_'); }
+  function bridge(msg) {
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try { window.FlutterBridge.postMessage(JSON.stringify(msg)); return true; } catch (e) {}
+    }
+    return false;
+  }
+
+  // ------------------------------------------------------------ criptografia
+  const K256 = new Uint32Array([
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+  ]);
+
+  function sha256(bytes) {
+    const h = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
+    const l = bytes.length;
+    const padLen = ((l + 9 + 63) >> 6) << 6;
+    const buf = new Uint8Array(padLen);
+    buf.set(bytes);
+    buf[l] = 0x80;
+    const dv = new DataView(buf.buffer);
+    dv.setUint32(padLen - 8, Math.floor(l / 0x20000000));
+    dv.setUint32(padLen - 4, (l << 3) >>> 0);
+    const w = new Uint32Array(64);
+    for (let off = 0; off < padLen; off += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const x = w[i - 15], y = w[i - 2];
+        const s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+        const s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      let a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (let i = 0; i < 64; i++) {
+        const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        const ch = (e & f) ^ (~e & g);
+        const t1 = (hh + S1 + ch + K256[i] + w[i]) | 0;
+        const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        const mj = (a & b) ^ (a & c) ^ (b & c);
+        const t2 = (S0 + mj) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      h[0] = (h[0] + a) | 0; h[1] = (h[1] + b) | 0; h[2] = (h[2] + c) | 0; h[3] = (h[3] + d) | 0;
+      h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + hh) | 0;
+    }
+    const out = new Uint8Array(32);
+    for (let i = 0; i < 8; i++) {
+      out[i * 4] = h[i] >>> 24; out[i * 4 + 1] = (h[i] >>> 16) & 255; out[i * 4 + 2] = (h[i] >>> 8) & 255; out[i * 4 + 3] = h[i] & 255;
+    }
+    return out;
+  }
+
+  function pbkdf2Js(pw, salt, iters) {
+    let key = pw;
+    if (key.length > 64) key = sha256(key);
+    const ipad = new Uint8Array(64), opad = new Uint8Array(64);
+    for (let i = 0; i < 64; i++) { const kb = i < key.length ? key[i] : 0; ipad[i] = kb ^ 0x36; opad[i] = kb ^ 0x5c; }
+    function hm(msg) {
+      const inner = new Uint8Array(64 + msg.length); inner.set(ipad); inner.set(msg, 64);
+      const ih = sha256(inner);
+      const outer = new Uint8Array(96); outer.set(opad); outer.set(ih, 64);
+      return sha256(outer);
+    }
+    const s1 = new Uint8Array(salt.length + 4); s1.set(salt); s1[salt.length + 3] = 1;
+    let u = hm(s1);
+    const t = new Uint8Array(u);
+    for (let i = 1; i < iters; i++) { u = hm(u); for (let j = 0; j < 32; j++) t[j] ^= u[j]; }
+    return t;
+  }
+
+  function utf8(str) { return new TextEncoder().encode(str); }
+  function b64(bytes) { let s = ''; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
+  function unb64(str) { const s = atob(str); const a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+  function hasSubtle() { return !!(typeof crypto !== 'undefined' && crypto.subtle && typeof crypto.subtle.importKey === 'function'); }
+  function randomBytes(n) {
+    const a = new Uint8Array(n);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(a);
+    else for (let i = 0; i < n; i++) a[i] = Math.floor(Math.random() * 256);
+    return a;
+  }
+  async function pbkdf2(pass, salt, iters) {
+    if (hasSubtle()) {
+      try {
+        const key = await crypto.subtle.importKey('raw', utf8(pass), 'PBKDF2', false, ['deriveBits']);
+        const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: salt, iterations: iters }, key, 256);
+        return new Uint8Array(bits);
+      } catch (e) { /* cai para a versão JS */ }
+    }
+    return pbkdf2Js(utf8(pass), salt, iters);
+  }
+  function ctEqual(a, b) {
+    a = String(a); b = String(b);
+    let diff = a.length ^ b.length;
+    const n = Math.max(a.length, b.length);
+    for (let i = 0; i < n; i++) diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+    return diff === 0;
+  }
+  async function hashPassword(pass) {
+    const salt = randomBytes(16);
+    const it = hasSubtle() ? 150000 : 20000;
+    const bits = await pbkdf2(pass, salt, it);
+    return { v: 1, alg: 'pbkdf2-sha256', it: it, salt: b64(salt), hash: b64(bits) };
+  }
+  async function verifyHash(pass, rec) {
+    const bits = await pbkdf2(pass, unb64(rec.salt), rec.it);
+    return ctEqual(b64(bits), rec.hash);
+  }
+
+  // ----------------------------------------------------------------- auditoria
+  const AUD_KEY = 'cp_audit_log_v1', AUD_MAX = 300, AUD_DAYS = 90;
+  function maskEmail(e) {
+    e = String(e || '').trim();
+    if (!e) return '-';
+    const at = e.indexOf('@');
+    if (at < 0) return e.slice(0, 2) + '***';
+    return e.slice(0, Math.min(2, at)) + '***' + e.slice(at);
+  }
+  function cleanMeta(m) {
+    const out = {};
+    if (!m || typeof m !== 'object') return out;
+    Object.keys(m).forEach((k) => {
+      if (/pass|senha|pwd|token|key|otp|cpf|secret/i.test(k) || k === 'who') return;
+      const v = m[k];
+      if (v == null) return;
+      if (typeof v === 'number' || typeof v === 'boolean') out[k] = v;
+      else out[k] = String(v).slice(0, 80);
+    });
+    return out;
+  }
+  let audBurst = { t: 0, n: 0 };
+  function audit(event, meta) {
+    try {
+      const now = Date.now();
+      if (now - audBurst.t > 60000) audBurst = { t: now, n: 0 };
+      if (++audBurst.n > 40) return;
+      let list = readJson(AUD_KEY, []);
+      if (!Array.isArray(list)) list = [];
+      const who = (meta && meta.who) || (window.currentUserSession && window.currentUserSession.email) || '';
+      list.push({ t: now, e: String(event).slice(0, 40), u: maskEmail(who), m: cleanMeta(meta) });
+      const min = now - AUD_DAYS * 86400000;
+      list = list.filter((x) => x && x.t >= min).slice(-AUD_MAX);
+      writeJson(AUD_KEY, list);
+    } catch (e) { /* auditoria nunca pode quebrar o app */ }
+  }
+  function myAuditEvents(limit) {
+    const u = maskEmail(window.currentUserSession && window.currentUserSession.email);
+    return readJson(AUD_KEY, []).filter((x) => x && x.u === u).slice(-(limit || 40)).reverse();
+  }
+
+  // ------------------------------------------------------- contas e senhas
+  function getAccounts() { const a = readJson('financas_cadastros_usuarios', []); return Array.isArray(a) ? a : []; }
+  function saveAccounts(a) { return writeJson('financas_cadastros_usuarios', a); }
+  function normId(id) { return String(id || '').trim().toLowerCase(); }
+  function idKey(id) { const n = normId(id); const d = n.replace(/\D/g, ''); return (d.length >= 11 && n.indexOf('@') < 0) ? d : n; }
+  function findAccount(ident) {
+    const id = normId(ident);
+    if (!id) return null;
+    const digits = id.replace(/\D/g, '');
+    return getAccounts().find((c) =>
+      (c && c.email && String(c.email).toLowerCase() === id) ||
+      (digits.length >= 11 && c && c.cpf && String(c.cpf).replace(/\D/g, '') === digits)
+    ) || null;
+  }
+  function publicSession(acc) { const s = Object.assign({}, acc); delete s.senha; delete s.pwd; return s; }
+  async function verifyAccountPassword(acc, pass) {
+    if (acc && acc.pwd && acc.pwd.hash) return { ok: await verifyHash(pass, acc.pwd) };
+    if (acc && typeof acc.senha === 'string' && acc.senha && acc.senha !== PLACEHOLDER) {
+      const ok = ctEqual(acc.senha, pass);
+      return { ok: ok, migrate: ok };
+    }
+    return { ok: false, firstAccess: true };
+  }
+  async function setAccountPassword(acc, pass) {
+    const rec = await hashPassword(pass);
+    const list = getAccounts();
+    const em = String(acc.email || '').toLowerCase();
+    const i = list.findIndex((c) => c && String(c.email || '').toLowerCase() === em);
+    const merged = Object.assign({}, i >= 0 ? list[i] : {}, acc, { pwd: rec });
+    delete merged.senha;
+    if (i >= 0) list[i] = merged; else list.push(merged);
+    saveAccounts(list);
+    acc.pwd = rec; delete acc.senha;
+    return merged;
+  }
+  const WEAK = ['12345678', '123456789', '1234567890', 'password', 'password1', 'senha123', 'senha1234', 'qwerty123', 'abc12345', '11111111', '00000000', 'pigctrl123', 'controlpig1'];
+  function passwordPolicyError(pass, email) {
+    if (!pass || pass.length < 8) return 'A senha deve ter no mínimo 8 caracteres.';
+    if (pass.length > 128) return 'A senha deve ter no máximo 128 caracteres.';
+    if (!/[A-Za-z]/.test(pass) || !/\d/.test(pass)) return 'Use letras e números na senha.';
+    if (WEAK.indexOf(pass.toLowerCase()) >= 0) return 'Senha muito comum. Escolha outra.';
+    const local = String(email || '').split('@')[0].toLowerCase();
+    if (local.length >= 4 && pass.toLowerCase().indexOf(local) >= 0) return 'A senha não pode conter o seu e-mail.';
+    return null;
+  }
+
+  // ----------------------------------------------- limite de tentativas (rate limit)
+  const ATT_KEY = 'cp_auth_attempts_v1';
+  function lockRemaining(id) {
+    const all = readJson(ATT_KEY, {});
+    const now = Date.now();
+    const st = all[idKey(id)] || {};
+    const g = all.__g || {};
+    return Math.max(0, (st.until || 0) - now, (g.until || 0) - now);
+  }
+  function registerFailure(id) {
+    const all = readJson(ATT_KEY, {});
+    const now = Date.now();
+    const k = idKey(id);
+    const st = all[k] || { n: 0, until: 0, last: 0 };
+    if (now - (st.last || 0) > 86400000) st.n = 0;
+    st.n++; st.last = now;
+    if (st.n >= 5) st.until = now + Math.min(900000, 30000 * Math.pow(2, st.n - 5));
+    all[k] = st;
+    const g = all.__g || { n: 0, first: now, until: 0 };
+    if (now - g.first > 600000) { g.n = 0; g.first = now; }
+    g.n++;
+    if (g.n >= 15) { g.until = now + 300000; g.n = 0; g.first = now; }
+    all.__g = g;
+    const keys = Object.keys(all).filter((x) => x !== '__g');
+    if (keys.length > 50) keys.sort((a, b) => (all[a].last || 0) - (all[b].last || 0)).slice(0, keys.length - 50).forEach((x) => delete all[x]);
+    writeJson(ATT_KEY, all);
+    audit(st.n >= 5 ? 'login_lockout' : 'login_fail', { who: id, n: st.n });
+    return st;
+  }
+  function clearFailures(id) {
+    const all = readJson(ATT_KEY, {});
+    delete all[idKey(id)];
+    writeJson(ATT_KEY, all);
+  }
+  function fmtWait(ms) { const s = Math.ceil(ms / 1000); return s >= 60 ? Math.ceil(s / 60) + ' min' : s + ' s'; }
+  function checkLocked(id) {
+    const rem = lockRemaining(id);
+    if (rem > 0) { toast('🔒 Muitas tentativas. Tente novamente em ' + fmtWait(rem) + '.'); return true; }
+    return false;
+  }
+
+  // ------------------------------------------------------------- modais base
+  function openModal(id, html, wide) {
+    const old = $(id); if (old) old.remove();
+    const d = document.createElement('div');
+    d.id = id; d.className = 'cp-modal'; d.style.zIndex = '4600';
+    d.innerHTML = '<div class="cp-card' + (wide ? ' cp-wide' : '') + '">' + html + '</div>';
+    document.body.appendChild(d);
+    return d;
+  }
+  function closeModal(id) { const d = $(id); if (d) d.remove(); }
+
+  function askPassword(opts) {
+    return new Promise((resolve) => {
+      const d = openModal('cpAskPassword',
+        '<h3>' + esc(opts.title || 'Confirme sua senha') + '</h3><p>' + esc(opts.message || '') + '</p>' +
+        '<input class="cp-input" id="cpAskPassInput" type="password" autocomplete="current-password" placeholder="Sua senha">' +
+        '<div class="cp-err" id="cpAskPassErr"></div>' +
+        '<div class="cp-row"><button class="cp-btn" data-a="cancel">Cancelar</button><button class="cp-btn cp-primary" data-a="ok">Confirmar</button></div>');
+      const inp = $('cpAskPassInput');
+      const done = (v) => { closeModal('cpAskPassword'); resolve(v); };
+      d.addEventListener('click', (e) => {
+        const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
+        if (a === 'cancel') done(null);
+        if (a === 'ok') { if (!inp.value) { $('cpAskPassErr').textContent = 'Digite a senha.'; return; } done(inp.value); }
+      });
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { if (inp.value) done(inp.value); } });
+      setTimeout(() => { try { inp.focus(); } catch (e) {} }, 50);
+    });
+  }
+
+  function askNewPassword(opts) {
+    return new Promise((resolve) => {
+      const d = openModal('cpAskNewPassword',
+        '<h3>' + esc(opts.title || 'Crie sua senha') + '</h3><p>' + esc(opts.message || '') + '</p>' +
+        '<input class="cp-input" id="cpNewPass1" type="password" autocomplete="new-password" placeholder="Nova senha (mín. 8, letras e números)">' +
+        '<input class="cp-input" id="cpNewPass2" type="password" autocomplete="new-password" placeholder="Repita a nova senha">' +
+        '<div class="cp-err" id="cpNewPassErr"></div>' +
+        '<div class="cp-row"><button class="cp-btn" data-a="cancel">Cancelar</button><button class="cp-btn cp-primary" data-a="ok">Salvar senha</button></div>');
+      const done = (v) => { closeModal('cpAskNewPassword'); resolve(v); };
+      const submit = () => {
+        const p1 = ($('cpNewPass1').value || '').trim(), p2 = ($('cpNewPass2').value || '').trim();
+        const err = passwordPolicyError(p1, opts.email);
+        if (err) { $('cpNewPassErr').textContent = err; return; }
+        if (p1 !== p2) { $('cpNewPassErr').textContent = 'As senhas não conferem.'; return; }
+        done(p1);
+      };
+      d.addEventListener('click', (e) => {
+        const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
+        if (a === 'cancel') done(null);
+        if (a === 'ok') submit();
+      });
+      d.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+      setTimeout(() => { try { $('cpNewPass1').focus(); } catch (e) {} }, 50);
+    });
+  }
+
+  // Reautenticação para ações sensíveis (privilégio mínimo / step-up)
+  let lastStepUp = 0;
+  async function requireStepUp(label) {
+    if (Date.now() - lastStepUp < 600000) return true;
+    const u = window.currentUserSession;
+    if (!u || !u.email) return false;
+    if (checkLocked(u.email)) return false;
+    let acc = findAccount(u.email);
+    const noPwd = !acc || (!acc.pwd && (!acc.senha || acc.senha === PLACEHOLDER));
+    if (noPwd) {
+      const np = await askNewPassword({ title: 'Defina uma senha', message: 'Para proteger ações sensíveis (' + label + ') crie uma senha de acesso.', email: u.email });
+      if (!np) return false;
+      await setAccountPassword(acc || publicSession(u), np);
+      lastStepUp = Date.now();
+      audit('password_set', { via: 'stepup' });
+      return true;
+    }
+    for (let i = 0; i < 3; i++) {
+      const p = await askPassword({ title: 'Confirme sua senha', message: 'Ação protegida: ' + label });
+      if (p === null) return false;
+      const r = await verifyAccountPassword(acc, p.trim());
+      if (r.ok) {
+        clearFailures(u.email);
+        if (r.migrate) await setAccountPassword(acc, p.trim());
+        lastStepUp = Date.now();
+        audit('stepup_ok', { a: label });
+        return true;
+      }
+      registerFailure(u.email);
+      if (checkLocked(u.email)) return false;
+      toast('Senha incorreta.');
+    }
+    return false;
+  }
+
+  // ---------------------------------------------------------- documentos legais
+  function supplierBlock() {
+    const c = LEGAL_CONFIG;
+    return '<h4>Identificação do fornecedor</h4><p><b>' + esc(c.product) + '</b><br>Responsável: ' + esc(c.nome) +
+      (c.doc ? '<br>CPF/CNPJ: ' + esc(c.doc) : '') + (c.endereco ? '<br>Endereço: ' + esc(c.endereco) : '') +
+      '<br>Contato e SAC: ' + esc(c.email) + '</p>';
+  }
+  function termsHtml() {
+    const c = LEGAL_CONFIG;
+    return '<p class="cp-note">Versão ' + esc(c.version) + '</p>' +
+      '<h4>1. Aceitação</h4><p>Ao criar uma conta ou usar o ' + esc(c.product) + ' você concorda com estes Termos de Uso e com a Política de Privacidade. Se não concordar, não utilize o aplicativo.</p>' +
+      '<h4>2. O serviço</h4><p>O ' + esc(c.product) + ' é uma ferramenta de organização financeira e familiar (lançamentos, ciclos, cartões, lista de compras, pets, saúde, crianças, garantias, chat). <b>Não é consultoria financeira, médica ou jurídica</b>; as informações são de apoio e as decisões são suas.</p>' +
+      '<h4>3. Cadastro e segurança da conta</h4><p>Você declara ser maior de 18 anos ou estar assistido por responsável legal. Mantenha sua senha em sigilo: você é responsável pelas atividades feitas com a sua conta. Após 5 tentativas de acesso incorretas o login é bloqueado temporariamente.</p>' +
+      '<h4>4. Planos, preços e cobrança</h4><table><tr><th>Plano</th><th>Valor</th><th>Inclui</th></tr>' +
+      '<tr><td>Solteiro</td><td>R$ 29,90/mês</td><td>1 usuário</td></tr>' +
+      '<tr><td>Casal</td><td>R$ 49,90/mês</td><td>2 pessoas + Chat</td></tr>' +
+      '<tr><td>Família</td><td>R$ 69,90/mês</td><td>até 5 usuários; membro adicional R$ 9,90/mês</td></tr></table>' +
+      '<p>Novos usuários têm <b>7 dias grátis</b> com acesso total, sem cobrança. O plano anual tem 20% de desconto sobre 12 meses. Os valores são em reais e já incluem os tributos aplicáveis. O pagamento é feito pelos canais exibidos na tela de assinatura (PIX ou link de pagamento) e o acesso é liberado por chave de ativação. <b>Não há cobrança automática em cartão pelo aplicativo</b>: ao fim do período contratado o acesso expira, e a renovação só ocorre se você pagar novamente. Qualquer alteração de preço será informada com antecedência e não afeta o período já pago.</p>' +
+      '<h4>5. Direito de arrependimento e reembolso</h4><p>Conforme o art. 49 do Código de Defesa do Consumidor, você pode desistir da contratação em até <b>7 (sete) dias corridos</b> após o pagamento e receber o <b>reembolso integral</b>, pelo mesmo meio de pagamento, em até 10 dias úteis. Solicite em <i>Central de Privacidade e Conta &gt; Solicitar reembolso</i> ou pelo e-mail ' + esc(c.email) + '. Passado o prazo, pedidos por falha comprovada do serviço serão analisados caso a caso.</p>' +
+      '<h4>6. Cancelamento</h4><p>Você pode cancelar a qualquer momento, sem multa, em <i>Central de Privacidade e Conta &gt; Cancelar assinatura</i>. O acesso continua até o fim do período já pago e não haverá novas cobranças. Você receberá um número de protocolo.</p>' +
+      '<h4>7. Licença de uso</h4><p>Concedemos a você uma licença pessoal, limitada, não exclusiva, intransferível e revogável para usar o aplicativo conforme seu plano. É proibido copiar, descompilar, revender, burlar o controle de licença ou usar o app para fins ilícitos. O código, a marca e os mascotes pertencem ao fornecedor. Os componentes de terceiros seguem suas próprias licenças (ver "Licenças de código aberto").</p>' +
+      '<h4>8. Inteligência artificial</h4><p>Alguns recursos usam IA (Google Gemini, com a chave informada por você) e reconhecimento de voz/texto. São opcionais, exigem seu consentimento, podem conter erros e não substituem avaliação profissional. Conteúdo gerado por IA é identificado como tal.</p>' +
+      '<h4>9. Crianças e dados de saúde</h4><p>O cadastro de dados de crianças e de saúde só deve ser feito por pais/responsáveis e depende de consentimento específico, solicitado no primeiro uso desses módulos.</p>' +
+      '<h4>10. Disponibilidade e seus dados</h4><p>Empregamos esforços razoáveis para manter o serviço disponível, sem garantia de funcionamento ininterrupto. Seus dados ficam principalmente no seu aparelho; faça exportações periódicas na Central de Privacidade. O app mantém cópias automáticas locais recentes dos principais dados.</p>' +
+      '<h4>11. Responsabilidade</h4><p>Não respondemos por decisões tomadas com base nas informações do app, por perdas decorrentes de aparelho perdido/formatado sem backup, nem por indisponibilidade de serviços de terceiros, salvo nos casos previstos em lei.</p>' +
+      '<h4>12. Alterações</h4><p>Podemos atualizar estes Termos. Mudanças relevantes exigem novo aceite no app.</p>' +
+      '<h4>13. Lei e foro</h4><p>Aplica-se a lei brasileira. Fica eleito o foro do domicílio do consumidor.</p>' +
+      supplierBlock();
+  }
+  function privacyHtml() {
+    const c = LEGAL_CONFIG;
+    return '<p class="cp-note">Versão ' + esc(c.version) + ' — Lei Geral de Proteção de Dados (Lei 13.709/2018)</p>' +
+      '<h4>1. Controlador e encarregado</h4><p>Controlador: ' + esc(c.nome) + ' (' + esc(c.product) + '). Encarregado (DPO): ' + esc(c.encarregado) + ' — ' + esc(c.encarregadoEmail) + '.</p>' +
+      '<h4>2. Dados que tratamos, finalidades e bases legais</h4><table><tr><th>Dados</th><th>Finalidade</th><th>Base legal (LGPD art. 7º/11)</th></tr>' +
+      '<tr><td>Nome, e-mail, CPF e WhatsApp (opcionais), senha (somente hash)</td><td>Criar e proteger a conta; recuperar acesso</td><td>Execução de contrato (art. 7º, V)</td></tr>' +
+      '<tr><td>Lançamentos, ciclos, cartões, metas, notas fiscais, listas de compras</td><td>Prestar o serviço de controle financeiro</td><td>Execução de contrato</td></tr>' +
+      '<tr><td>Dados de saúde (medicamentos, horários)</td><td>Lembretes e organização</td><td>Consentimento específico (art. 11, I)</td></tr>' +
+      '<tr><td>Dados de crianças (nome, idade, atividades)</td><td>Agenda e organização familiar</td><td>Consentimento de um dos pais/responsável (art. 14, §1º)</td></tr>' +
+      '<tr><td>Conteúdo enviado à IA (Google Gemini)</td><td>Resumos, leitura de notas, sugestões</td><td>Consentimento (art. 7º, I)</td></tr>' +
+      '<tr><td>Registros de segurança (tentativas de login, ações sensíveis; sem senhas)</td><td>Prevenção a fraudes e segurança</td><td>Legítimo interesse (art. 7º, IX) e prevenção à fraude (art. 11, II, g)</td></tr>' +
+      '<tr><td>Pagamento/assinatura (plano, datas, protocolos)</td><td>Cobrança, cancelamento e reembolso</td><td>Execução de contrato; obrigação legal (CDC)</td></tr></table>' +
+      '<h4>3. Minimização</h4><p>Pedimos apenas o necessário: CPF e WhatsApp são opcionais; não coletamos localização contínua, contatos ou fotos além do que você escolher anexar.</p>' +
+      '<h4>4. Compartilhamento e operadores</h4><ul><li><b>Supabase</b> — infraestrutura de nuvem (login e sincronização), quando ativada.</li><li><b>Google</b> — IA Gemini (apenas se você ativar e permitir) e reconhecimento de voz do Android.</li><li><b>GitHub</b> — distribuição do aplicativo (não recebe seus dados financeiros).</li><li><b>WhatsApp</b> — somente quando você mesmo compartilha uma lista ou código.</li></ul><p>Não vendemos dados nem os usamos para publicidade ou perfilamento. Alguns operadores podem processar dados fora do Brasil (transferência internacional com garantias contratuais — LGPD art. 33).</p>' +
+      '<h4>5. Retenção</h4><table><tr><th>Dado</th><th>Prazo</th></tr>' +
+      '<tr><td>Conta e dados do app</td><td>Enquanto a conta existir; apagados ao excluir a conta</td></tr>' +
+      '<tr><td>Itens na lixeira</td><td>30 dias, depois são removidos automaticamente</td></tr>' +
+      '<tr><td>Registros de segurança locais</td><td>90 dias (máx. 300 eventos)</td></tr>' +
+      '<tr><td>Cópias automáticas locais</td><td>3 últimas (substituídas continuamente)</td></tr>' +
+      '<tr><td>Dados fiscais de cobrança (se houver pagamento)</td><td>5 anos (obrigação legal)</td></tr>' +
+      '<tr><td>Backups na nuvem</td><td>até 30 dias após a exclusão</td></tr></table>' +
+      '<h4>6. Segurança</h4><p>Senhas são guardadas apenas como hash PBKDF2-SHA256 com sal; comunicação com a nuvem usa HTTPS/TLS; a nuvem usa isolamento por família (RLS); há bloqueio após tentativas incorretas e reautenticação para funções administrativas.</p>' +
+      '<h4>7. Seus direitos (art. 18)</h4><p>Confirmação de tratamento, acesso, correção, anonimização/eliminação, portabilidade, informação sobre compartilhamento e revogação do consentimento. No app: <b>Central de Privacidade</b> (exportar seus dados, revogar consentimentos, excluir a conta). Outras solicitações: ' + esc(c.encarregadoEmail) + ' — respondemos em até 15 dias. Você também pode reclamar à ANPD (gov.br/anpd).</p>' +
+      '<h4>8. Crianças e adolescentes</h4><p>Dados de menores só são tratados com consentimento específico e em destaque de um dos pais ou responsável, para a finalidade de organização familiar, sem publicidade (art. 14).</p>' +
+      '<h4>9. Cookies e rastreadores</h4><p>O aplicativo não usa cookies de rastreamento, anúncios ou SDKs de publicidade. Usamos apenas armazenamento local do aparelho, necessário ao funcionamento.</p>' +
+      '<h4>10. Incidentes de segurança</h4><p>Em caso de incidente com risco relevante, comunicaremos a ANPD e os titulares afetados em prazo razoável (referência: 3 dias úteis), informando natureza, dados envolvidos, medidas adotadas e recomendações.</p>' +
+      '<h4>11. Inteligência artificial</h4><p>Ao usar recursos de IA, o texto/imagem que você escolher é enviado ao Google Gemini com a sua chave. Você pode desativar removendo a chave ou revogando o consentimento na Central de Privacidade. Resultados de IA são rotulados e podem errar.</p>' +
+      '<h4>12. Alterações</h4><p>Mudanças relevantes serão comunicadas no app e podem exigir novo aceite.</p>' +
+      supplierBlock();
+  }
+  function aiHtml() {
+    return '<h4>Como a IA é usada</h4><ul><li>O conteúdo que você escolher (descrição de gasto, texto/foto de nota fiscal, pergunta) é enviado ao <b>Google Gemini</b> usando a chave que você cadastrou.</li><li>É <b>opcional</b>: sem consentimento ou sem chave, nada é enviado.</li><li>As respostas podem conter erros — confira antes de decidir. Não é aconselhamento financeiro ou médico.</li><li>Você pode revogar a qualquer momento em Central de Privacidade.</li></ul>';
+  }
+  function licensesHtml() {
+    const rows = [
+      ['Flutter / Dart', 'BSD-3-Clause'], ['supabase_flutter', 'MIT'], ['Tailwind CSS', 'MIT'], ['Chart.js', 'MIT'], ['Lucide (ícones)', 'ISC'],
+      ['Tesseract.js', 'Apache-2.0'], ['provider', 'MIT'], ['speech_to_text', 'BSD-3-Clause'], ['flutter_tts', 'MIT'],
+      ['google_mlkit_text_recognition', 'MIT'], ['image_picker', 'BSD-3-Clause'], ['intl', 'BSD-3-Clause'], ['google_fonts', 'Apache-2.0'],
+      ['shared_preferences', 'BSD-3-Clause'], ['permission_handler', 'MIT'], ['local_auth', 'BSD-3-Clause'], ['mobile_scanner', 'BSD-3-Clause'],
+      ['http', 'BSD-3-Clause'], ['html', 'BSD-3-Clause'], ['webview_flutter', 'BSD-3-Clause'], ['url_launcher', 'BSD-3-Clause'], ['lucide_icons_flutter', 'ISC']
+    ];
+    return '<p>O aplicativo usa software de código aberto. Os textos completos das licenças estão nas páginas oficiais de cada projeto (pub.dev / npm / GitHub). Tipo de licença informado conforme publicado pelos autores — confira a versão exata nas páginas oficiais.</p>' +
+      '<table><tr><th>Componente</th><th>Licença</th></tr>' + rows.map((r) => '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>').join('') + '</table>';
+  }
+  const DOCS = {
+    terms: { title: 'Termos de Uso', html: termsHtml },
+    privacy: { title: 'Política de Privacidade', html: privacyHtml },
+    ai: { title: 'Uso de Inteligência Artificial', html: aiHtml },
+    licenses: { title: 'Licenças de código aberto', html: licensesHtml }
+  };
+  function openDoc(key) {
+    const d = DOCS[key]; if (!d) return;
+    const m = openModal('cpDocViewer',
+      '<div class="cp-head"><h3>' + esc(d.title) + '</h3><button class="cp-x" data-a="x" aria-label="Fechar">✕</button></div>' + d.html() +
+      '<div class="cp-row"><button class="cp-btn cp-primary" data-a="x">Fechar</button></div>', true);
+    m.style.zIndex = '4800';
+    m.addEventListener('click', (e) => { if (e.target && e.target.getAttribute && e.target.getAttribute('data-a') === 'x') closeModal('cpDocViewer'); });
+  }
+
+  // ------------------------------------------------------------ consentimentos
+  function consentKey() { return typeof window.getUserScopedStorageKey === 'function' ? window.getUserScopedStorageKey('cp_consent_v1') : 'cp_consent_v1'; }
+  function getConsent() { return readJson(consentKey(), null); }
+  function hasBaseConsent() { const c = getConsent(); return !!(c && c.version === LEGAL_CONFIG.version && c.terms && c.privacy); }
+  function recordConsent(patch) {
+    const c = Object.assign({}, getConsent() || {}, patch);
+    writeJson(consentKey(), c);
+    audit('consent_update', { keys: Object.keys(patch).join(',') });
+    return c;
+  }
+  function recordBaseConsent() {
+    return recordConsent({ version: LEGAL_CONFIG.version, terms: true, privacy: true, acceptedAt: new Date().toISOString() });
+  }
+  function revokeConsent(type) {
+    const c = Object.assign({}, getConsent() || {});
+    delete c[type];
+    writeJson(consentKey(), c);
+    audit('consent_revoked', { type: type });
+  }
+  const JIT = {
+    kids: { title: 'Dados de crianças e adolescentes', text: 'Para cadastrar filhos (nome, idade, atividades) precisamos do consentimento específico de um dos pais ou responsável legal (LGPD art. 14). Os dados ficam no seu aparelho e, se a sincronização estiver ativa, na nuvem. Nunca usamos para publicidade. Você pode revogar quando quiser na Central de Privacidade.', btn: 'Sou pai/responsável e autorizo' },
+    health: { title: 'Dados de saúde', text: 'Medicamentos, horários e receitas são dados pessoais sensíveis (LGPD art. 11). Usamos apenas para lembretes e organização, com seu consentimento específico. Você pode revogar quando quiser na Central de Privacidade.', btn: 'Autorizo o uso dos dados de saúde' },
+    ai: { title: 'Recursos de Inteligência Artificial', text: 'Este recurso envia o conteúdo que você escolher (texto, descrição de gasto, nota fiscal) ao Google Gemini, usando a chave que você cadastrou. É opcional; os resultados podem conter erros e são rotulados como gerados por IA. Você pode revogar na Central de Privacidade.', btn: 'Permitir uso de IA' }
+  };
+  function requireConsent(type) {
+    return new Promise((resolve) => {
+      const c = getConsent();
+      if (c && c[type]) { resolve(true); return; }
+      const j = JIT[type];
+      const d = openModal('cpJitConsent',
+        '<h3>' + esc(j.title) + '</h3><p>' + esc(j.text) + '</p>' +
+        '<p class="cp-note">Leia a <button class="cp-link" style="color:#2563eb" data-a="privacy">Política de Privacidade</button>.</p>' +
+        '<div class="cp-row"><button class="cp-btn" data-a="no">Agora não</button><button class="cp-btn cp-primary" data-a="yes">' + esc(j.btn) + '</button></div>');
+      d.style.zIndex = '4700';
+      d.addEventListener('click', (e) => {
+        const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
+        if (a === 'privacy') openDoc('privacy');
+        if (a === 'no') { closeModal('cpJitConsent'); resolve(false); }
+        if (a === 'yes') { const p = {}; p[type] = new Date().toISOString(); recordConsent(p); closeModal('cpJitConsent'); resolve(true); }
+      });
+    });
+  }
+  function wrapOpener(name, type) {
+    const orig = window[name];
+    if (typeof orig !== 'function' || orig.__cpWrapped) return;
+    const w = function() {
+      const self = this, args = arguments;
+      const c = getConsent();
+      if (c && c[type]) return orig.apply(self, args);
+      requireConsent(type).then((ok) => { if (ok) orig.apply(self, args); });
+    };
+    w.__cpWrapped = true;
+    window[name] = w;
+  }
+  function wrapFetchForAI() {
+    const orig = window.fetch;
+    if (typeof orig !== 'function' || orig.__cpWrapped) return;
+    const w = function(input) {
+      try {
+        const url = typeof input === 'string' ? input : (input && input.url) || '';
+        if (/generativelanguage\.googleapis\.com/i.test(url)) {
+          const c = getConsent();
+          if (!(c && c.ai)) { requireConsent('ai'); return Promise.reject(new Error('Consentimento para uso de IA pendente.')); }
+          audit('ai_request', { host: 'gemini' });
+        }
+      } catch (e) {}
+      return orig.apply(this, arguments);
+    };
+    w.__cpWrapped = true;
+    window.fetch = w;
+  }
+
+  // Aceite obrigatório (novos termos / usuários existentes)
+  function showConsentGate() {
+    if ($('cpConsentGate')) return;
+    const d = openModal('cpConsentGate',
+      '<h3>🛡️ Termos de Uso e Privacidade</h3>' +
+      '<p>Atualizamos nossos documentos para atender à LGPD e ao Código de Defesa do Consumidor. Em resumo:</p>' +
+      '<ul><li>Seus dados financeiros ficam principalmente no seu aparelho.</li><li>Não vendemos dados nem exibimos anúncios.</li><li>Você pode exportar ou excluir tudo na Central de Privacidade.</li><li>Cobrança só mediante pagamento seu; 7 dias de arrependimento e cancelamento a qualquer momento.</li></ul>' +
+      '<p><button class="cp-link" style="color:#2563eb" data-a="terms">Ler Termos de Uso</button> • <button class="cp-link" style="color:#2563eb" data-a="privacy">Ler Política de Privacidade</button></p>' +
+      '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-top:8px"><input type="checkbox" id="cpGateCheck" style="margin-top:2px"><span>Li e aceito os Termos de Uso e a Política de Privacidade.</span></label>' +
+      '<div class="cp-row"><button class="cp-btn" data-a="decline">Recusar e sair</button><button class="cp-btn cp-primary" id="cpGateOk" data-a="accept" disabled>Aceitar e continuar</button></div>');
+    d.style.zIndex = '4700';
+    d.addEventListener('change', (e) => { if (e.target && e.target.id === 'cpGateCheck') $('cpGateOk').disabled = !e.target.checked; });
+    d.addEventListener('click', (e) => {
+      const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
+      if (a === 'terms' || a === 'privacy') openDoc(a);
+      if (a === 'accept') { if (!$('cpGateCheck').checked) return; recordBaseConsent(); closeModal('cpConsentGate'); toast('✅ Aceite registrado. Obrigado!'); }
+      if (a === 'decline') { closeModal('cpConsentGate'); audit('consent_declined', {}); if (typeof window.logoutUser === 'function') window.logoutUser(); }
+    });
+  }
+  function consentWatcher() {
+    try {
+      const authed = sessionStorage.getItem('pigctrl_session_authenticated') === 'true';
+      const u = window.currentUserSession;
+      const authVisible = $('authOverlayContainer') && !$('authOverlayContainer').classList.contains('hidden') && $('authOverlayContainer').style.display !== 'none';
+      if (authed && u && u.email && !authVisible && !hasBaseConsent()) showConsentGate();
+    } catch (e) {}
+  }
+
+  // --------------------------------------------- retenção, backup e exportação
+  function purgeOldTrash() {
+    const now = Date.now(), lim = 30 * 86400000;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !/trash|lixeira/i.test(k)) continue;
+        let v; try { v = JSON.parse(localStorage.getItem(k)); } catch (e) { continue; }
+        if (!Array.isArray(v)) continue;
+        const keep = v.filter((it) => {
+          const ts = it && (it.deletedAt || it.deleted_at || it.excluidoEm || it.deletedOn);
+          if (!ts) return true;
+          const t = new Date(ts).getTime();
+          return isNaN(t) || now - t < lim;
+        });
+        if (keep.length !== v.length) { localStorage.setItem(k, JSON.stringify(keep)); audit('retention_purge', { k: k.slice(0, 40), n: v.length - keep.length }); }
+      }
+    } catch (e) {}
+  }
+  function backupKeys() {
+    const ks = [];
+    try { if (typeof window.getUserTransactionsStorageKey === 'function') ks.push(window.getUserTransactionsStorageKey()); } catch (e) {}
+    try { if (typeof window.getUserCardsStorageKey === 'function') ks.push(window.getUserCardsStorageKey()); } catch (e) {}
+    ks.push('financas_piggies_list');
+    return ks.filter(Boolean);
+  }
+  function autoBackupKey() { return typeof window.getUserScopedStorageKey === 'function' ? window.getUserScopedStorageKey('cp_autobackup_v1') : 'cp_autobackup_v1'; }
+  function maybeAutoBackup() {
+    try {
+      if (!(window.currentUserSession && window.currentUserSession.email)) return;
+      const bk = readJson(autoBackupKey(), []);
+      const list = Array.isArray(bk) ? bk : [];
+      if (list.length && Date.now() - list[list.length - 1].t < 20 * 3600000) return;
+      const snap = { t: Date.now(), d: {} };
+      backupKeys().forEach((k) => { const v = localStorage.getItem(k); if (v != null) snap.d[k] = v; });
+      if (!Object.keys(snap.d).length) return;
+      if (JSON.stringify(snap).length > 900000) return;
+      list.push(snap);
+      while (list.length > 3) list.shift();
+      if (!writeJson(autoBackupKey(), list)) { list.shift(); writeJson(autoBackupKey(), list); }
+      audit('auto_backup', { n: list.length });
+    } catch (e) {}
+  }
+  function restoreBackup(idx) {
+    const list = readJson(autoBackupKey(), []);
+    const snap = list[idx];
+    if (!snap) return;
+    Object.keys(snap.d).forEach((k) => { try { localStorage.setItem(k, snap.d[k]); } catch (e) {} });
+    audit('backup_restore', { at: new Date(snap.t).toISOString() });
+    toast('♻️ Cópia restaurada. Recarregando...');
+    setTimeout(() => location.reload(), 700);
+  }
+  function collectUserData() {
+    const u = window.currentUserSession || {};
+    const mySlug = slug(u.email);
+    const otherSlugs = getAccounts().map((a) => slug(a.email)).filter((s) => s && s !== mySlug);
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !/^(financas_|ctrlpig_|continuousHealthMeds|cp_consent|cp_billing)/i.test(k)) continue;
+      if (/senha|password|pwd|otp|gemini|api_?key|cadastros_usuarios|auth_user|usuario_ativo|attempts/i.test(k)) continue;
+      if (otherSlugs.some((s) => k.length > s.length && k.slice(-s.length - 1) === '_' + s)) continue;
+      data[k] = localStorage.getItem(k);
+    }
+    return {
+      app: LEGAL_CONFIG.product, exportedAt: new Date().toISOString(), schema: 1,
+      perfil: { nome: u.nome || '', email: u.email || '', whatsapp: u.whatsapp || '', plano: u.plano || '' },
+      consentimentos: getConsent(), registrosDeSeguranca: myAuditEvents(100), dados: data
+    };
+  }
+  function copyFallback(text) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand && document.execCommand('copy');
+      ta.remove();
+      return !!ok;
+    } catch (e) { return false; }
+  }
+  let pendingExport = null;
+  window.onNativeTextSaved = function(ok) {
+    if (pendingExport === null) return;
+    const txt = pendingExport; pendingExport = null;
+    if (ok) { toast('📥 Arquivo salvo em Downloads/ControlPig.'); return; }
+    if (copyFallback(txt)) toast('📋 Não foi possível salvar o arquivo. O conteúdo foi copiado — cole em um e-mail ou nota.');
+    else toast('Não foi possível exportar neste aparelho.');
+  };
+  function exportMyData() {
+    const payload = JSON.stringify(collectUserData(), null, 2);
+    const name = 'controlpig_meus_dados_' + new Date().toISOString().slice(0, 10) + '.json';
+    audit('data_export', {});
+    if (window.FlutterBridge) {
+      pendingExport = payload;
+      bridge({ action: 'save_text_file', content: payload, filename: name, mimeType: 'application/json' });
+      return;
+    }
+    try {
+      const blob = new Blob([payload], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('📥 Download iniciado.');
+    } catch (e) { toast(copyFallback(payload) ? '📋 Conteúdo copiado.' : 'Não foi possível exportar.'); }
+  }
+  window.exportDataJSON = exportMyData;
+
+  // -------------------------------------------------------- excluir conta
+  function wipeLocalData(email) {
+    const mySlug = slug(email);
+    const isMaster = String(email || '').toLowerCase() === MASTER_EMAIL;
+    const keep = /^(cp_auth_attempts_v1|cp_audit_log_v1)$/;
+    const remove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || keep.test(k)) continue;
+      if (/^(financas_|ctrlpig_|continuousHealthMeds|cp_)/i.test(k)) {
+        if (isMaster) { remove.push(k); continue; }
+        remove.push(k);   // dados não escopados pertencem ao usuário ativo deste aparelho
+      } else if (mySlug && k.slice(-mySlug.length - 1) === '_' + mySlug) { remove.push(k); }
+    }
+    remove.forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
+    try { sessionStorage.clear(); } catch (e) {}
+    // remove a conta (preserva as demais contas do aparelho)
+    const rest = getAccounts().filter((a) => String(a.email || '').toLowerCase() !== String(email || '').toLowerCase());
+    try { localStorage.setItem('financas_cadastros_usuarios', JSON.stringify(rest)); } catch (e) {}
+    return remove.length;
+  }
+  async function deleteMyAccount() {
+    const u = window.currentUserSession;
+    if (!u || !u.email) { toast('Entre na sua conta primeiro.'); return; }
+    const isMaster = u.email.toLowerCase() === MASTER_EMAIL;
+    const d = openModal('cpDeleteAccount',
+      '<h3 style="color:#dc2626">Excluir minha conta e dados</h3>' +
+      '<p>Esta ação é <b>definitiva</b>: apaga sua conta, lançamentos, cartões, metas, listas, pets, saúde, crianças e preferências deste aparelho e, se a sincronização estiver ativa, da nuvem.' + (isMaster ? ' <b>Você é o administrador master: todos os dados deste aparelho serão apagados.</b>' : '') + '</p>' +
+      '<p>Recomendamos <button class="cp-link" style="color:#2563eb" data-a="export">exportar seus dados</button> antes.</p>' +
+      '<p>Digite <b>EXCLUIR</b> para confirmar:</p><input class="cp-input" id="cpDelConfirm" autocomplete="off" placeholder="EXCLUIR">' +
+      '<div class="cp-row"><button class="cp-btn" data-a="cancel">Cancelar</button><button class="cp-btn cp-danger" data-a="go">Excluir tudo</button></div>');
+    d.style.zIndex = '4700';
+    d.addEventListener('click', async (e) => {
+      const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
+      if (a === 'export') exportMyData();
+      if (a === 'cancel') closeModal('cpDeleteAccount');
+      if (a === 'go') {
+        if (($('cpDelConfirm').value || '').trim().toUpperCase() !== 'EXCLUIR') { toast('Digite EXCLUIR para confirmar.'); return; }
+        lastStepUp = 0;
+        const ok = await requireStepUp('excluir a conta');
+        if (!ok) return;
+        audit('account_delete', {});
+        closeModal('cpDeleteAccount'); closeModal('cpPrivacyCenter');
+        bridge({ action: 'delete_account' });
+        wipeLocalData(u.email);
+        toast('🗑️ Conta e dados excluídos.');
+        setTimeout(() => location.reload(), 900);
+      }
+    });
+  }
+  window.onNativeAccountDeleted = function(ok, err) { if (!ok && err) console.warn('Exclusão na nuvem pendente:', err); };
+
+  // ---------------------------------------------------- assinatura e cobrança
+  const BILL_KEY = 'cp_billing_requests_v1';
+  function newProtocol(prefix) {
+    const d = new Date();
+    const ymd = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    return prefix + '-' + ymd + '-' + Math.floor(1000 + Math.random() * 9000);
+  }
+  function currentSub() { try { return typeof window.getUserSubscriptionRecord === 'function' ? window.getUserSubscriptionRecord() : null; } catch (e) { return null; } }
+  function fmtDate(ts) { try { return new Date(ts).toLocaleDateString('pt-BR'); } catch (e) { return '-'; } }
+  function mailTo(subject, body) {
+    const url = 'mailto:' + encodeURIComponent(LEGAL_CONFIG.email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    if (!bridge({ action: 'open_external_url', url: url })) { try { window.open(url, '_blank'); } catch (e) {} }
+  }
+  function cancelSubscription() {
+    const sub = currentSub();
+    const isLife = sub && (sub.status === 'master_lifetime' || sub.status === 'vip_lifetime');
+    if (isLife) { toast('Seu acesso é vitalício/cortesia: não há assinatura a cancelar.'); return; }
+    const until = sub && sub.expiresAt ? fmtDate(sub.expiresAt) : '-';
+    if (!window.confirm('Cancelar sua assinatura?\n\nSeu acesso continua até ' + until + ' e não haverá novas cobranças.')) return;
+    const list = readJson(BILL_KEY, []);
+    const protocolo = newProtocol('CAN');
+    list.push({ type: 'cancel', protocol: protocolo, at: new Date().toISOString(), plan: sub && sub.planTier, accessUntil: sub && sub.expiresAt });
+    writeJson(BILL_KEY, list);
+    audit('subscription_cancel', { p: protocolo });
+    toast('✅ Cancelamento registrado. Protocolo ' + protocolo + '. Acesso até ' + until + '.');
+    mailTo('Cancelamento de assinatura ' + protocolo, 'Protocolo: ' + protocolo + '\nConta: ' + ((window.currentUserSession || {}).email || '') + '\nSolicito o cancelamento da assinatura.');
+  }
+  function requestRefund() {
+    const sub = currentSub();
+    const paidAt = sub && sub.paidActivatedAt;
+    if (!paidAt) { toast('Você ainda não tem pagamento registrado — nada a reembolsar. O período grátis não é cobrado.'); return; }
+    const days = Math.floor((Date.now() - paidAt) / 86400000);
+    const inWindow = days <= 7;
+    const msg = inWindow
+      ? 'Solicitar reembolso integral (direito de arrependimento de 7 dias)?'
+      : 'Já se passaram ' + days + ' dias do pagamento (fora dos 7 dias). O pedido será analisado caso a caso. Registrar solicitação?';
+    if (!window.confirm(msg)) return;
+    const list = readJson(BILL_KEY, []);
+    const protocolo = newProtocol('REE');
+    list.push({ type: 'refund', protocol: protocolo, at: new Date().toISOString(), inWindow: inWindow, paidAt: paidAt });
+    writeJson(BILL_KEY, list);
+    audit('refund_request', { p: protocolo, win: inWindow });
+    toast('✅ Pedido de reembolso registrado. Protocolo ' + protocolo + '.');
+    mailTo('Reembolso ' + protocolo, 'Protocolo: ' + protocolo + '\nConta: ' + ((window.currentUserSession || {}).email || '') + '\nPagamento em: ' + fmtDate(paidAt) + '\nSolicito o reembolso da assinatura.');
+  }
+
+  // ------------------------------------------------------ Central de Privacidade
+  function openPrivacyCenter() {
+    const u = window.currentUserSession || {};
+    const c = getConsent() || {};
+    const sub = currentSub();
+    const subTxt = sub ? ({ trial: 'Período grátis', active: 'Ativa', master_lifetime: 'Administrador (vitalício)', vip_lifetime: 'Cortesia vitalícia', expired: 'Expirada', blocked: 'Bloqueada' }[sub.status] || sub.status) + (sub.expiresAt && sub.status !== 'master_lifetime' ? ' • até ' + fmtDate(sub.expiresAt) : '') : '-';
+    const chip = (label, key) => '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9"><span style="font-size:12px">' + label + ': <b>' + (c[key] ? 'permitido' : 'não concedido') + '</b></span>' + (c[key] ? '<button class="cp-btn" style="flex:0 0 auto;min-width:0;padding:5px 10px;font-size:11px" data-a="revoke" data-k="' + key + '">Revogar</button>' : '') + '</div>';
+    const backups = readJson(autoBackupKey(), []);
+    const bkHtml = (Array.isArray(backups) && backups.length) ? backups.map((b, i) => '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0"><span style="font-size:12px">' + new Date(b.t).toLocaleString('pt-BR') + '</span><button class="cp-btn" style="flex:0 0 auto;min-width:0;padding:5px 10px;font-size:11px" data-a="restore" data-i="' + i + '">Restaurar</button></div>').join('') : '<p class="cp-note">Nenhuma cópia automática ainda (criada a cada 20h de uso).</p>';
+    const d = openModal('cpPrivacyCenter',
+      '<div class="cp-head"><h3>🛡️ Central de Privacidade e Conta</h3><button class="cp-x" data-a="x" aria-label="Fechar">✕</button></div>' +
+      '<p class="cp-note">Conta: ' + esc(u.email || '-') + ' • Assinatura: ' + esc(subTxt) + '</p>' +
+      '<h4>Documentos</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="doc" data-k="terms">📄 Termos de Uso</button><button class="cp-btn cp-ghost" data-a="doc" data-k="privacy">🔒 Política de Privacidade</button><button class="cp-btn cp-ghost" data-a="doc" data-k="ai">🤖 Uso de IA</button><button class="cp-btn cp-ghost" data-a="doc" data-k="licenses">📚 Licenças de código aberto</button></div>' +
+      '<h4>Meus dados</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="export">📥 Exportar meus dados (JSON)</button><button class="cp-btn cp-ghost" data-a="audit">🧾 Ver registros de segurança</button></div>' +
+      '<h4>Consentimentos</h4>' + chip('Termos e Privacidade', 'terms') + chip('Dados de crianças', 'kids') + chip('Dados de saúde', 'health') + chip('Inteligência Artificial', 'ai') +
+      '<h4>Assinatura e cobrança</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="cancelsub">🚫 Cancelar assinatura</button><button class="cp-btn cp-ghost" data-a="refund">↩️ Solicitar reembolso (7 dias)</button></div>' +
+      '<h4>Cópias automáticas locais</h4>' + bkHtml +
+      '<h4>Contato do encarregado (LGPD)</h4><p>' + esc(LEGAL_CONFIG.encarregado) + ' — ' + esc(LEGAL_CONFIG.encarregadoEmail) + '</p>' +
+      '<h4 style="color:#dc2626">Zona de perigo</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-danger" data-a="delete">🗑️ Excluir minha conta e dados</button></div>', true);
+    d.addEventListener('click', (e) => {
+      const t = e.target; const a = t && t.getAttribute && t.getAttribute('data-a'); if (!a) return;
+      if (a === 'x') closeModal('cpPrivacyCenter');
+      else if (a === 'doc') openDoc(t.getAttribute('data-k'));
+      else if (a === 'export') exportMyData();
+      else if (a === 'audit') showAuditViewer();
+      else if (a === 'revoke') { revokeConsent(t.getAttribute('data-k')); openPrivacyCenter(); }
+      else if (a === 'restore') { if (window.confirm('Restaurar esta cópia? Os dados atuais de lançamentos, cartões e metas serão substituídos.')) restoreBackup(parseInt(t.getAttribute('data-i'), 10)); }
+      else if (a === 'cancelsub') cancelSubscription();
+      else if (a === 'refund') requestRefund();
+      else if (a === 'delete') deleteMyAccount();
+    });
+  }
+  function showAuditViewer() {
+    const ev = myAuditEvents(40);
+    const rows = ev.length ? ev.map((x) => '<tr><td>' + esc(new Date(x.t).toLocaleString('pt-BR')) + '</td><td>' + esc(x.e) + '</td></tr>').join('') : '<tr><td colspan="2">Nenhum evento.</td></tr>';
+    const m = openModal('cpAuditViewer',
+      '<div class="cp-head"><h3>🧾 Registros de segurança</h3><button class="cp-x" data-a="x" aria-label="Fechar">✕</button></div>' +
+      '<p class="cp-note">Últimos eventos da sua conta neste aparelho (sem senhas). Mantidos por 90 dias.</p><table><tr><th>Quando</th><th>Evento</th></tr>' + rows + '</table>' +
+      '<div class="cp-row"><button class="cp-btn cp-primary" data-a="x">Fechar</button></div>');
+    m.style.zIndex = '4800';
+    m.addEventListener('click', (e) => { if (e.target && e.target.getAttribute && e.target.getAttribute('data-a') === 'x') closeModal('cpAuditViewer'); });
+  }
+
+  // ------------------------------------------------------------ API pública
+  window.CPSec = {
+    MASTER_EMAIL: MASTER_EMAIL, PLACEHOLDER: PLACEHOLDER,
+    sha256: sha256, pbkdf2Js: pbkdf2Js, hashPassword: hashPassword, verifyHash: verifyHash,
+    getAccounts: getAccounts, saveAccounts: saveAccounts, findAccount: findAccount, publicSession: publicSession,
+    verifyAccountPassword: verifyAccountPassword, setAccountPassword: setAccountPassword, passwordPolicyError: passwordPolicyError,
+    lockRemaining: lockRemaining, registerFailure: registerFailure, clearFailures: clearFailures, checkLocked: checkLocked, fmtWait: fmtWait,
+    askPassword: askPassword, askNewPassword: askNewPassword, requireStepUp: requireStepUp,
+    audit: audit, myAuditEvents: myAuditEvents, maskEmail: maskEmail,
+    getConsent: getConsent, hasBaseConsent: hasBaseConsent, recordBaseConsent: recordBaseConsent, recordConsent: recordConsent, revokeConsent: revokeConsent, requireConsent: requireConsent,
+    openDoc: openDoc, openPrivacyCenter: openPrivacyCenter, exportMyData: exportMyData, deleteMyAccount: deleteMyAccount,
+    cancelSubscription: cancelSubscription, requestRefund: requestRefund, purgeOldTrash: purgeOldTrash, maybeAutoBackup: maybeAutoBackup,
+    collectUserData: collectUserData, wipeLocalData: wipeLocalData, esc: esc
+  };
+  window.openPrivacyCenter = openPrivacyCenter;
+  window.openLegalDoc = openDoc;
+
+  // ------------------------------------------------------------ integração
+  function boot() {
+    // Reautenticação (step-up) no painel administrativo master
+    ['openAdminModal', 'openAdminModalDirect'].forEach((name) => {
+      const orig = window[name];
+      if (typeof orig !== 'function' || orig.__cpStepUp) return;
+      const w = function() {
+        const self = this, args = arguments;
+        const isMaster = typeof window.isCurrentUserMaster === 'function' && window.isCurrentUserMaster();
+        const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
+        if (!isMaster || isDemo) return orig.apply(self, args);
+        requireStepUp('Painel Administrativo').then((ok) => {
+          if (ok) { audit('admin_open', {}); orig.apply(self, args); } else toast('Acesso ao painel administrativo cancelado.');
+        });
+      };
+      w.__cpStepUp = true;
+      window[name] = w;
+    });
+    // Auditoria de saída
+    const origLogout = window.logoutUser;
+    if (typeof origLogout === 'function' && !origLogout.__cpAudit) {
+      const lw = function() { audit('logout', {}); lastStepUp = 0; return origLogout.apply(this, arguments); };
+      lw.__cpAudit = true; window.logoutUser = lw;
+    }
+    wrapOpener('openKidsAreaModal', 'kids');
+    wrapOpener('openHealthMedsModal', 'health');
+    wrapFetchForAI();
+    // Monitoramento básico de erros (sem dados pessoais)
+    window.addEventListener('error', (ev) => { audit('js_error', { msg: String(ev.message || '').slice(0, 100), f: String(ev.filename || '').split('/').pop().slice(0, 40), l: ev.lineno }); });
+    window.addEventListener('unhandledrejection', (ev) => { audit('js_rejection', { msg: String((ev.reason && ev.reason.message) || ev.reason || '').slice(0, 100) }); });
+    const spl = $('cpPaywallSupplier');
+    if (spl) spl.textContent = LEGAL_CONFIG.nome + ' • ' + LEGAL_CONFIG.email + (LEGAL_CONFIG.doc ? ' • ' + LEGAL_CONFIG.doc : '');
+    try { localStorage.removeItem('ctrlpig_recovery_otp'); } catch (e) {}
+    setTimeout(purgeOldTrash, 3000);
+    setInterval(consentWatcher, 1500);
+    setInterval(maybeAutoBackup, 60000);
+    setTimeout(maybeAutoBackup, 8000);
+  }
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+    else boot();
+  }
 })();
 </script>
 </body>

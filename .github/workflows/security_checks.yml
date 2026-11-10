@@ -1,0 +1,51 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  schedule:
+    - cron: '0 11 * * 1'   # toda segunda-feira
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-security:
+    name: Verificações de segurança e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar motor JS para testes
+        run: pip install mini-racer
+
+      - name: Verificações estáticas de segurança/privacidade
+        run: python tools/security_check.py
+
+      - name: Sintaxe dos scripts do app
+        run: python tools/check_js_syntax.py
+
+      - name: Testes de criptografia e autenticação
+        run: python tools/test_cpsec.py
+
+  dart-analysis:
+    name: Análise Flutter (não bloqueante)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - run: flutter pub get
+      - name: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Dependências desatualizadas
+        run: flutter pub outdated || true
