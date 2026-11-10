@@ -34,7 +34,7 @@ dependencies:
   local_auth: ^2.3.0
 
   # Leitura contÃ­nua e instantÃ¢nea de QR Code via cÃ¢mera nativa
-  mobile_scanner: ^5.2.3
+  mobile_scanner: ^7.5.0
 
   # RequisiÃ§Ãµes HTTP SEFAZ no Dart (sem limitaÃ§Ãµes de CORS da WebView)
   http: ^1.2.2
