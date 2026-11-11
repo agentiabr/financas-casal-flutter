@@ -46,9 +46,6 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Dar permissão de execução ao Gradle Wrapper
-        run: chmod +x android/gradlew
-
       - name: Instalar Dependências Flutter
         run: flutter pub get
 
