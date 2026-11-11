@@ -4466,11 +4466,6 @@ html, body {
   <button type="button" onclick="adjustFontScale(0.05)" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Aumentar fonte">A+</button>
 </div>
 
-              <!-- Silenciar Alarmes Instantâneo (Botão Pânico) -->
-              <button type="button" onclick="stopMedicationAlarmAudio()" class="w-8 h-8 rounded-full bg-rose-500/25 hover:bg-rose-500/40 border border-rose-300/50 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95 text-xs font-black" title="Silenciar / Desligar Todos os Alarmes">
-                🔕
-              </button>
-
               <!-- Notificações -->
               <button type="button" onclick="if (typeof openNotificationsModal === 'function') openNotificationsModal(); else if (typeof showToastUndo === 'function') showToastUndo('Nenhuma nova notificação no momento.', false);" class="relative w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Ver Notificações">
                 <i data-lucide="bell" class="w-4 h-4 text-white"></i>
@@ -5024,10 +5019,10 @@ html, body {
             <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
-            <h2 class="text-lg font-black text-white tracking-tight">Rotina &amp; Vida</h2>
+            <h2 class="text-lg font-black text-white tracking-tight">Minha Rotina</h2>
           </div>
           <div class="flex items-center gap-1.5">
-            <button type="button" onclick="openSectionLampInsight('familia')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Rotina & Vida">
+            <button type="button" onclick="openSectionLampInsight('familia')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Minha Rotina">
               <span>💡</span>
             </button>
           </div>
@@ -5217,7 +5212,7 @@ html, body {
     </div>
 
     <!-- ============================================================ -->
-    <!-- DOCK INFERIOR FIXO COM 5 BOTÕES: Início / Transações / (+) / Mercado / Rotina & Vida -->
+    <!-- DOCK INFERIOR FIXO COM 5 BOTÕES: Início / Transações / (+) / Mercado / Minha Rotina -->
     <!-- ============================================================ -->
     <nav class="bottom-nav">
       <div class="bottom-nav-grid">
@@ -5247,10 +5242,10 @@ html, body {
           <span>Mercado</span>
         </button>
 
-        <!-- 5. Rotina & Vida -->
+        <!-- 5. Minha Rotina -->
         <button id="navTab_familia" onclick="switchScreen('familia')" class="bottom-nav-item">
           <i data-lucide="sparkles" class="w-5 h-5 mb-0.5"></i>
-          <span>Rotina &amp; Vida</span>
+          <span>Minha Rotina</span>
         </button>
 
       </div>
@@ -10102,12 +10097,31 @@ html, body {
         function refreshHomeRecentTransactions(activeTxs) {
       const container = document.getElementById('dashboardRecentTransactionsList');
       if (!container) return;
-      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
-        ? window.appCyclesData[window.currentActiveCycleKey].tag
-        : currentCycle;
-      const txs = (Array.isArray(activeTxs))
-        ? activeTxs.filter(t => isTxInCycle(t, activeCycleTag))
-        : ((Array.isArray(transactions) && transactions.length > 0) ? transactions.filter(t => isTxInCycle(t, activeCycleTag)) : []);
+      const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+      const activeCycleObj = (window.appCyclesData && window.appCyclesData[activeCycleKey]) ? window.appCyclesData[activeCycleKey] : null;
+      const activeCycleTag = activeCycleObj ? activeCycleObj.tag : currentCycle;
+      const sIso = activeCycleObj ? activeCycleObj.startIso : null;
+      const eIso = activeCycleObj ? activeCycleObj.endIso : null;
+
+      const cleanStr = (s) => String(s || '').replace(/[\s\-_–—]+/g, '').trim().toLowerCase();
+      const normActiveTag = cleanStr(activeCycleTag);
+
+      const sourceList = (Array.isArray(activeTxs) && activeTxs.length > 0)
+        ? activeTxs
+        : (activeCycleObj && Array.isArray(activeCycleObj.transactions) ? activeCycleObj.transactions : ((Array.isArray(transactions) && transactions.length > 0) ? transactions : []));
+
+      const txs = sourceList.filter(t => {
+        if (!t) return false;
+        const tCiclo = cleanStr(t.ciclo);
+        if (tCiclo && normActiveTag) {
+          return tCiclo === normActiveTag;
+        }
+        if (sIso && eIso && t.data) {
+          const dStr = String(t.data).substring(0, 10);
+          return dStr >= sIso && dStr <= eIso;
+        }
+        return false;
+      });
 
       if (!txs || txs.length === 0) {
         container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
@@ -22384,7 +22398,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const diffDays = Math.ceil((new Date(v.proximaDose + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
         const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
 
-        if (diffDays === 5 || diffDays === 2 || diffDays === 0) {
+        const vaxTargetHora = v.hora || '09:00';
+        if ((diffDays === 5 || diffDays === 2 || diffDays === 0) && curTime === vaxTargetHora) {
           const firedKey = `ctrlpig_vax_fired_${v.id}_${diffDays}_${todayStr}`;
           if (localStorage.getItem(firedKey) === 'true') return;
           localStorage.setItem(firedKey, 'true');
@@ -23456,6 +23471,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function checkHealthScheduleTimers() {
+      if (typeof window.checkHealthScheduleTimers === 'function' && window.checkHealthScheduleTimers !== checkHealthScheduleTimers) {
+        window.checkHealthScheduleTimers();
+        return;
+      }
       if (typeof checkPetCareScheduleTimers === 'function') {
         checkPetCareScheduleTimers();
       }
@@ -33739,6 +33758,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   // Desliga COMPLETAMENTE e silencia todo e qualquer alarme sonoro, loop, timer e modal
   window.stopMedicationAlarmAudio = function() {
+    window._alarmsGloballySilencedUntil = Date.now() + (4 * 3600 * 1000); // 4 horas de silenciamento
+    try {
+      localStorage.setItem('ctrlpig_alarm_silenced_until', String(window._alarmsGloballySilencedUntil));
+    } catch (_) {}
+
     if (typeof _medAlarmRepeatInterval !== 'undefined' && _medAlarmRepeatInterval) {
       clearInterval(_medAlarmRepeatInterval);
       _medAlarmRepeatInterval = null;
@@ -33750,6 +33774,10 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     if (typeof activeMedAlarmInterval !== 'undefined' && activeMedAlarmInterval) {
       clearInterval(activeMedAlarmInterval);
       activeMedAlarmInterval = null;
+    }
+    if (typeof _snoozeAlarmTimeoutId !== 'undefined' && _snoozeAlarmTimeoutId) {
+      clearTimeout(_snoozeAlarmTimeoutId);
+      _snoozeAlarmTimeoutId = null;
     }
 
     // 1. Remove qualquer barra de emergência ou banner flutuante
@@ -33779,29 +33807,54 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       } catch(e) {}
     }
 
-    // 5. Silencia permanentemente para hoje todos os horários e medicamentos
+    // 5. Silencia permanentemente para hoje todos os horários, rotinas e medicamentos
     try {
       const todayStr = new Date().toISOString().split('T')[0];
       const now = new Date();
       const curH = String(now.getHours()).padStart(2, '0');
       const curM = String(now.getMinutes()).padStart(2, '0');
-      const slot = `${curH}:${curM}`;
-      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slot}`, 'true');
-      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${slot}`, 'true');
-      localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${slot}`, 'true');
+      const curSlot = `${curH}:${curM}`;
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${curSlot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${curSlot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${curSlot}`, 'true');
 
-      // Silencia também todos os horários cadastrados nos remédios
+      // Silencia horários padrão das configurações (manhã e noite)
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : {};
+      const mTime = settings.morningTime || '08:00';
+      const eTime = settings.eveningTime || '20:00';
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${mTime}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${mTime}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${eTime}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${eTime}`, 'true');
+
+      // Silencia todos os horários cadastrados nos remédios
       const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
       meds.forEach(m => {
         const slots = [m.horario, ...(Array.isArray(m.horariosPersonalizados) ? m.horariosPersonalizados : [])].filter(Boolean);
         slots.forEach(s => {
           localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${s}`, 'true');
           localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${s}`, 'true');
+          localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${s}`, 'true');
         });
       });
+
+      // Silencia slots em torno da hora atual (intervalo de ±2 horas)
+      const curMinutes = now.getHours() * 60 + now.getMinutes();
+      for (let offset = -120; offset <= 120; offset += 5) {
+        const m = curMinutes + offset;
+        if (m >= 0 && m < 1440) {
+          const hh = String(Math.floor(m / 60)).padStart(2, '0');
+          const mm = String(m % 60).padStart(2, '0');
+          localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${hh}:${mm}`, 'true');
+          localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${hh}:${mm}`, 'true');
+        }
+      }
     } catch (_) {}
 
-    window.onNativeNotificationMedDismissed('', '');
+    window.currentAlarmContext = null;
+    if (typeof window.onNativeNotificationMedDismissed === 'function') {
+      window.onNativeNotificationMedDismissed('', '');
+    }
     if (typeof showToastUndo === 'function') {
       showToastUndo('🔕 Todos os alarmes foram desligados com sucesso.', false);
     }
@@ -33810,6 +33863,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   // Sobrescreve checkHealthScheduleTimers para usar a frase personalizada ("Rodrigo, tomar seu remédio...")
   // e respeitar o bloqueio de alarmes já desligados na notificação
   window.checkHealthScheduleTimers = function() {
+    const silencedUntil = Number(localStorage.getItem('ctrlpig_alarm_silenced_until') || window._alarmsGloballySilencedUntil || 0);
+    if (Date.now() < silencedUntil) {
+      return; // Silenciado pelo usuário após clicar em Desligar Alarme
+    }
+
     if (typeof window.checkSnoozedMedicationAlarm === 'function') window.checkSnoozedMedicationAlarm();
     if (typeof window.checkFiveDaysMedStockWarning === 'function') window.checkFiveDaysMedStockWarning();
     if (typeof window.checkSnoozedShoppingListAlert === 'function') window.checkSnoozedShoppingListAlert();
@@ -33955,30 +34013,10 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       modalFull.style.inset = '0';
     }
 
-    // 2. Cria também a Barra Flutuante de Emergência no Topo (GARANTIA 100% VISÍVEL com botão DESLIGAR)
+    // Não utiliza barra de pânico superior; a tela inteira com o modal cobre as outras telas com z-index máximo
     try {
-      let emergBar = document.getElementById('floatingEmergencyAlarmBar');
-      if (!emergBar) {
-        emergBar = document.createElement('div');
-        emergBar.id = 'floatingEmergencyAlarmBar';
-        emergBar.className = 'fixed top-3 left-1/2 -translate-x-1/2 z-[99999999] w-[96vw] max-w-md p-3.5 bg-gradient-to-r from-rose-600 to-red-700 text-white rounded-2xl shadow-2xl border-2 border-white flex items-center justify-between gap-2.5 animate-bounce';
-        emergBar.innerHTML = `
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="text-2xl animate-pulse flex-shrink-0">⏰</span>
-            <div class="min-w-0">
-              <h4 class="font-black text-xs uppercase tracking-wide truncate">${title || 'Alarme Disparando!'}</h4>
-              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">${message || 'Toque para desligar'}</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button type="button" onclick="stopMedicationAlarmAudio()" class="px-3.5 py-2.5 bg-white text-rose-700 hover:bg-rose-100 font-black text-xs rounded-xl shadow-lg border border-rose-200 cursor-pointer active:scale-95 flex items-center gap-1">
-              <span>🛑</span>
-              <span>DESLIGAR</span>
-            </button>
-          </div>
-        `;
-        document.body.appendChild(emergBar);
-      }
+      const b = document.getElementById('floatingEmergencyAlarmBar');
+      if (b) b.remove();
     } catch (_) {}
   };
 
@@ -34733,37 +34771,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     // Dispara a fala e alarme sonoro nativo (o Android nativo executa o ringtone + voz sem loop interminável)
     fireSingleMedSpeechAndBeep(text, false);
 
-    // Garante exibição imediata da barra de emergência fixada no topo de document.body
+    // Desativa a barra de emergência; o modal sobrepõe as outras telas com opção de desligar
     try {
-      let emergBar = document.getElementById('floatingEmergencyAlarmBar');
-      if (!emergBar) {
-        emergBar = document.createElement('div');
-        emergBar.id = 'floatingEmergencyAlarmBar';
-        emergBar.className = 'fixed top-3 left-1/2 -translate-x-1/2 z-[99999999] w-[96vw] max-w-md p-3.5 bg-gradient-to-r from-rose-600 to-red-700 text-white rounded-2xl shadow-2xl border-2 border-white flex items-center justify-between gap-2.5 animate-bounce';
-        emergBar.innerHTML = `
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="text-2xl animate-pulse flex-shrink-0">⏰</span>
-            <div class="min-w-0">
-              <h4 class="font-black text-xs uppercase tracking-wide truncate">Alarme Disparando!</h4>
-              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">Toque para parar o som</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button type="button" onclick="stopMedicationAlarmAudio()" class="px-3.5 py-2.5 bg-white text-rose-700 hover:bg-rose-100 font-black text-xs rounded-xl shadow-lg border border-rose-200 cursor-pointer active:scale-95 flex items-center gap-1">
-              <span>🛑</span>
-              <span>DESLIGAR</span>
-            </button>
-          </div>
-        `;
-        document.body.appendChild(emergBar);
-      }
-    } catch (_) {}
-
-    // Auto-remove a barra após 30 segundos
-    _medAlarmAutoStopTimeout = setTimeout(() => {
       const b = document.getElementById('floatingEmergencyAlarmBar');
       if (b) b.remove();
-    }, 30000);
+    } catch (_) {}
   };
 
   const _origStopAlarmV205 = window.stopMedicationAlarmAudio;
@@ -38348,15 +38360,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       <i data-lucide="shopping-cart" class="w-5 h-5"></i>
       <span>Mercado</span>
     </button>
-    <!-- Aba 5: Rotina & Vida -->
+    <!-- Aba 5: Minha Rotina -->
     <button type="button" onclick="switchMainTab('familia')" id="btnNav_familia" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500 font-bold text-[10px] hover:text-slate-600 dark:hover:text-slate-300 transition-all flex-1 py-1 cursor-pointer">
       <i data-lucide="sparkles" class="w-5 h-5"></i>
-      <span>Rotina &amp; Vida</span>
+      <span>Minha Rotina</span>
     </button>
   </nav>
 
   <script>
-    // Lógica da Barra de 5 Abas do Novo Design System (Início, Transações, (+), Mercado, Rotina & Vida)
+    // Lógica da Barra de 5 Abas do Novo Design System (Início, Transações, (+), Mercado, Minha Rotina)
     window.switchMainTab = function(tabName) {
       window.currentMainTab = tabName;
       const tabs = ['inicio', 'transacoes', 'compras', 'familia'];
@@ -40805,10 +40817,31 @@ window.openHealthMedsModal = function() {
     const card = heading && heading.closest('.bg-white.rounded-3xl');
     const list = card && [...card.querySelectorAll('div')].find(el => el.classList.contains('space-y-2.5'));
     if (!list) return;
-    const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
-      ? window.appCyclesData[window.currentActiveCycleKey].tag
-      : currentCycle;
-    const cleanTxs = (Array.isArray(txs) ? txs : []).filter(t => isTxInCycle(t, activeCycleTag));
+    const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+    const activeCycleObj = (window.appCyclesData && window.appCyclesData[activeCycleKey]) ? window.appCyclesData[activeCycleKey] : null;
+    const activeCycleTag = activeCycleObj ? activeCycleObj.tag : currentCycle;
+    const sIso = activeCycleObj ? activeCycleObj.startIso : null;
+    const eIso = activeCycleObj ? activeCycleObj.endIso : null;
+
+    const cleanStr = (s) => String(s || '').replace(/[\s\-_–—]+/g, '').trim().toLowerCase();
+    const normActiveTag = cleanStr(activeCycleTag);
+
+    const pool = (Array.isArray(txs) && txs.length > 0)
+      ? txs
+      : (activeCycleObj && Array.isArray(activeCycleObj.transactions) ? activeCycleObj.transactions : ((Array.isArray(transactions) && transactions.length > 0) ? transactions : []));
+
+    const cleanTxs = pool.filter(t => {
+      if (!t) return false;
+      const tCiclo = cleanStr(t.ciclo);
+      if (tCiclo && normActiveTag) {
+        return tCiclo === normActiveTag;
+      }
+      if (sIso && eIso && t.data) {
+        const dStr = String(t.data).substring(0, 10);
+        return dStr >= sIso && dStr <= eIso;
+      }
+      return false;
+    });
     const latest = [...cleanTxs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
     if (!latest.length) {
       list.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';

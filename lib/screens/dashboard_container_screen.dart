@@ -187,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.138+215';
+  static const String _kCurrentAppVersion = '2.1.139+216';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
@@ -1650,82 +1650,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                       ),
                     ),
                   ),
-                if (_isAlarmRinging)
-                  Positioned(
-                    top: 10,
-                    left: 12,
-                    right: 12,
-                    child: Material(
-                      color: Colors.transparent,
-                      elevation: 99999,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFE11D48), Color(0xFF9F1239)],
-                          ),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Text('⏰', style: TextStyle(fontSize: 26)),
-                            const SizedBox(width: 10),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'ALARME DISPARANDO',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 13,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Toque para desligar o som agora',
-                                    style: TextStyle(
-                                      color: Color(0xFFFECDD3),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton.icon(
-                              onPressed: _silenceAllAlarmsNow,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFFBE123C),
-                                elevation: 4,
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                              icon: const Text('🛑', style: TextStyle(fontSize: 16)),
-                              label: const Text(
-                                'DESLIGAR',
-                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                
               ],
             ),
           ),
