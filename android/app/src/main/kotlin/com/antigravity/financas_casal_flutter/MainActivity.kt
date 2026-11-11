@@ -33,12 +33,15 @@ object AlarmAudioPlayer {
     private var tts: TextToSpeech? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private val handler = Handler(Looper.getMainLooper())
+    var isPlaying = false
+        private set
     private var isStopped = false
 
     fun playAlarmAndSpeak(context: Context, speechText: String) {
         val appCtx = context.applicationContext
         stop()
         isStopped = false
+        isPlaying = true
 
         // 1. Mantém a CPU acordada por até 68s para repetir o alarme de 10 em 10s durante 1 minuto
         try {
@@ -183,6 +186,7 @@ object AlarmAudioPlayer {
 
     fun stop() {
         isStopped = true
+        isPlaying = false
         handler.removeCallbacksAndMessages(null)
         try {
             ringtone?.stop()
@@ -804,6 +808,9 @@ class MainActivity: FlutterFragmentActivity() {
                 "stopNativeAlarm" -> {
                     AlarmAudioPlayer.stop()
                     result.success(true)
+                }
+                "isNativeAlarmActive" -> {
+                    result.success(AlarmAudioPlayer.isPlaying)
                 }
                 "speakAlarmNative" -> {
                     val textToSpeak = call.argument<String>("text") ?: ""

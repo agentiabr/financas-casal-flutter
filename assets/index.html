@@ -4466,6 +4466,11 @@ html, body {
   <button type="button" onclick="adjustFontScale(0.05)" class="px-1 text-blue-100 hover:text-white cursor-pointer" title="Aumentar fonte">A+</button>
 </div>
 
+              <!-- Silenciar Alarmes Instantâneo (Botão Pânico) -->
+              <button type="button" onclick="stopMedicationAlarmAudio()" class="w-8 h-8 rounded-full bg-rose-500/25 hover:bg-rose-500/40 border border-rose-300/50 text-rose-200 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95 text-xs font-black" title="Silenciar / Desligar Todos os Alarmes">
+                🔕
+              </button>
+
               <!-- Notificações -->
               <button type="button" onclick="if (typeof openNotificationsModal === 'function') openNotificationsModal(); else if (typeof showToastUndo === 'function') showToastUndo('Nenhuma nova notificação no momento.', false);" class="relative w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95" title="Ver Notificações">
                 <i data-lucide="bell" class="w-4 h-4 text-white"></i>
@@ -22348,9 +22353,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const diffDays = Math.ceil((new Date(c.data + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
         const targetHora = c.hora || '09:00';
         if ((diffDays === 0 || diffDays === 2 || diffDays === 5) && targetHora === curTime) {
-          const firedKey = `pet_fired_${c.id}_${diffDays}_${todayStr}_${curTime}`;
-          if (sessionStorage.getItem(firedKey) === 'true') return;
-          sessionStorage.setItem(firedKey, 'true');
+          const firedKey = `ctrlpig_pet_fired_${c.id}_${diffDays}_${todayStr}`;
+          if (localStorage.getItem(firedKey) === 'true') return;
+          localStorage.setItem(firedKey, 'true');
 
           const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
           const title = diffDays === 0
@@ -22380,9 +22385,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
 
         if (diffDays === 5 || diffDays === 2 || diffDays === 0) {
-          const firedKey = `vax_fired_${v.id}_${diffDays}_${todayStr}`;
-          if (sessionStorage.getItem(firedKey) === 'true') return;
-          sessionStorage.setItem(firedKey, 'true');
+          const firedKey = `ctrlpig_vax_fired_${v.id}_${diffDays}_${todayStr}`;
+          if (localStorage.getItem(firedKey) === 'true') return;
+          localStorage.setItem(firedKey, 'true');
 
           const isToday = diffDays === 0;
           const title = isToday
@@ -33732,8 +33737,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     }
   };
 
-  // Ao clicar em "🔕 Desligar" dentro do próprio aplicativo, também grava o acknowledge do horário atual
-  const _origStopMedicationAlarmAudio = window.stopMedicationAlarmAudio;
+  // Desliga COMPLETAMENTE e silencia todo e qualquer alarme sonoro, loop, timer e modal
   window.stopMedicationAlarmAudio = function() {
     if (typeof _medAlarmRepeatInterval !== 'undefined' && _medAlarmRepeatInterval) {
       clearInterval(_medAlarmRepeatInterval);
@@ -33748,7 +33752,34 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       activeMedAlarmInterval = null;
     }
 
-    // Silencia permanentemente o horário corrente de hoje para não re-disparar no próximo minuto
+    // 1. Remove qualquer barra de emergência ou banner flutuante
+    try {
+      const banners = document.querySelectorAll('#floatingEmergencyAlarmBar, #floatingHealthAlarmBanner, .floating-health-alarm-banner');
+      banners.forEach(b => { try { b.remove(); } catch(e) {} });
+    } catch (_) {}
+
+    // 2. Fecha modal de alarme em tela cheia
+    try {
+      const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
+      if (modalFull) {
+        modalFull.classList.add('hidden');
+        modalFull.style.display = 'none';
+      }
+    } catch (_) {}
+
+    // 3. Cancela síntese de voz Web Audio
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+
+    // 4. Manda comando de parada imediata ao Flutter / Android nativo
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'stop_speak' }));
+      } catch(e) {}
+    }
+
+    // 5. Silencia permanentemente para hoje todos os horários e medicamentos
     try {
       const todayStr = new Date().toISOString().split('T')[0];
       const now = new Date();
@@ -33758,14 +33789,21 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slot}`, 'true');
       localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${slot}`, 'true');
       localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${slot}`, 'true');
+
+      // Silencia também todos os horários cadastrados nos remédios
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      meds.forEach(m => {
+        const slots = [m.horario, ...(Array.isArray(m.horariosPersonalizados) ? m.horariosPersonalizados : [])].filter(Boolean);
+        slots.forEach(s => {
+          localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${s}`, 'true');
+          localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${s}`, 'true');
+        });
+      });
     } catch (_) {}
 
     window.onNativeNotificationMedDismissed('', '');
-    if (typeof window.dismissAllHealthAlarmBanners === 'function') {
-      window.dismissAllHealthAlarmBanners();
-    }
-    if (typeof _origStopMedicationAlarmAudio === 'function') {
-      _origStopMedicationAlarmAudio();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('🔕 Todos os alarmes foram desligados com sucesso.', false);
     }
   };
 
@@ -34676,11 +34714,12 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     }
   }
 
-  // Alarme de medicação: SÓ repete a cada 10s durante 1 minuto se isRepeatingAlarm for true (alarme de dose de remédio)
+  // Alarme de medicação: Dispara UMA ÚNICA VEZ em sequência limpa (sem loop infinito de toques)
+  // e exibe a barra e modal de emergência no topo
   window.speakMedicationAlarm = function(text, isRepeatingAlarm = false) {
     if (!text) return;
     if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
-      return; // Notificação via áudio silenciada
+      return; // Notificação via áudio silenciada pelo usuário
     }
     if (_medAlarmRepeatInterval) {
       clearInterval(_medAlarmRepeatInterval);
@@ -34691,10 +34730,10 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       _medAlarmAutoStopTimeout = null;
     }
 
-    // Dispara imediatamente (0s)
-    fireSingleMedSpeechAndBeep(text, isRepeatingAlarm);
+    // Dispara a fala e alarme sonoro nativo (o Android nativo executa o ringtone + voz sem loop interminável)
+    fireSingleMedSpeechAndBeep(text, false);
 
-    // Garante que o botão de desligar alarme apareça imediatamente no topo da tela
+    // Garante exibição imediata da barra de emergência fixada no topo de document.body
     try {
       let emergBar = document.getElementById('floatingEmergencyAlarmBar');
       if (!emergBar) {
@@ -34706,7 +34745,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
             <span class="text-2xl animate-pulse flex-shrink-0">⏰</span>
             <div class="min-w-0">
               <h4 class="font-black text-xs uppercase tracking-wide truncate">Alarme Disparando!</h4>
-              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">Toque no botão para parar o som</p>
+              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">Toque para parar o som</p>
             </div>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -34720,31 +34759,11 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       }
     } catch (_) {}
 
-    // SOMENTE repete de 10 em 10 segundos durante 1 minuto se for dose real de remédio ou teste com botão de desligar
-    if (isRepeatingAlarm === true) {
-      let elapsedSeconds = 0;
-      _medAlarmRepeatInterval = setInterval(() => {
-        if (typeof isHealthAudioNotificationEnabled === 'function' && !isHealthAudioNotificationEnabled()) {
-          clearInterval(_medAlarmRepeatInterval);
-          _medAlarmRepeatInterval = null;
-          return;
-        }
-        elapsedSeconds += 10;
-        if (elapsedSeconds <= 60) {
-          fireSingleMedSpeechAndBeep(text, true);
-        } else {
-          clearInterval(_medAlarmRepeatInterval);
-          _medAlarmRepeatInterval = null;
-        }
-      }, 10000);
-
-      _medAlarmAutoStopTimeout = setTimeout(() => {
-        if (_medAlarmRepeatInterval) {
-          clearInterval(_medAlarmRepeatInterval);
-          _medAlarmRepeatInterval = null;
-        }
-      }, 62000);
-    }
+    // Auto-remove a barra após 30 segundos
+    _medAlarmAutoStopTimeout = setTimeout(() => {
+      const b = document.getElementById('floatingEmergencyAlarmBar');
+      if (b) b.remove();
+    }, 30000);
   };
 
   const _origStopAlarmV205 = window.stopMedicationAlarmAudio;

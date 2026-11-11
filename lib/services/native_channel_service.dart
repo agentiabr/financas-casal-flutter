@@ -70,6 +70,15 @@ class NativeChannelService {
     }
   }
 
+  /// Verifica se o alarme nativo está tocando no momento
+  static Future<bool> isNativeAlarmActive() async {
+    try {
+      return await _channel.invokeMethod<bool>('isNativeAlarmActive') ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Exibe notificação simples padrão
   static Future<void> showStandardNotification({
     required String title,

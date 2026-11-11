@@ -36,6 +36,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _isAlarmRinging = false;
+  Timer? _alarmPollTimer;
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
   FlutterTts? _flutterTts;
@@ -51,6 +53,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
 
   @override
   void dispose() {
+    _alarmPollTimer?.cancel();
     _pulseController.dispose();
     _voiceDebounceTimer?.cancel();
     _chatVoiceDebounceTimer?.cancel();
@@ -72,6 +75,16 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
     _initWebViewController();
+    _alarmPollTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      try {
+        final active = await NativeChannelService.isNativeAlarmActive();
+        if (mounted && active != _isAlarmRinging) {
+          setState(() {
+            _isAlarmRinging = active;
+          });
+        }
+      } catch (_) {}
+    });
   }
 
   Future<void> _checkPendingNativeMedTaken() async {
@@ -174,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.137+214';
+  static const String _kCurrentAppVersion = '2.1.138+215';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
@@ -411,6 +424,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         }
       } else if (action == 'speak_alarm') {
+        if (mounted) {
+          setState(() {
+            _isAlarmRinging = true;
+          });
+        }
         final text = data['text'] as String? ?? '';
         final alarmStyle = data['alarmStyle'] as String? ?? 'female';
         final audioEnabled = await NativeChannelService.getMedAudioEnabled();
@@ -541,6 +559,11 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       } else if (action == 'stop_speak') {
+        if (mounted) {
+          setState(() {
+            _isAlarmRinging = false;
+          });
+        }
         _flutterTts?.stop();
         await NativeChannelService.stopNativeAlarm();
       } else if (action == 'update_launcher_icon') {
@@ -1448,6 +1471,33 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
+  Future<void> _silenceAllAlarmsNow() async {
+    setState(() {
+      _isAlarmRinging = false;
+    });
+    await NativeChannelService.stopNativeAlarm();
+    try {
+      await _flutterTts?.stop();
+    } catch (_) {}
+    try {
+      await _controller.runJavaScript("""
+        if (typeof window.stopMedicationAlarmAudio === 'function') {
+          window.stopMedicationAlarmAudio();
+        }
+      """);
+    } catch (_) {}
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🔕 Todos os alarmes foram desligados com sucesso.'),
+          backgroundColor: Color(0xFF0F172A),
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -1593,6 +1643,82 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
                                 color: Color(0xFF94A3B8),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_isAlarmRinging)
+                  Positioned(
+                    top: 10,
+                    left: 12,
+                    right: 12,
+                    child: Material(
+                      color: Colors.transparent,
+                      elevation: 99999,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFE11D48), Color(0xFF9F1239)],
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Text('⏰', style: TextStyle(fontSize: 26)),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'ALARME DISPARANDO',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 13,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Toque para desligar o som agora',
+                                    style: TextStyle(
+                                      color: Color(0xFFFECDD3),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton.icon(
+                              onPressed: _silenceAllAlarmsNow,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: const Color(0xFFBE123C),
+                                elevation: 4,
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                              icon: const Text('🛑', style: TextStyle(fontSize: 16)),
+                              label: const Text(
+                                'DESLIGAR',
+                                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
                               ),
                             ),
                           ],
