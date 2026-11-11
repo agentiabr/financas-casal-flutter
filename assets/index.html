@@ -26486,7 +26486,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DE ALARME EM TELA CHEIA (REMÉDIOS & CUIDADOS PET)        -->
   <!-- ============================================================== -->
-  <div id="modalFullScreenAlarmOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+  <div id="modalFullScreenAlarmOverlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[99999999] hidden flex items-center justify-center p-4" style="z-index: 99999999;">
     <div class="bg-slate-900 text-white border-2 border-amber-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center flex flex-col items-center">
       
       <!-- Badge Superior -->
@@ -26526,8 +26526,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <span>ADIAR 5 MINUTOS</span>
         </button>
 
-        <button type="button" id="btnFullAlarmDismiss" onclick="handleFullAlarmDismiss()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-2xl border border-slate-700 transition-all cursor-pointer">
-          <span>🔕 Desligar Alarme</span>
+        <button type="button" id="btnFullAlarmDismiss" onclick="stopMedicationAlarmAudio(); if(typeof handleFullAlarmDismiss==='function') handleFullAlarmDismiss();" class="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white font-black text-sm rounded-2xl border-2 border-rose-400 shadow-xl shadow-rose-600/40 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+          <span class="text-base">🛑</span>
+          <span>DESLIGAR ALARME AGORA</span>
         </button>
       </div>
 
@@ -33473,7 +33474,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   window.dismissAllHealthAlarmBanners = function() {
     try {
       // 1. Remove qualquer banner flutuante existente no DOM
-      const floatingBanners = document.querySelectorAll('#floatingHealthAlarmBanner, .floating-health-alarm-banner');
+      const floatingBanners = document.querySelectorAll('#floatingHealthAlarmBanner, .floating-health-alarm-banner, #floatingEmergencyAlarmBar');
       floatingBanners.forEach(b => {
         try { b.remove(); } catch(e) {}
       });
@@ -33482,6 +33483,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
       if (modalFull) {
         modalFull.classList.add('hidden');
+        modalFull.style.display = 'none';
       }
 
       // 3. Cancela síntese de voz e para áudio
@@ -33501,6 +33503,31 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
   // Ao clicar em "🔕 Desligar" dentro do próprio aplicativo, também grava o acknowledge do horário atual
   const _origStopMedicationAlarmAudio = window.stopMedicationAlarmAudio;
   window.stopMedicationAlarmAudio = function() {
+    if (typeof _medAlarmRepeatInterval !== 'undefined' && _medAlarmRepeatInterval) {
+      clearInterval(_medAlarmRepeatInterval);
+      _medAlarmRepeatInterval = null;
+    }
+    if (typeof _medAlarmAutoStopTimeout !== 'undefined' && _medAlarmAutoStopTimeout) {
+      clearTimeout(_medAlarmAutoStopTimeout);
+      _medAlarmAutoStopTimeout = null;
+    }
+    if (typeof activeMedAlarmInterval !== 'undefined' && activeMedAlarmInterval) {
+      clearInterval(activeMedAlarmInterval);
+      activeMedAlarmInterval = null;
+    }
+
+    // Silencia permanentemente o horário corrente de hoje para não re-disparar no próximo minuto
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const curH = String(now.getHours()).padStart(2, '0');
+      const curM = String(now.getMinutes()).padStart(2, '0');
+      const slot = `${curH}:${curM}`;
+      localStorage.setItem(`ctrlpig_alarm_ack_${todayStr}_${slot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_pre_${todayStr}_${slot}`, 'true');
+      localStorage.setItem(`ctrlpig_alarm_dismissed_permanent_${todayStr}_${slot}`, 'true');
+    } catch (_) {}
+
     window.onNativeNotificationMedDismissed('', '');
     if (typeof window.dismissAllHealthAlarmBanners === 'function') {
       window.dismissAllHealthAlarmBanners();
@@ -33613,9 +33640,12 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       petCareId: petCareId || null
     };
 
-    // Abre o Modal de Alarme em Tela Cheia no App
+    // Abre o Modal de Alarme em Tela Cheia no App (garantindo anexação direta ao document.body e z-index máximo)
     const modalFull = document.getElementById('modalFullScreenAlarmOverlay');
     if (modalFull) {
+      if (modalFull.parentElement !== document.body) {
+        document.body.appendChild(modalFull);
+      }
       const badgeEl = document.getElementById('fullAlarmBadge');
       const iconEl = document.getElementById('fullAlarmIcon');
       const timeEl = document.getElementById('fullAlarmTime');
@@ -33649,7 +33679,37 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       }
 
       modalFull.classList.remove('hidden');
+      modalFull.style.display = 'flex';
+      modalFull.style.zIndex = '99999999';
+      modalFull.style.position = 'fixed';
+      modalFull.style.inset = '0';
     }
+
+    // 2. Cria também a Barra Flutuante de Emergência no Topo (GARANTIA 100% VISÍVEL com botão DESLIGAR)
+    try {
+      let emergBar = document.getElementById('floatingEmergencyAlarmBar');
+      if (!emergBar) {
+        emergBar = document.createElement('div');
+        emergBar.id = 'floatingEmergencyAlarmBar';
+        emergBar.className = 'fixed top-3 left-1/2 -translate-x-1/2 z-[99999999] w-[96vw] max-w-md p-3.5 bg-gradient-to-r from-rose-600 to-red-700 text-white rounded-2xl shadow-2xl border-2 border-white flex items-center justify-between gap-2.5 animate-bounce';
+        emergBar.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-2xl animate-pulse flex-shrink-0">⏰</span>
+            <div class="min-w-0">
+              <h4 class="font-black text-xs uppercase tracking-wide truncate">${title || 'Alarme Disparando!'}</h4>
+              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">${message || 'Toque para desligar'}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" onclick="stopMedicationAlarmAudio()" class="px-3.5 py-2.5 bg-white text-rose-700 hover:bg-rose-100 font-black text-xs rounded-xl shadow-lg border border-rose-200 cursor-pointer active:scale-95 flex items-center gap-1">
+              <span>🛑</span>
+              <span>DESLIGAR</span>
+            </button>
+          </div>
+        `;
+        document.body.appendChild(emergBar);
+      }
+    } catch (_) {}
   };
 
   window.handleFullAlarmTaken = function() {
@@ -34401,6 +34461,32 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
     // Dispara imediatamente (0s)
     fireSingleMedSpeechAndBeep(text, isRepeatingAlarm);
+
+    // Garante que o botão de desligar alarme apareça imediatamente no topo da tela
+    try {
+      let emergBar = document.getElementById('floatingEmergencyAlarmBar');
+      if (!emergBar) {
+        emergBar = document.createElement('div');
+        emergBar.id = 'floatingEmergencyAlarmBar';
+        emergBar.className = 'fixed top-3 left-1/2 -translate-x-1/2 z-[99999999] w-[96vw] max-w-md p-3.5 bg-gradient-to-r from-rose-600 to-red-700 text-white rounded-2xl shadow-2xl border-2 border-white flex items-center justify-between gap-2.5 animate-bounce';
+        emergBar.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-2xl animate-pulse flex-shrink-0">⏰</span>
+            <div class="min-w-0">
+              <h4 class="font-black text-xs uppercase tracking-wide truncate">Alarme Disparando!</h4>
+              <p class="text-[11px] text-rose-100 font-bold truncate max-w-[160px] sm:max-w-[220px]">Toque no botão para parar o som</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" onclick="stopMedicationAlarmAudio()" class="px-3.5 py-2.5 bg-white text-rose-700 hover:bg-rose-100 font-black text-xs rounded-xl shadow-lg border border-rose-200 cursor-pointer active:scale-95 flex items-center gap-1">
+              <span>🛑</span>
+              <span>DESLIGAR</span>
+            </button>
+          </div>
+        `;
+        document.body.appendChild(emergBar);
+      }
+    } catch (_) {}
 
     // SOMENTE repete de 10 em 10 segundos durante 1 minuto se for dose real de remédio ou teste com botão de desligar
     if (isRepeatingAlarm === true) {
@@ -38257,6 +38343,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     window.ensureModalsOnBody = function() {
     try {
       const modalIds = [
+        'modalFullScreenAlarmOverlay',
         'modalAddNewContinuousMed', 'modalEditMedication', 'modalMedTakeConfirmation',
         'modalAddEditPet', 'modalAddPetVaccine', 'modalAddEditPetCare', 'modalPetQrCode',
         'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel', 'modalAddUser', 'modalAddUser',
