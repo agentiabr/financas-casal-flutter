@@ -5023,7 +5023,7 @@ html, body {
               </div>
 
               <!-- 2. Lista de Compras -->
-              <div onclick="openShoppingListModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛒</div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
@@ -5035,7 +5035,7 @@ html, body {
               </div>
 
               <!-- 3. Pets e Vacinas -->
-              <div onclick="openPetAreaModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-base flex-shrink-0">🐾</div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
@@ -5047,7 +5047,7 @@ html, body {
               </div>
 
               <!-- 4. Vida Saudável -->
-              <div onclick="openHealthMedsModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
                   <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base flex-shrink-0">❤️</div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
@@ -20265,8 +20265,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         nome: 'Tosse dos Canis (Gripe Canina)',
         descricao: 'Prevenção contra traqueobronquite infecciosa canina',
         tipo: 'Vacina Anual Complementar',
-        ultimaDose: '2026-08-05',
-        proximaDose: '2027-08-05',
+        ultimaDose: '2025-11-15',
+        proximaDose: (function() { const d = new Date(); d.setDate(d.getDate() + 5); return d.toISOString().split('T')[0]; })(),
         clinica: 'Wevets Clínica Veterinária'
       }
     ];
@@ -20981,8 +20981,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                 <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400 mt-1 flex-wrap">
                   <span>Última dose: <strong>${formatDateBR(v.ultimaDose)}</strong></span>
                   <span>•</span>
-                  <span>Próxima dose anual: <strong class="text-slate-800 dark:text-slate-200">${formatDateBR(v.proximaDose)}</strong></span>
+                  <span>Próxima dose: <strong class="text-slate-800 dark:text-slate-200">${formatDateBR(v.proximaDose)}</strong></span>
                   ${v.clinica ? `<span>• <em>${v.clinica}</em></span>` : ''}
+                  <span class="text-amber-600 dark:text-amber-400 font-bold">• 🔔 Alarme 2d antes e no dia</span>
                 </div>
               </div>
             </div>
@@ -20990,6 +20991,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
               <button type="button" onclick="recordVaccineDoseNow('${v.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer" title="Registrar dose aplicada hoje e renovar para mais 1 ano">
                 <span>💉 Aplicada Hoje</span>
+              </button>
+              <button type="button" onclick="openAddPetVaccineModal('${v.id}')" class="p-1.5 text-slate-400 hover:text-amber-500 transition-colors cursor-pointer" title="Editar vacina e data da próxima dose">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
               </button>
               <button type="button" onclick="deletePetVaccine('${v.id}')" class="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer" title="Remover vacina">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -20999,6 +21003,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         `;
       }).join('');
       if (window.lucide) lucide.createIcons();
+    }
+
+    function saveAllPetVaccinesList(vaxes) {
+      const vaxKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_pet_vaccines') : 'ctrlpig_pet_vaccines';
+      localStorage.setItem(vaxKey, JSON.stringify(vaxes));
+      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxes));
+      renderPetVaccinesList();
+      updateQuickHubUI();
+      if (typeof syncNativePetCareAlarms === 'function') syncNativePetCareAlarms();
     }
 
     function recordVaccineDoseNow(vaccineId) {
@@ -21019,17 +21032,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         return v;
       });
 
-      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxes));
-      renderPetVaccinesList();
-      updateQuickHubUI();
+      saveAllPetVaccinesList(vaxes);
       showToastUndo('Dose registrada com sucesso! Renovada por mais 1 ano. 💉🐾');
     }
 
     function deletePetVaccine(vaccineId) {
       let vaxes = getAllPetVaccines().filter(v => v.id !== vaccineId);
-      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(vaxes));
-      renderPetVaccinesList();
-      updateQuickHubUI();
+      saveAllPetVaccinesList(vaxes);
       showToastUndo('Vacina removida da carteira.');
     }
 
@@ -21055,9 +21064,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       const all = getAllPetVaccines();
       const updated = [...all, ...presets];
-      localStorage.setItem('ctrlpig_pet_vaccines', JSON.stringify(updated));
-      renderPetVaccinesList();
-      updateQuickHubUI();
+      saveAllPetVaccinesList(updated);
       showToastUndo('Pacote padrão de vacinas adicionado para o pet! 💉');
     }
 
@@ -21206,14 +21213,59 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       showToastUndo(`Pet ${pet.nome} removido.`);
     }
 
-    function openAddPetVaccineModal() {
+    function onVacUltimaDoseChanged() {
+      const ultimaEl = document.getElementById('inputVacUltimaDose');
+      const proxEl = document.getElementById('inputVacProximaDose');
+      if (ultimaEl && proxEl && ultimaEl.value && !proxEl.dataset.userEdited) {
+        const uDate = new Date(ultimaEl.value + 'T00:00:00');
+        if (!isNaN(uDate.getTime())) {
+          const pDate = new Date(uDate);
+          pDate.setFullYear(pDate.getFullYear() + 1);
+          proxEl.value = pDate.toISOString().split('T')[0];
+        }
+      }
+    }
+    window.onVacUltimaDoseChanged = onVacUltimaDoseChanged;
+
+    function openAddPetVaccineModal(editVaccineId) {
       const modal = document.getElementById('modalAddPetVaccine');
       if (modal) {
         modal.classList.remove('hidden');
         const form = document.getElementById('formAddPetVaccine');
         if (form) form.reset();
+        const idInput = document.getElementById('inputVacEditId');
         const inputDose = document.getElementById('inputVacUltimaDose');
-        if (inputDose) inputDose.value = new Date().toISOString().split('T')[0];
+        const inputProx = document.getElementById('inputVacProximaDose');
+        if (inputProx) delete inputProx.dataset.userEdited;
+
+        if (editVaccineId) {
+          const allVax = getAllPetVaccines();
+          const found = allVax.find(v => v.id === editVaccineId);
+          if (found) {
+            if (idInput) idInput.value = found.id;
+            const nEl = document.getElementById('inputVacNome');
+            const dEl = document.getElementById('inputVacDesc');
+            const cEl = document.getElementById('inputVacClinica');
+            if (nEl) nEl.value = found.nome || '';
+            if (dEl) dEl.value = found.descricao || '';
+            if (inputDose) inputDose.value = found.ultimaDose || new Date().toISOString().split('T')[0];
+            if (inputProx) {
+              inputProx.value = found.proximaDose || '';
+              inputProx.dataset.userEdited = 'true';
+            }
+            if (cEl) cEl.value = found.clinica || '';
+            return;
+          }
+        }
+
+        if (idInput) idInput.value = '';
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (inputDose) inputDose.value = todayStr;
+        if (inputProx) {
+          const nextYr = new Date();
+          nextYr.setFullYear(nextYr.getFullYear() + 1);
+          inputProx.value = nextYr.toISOString().split('T')[0];
+        }
       }
     }
 
@@ -21224,33 +21276,42 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function handleSaveNewPetVaccine(event) {
       event.preventDefault();
+      const editId = document.getElementById('inputVacEditId')?.value || '';
       const nome = document.getElementById('inputVacNome').value.trim();
       const desc = document.getElementById('inputVacDesc').value.trim();
       const ultima = document.getElementById('inputVacUltimaDose').value;
+      const proxInput = document.getElementById('inputVacProximaDose')?.value;
       const clinica = document.getElementById('inputVacClinica').value.trim() || 'Clínica Veterinária';
 
       if (!nome || !ultima) return;
 
-      const uDate = new Date(ultima + 'T00:00:00');
-      const pDate = new Date(uDate);
-      pDate.setFullYear(pDate.getFullYear() + 1);
-      const proxima = pDate.toISOString().split('T')[0];
+      let proxima = proxInput;
+      if (!proxima) {
+        const uDate = new Date(ultima + 'T00:00:00');
+        const pDate = new Date(uDate);
+        pDate.setFullYear(pDate.getFullYear() + 1);
+        proxima = pDate.toISOString().split('T')[0];
+      }
 
-      const newVac = {
-        id: 'vac_' + Date.now(),
-        nome: nome,
-        descricao: desc,
-        tipo: 'Vacina Anual',
-        ultimaDose: ultima,
-        proximaDose: proxima,
-        clinica: clinica
-      };
-
-      const vaxes = getPetVaccines();
-      vaxes.push(newVac);
+      let vaxes = getPetVaccines();
+      if (editId) {
+        vaxes = vaxes.map(v => v.id === editId ? { ...v, nome, descricao: desc, ultimaDose: ultima, proximaDose: proxima, clinica } : v);
+      } else {
+        vaxes.push({
+          id: 'vac_' + Date.now(),
+          petId: getActivePetId(),
+          nome: nome,
+          descricao: desc,
+          tipo: 'Vacina Anual',
+          ultimaDose: ultima,
+          proximaDose: proxima,
+          clinica: clinica
+        });
+      }
       savePetVaccines(vaxes);
+      if (typeof syncNativePetCareAlarms === 'function') syncNativePetCareAlarms();
       closeAddPetVaccineModal();
-      showToastUndo(`Vacina ${nome} adicionada à carteira do pet!`);
+      showToastUndo(`Vacina "${nome}" salva! Alarme ativo para 2 dias antes e no dia (${formatDateBR(proxima)})! 💉🔔`);
     }
 
     function quickLaunchPetExpense() {
@@ -21751,23 +21812,51 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const pets = getRegisteredPets();
         const vaxes = typeof getAllPetVaccines === 'function' ? getAllPetVaccines() : [];
 
-        let alarmsPayload = pending.slice(0, 10).map((c, idx) => {
-          const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
-          const dtParts = c.data.split('-');
-          const tmParts = (c.hora || '09:00').split(':');
-          const targetDate = new Date(parseInt(dtParts[0]), parseInt(dtParts[1]) - 1, parseInt(dtParts[2]), parseInt(tmParts[0]), parseInt(tmParts[1]), 0);
-          
-          return {
-            id: 9000 + idx,
-            triggerMillis: targetDate.getTime(),
-            title: `🐾 Hora do ${c.categoria}: ${pet.nome}`,
-            body: `${c.titulo} às ${c.hora || '09:00'}. ${c.local ? 'Local: ' + c.local : ''}`,
-            speech: `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`,
-            slot: c.hora || '09:00'
-          };
-        }).filter(a => a.triggerMillis > Date.now());
+        let alarmsPayload = [];
 
-        // Agenda alertas de vacinas: 5 dias antes e no dia do vencimento às 09:00
+        // 1. Agenda alarmes de cuidados e remédios do Pet: 5 dias antes, 2 dias antes e no dia agendado
+        pending.slice(0, 10).forEach((c, idx) => {
+          const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
+          const dtParts = String(c.data || '').split('-');
+          const tmParts = (c.hora || '09:00').split(':');
+          if (dtParts.length !== 3) return;
+          const targetDate = new Date(parseInt(dtParts[0]), parseInt(dtParts[1]) - 1, parseInt(dtParts[2]), parseInt(tmParts[0]) || 9, parseInt(tmParts[1]) || 0, 0);
+          const fiveDaysBefore = new Date(targetDate.getTime() - (5 * 24 * 60 * 60 * 1000));
+          const twoDaysBefore = new Date(targetDate.getTime() - (2 * 24 * 60 * 60 * 1000));
+
+          if (fiveDaysBefore.getTime() > Date.now()) {
+            alarmsPayload.push({
+              id: 9000 + (idx * 3),
+              triggerMillis: fiveDaysBefore.getTime(),
+              title: `🐾 Vence em 5 Dias: ${c.titulo} (${pet.nome})`,
+              body: `${c.categoria} "${c.titulo}" de ${pet.nome} vence em 5 dias (${formatDateBR(c.data)} às ${c.hora || '09:00'}).`,
+              speech: `Atenção! O cuidado ${c.titulo} do ${pet.nome} vence em cinco dias.`,
+              slot: c.hora || '09:00'
+            });
+          }
+          if (twoDaysBefore.getTime() > Date.now()) {
+            alarmsPayload.push({
+              id: 9001 + (idx * 3),
+              triggerMillis: twoDaysBefore.getTime(),
+              title: `🔔 Alarme (Faltam 2 Dias): ${c.titulo} (${pet.nome})`,
+              body: `Faltam 2 dias para ${c.categoria} "${c.titulo}" de ${pet.nome} (${formatDateBR(c.data)} às ${c.hora || '09:00'}).`,
+              speech: `Atenção! Faltam dois dias para ${c.titulo} do ${pet.nome}.`,
+              slot: c.hora || '09:00'
+            });
+          }
+          if (targetDate.getTime() > Date.now()) {
+            alarmsPayload.push({
+              id: 9002 + (idx * 3),
+              triggerMillis: targetDate.getTime(),
+              title: `🐾 Hora do ${c.categoria}: ${pet.nome}`,
+              body: `${c.titulo} às ${c.hora || '09:00'}. ${c.local ? 'Local: ' + c.local : ''}`,
+              speech: `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`,
+              slot: c.hora || '09:00'
+            });
+          }
+        });
+
+        // 2. Agenda alertas de vacinas: 5 dias antes, 2 dias antes e no dia agendado às 09:00
         vaxes.forEach((v, vIdx) => {
           if (!v.proximaDose) return;
           const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
@@ -21775,23 +21864,36 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           if (parts.length === 3) {
             const dueDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 9, 0, 0);
             const fiveDaysBefore = new Date(dueDate.getTime() - (5 * 24 * 60 * 60 * 1000));
+            const twoDaysBefore = new Date(dueDate.getTime() - (2 * 24 * 60 * 60 * 1000));
 
-            // Alarme 5 dias antes
+            // Alerta 5 dias antes
             if (fiveDaysBefore.getTime() > Date.now()) {
               alarmsPayload.push({
-                id: 9500 + (vIdx * 2),
+                id: 9500 + (vIdx * 3),
                 triggerMillis: fiveDaysBefore.getTime(),
                 title: `🐾 Vacina Vencendo em 5 Dias: ${pet.nome}`,
-                body: `A vacina ${v.nome} do ${pet.nome} vence em 5 dias (${v.proximaDose}). Agende a clínica!`,
+                body: `A vacina ${v.nome} do ${pet.nome} vence em 5 dias (${formatDateBR(v.proximaDose)}). Agende a clínica!`,
                 speech: `Atenção Rodrigo e Márcia! A vacina ${v.nome} do ${pet.nome} vence em cinco dias.`,
                 slot: '09:00'
               });
             }
 
-            // Alarme no dia do vencimento
+            // Alarme 2 dias antes
+            if (twoDaysBefore.getTime() > Date.now()) {
+              alarmsPayload.push({
+                id: 9501 + (vIdx * 3),
+                triggerMillis: twoDaysBefore.getTime(),
+                title: `🔔 Alarme (Faltam 2 Dias): Vacina ${v.nome} (${pet.nome})`,
+                body: `A vacina ${v.nome} do ${pet.nome} vence em 2 dias (${formatDateBR(v.proximaDose)}). Prepare a carteirinha!`,
+                speech: `Atenção Rodrigo e Márcia! Faltam dois dias para a vacina ${v.nome} do ${pet.nome}.`,
+                slot: '09:00'
+              });
+            }
+
+            // Alarme no dia agendado
             if (dueDate.getTime() > Date.now()) {
               alarmsPayload.push({
-                id: 9501 + (vIdx * 2),
+                id: 9502 + (vIdx * 3),
                 triggerMillis: dueDate.getTime(),
                 title: `🐾 Vacina Vence Hoje: ${pet.nome}!`,
                 body: `Hoje é o dia da vacina ${v.nome} do ${pet.nome}. Renove a dose anual!`,
@@ -21811,7 +21913,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     }
 
-    // Monitora a cada minuto se há alarmes de cuidados pet ou vacinas para disparar na tela
+    // Monitora a cada minuto se há alarmes de cuidados pet ou vacinas para disparar na tela (5 dias antes, 2 dias antes e no dia agendado)
     function checkPetCareScheduleTimers() {
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
@@ -21823,46 +21925,56 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const pets = getRegisteredPets();
 
       all.forEach(c => {
-        if (c.status !== 'Pendente' || !c.alarmeAtivo || c.data !== todayStr) return;
-        if (c.hora === curTime) {
-          const firedKey = `pet_fired_${c.id}_${todayStr}_${curTime}`;
+        if (c.status !== 'Pendente' || !c.alarmeAtivo || !c.data) return;
+        const diffDays = Math.ceil((new Date(c.data + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
+        const targetHora = c.hora || '09:00';
+        if ((diffDays === 0 || diffDays === 2 || diffDays === 5) && targetHora === curTime) {
+          const firedKey = `pet_fired_${c.id}_${diffDays}_${todayStr}_${curTime}`;
           if (sessionStorage.getItem(firedKey) === 'true') return;
           sessionStorage.setItem(firedKey, 'true');
 
           const pet = pets.find(p => p.id === c.petId) || { nome: 'Pet' };
-          const title = `🐾 Hora do ${c.categoria}: ${pet.nome}`;
-          const body = `${c.titulo} programado para as ${c.hora}. ${c.observacoes || ''}`;
-          const speech = `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`;
+          const title = diffDays === 0
+            ? `🐾 Hora do ${c.categoria}: ${pet.nome}`
+            : (diffDays === 2 ? `🔔 Alarme (Em 2 Dias): ${c.titulo} (${pet.nome})` : `⚠️ Vence em 5 Dias: ${c.titulo} (${pet.nome})`);
+          const body = diffDays === 0
+            ? `${c.titulo} programado para hoje às ${targetHora}. ${c.observacoes || ''}`
+            : `O cuidado/remédio "${c.titulo}" de ${pet.nome} está agendado para daqui a ${diffDays} dias (${formatDateBR(c.data)} às ${targetHora}).`;
+          const speech = diffDays === 0
+            ? `Atenção Rodrigo e Márcia! Hora do ${c.categoria} do ${pet.nome}: ${c.titulo}.`
+            : `Atenção! Faltam ${diffDays} dias para ${c.titulo} do ${pet.nome}.`;
 
           if (typeof speakMedicationAlarm === 'function') {
             speakMedicationAlarm(speech, true);
           }
           if (typeof window.showFloatingHealthAlarmBanner === 'function') {
-            window.showFloatingHealthAlarmBanner(title, body, 'pet_care', c.hora, c.id);
+            window.showFloatingHealthAlarmBanner(title, body, 'pet_care', targetHora, c.id);
           }
         }
       });
 
-      // Checa vencimento de vacinas: 5 dias antes e no dia exato
+      // Checa vencimento de vacinas: 5 dias antes, 2 dias antes e no dia agendado
       const vaxes = typeof getAllPetVaccines === 'function' ? getAllPetVaccines() : [];
       vaxes.forEach(v => {
         if (!v.proximaDose) return;
         const diffDays = Math.ceil((new Date(v.proximaDose + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
         const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
 
-        if (diffDays === 5 || diffDays === 0) {
+        if (diffDays === 5 || diffDays === 2 || diffDays === 0) {
           const firedKey = `vax_fired_${v.id}_${diffDays}_${todayStr}`;
           if (sessionStorage.getItem(firedKey) === 'true') return;
           sessionStorage.setItem(firedKey, 'true');
 
           const isToday = diffDays === 0;
-          const title = isToday ? `💉 Vacina Vence Hoje: ${pet.nome}!` : `⚠️ Vacina Vence em 5 Dias: ${pet.nome}`;
+          const title = isToday
+            ? `💉 Vacina Vence Hoje: ${pet.nome}!`
+            : (diffDays === 2 ? `🔔 Alarme (Faltam 2 Dias): Vacina ${v.nome} (${pet.nome})` : `⚠️ Vacina Vence em 5 Dias: ${pet.nome}`);
           const body = isToday
             ? `Hoje é o dia de aplicar a vacina ${v.nome}. Não esqueça de levar à clínica!`
-            : `A vacina ${v.nome} do ${pet.nome} vence em 5 dias. Já agende o veterinário!`;
+            : `A vacina ${v.nome} do ${pet.nome} vence em ${diffDays} dias (${formatDateBR(v.proximaDose)}).`;
           const speech = isToday
             ? `Atenção! Hoje é o dia da vacina ${v.nome} do ${pet.nome}.`
-            : `Atenção Rodrigo e Márcia! A vacina ${v.nome} do ${pet.nome} vence em cinco dias.`;
+            : `Atenção Rodrigo e Márcia! A vacina ${v.nome} do ${pet.nome} vence em ${diffDays} dias.`;
 
           if (typeof speakMedicationAlarm === 'function') {
             speakMedicationAlarm(speech, true);
@@ -22058,8 +22170,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         horariosPadrao: ['20:00'],
         dosePorVez: 1,
         unidadeDose: 'comprimido',
-        estoqueAtual: 27,
+        estoqueAtual: 5,
         estoqueAlerta: 7,
+        dataVencimento: (function() { const d = new Date(); d.setDate(d.getDate() + 5); return d.toISOString().split('T')[0]; })(),
         precoMedio: 18.20,
         rotinas: ['evening']
       }
@@ -22849,6 +22962,35 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      // Verifica vencimento / fim de estoque de medicamentos (5 dias antes, 2 dias antes e no dia agendado)
+      try {
+        const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+        const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        meds.forEach(m => {
+          if (!m || !m.nome) return;
+          const dosesDia = (m.dosePorVez || 1) * Math.max(1, (Array.isArray(m.rotinas) && m.rotinas.length > 0 ? m.rotinas.length : (Array.isArray(m.horariosPadrao) && m.horariosPadrao.length > 0 ? m.horariosPadrao.length : 1)));
+          let diffDays = typeof m.estoqueAtual === 'number' ? Math.floor(m.estoqueAtual / dosesDia) : null;
+          const rawDate = m.dataVencimento || m.dataFim || m.proximaDose || '';
+          if (rawDate) {
+            const targetDate = new Date(rawDate + 'T00:00:00');
+            if (!isNaN(targetDate.getTime())) {
+              const dateDiff = Math.round((targetDate - todayZero) / (1000 * 60 * 60 * 24));
+              if (diffDays === null || dateDiff < diffDays) diffDays = dateDiff;
+            }
+          }
+          if (diffDays === 5 || diffDays === 2 || diffDays === 0) {
+            const alertKey = `ctrlpig_med_exp_alert_${m.id}_${diffDays}_${todayStr}`;
+            if (!localStorage.getItem(alertKey)) {
+              localStorage.setItem(alertKey, '1');
+              const quandoTxt = diffDays === 0 ? 'vence/acaba HOJE' : `vai vencer/acabar em ${diffDays} dias`;
+              const speech = `Atenção: o medicamento ${m.nome} ${quandoTxt}. Os alarmes de 2 dias antes e no dia agendado estão ativos.`;
+              speakAccessibility(speech);
+              showFloatingHealthAlarmBanner(`💊 Alerta de Remédio (${diffDays === 0 ? 'HOJE' : 'Faltam ' + diffDays + ' dias'})`, `O medicamento ${m.nome} ${quandoTxt} (${m.estoqueAtual || 0} comp. restantes).`, 'morning');
+            }
+          }
+        });
+      } catch (e) {}
 
       const [mH, mM] = (settings.morningTime || '08:00').split(':').map(Number);
       const morningTargetMinutes = mH * 60 + mM;
@@ -25923,6 +26065,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <form id="formAddPetVaccine" onsubmit="handleSaveNewPetVaccine(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="inputVacEditId" value="">
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nome da Vacina / Medicamento *</label>
           <input type="text" id="inputVacNome" required placeholder="Ex: Bravecto, Nexgard, Giardiavax, Vermífugo" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
@@ -25936,16 +26079,21 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Data da Aplicação *</label>
-            <input type="date" id="inputVacUltimaDose" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
+            <input type="date" id="inputVacUltimaDose" onchange="onVacUltimaDoseChanged()" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Clínica / Local</label>
-            <input type="text" id="inputVacClinica" placeholder="Clínica Veterinária" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Próxima Dose / Vencimento *</label>
+            <input type="date" id="inputVacProximaDose" oninput="this.dataset.userEdited='true'" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
           </div>
         </div>
 
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Clínica / Local</label>
+          <input type="text" id="inputVacClinica" placeholder="Clínica Veterinária" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+        </div>
+
         <p class="text-[10px] text-slate-400">
-          💡 A próxima dose será calculada automaticamente para <strong>+1 ano</strong> a partir da data de aplicação.
+          🔔 O app alerta automaticamente no Pitaco do Piggy e toca alarme <strong>2 dias antes</strong> e <strong>no dia agendado</strong>!
         </p>
 
         <div class="pt-2 flex items-center gap-2">
@@ -36060,13 +36208,16 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
       </button>
 
       <div class="mt-3 flex flex-col items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-        <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-700 dark:hover:text-slate-200">
-          <input type="checkbox" id="checkSkipPitaco3Days" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-          <span>Não mostrar esta dica nos próximos 3 dias</span>
+        <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 select-none">
+          <input type="checkbox" id="checkSkipPitaco3Days" onchange="window.onToggleSkipPitaco3Days && window.onToggleSkipPitaco3Days(this.checked)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer w-3.5 h-3.5">
+          <span class="font-semibold">Não mostrar esta dica nos próximos 3 dias</span>
         </label>
-        <button type="button" onclick="disableMascotTipsForSection()" class="text-[10px] text-slate-400 hover:text-rose-500 underline transition-colors cursor-pointer">
+        <button type="button" onclick="disableMascotTipsForSection()" class="text-[10px] text-slate-400 hover:text-rose-500 underline transition-colors cursor-pointer font-semibold">
           Ou desligar dicas desta seção permanentemente
         </button>
+        <div id="mascotPitacoAlarmNote" class="mt-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-[9.5px] font-bold text-emerald-700 dark:text-emerald-300 text-center leading-tight">
+          🔔 Mesmo ocultando a dica por 3 dias ou desligando, seus alarmes de <strong>2 dias antes</strong> e <strong>no dia agendado</strong> continuam ativos!
+        </div>
       </div>
     </div>
 
@@ -36189,21 +36340,59 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   window._pendingSectionCallback = null;
   window.currentActiveSectionKey = null;
 
+  function getPitacoSkipKeys(sectionKey) {
+    const baseKey = 'financas_skip_pitaco_' + sectionKey;
+    const keys = [baseKey];
+    if (typeof getUserScopedStorageKey === 'function') {
+      const scoped = getUserScopedStorageKey(baseKey);
+      if (scoped && !keys.includes(scoped)) keys.push(scoped);
+    }
+    return keys;
+  }
+
+  window.onToggleSkipPitaco3Days = function(checked) {
+    if (!window.currentActiveSectionKey) return;
+    try {
+      const keys = getPitacoSkipKeys(window.currentActiveSectionKey);
+      if (checked) {
+        const skipUntil = String(Date.now() + (3 * 24 * 60 * 60 * 1000));
+        keys.forEach(k => localStorage.setItem(k, skipUntil));
+      } else {
+        keys.forEach(k => {
+          if (localStorage.getItem(k) !== 'always') localStorage.removeItem(k);
+        });
+      }
+    } catch (e) {}
+  };
+
   window.triggerSectionWithIntelligentMascot = function(sectionKey, callback) {
     window._pendingSectionCallback = callback;
     window.currentActiveSectionKey = sectionKey;
 
-    // Verifica se o usuário optou por não mostrar esta dica
+    // Garante que os alarmes de 5 dias, 2 dias antes e no dia agendado estejam sempre sincronizados
     try {
-      const skipPref = localStorage.getItem('financas_skip_pitaco_' + sectionKey);
-      if (skipPref === 'always') {
-        if (typeof callback === 'function') callback();
-        return;
+      if (sectionKey === 'pet' && typeof syncNativePetCareAlarms === 'function') {
+        syncNativePetCareAlarms();
       }
-      const skipUntil = parseInt(skipPref, 10);
-      if (!isNaN(skipUntil) && Date.now() < skipUntil) {
-        if (typeof callback === 'function') callback();
-        return;
+      if (sectionKey === 'saude' && typeof checkHealthScheduleTimers === 'function') {
+        checkHealthScheduleTimers();
+      }
+    } catch (e) {}
+
+    // Verifica se o usuário optou por não mostrar esta dica nos próximos 3 dias ou desligou permanentemente
+    try {
+      const keys = getPitacoSkipKeys(sectionKey);
+      for (const k of keys) {
+        const skipPref = localStorage.getItem(k);
+        if (skipPref === 'always') {
+          if (typeof callback === 'function') callback();
+          return;
+        }
+        const skipUntil = parseInt(skipPref, 10);
+        if (!isNaN(skipUntil) && Date.now() < skipUntil) {
+          if (typeof callback === 'function') callback();
+          return;
+        }
       }
     } catch(e) {}
 
@@ -36219,7 +36408,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     const text = document.getElementById('mascotPitacoText');
     const img = document.getElementById('mascotPitacoImg');
     const btnLabel = document.getElementById('btnEnterSectionLabel');
-    const checkSkip = document.getElementById('checkSkipPitacoThisMonth');
+    const checkSkip = document.getElementById('checkSkipPitaco3Days');
 
     if (header) header.innerText = pitaco.header;
     if (badge) {
@@ -36241,13 +36430,21 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   window.confirmEnterSectionFromPitaco = function() {
     const modal = document.getElementById('modalMascotSectionPitaco');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
 
     const checkSkip = document.getElementById('checkSkipPitaco3Days');
     if (checkSkip && checkSkip.checked && window.currentActiveSectionKey) {
       // Reaparece somente em 3 dias
-      const skipUntil = Date.now() + (3 * 24 * 60 * 60 * 1000);
-      localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, String(skipUntil));
+      const skipUntil = String(Date.now() + (3 * 24 * 60 * 60 * 1000));
+      try {
+        getPitacoSkipKeys(window.currentActiveSectionKey).forEach(k => localStorage.setItem(k, skipUntil));
+      } catch (e) {}
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('👍 Dica ocultada pelos próximos 3 dias! (Seus alarmes de 2 dias antes e no dia agendado continuam ativos 🔔)', false);
+      }
     }
 
     // Executa a abertura da seção alvo AGORA
@@ -36260,11 +36457,15 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   window.disableMascotTipsForSection = function() {
     if (window.currentActiveSectionKey) {
-      localStorage.setItem('financas_skip_pitaco_' + window.currentActiveSectionKey, 'always');
+      try {
+        getPitacoSkipKeys(window.currentActiveSectionKey).forEach(k => localStorage.setItem(k, 'always'));
+      } catch (e) {}
       if (typeof showToastUndo === 'function') {
-        showToastUndo('Dicas desta seção foram desligadas.', false);
+        showToastUndo('🔕 Dicas desta seção desligadas! (Seus alarmes de 2 dias antes e no dia agendado continuam ativos 🔔)', false);
       }
     }
+    const checkSkip = document.getElementById('checkSkipPitaco3Days');
+    if (checkSkip) checkSkip.checked = false;
     window.confirmEnterSectionFromPitaco();
   };
 
@@ -36274,36 +36475,112 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   function generateContextualPitaco(sectionKey) {
     window.currentActiveSectionKey = sectionKey;
-    const txs = (typeof appData !== 'undefined' && appData && appData.transacoes) ? appData.transacoes : [];
-    
-    // 1. SAÚDE: EXEMPLO DO AÇÚCAR / DOCES DETECTADOS
+    const txs = Array.isArray(window.transactions) ? window.transactions : ((typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : []);
+    const now = new Date();
+    const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // 1. SAÚDE & REMÉDIOS: TEXTO DINÂMICO DE ACORDO COM OS ACONTECIMENTOS (VENCIMENTO EM 5 DIAS, ESTOQUE E HORÁRIOS)
     if (sectionKey === 'saude') {
-      let detectouAcucar = false;
-      const keywords = ['açúcar', 'acucar', 'doce', 'refrigerante', 'chocolate', 'bala', 'sorvete', 'coca-cola', 'sobremesa', 'bolacha'];
-      for (const t of txs) {
-        const desc = ((t.descricao || '') + ' ' + (t.categoria || '')).toLowerCase();
-        if (keywords.some(k => desc.includes(k))) {
-          detectouAcucar = true;
-          break;
+      const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
+      const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00' };
+
+      const medEvents = [];
+      meds.forEach(m => {
+        if (!m || !m.nome) return;
+        const dosesDia = (m.dosePorVez || 1) * Math.max(1, (Array.isArray(m.rotinas) && m.rotinas.length > 0 ? m.rotinas.length : (Array.isArray(m.horariosPadrao) && m.horariosPadrao.length > 0 ? m.horariosPadrao.length : 1)));
+        let diffDays = typeof m.estoqueAtual === 'number' ? Math.floor(m.estoqueAtual / dosesDia) : null;
+        let dateFormatted = '';
+        const rawDate = m.dataVencimento || m.dataFim || m.proximaDose || '';
+        if (rawDate) {
+          const targetDate = new Date(rawDate + 'T00:00:00');
+          if (!isNaN(targetDate.getTime())) {
+            const dateDiff = Math.round((targetDate - todayZero) / (1000 * 60 * 60 * 24));
+            if (diffDays === null || dateDiff < diffDays) diffDays = dateDiff;
+            dateFormatted = rawDate.split('-').reverse().join('/');
+          }
         }
-      }
-      if (detectouAcucar) {
+        if (diffDays !== null && !dateFormatted) {
+          const dTarget = new Date(todayZero);
+          dTarget.setDate(dTarget.getDate() + Math.max(0, diffDays));
+          dateFormatted = dTarget.toLocaleDateString('pt-BR');
+        }
+        medEvents.push({
+          nome: m.nome,
+          concentracao: m.concentracao || '',
+          estoqueAtual: m.estoqueAtual,
+          diffDays: diffDays !== null ? diffDays : 999,
+          dateFormatted: dateFormatted,
+          rotinas: m.rotinas || [],
+          horario: m.horario || (Array.isArray(m.horariosPadrao) ? m.horariosPadrao.join(' e ') : '')
+        });
+      });
+
+      medEvents.sort((a, b) => a.diffDays - b.diffDays);
+      const urgentMeds = medEvents.filter(m => m.diffDays <= 7);
+
+      const morningMeds = meds.filter(m => Array.isArray(m.rotinas) && m.rotinas.includes('morning')).map(m => m.nome.split(' ')[0]);
+      const eveningMeds = meds.filter(m => Array.isArray(m.rotinas) && m.rotinas.includes('evening')).map(m => m.nome.split(' ')[0]);
+
+      if (urgentMeds.length > 0) {
+        const lines = urgentMeds.slice(0, 3).map(m => {
+          let statusStr = '';
+          if (m.diffDays < 0) {
+            statusStr = `<span class="text-rose-600 dark:text-rose-400 font-black">venceu/acabou há ${Math.abs(m.diffDays)} dia(s)</span>`;
+          } else if (m.diffDays === 0) {
+            statusStr = `<span class="text-rose-600 dark:text-rose-400 font-black">vence/acaba HOJE (${m.dateFormatted})</span>`;
+          } else if (m.diffDays === 1) {
+            statusStr = `<span class="text-amber-600 dark:text-amber-400 font-black">vai vencer/acabar AMANHÃ (em 1 dia)</span>`;
+          } else {
+            statusStr = `<span class="text-amber-600 dark:text-amber-400 font-black">vai vencer/acabar em ${m.diffDays} dias (${m.dateFormatted})</span>`;
+          }
+          const stockInfo = typeof m.estoqueAtual === 'number' ? ` • restam ${m.estoqueAtual} comp.` : '';
+          return `💊 <strong>${m.nome}</strong>: ${statusStr}${stockInfo}`;
+        });
+
+        let routineLine = '';
+        if (morningMeds.length > 0 || eveningMeds.length > 0) {
+          const parts = [];
+          if (morningMeds.length > 0) parts.push(`☀️ <strong>${settings.morningTime || '08:00'}</strong> (${morningMeds.join(', ')})`);
+          if (eveningMeds.length > 0) parts.push(`🌙 <strong>${settings.eveningTime || '20:00'}</strong> (${eveningMeds.join(', ')})`);
+          routineLine = `<div class="mt-2 pt-1.5 border-t border-slate-200 dark:border-slate-800 text-[11px]">⏰ <strong>Doses de Hoje:</strong> ${parts.join(' | ')}</div>`;
+        }
+
+        const alarmLine = `<div class="mt-2 pt-1.5 border-t border-slate-200 dark:border-slate-800 text-[11px] text-emerald-700 dark:text-emerald-300 font-bold">🔔 <strong>Alarme Mantido:</strong> Você receberá o alerta sonoro <strong>2 dias antes</strong> e <strong>no dia/horário agendado</strong>!</div>`;
+
         return {
           header: "Minha Saúde & Remédios",
-          badge: "🩺 Alerta do Piggy Médico",
-          badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40",
-          text: "“Opa, Rodrigo & Márcia! Analisei as compras de mercado deste mês e notei que vocês compraram <strong>bastante açúcar, doces ou refrigerantes</strong>! Cuidado com a glicemia e a saúde preventiva, hein? Que tal manter os exames em dia?”",
-          img: MASCOTES_OFICIAIS_B64.saude
-        };
-      } else {
-        return {
-          header: "Minha Saúde & Remédios",
-          badge: "🩺 Dica do Piggy Médico",
-          badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-          text: "“Aqui você cadastra medicamentos contínuos e ativa alarmes para não esquecer os horários, além de controlar despesas com farmácia e consultas.”",
+          badge: "🩺 Alerta de Remédios do Piggy",
+          badgeColor: "bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40",
+          text: `<div class="space-y-1.5">${lines.map(l => `<div>${l}</div>`).join('')}${routineLine}${alarmLine}</div>`,
           img: MASCOTES_OFICIAIS_B64.saude
         };
       }
+
+      if (medEvents.length > 0) {
+        const nextMed = medEvents[0];
+        const parts = [];
+        if (morningMeds.length > 0) parts.push(`☀️ <strong>${settings.morningTime || '08:00'}</strong> (${morningMeds.join(', ')})`);
+        if (eveningMeds.length > 0) parts.push(`🌙 <strong>${settings.eveningTime || '20:00'}</strong> (${eveningMeds.join(', ')})`);
+        return {
+          header: "Minha Saúde & Remédios",
+          badge: "🩺 Agenda de Remédios Ativa",
+          badgeColor: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40",
+          text: `<div class="space-y-1.5">
+            <div>✅ <strong>${medEvents.length} medicamento(s) monitorado(s):</strong> Próxima reposição é <strong>${nextMed.nome}</strong> (vai acabar em <strong>${nextMed.diffDays} dias</strong> • ${nextMed.estoqueAtual} comp.).</div>
+            ${parts.length > 0 ? `<div class="pt-1 border-t border-slate-200 dark:border-slate-800 text-[11px]">⏰ <strong>Doses de Hoje:</strong> ${parts.join(' | ')}</div>` : ''}
+            <div class="pt-1 border-t border-slate-200 dark:border-slate-800 text-[11px] text-emerald-700 dark:text-emerald-300 font-bold">🔔 Seus alarmes estão ativos para avisar em <strong>5 dias</strong>, <strong>2 dias antes</strong> e <strong>no dia agendado</strong>!</div>
+          </div>`,
+          img: MASCOTES_OFICIAIS_B64.saude
+        };
+      }
+
+      return {
+        header: "Minha Saúde & Remédios",
+        badge: "🩺 Dica do Piggy Médico",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+        text: "“Cadastre seus medicamentos contínuos e de tratamento! O Piggy avisa quando o remédio vai vencer em 5 dias e mantém o alarme sonoro 2 dias antes e no dia agendado.”",
+        img: MASCOTES_OFICIAIS_B64.saude
+      };
     }
 
     // 2. COMPRAS / MERCADO
@@ -36331,13 +36608,91 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
       }
     }
 
-    // 3. MUNDO PET
+    // 3. MUNDO PET: TEXTO DINÂMICO DE ACORDO COM OS ACONTECIMENTOS (VACINAS E REMÉDIOS PET)
     if (sectionKey === 'pet') {
+      const pets = (typeof getRegisteredPets === 'function') ? getRegisteredPets() : [];
+      const vaccines = (typeof getAllPetVaccines === 'function') ? getAllPetVaccines() : ((typeof getPetVaccines === 'function') ? getPetVaccines() : []);
+      const cares = (typeof getAllPetCareEvents === 'function') ? getAllPetCareEvents() : ((typeof getPetCareEvents === 'function') ? getPetCareEvents() : []);
+
+      const getPetNameById = (pid) => {
+        const found = pets.find(p => p.id === pid);
+        return found ? found.nome : (pets[0]?.nome || 'Pet');
+      };
+
+      const petAlerts = [];
+
+      vaccines.forEach(v => {
+        if (!v || !v.proximaDose) return;
+        const target = new Date(v.proximaDose + 'T00:00:00');
+        if (isNaN(target.getTime())) return;
+        const diffDays = Math.round((target - todayZero) / (1000 * 60 * 60 * 24));
+        const dateFormatted = v.proximaDose.split('-').reverse().join('/');
+        petAlerts.push({
+          kind: 'Vacina',
+          icon: '💉',
+          nome: v.nome,
+          petName: getPetNameById(v.petId),
+          diffDays: diffDays,
+          dateFormatted: dateFormatted,
+          horario: v.horario || '09:00'
+        });
+      });
+
+      cares.forEach(c => {
+        if (!c || c.concluido || !c.data) return;
+        const target = new Date(c.data + 'T00:00:00');
+        if (isNaN(target.getTime())) return;
+        const diffDays = Math.round((target - todayZero) / (1000 * 60 * 60 * 24));
+        const dateFormatted = c.data.split('-').reverse().join('/');
+        petAlerts.push({
+          kind: c.categoria || 'Remédio / Cuidado',
+          icon: '💊',
+          nome: c.titulo,
+          petName: getPetNameById(c.petId),
+          diffDays: diffDays,
+          dateFormatted: dateFormatted,
+          horario: c.horario || '09:00'
+        });
+      });
+
+      petAlerts.sort((a, b) => a.diffDays - b.diffDays);
+
+      // Filtra acontecimentos próximos (vencidos ou até 30 dias) ou pega os mais próximos da fila
+      const relevantAlerts = petAlerts.filter(a => a.diffDays <= 30);
+      const displayAlerts = relevantAlerts.length > 0 ? relevantAlerts.slice(0, 3) : petAlerts.slice(0, 2);
+
+      if (displayAlerts.length > 0) {
+        const lines = displayAlerts.map(item => {
+          let timingBadge = '';
+          if (item.diffDays < 0) {
+            timingBadge = `<span class="text-rose-600 dark:text-rose-400 font-black">venceu há ${Math.abs(item.diffDays)} dia(s) (${item.dateFormatted})</span>`;
+          } else if (item.diffDays === 0) {
+            timingBadge = `<span class="text-rose-600 dark:text-rose-400 font-black">vence HOJE (${item.dateFormatted} às ${item.horario})</span>`;
+          } else if (item.diffDays === 1) {
+            timingBadge = `<span class="text-amber-600 dark:text-amber-400 font-black">vai vencer AMANHÃ (${item.dateFormatted})</span>`;
+          } else {
+            timingBadge = `<span class="text-amber-600 dark:text-amber-400 font-black">vai vencer em ${item.diffDays} dias (${item.dateFormatted})</span>`;
+          }
+          return `${item.icon} <strong>${item.kind} (${item.petName}):</strong> <strong>${item.nome}</strong> ${timingBadge}!`;
+        });
+
+        const hasSoon = displayAlerts.some(a => a.diffDays <= 7);
+        const alarmFooter = `<div class="mt-2 pt-1.5 border-t border-slate-200 dark:border-slate-800 text-[11px] text-emerald-700 dark:text-emerald-300 font-bold">🔔 <strong>Alarme Programado Ativo:</strong> O aviso automático está confirmado <strong>2 dias antes</strong> do vencimento e <strong>no dia agendado</strong>!</div>`;
+
+        return {
+          header: "Espaço Mundo Pet",
+          badge: hasSoon ? "🐾 Alerta de Vacinas & Remédios Pet" : "🐾 Agenda do Mundo Pet",
+          badgeColor: hasSoon ? "bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40" : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/40",
+          text: `<div class="space-y-1.5">${lines.map(l => `<div>${l}</div>`).join('')}${alarmFooter}</div>`,
+          img: MASCOTES_OFICIAIS_B64.pet
+        };
+      }
+
       return {
         header: "Espaço Mundo Pet",
         badge: "🐾 Pitaco do Piggy Pet",
         badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-        text: "“Au au! Acompanhe ração, vacinas e consultas veterinárias do seu amigão sem misturar com as contas gerais da casa!”",
+        text: "“Au au! Cadastre as vacinas, vermífugos e antipulgas do seu pet: eu te aviso aqui quando faltar 5 dias para vencer e mantenho o alarme sonoro 2 dias antes e no dia agendado!”",
         img: MASCOTES_OFICIAIS_B64.pet
       };
     }
@@ -37358,18 +37713,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   executeInvoiceProcessing();
 };
 
-// 4. INTELLIGENT MASCOT PITACION - Gerenciado centralmente por triggerSectionWithIntelligentMascot
-// Limpeza de chaves de skip antigas para garantir que todas as dicas apareçam normalmente
-(function() {
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('financas_skip_pitaco_')) {
-        localStorage.removeItem(k);
-      }
-    }
-  } catch(e) {}
-})();
+// 4. INTELLIGENT MASCOT PITACO - Gerenciado centralmente por triggerSectionWithIntelligentMascot
+// Preserva preferências do usuário ("Não mostrar nos próximos 3 dias" e "Desligar permanentemente")
 
 </script>
 
@@ -39367,20 +39712,25 @@ window.openHealthMedsModal = function() {
     if (!modules) return;
 
     // Se pets desligado, esconde atalho de pet no Acesso Rápido e Família
-    const petCard = document.querySelector('[onclick="openPetAreaModal()"]');
-    if (petCard) petCard.style.display = modules.pets ? '' : 'none';
+    document.querySelectorAll('[onclick*="openPetAreaModal"]').forEach(el => {
+      el.style.display = modules.pets ? '' : 'none';
+    });
 
-    const saudeCard = document.querySelector('[onclick="openHealthMedsModal()"]');
-    if (saudeCard) saudeCard.style.display = modules.saude ? '' : 'none';
+    document.querySelectorAll('[onclick*="openHealthMedsModal"]').forEach(el => {
+      el.style.display = modules.saude ? '' : 'none';
+    });
 
-    const comprasCard = document.querySelector('[onclick="openShoppingListModal()"]');
-    if (comprasCard) comprasCard.style.display = modules.compras ? '' : 'none';
+    document.querySelectorAll('[onclick*="openShoppingListModal"]').forEach(el => {
+      el.style.display = modules.compras ? '' : 'none';
+    });
 
-    const veiculosCard = document.querySelector('[onclick="openVeiculosHub()"]');
-    if (veiculosCard) veiculosCard.style.display = modules.veiculos ? '' : 'none';
+    document.querySelectorAll('[onclick*="openVeiculosHub"]').forEach(el => {
+      el.style.display = modules.veiculos ? '' : 'none';
+    });
 
-    const educacaoCard = document.querySelector('[onclick="openEducacaoHub()"]');
-    if (educacaoCard) educacaoCard.style.display = modules.educacao ? '' : 'none';
+    document.querySelectorAll('[onclick*="openEducacaoHub"]').forEach(el => {
+      el.style.display = modules.educacao ? '' : 'none';
+    });
   };
 
   // 6. Comparativo de Mercados (Item 10) — Sempre acima do modalShoppingListHistory (z-index 3600)
@@ -41486,18 +41836,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   executeInvoiceProcessing();
 };
 
-// 4. INTELLIGENT MASCOT PITACION - Gerenciado centralmente por triggerSectionWithIntelligentMascot
-// Limpeza de chaves de skip antigas para garantir que todas as dicas apareçam normalmente
-(function() {
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith('financas_skip_pitaco_')) {
-        localStorage.removeItem(k);
-      }
-    }
-  } catch(e) {}
-})();
+// 4. INTELLIGENT MASCOT PITACO - Gerenciado centralmente por triggerSectionWithIntelligentMascot
+// Preserva preferências do usuário ("Não mostrar nos próximos 3 dias" e "Desligar permanentemente")
 
 
 
