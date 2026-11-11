@@ -4524,20 +4524,72 @@ html, body {
             <script>
               (function() {
                 try {
-                  var state = localStorage.getItem('ctrlpig_mascot_state');
-                  if (!state) {
+                  function computeInitialMascotState() {
                     var act = localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
-                    var custom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
-                    if (custom && custom[act]) {
-                      var b = (Number(custom[act].totalReceitas) || 0) - (Number(custom[act].totalDespesas) || 0);
-                      state = b < 0 ? 'negativo' : (b <= 200 ? 'alerta' : 'positivo');
+                    
+                    // Ciclo padrão inicial out_2026 tem saldo negativo oficial (-R$ 197,83)
+                    if (act === 'out_2026') {
+                      return 'negativo';
                     }
+
+                    // Se for ciclo customizado com métricas salvas
+                    var custom = {};
+                    try { custom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}'); } catch(_) {}
+                    if (custom && custom[act]) {
+                      var rec = Number(custom[act].totalReceitas) || 0;
+                      var desp = Number(custom[act].totalDespesas) || 0;
+                      var bal = rec - desp;
+                      return bal < 0 ? 'negativo' : (bal <= 200 ? 'alerta' : 'positivo');
+                    }
+
+                    // Verifica transações do usuário no localStorage
+                    var session = null;
+                    try { session = JSON.parse(localStorage.getItem('financas_auth_user') || 'null'); } catch(_) {}
+                    var uEmail = session && session.email ? String(session.email).toLowerCase().trim() : '';
+                    var uKey = (uEmail && uEmail !== 'rodrigocardosocn@gmail.com')
+                      ? 'financas_transacoes_v4_' + uEmail.replace(/[^a-z0-9]/g, '_')
+                      : 'financas_transacoes_v4';
+                    
+                    var rawTxs = localStorage.getItem(uKey) || localStorage.getItem('financas_transacoes_v4');
+                    if (rawTxs) {
+                      try {
+                        var txs = JSON.parse(rawTxs);
+                        if (Array.isArray(txs) && txs.length > 0) {
+                          var tRec = 0, tDesp = 0;
+                          txs.forEach(function(t) {
+                            if (!t) return;
+                            var rawVal = String(t.valor || 0).replace(/[^\d,\.\-]/g, '').trim();
+                            if (rawVal.includes(',') && rawVal.includes('.')) rawVal = rawVal.replace(/\./g, '').replace(',', '.');
+                            else if (rawVal.includes(',')) rawVal = rawVal.replace(',', '.');
+                            var v = parseFloat(rawVal) || 0;
+                            var tp = String(t.tipo || '').toLowerCase();
+                            if (tp.includes('receita') || tp.includes('salario') || tp.includes('rendimento')) {
+                              tRec += v;
+                            } else {
+                              tDesp += v;
+                            }
+                          });
+                          var tBal = tRec - tDesp;
+                          return tBal < 0 ? 'negativo' : (tBal <= 200 ? 'alerta' : 'positivo');
+                        }
+                      } catch(_) {}
+                    }
+
+                    var cachedState = localStorage.getItem('ctrlpig_mascot_state');
+                    if (cachedState === 'negativo' || cachedState === 'alerta' || cachedState === 'positivo') {
+                      return cachedState;
+                    }
+
+                    return 'negativo';
                   }
-                  state = state || 'positivo';
+
+                  var state = computeInitialMascotState();
+                  try { localStorage.setItem('ctrlpig_mascot_state', state); } catch(_) {}
                   var img = document.getElementById('mascotImage');
                   if (img) {
                     img.src = 'images/mascote_saldo_' + state + '.png';
                     img.onerror = function() { this.onerror = null; this.src = 'assets/images/mascote_saldo_' + state + '.png'; };
+                    img.alt = state === 'negativo' ? 'Piggy triste: saldo negativo' : state === 'alerta' ? 'Piggy em alerta' : 'Piggy positivo';
                   }
                 } catch(e) {}
               })();
@@ -6756,16 +6808,21 @@ html, body {
     </div>
   </div>
 
-  <!-- TOAST FLUTUANTE COM BOTÃO "DESFAZER" -->
-  <div id="toastUndo" class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-[110] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-between gap-3 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/80">
-    <div class="flex items-center gap-2 min-w-0">
-      <i data-lucide="trash-2" class="w-4 h-4 text-rose-400 flex-shrink-0"></i>
-      <span id="toastUndoMsg" class="text-xs font-semibold truncate">Lançamento movido para a lixeira.</span>
+  <!-- TOAST FLUTUANTE COM BOTÃO "DESFAZER" E BOTÃO FECHAR -->
+  <div id="toastUndo" onclick="if(!event.target.closest('#btnToastUndo')) hideToastUndo();" class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-[110] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-between gap-3 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/80 cursor-pointer" title="Toque para fechar">
+    <div class="flex items-center gap-2 min-w-0 flex-1">
+      <i data-lucide="bell-off" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+      <span id="toastUndoMsg" class="text-xs font-semibold truncate">Operação concluída.</span>
     </div>
-    <button id="btnToastUndo" onclick="undoLastDelete()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 pointer-events-auto flex-shrink-0 shadow-xs cursor-pointer">
-      <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-      <span>Desfazer</span>
-    </button>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button id="btnToastUndo" onclick="undoLastDelete(); event.stopPropagation();" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 pointer-events-auto flex-shrink-0 shadow-xs cursor-pointer">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        <span>Desfazer</span>
+      </button>
+      <button type="button" onclick="hideToastUndo(); event.stopPropagation();" class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white rounded-full transition-colors pointer-events-auto cursor-pointer" title="Fechar">
+        ✕
+      </button>
+    </div>
   </div>
 
   <!-- ========================================== -->
@@ -9193,22 +9250,41 @@ html, body {
       msgEl.textContent = msg;
       if (btnUndo) {
         btnUndo.style.display = (showUndoBtn && lastDeletedItem) ? 'flex' : 'none';
-        btnUndo.onclick = function() {
+        btnUndo.onclick = function(e) {
+          if (e) e.stopPropagation();
           undoLastDelete();
           hideToastUndo();
         };
       }
 
       toast.classList.remove('translate-y-24', 'opacity-0');
-      clearTimeout(toastUndoTimeout);
-      toastUndoTimeout = setTimeout(() => {
+      toast.classList.remove('pointer-events-none');
+      toast.classList.add('pointer-events-auto');
+
+      if (window.toastUndoTimeout) clearTimeout(window.toastUndoTimeout);
+      if (typeof toastUndoTimeout !== 'undefined' && toastUndoTimeout) clearTimeout(toastUndoTimeout);
+      const dismissDuration = (showUndoBtn && lastDeletedItem) ? 4000 : 2500;
+      window.toastUndoTimeout = setTimeout(() => {
         hideToastUndo();
-      }, (showUndoBtn && lastDeletedItem) ? 5000 : 2500);
+      }, dismissDuration);
+      toastUndoTimeout = window.toastUndoTimeout;
     }
 
     function hideToastUndo() {
       const toast = document.getElementById('toastUndo');
-      if (toast) toast.classList.add('translate-y-24', 'opacity-0');
+      if (toast) {
+        toast.classList.add('translate-y-24', 'opacity-0');
+        toast.classList.remove('pointer-events-auto');
+        toast.classList.add('pointer-events-none');
+      }
+      if (window.toastUndoTimeout) {
+        clearTimeout(window.toastUndoTimeout);
+        window.toastUndoTimeout = null;
+      }
+      if (typeof toastUndoTimeout !== 'undefined' && toastUndoTimeout) {
+        clearTimeout(toastUndoTimeout);
+        toastUndoTimeout = null;
+      }
     }
 
     function openTrashModal() {
@@ -33758,6 +33834,10 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   // Desliga COMPLETAMENTE e silencia todo e qualquer alarme sonoro, loop, timer e modal
   window.stopMedicationAlarmAudio = function() {
+    if (window._isStoppingAlarmAudio) return;
+    window._isStoppingAlarmAudio = true;
+    setTimeout(function() { window._isStoppingAlarmAudio = false; }, 2500);
+
     window._alarmsGloballySilencedUntil = Date.now() + (4 * 3600 * 1000); // 4 horas de silenciamento
     try {
       localStorage.setItem('ctrlpig_alarm_silenced_until', String(window._alarmsGloballySilencedUntil));
@@ -33803,7 +33883,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     // 4. Manda comando de parada imediata ao Flutter / Android nativo
     if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
       try {
-        window.FlutterBridge.postMessage(JSON.stringify({ action: 'stop_speak' }));
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'stop_speak', source: 'webview' }));
       } catch(e) {}
     }
 
@@ -40624,16 +40704,56 @@ window.openHealthMedsModal = function() {
   };
 
   function refreshBalanceMascot(txs) {
-    const income = txs.filter(t => t.tipo === 'Receita').reduce((sum, t) => sum + (Number(t.valor) || 0), 0);
-    const expenses = txs.filter(t => t.tipo !== 'Receita').reduce((sum, t) => sum + (Number(t.valor) || 0), 0);
-    const balance = income - expenses;
-    const image = document.getElementById('mascotImage');
+    function parseRobustTxVal(v) {
+      if (typeof v === 'number') return isNaN(v) ? 0 : v;
+      if (!v) return 0;
+      var s = String(v).replace(/[^\d,\.\-]/g, '').trim();
+      if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+      else if (s.includes(',')) s = s.replace(',', '.');
+      return parseFloat(s) || 0;
+    }
+
+    const isReceita = (t) => {
+      if (!t || !t.tipo) return false;
+      const s = String(t.tipo).toLowerCase();
+      return s.includes('receita') || s.includes('salario') || s.includes('rendimento');
+    };
+
+    const activeObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+    let balance = 0;
+    if (activeObj && activeObj.totalReceitas !== undefined && activeObj.totalDespesas !== undefined) {
+      balance = (Number(activeObj.totalReceitas) || 0) - (Number(activeObj.totalDespesas) || 0);
+    } else if (Array.isArray(txs) && txs.length > 0) {
+      const income = txs.filter(isReceita).reduce((sum, t) => sum + parseRobustTxVal(t.valor), 0);
+      const expenses = txs.filter(t => !isReceita(t)).reduce((sum, t) => sum + parseRobustTxVal(t.valor), 0);
+      balance = income - expenses;
+    } else {
+      // Se txs vazio e ciclo atual for out_2026:
+      const actKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+      if (actKey === 'out_2026') {
+        balance = -197.83;
+      }
+    }
+
     const state = balance < 0 ? 'negativo' : (balance <= 200 ? 'alerta' : 'positivo');
     try { localStorage.setItem('ctrlpig_mascot_state', state); } catch (_) {}
-    if (!image) return;
-    image.src = `images/mascote_saldo_${state}.png`;
-    image.onerror = function () { this.onerror = null; this.src = `assets/images/mascote_saldo_${state}.png`; };
-    image.alt = state === 'negativo' ? 'Piggy triste: saldo negativo' : state === 'alerta' ? 'Piggy em alerta: saldo até R$ 200' : 'Piggy positivo';
+    
+    if (typeof updateMascotMood === 'function') {
+      updateMascotMood(balance, 0);
+    } else {
+      const image = document.getElementById('mascotImage');
+      if (image) {
+        image.src = `images/mascote_saldo_${state}.png`;
+        image.onerror = function () { this.onerror = null; this.src = `assets/images/mascote_saldo_${state}.png`; };
+        image.alt = state === 'negativo' ? 'Piggy triste: saldo negativo' : state === 'alerta' ? 'Piggy em alerta: saldo até R$ 200' : 'Piggy positivo';
+      }
+    }
+
+    if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'update_launcher_icon', isPositive: balance >= 0 }));
+      } catch (_) {}
+    }
   }
 
   function drawNativeCategoryDonut(canvas, dataValues, colors) {

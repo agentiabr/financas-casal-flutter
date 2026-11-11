@@ -36,6 +36,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _isAlarmRinging = false;
+  bool _isSilencing = false;
   Timer? _alarmPollTimer;
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
@@ -186,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.139+217';
+  static const String _kCurrentAppVersion = '2.1.140+218';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
@@ -558,7 +559,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       } else if (action == 'stop_speak') {
-        _silenceAllAlarmsNow();
+        final source = data['source'] as String? ?? '';
+        _silenceAllAlarmsNow(calledFromWebView: source == 'webview');
       } else if (action == 'update_launcher_icon') {
         final isPositive = data['isPositive'] as bool? ?? true;
         await NativeChannelService.setLauncherIcon(isPositive);
@@ -1464,30 +1466,41 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  Future<void> _silenceAllAlarmsNow() async {
-    setState(() {
-      _isAlarmRinging = false;
-    });
-    await NativeChannelService.stopNativeAlarm();
+  Future<void> _silenceAllAlarmsNow({bool calledFromWebView = false}) async {
+    if (_isSilencing) return;
+    _isSilencing = true;
     try {
-      await _flutterTts?.stop();
-    } catch (_) {}
-    try {
-      await _controller.runJavaScript("""
-        if (typeof window.stopMedicationAlarmAudio === 'function') {
-          window.stopMedicationAlarmAudio();
-        }
-      """);
-    } catch (_) {}
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🔕 Todos os alarmes foram desligados com sucesso.'),
-          backgroundColor: Color(0xFF0F172A),
-          duration: Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      setState(() {
+        _isAlarmRinging = false;
+      });
+      await NativeChannelService.stopNativeAlarm();
+      try {
+        await _flutterTts?.stop();
+      } catch (_) {}
+      if (!calledFromWebView) {
+        try {
+          await _controller.runJavaScript("""
+            if (typeof window.stopMedicationAlarmAudio === 'function') {
+              window.stopMedicationAlarmAudio();
+            }
+          """);
+        } catch (_) {}
+      }
+      if (mounted && !calledFromWebView) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🔕 Todos os alarmes foram desligados com sucesso.'),
+            backgroundColor: Color(0xFF0F172A),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        _isSilencing = false;
+      });
     }
   }
 
