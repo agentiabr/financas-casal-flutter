@@ -6738,7 +6738,14 @@ html, body {
     // ============================================================================
     function isTxInCycle(t, targetCycle) {
       if (!t) return false;
-      const target = String(targetCycle || currentCycle || '05/Out a 04/Nov 2026');
+      const activeCycleObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+      const target = String(targetCycle || (activeCycleObj && activeCycleObj.tag) || currentCycle || '05/Out a 04/Nov 2026');
+
+      // Se estivermos consultando o ciclo ativo e a transação faz parte da lista oficial desse ciclo, pertence a ele
+      if (activeCycleObj && Array.isArray(activeCycleObj.transactions) && (!targetCycle || targetCycle === currentCycle || targetCycle === activeCycleObj.tag)) {
+        if (activeCycleObj.transactions.includes(t)) return true;
+      }
+
       const clean = (s) => String(s || '').replace(/[\s\-–—]+/g, ' ').trim().toLowerCase();
       const tNorm = clean(t.ciclo);
       const cNorm = clean(target);
@@ -6748,29 +6755,28 @@ html, body {
         return true;
       }
 
-      // Match semântico por mês
-      if (tNorm && cNorm) {
-        if ((tNorm.includes('out') || tNorm.includes('nov')) && (cNorm.includes('out') || cNorm.includes('nov'))) return true;
-        if (tNorm.includes('set') && cNorm.includes('set')) return true;
-        if (tNorm.includes('ago') && cNorm.includes('ago')) return true;
-        if (tNorm.includes('jul') && cNorm.includes('jul')) return true;
-        if (tNorm.includes('jun') && cNorm.includes('jun')) return true;
+      // Match pelo mês de abertura do ciclo (ex: '05/out a 04/nov' -> mês inicial 'out'; '05/nov a 04/dez' -> mês inicial 'nov')
+      const monthMap = {
+        'jan': '01', 'fev': '02', 'mar': '03', 'abr': '04', 'mai': '05', 'jun': '06',
+        'jul': '07', 'ago': '08', 'set': '09', 'out': '10', 'nov': '11', 'dez': '12'
+      };
+      const extractStartMonth = (str) => {
+        const m = String(str || '').match(/\b\d{1,2}\/([a-zç]{3})/i) || String(str || '').match(/\b(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/i);
+        return m ? m[1].toLowerCase().substring(0, 3) : null;
+      };
+
+      const cStartMon = extractStartMonth(cNorm);
+      if (tNorm && cStartMon) {
+        const tStartMon = extractStartMonth(tNorm);
+        if (tStartMon && tStartMon === cStartMon) return true;
       }
 
       // Match por data ISO caso t.ciclo não esteja preenchido
-      if (t.data) {
+      if (!tNorm && t.data && cStartMon && monthMap[cStartMon]) {
         const d = String(t.data);
-        if (cNorm.includes('out') || cNorm.includes('nov')) {
-          if (d.startsWith('2026-10') || d.startsWith('2026-11')) return true;
-        } else if (cNorm.includes('set')) {
-          if (d.startsWith('2026-09')) return true;
-        } else if (cNorm.includes('ago')) {
-          if (d.startsWith('2026-08')) return true;
-        } else if (cNorm.includes('jul')) {
-          if (d.startsWith('2026-07')) return true;
-        } else if (cNorm.includes('jun')) {
-          if (d.startsWith('2026-06')) return true;
-        }
+        const yearMatch = cNorm.match(/\b(20\d{2})\b/);
+        const yPrefix = yearMatch ? yearMatch[1] : '2026';
+        if (d.startsWith(`${yPrefix}-${monthMap[cStartMon]}`)) return true;
       }
 
       return false;
@@ -6808,8 +6814,18 @@ html, body {
 
     function saveTransactionsToLocalStorage() {
       const key = getUserTransactionsStorageKey();
+      const activeList = window.transactions || transactions || [];
       try {
-        localStorage.setItem(key, JSON.stringify(window.transactions || transactions || []));
+        localStorage.setItem(key, JSON.stringify(activeList));
+        if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]) {
+          window.appCyclesData[window.currentActiveCycleKey].transactions = activeList;
+          const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
+          if (!baseKeys.includes(window.currentActiveCycleKey)) {
+            const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+            savedCustom[window.currentActiveCycleKey] = window.appCyclesData[window.currentActiveCycleKey];
+            localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustom));
+          }
+        }
       } catch(e) {}
     }
     window.saveTransactionsToLocalStorage = saveTransactionsToLocalStorage;
@@ -6846,6 +6862,19 @@ html, body {
     function ensureActiveTransactionsLoaded() {
       const isMaster = isCurrentUserMaster();
       const key = getUserTransactionsStorageKey();
+      const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
+      const isCustomCycle = window.currentActiveCycleKey && !baseKeys.includes(window.currentActiveCycleKey);
+
+      if ((isMaster || isCustomCycle) && window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]) {
+        const activeCycleObj = window.appCyclesData[window.currentActiveCycleKey];
+        currentCycle = activeCycleObj.tag || currentCycle;
+        if (Array.isArray(activeCycleObj.transactions)) {
+          transactions = activeCycleObj.transactions;
+          window.transactions = transactions;
+          return;
+        }
+      }
+
       if (!isMaster) {
         const seededKey = getUserScopedStorageKey('ctrlpig_fictional_tx_seeded');
         const alreadySeeded = localStorage.getItem(seededKey) === 'true';
@@ -6864,15 +6893,6 @@ html, body {
         transactions = Array.isArray(storedTxs) ? storedTxs : [];
         window.transactions = transactions;
         return;
-      }
-      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]) {
-        const activeCycleObj = window.appCyclesData[window.currentActiveCycleKey];
-        currentCycle = activeCycleObj.tag || currentCycle;
-        if (Array.isArray(activeCycleObj.transactions)) {
-          transactions = activeCycleObj.transactions;
-          window.transactions = transactions;
-          return;
-        }
       }
       if (!Array.isArray(transactions) || (transactions.length === 0 && isMaster)) {
         transactions = isMaster ? JSON.parse(JSON.stringify(INITIAL_TRANSACTIONS)) : [];
@@ -9788,18 +9808,28 @@ html, body {
 
     function updateDashboard() {
       // Garantir sincronização entre transactions e window.transactions
+      if (typeof ensureActiveTransactionsLoaded === 'function') {
+        ensureActiveTransactionsLoaded();
+      }
       if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
         window.transactions = transactions;
       } else if (Array.isArray(window.transactions)) {
         transactions = window.transactions;
       }
-      
-      if (typeof ensureActiveTransactionsLoaded === 'function') {
-        ensureActiveTransactionsLoaded();
-      }
-      let activeTxs = transactions.filter(t => isTxInCycle(t, currentCycle));
-      if (activeTxs.length === 0 && transactions.length > 0) {
-        activeTxs = transactions.slice(0, 30);
+
+      const baseKeys = ['out_2026', 'set_2026', 'ago_2026', 'jul_2026', 'jun_2026'];
+      const isCustomCycle = window.currentActiveCycleKey && !baseKeys.includes(window.currentActiveCycleKey);
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const activeCycleObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+
+      let activeTxs = [];
+      if ((isMaster || isCustomCycle) && activeCycleObj && Array.isArray(activeCycleObj.transactions)) {
+        activeTxs = activeCycleObj.transactions;
+      } else {
+        activeTxs = transactions.filter(t => isTxInCycle(t, currentCycle));
+        if (activeTxs.length === 0 && transactions.length > 0 && !isCustomCycle) {
+          activeTxs = transactions.slice(0, 30);
+        }
       }
 
       const isReceita = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
@@ -9881,8 +9911,8 @@ html, body {
       const heroMiniCompEl = document.getElementById('heroMiniComprometimento');
 
       if (heroSaldoEl) heroSaldoEl.textContent = formatBRL(saldoLivre, 'saldo');
-      if (heroCycleTagEl) heroCycleTagEl.textContent = currentCycle;
-            if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}% comprometido`;
+      if (heroCycleTagEl) heroCycleTagEl.textContent = typeof window.formatCycleShortSubtitle === 'function' ? window.formatCycleShortSubtitle(currentCycle) : currentCycle;
+      if (heroMiniCompEl) heroMiniCompEl.textContent = `${percentGasto}% comprometido`;
       const despesasEl = document.getElementById('metricDespesasVal') || document.getElementById('metricDespesasFixasVal');
       if (despesasEl && typeof formatBRL === 'function') despesasEl.textContent = formatBRL(totalGastos, 'despesa');
       const heroCompText = document.getElementById('heroMiniComprometimentoText');
@@ -11763,30 +11793,54 @@ html, body {
     }
 
     function getCycleDaysRemainingInfo(cycleStr) {
-      const targetStr = cycleStr || currentCycle || '05/Out a 04/Nov - 2026';
-      const match = targetStr.match(/([0-9]{1,2})\/([A-Za-zç]+)\s+a\s+([0-9]{1,2})\/([A-Za-zç]+)(?:\s*[\-–—]\s*|\s+)([0-9]{4})/i);
+      const activeCycleObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+      const targetStr = cycleStr || (activeCycleObj && activeCycleObj.tag) || currentCycle || '05/Out a 04/Nov - 2026';
       const monthsMap = {
         'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3, 'mai': 4, 'jun': 5,
         'jul': 6, 'ago': 7, 'set': 8, 'out': 9, 'nov': 10, 'dez': 11
       };
 
-      if (match) {
-        const d1 = parseInt(match[1]);
-        const m1 = monthsMap[match[2].toLowerCase().substring(0, 3)] ?? 9;
-        const d2 = parseInt(match[3]);
-        const m2 = monthsMap[match[4].toLowerCase().substring(0, 3)] ?? 10;
-        const y2 = parseInt(match[5]);
-        const y1 = m1 > m2 ? y2 - 1 : y2;
+      let startDate = null;
+      let endDate = null;
 
-        const startDate = new Date(y1, m1, d1, 0, 0, 0);
-        const endDate = new Date(y2, m2, d2, 23, 59, 59);
+      if (activeCycleObj && activeCycleObj.startIso && activeCycleObj.endIso && (!cycleStr || cycleStr === currentCycle || cycleStr === activeCycleObj.tag)) {
+        const sParts = String(activeCycleObj.startIso).split('-');
+        const eParts = String(activeCycleObj.endIso).split('-');
+        if (sParts.length === 3 && eParts.length === 3) {
+          startDate = new Date(parseInt(sParts[0], 10), parseInt(sParts[1], 10) - 1, parseInt(sParts[2], 10), 0, 0, 0);
+          endDate = new Date(parseInt(eParts[0], 10), parseInt(eParts[1], 10) - 1, parseInt(eParts[2], 10), 23, 59, 59);
+        }
+      }
+
+      if (!startDate || !endDate) {
+        const match = String(targetStr).match(/([0-9]{1,2})\/([A-Za-zç]+)\s+a\s+([0-9]{1,2})\/([A-Za-zç]+)(?:(?:\s*[\-–—]\s*|\s+)([0-9]{4}))?/i);
+        if (match) {
+          const d1 = parseInt(match[1], 10);
+          const m1 = monthsMap[match[2].toLowerCase().substring(0, 3)] ?? 9;
+          const d2 = parseInt(match[3], 10);
+          const m2 = monthsMap[match[4].toLowerCase().substring(0, 3)] ?? 10;
+          const y2 = match[5] ? parseInt(match[5], 10) : new Date().getFullYear();
+          const y1 = m1 > m2 ? y2 - 1 : y2;
+
+          startDate = new Date(y1, m1, d1, 0, 0, 0);
+          endDate = new Date(y2, m2, d2, 23, 59, 59);
+        }
+      }
+
+      if (startDate && endDate) {
         const today = new Date();
-
         const totalMs = endDate - startDate;
         const totalDays = Math.max(1, Math.round(totalMs / (1000 * 60 * 60 * 24)));
 
-        const remainingMs = endDate - today;
-        const daysRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60 * 24)));
+        let daysRemaining = 0;
+        if (today < startDate) {
+          daysRemaining = totalDays;
+        } else if (today > endDate) {
+          daysRemaining = 0;
+        } else {
+          const remainingMs = endDate - today;
+          daysRemaining = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60 * 24)));
+        }
         const elapsedDays = Math.max(0, totalDays - daysRemaining);
 
         return { totalDays, elapsedDays, daysRemaining };
@@ -38059,7 +38113,7 @@ window.openHealthMedsModal = function() {
 
         <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
           <input type="checkbox" id="checkNewCycleCopyFixas" checked class="w-4 h-4 rounded text-blue-600">
-          <span class="text-[11px] font-bold text-slate-700">Manter Gastos Fixos recorrentes no topo do novo ciclo</span>
+          <span class="text-[11px] font-bold text-slate-700">Manter Receita Fixa (Salário), Gastos Fixos e Parcelas Ativas do mês anterior</span>
         </label>
 
         <input type="hidden" id="inputNewCycleName" value="Novembro 2026">
@@ -38702,10 +38756,135 @@ window.openHealthMedsModal = function() {
     } catch (e) {}
   };
 
-  // Carrega ciclos customizados salvos no localStorage
+  // Função auxiliar para extrair receitas fixas (Salário/Rendimento), despesas fixas e parcelas ativas do ciclo base
+  window.buildRecurringTransactionsForCycle = function(sourceTxs, sourceCycleObj, info) {
+    const list = Array.isArray(sourceTxs) ? sourceTxs : [];
+    const mNum = String(info.monthNum || 11).padStart(2, '0');
+    const yNum = String(info.yearNum || 2026);
+    const result = [];
+    let idOffset = 1;
+
+    // 1. RECEITAS FIXAS DO MÊS ANTERIOR (Salário, Rendimento fixo, Pró-labore, Aposentadoria)
+    const fixedIncomes = list.filter(t => {
+      if (!t || t.tipo !== 'Receita') return false;
+      const cat = String(t.categoria || '').toLowerCase();
+      const desc = String(t.descricao || '').toLowerCase();
+      return cat === 'salário' || cat === 'salario' || cat === 'investimentos' || t.fixa === true ||
+             /sal[áa]rio|remunera[çc][ãa]o|pro-labore|aposentadoria|pens[ãa]o|rendimento|juros\s+terreno|aluguel|fixa|mensal/i.test(desc + ' ' + cat);
+    });
+
+    if (fixedIncomes.length > 0) {
+      fixedIncomes.forEach(inc => {
+        const origDay = (inc.data && inc.data.split('-')[2]) ? inc.data.split('-')[2] : '05';
+        result.push({
+          ...inc,
+          id: Date.now() + (idOffset++),
+          data: `${yNum}-${mNum}-${origDay}`,
+          ciclo: info.tag,
+          status: 'Recebido'
+        });
+      });
+    } else if (sourceCycleObj && Number(sourceCycleObj.salario) > 0) {
+      const activeUser = (window.currentUserSession && window.currentUserSession.nome) ? String(window.currentUserSession.nome).split(' ')[0] : 'Rodrigo';
+      result.push({
+        id: Date.now() + (idOffset++),
+        data: `${yNum}-${mNum}-05`,
+        descricao: `Salário ${activeUser}`,
+        categoria: 'Salário',
+        valor: Number(sourceCycleObj.salario),
+        tipo: 'Receita',
+        status: 'Recebido',
+        responsavel: activeUser,
+        ciclo: info.tag
+      });
+    }
+
+    // 2. DESPESAS FIXAS DO MÊS ANTERIOR
+    list.filter(t => {
+      if (!t || t.tipo === 'Receita') return false;
+      return t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' ||
+             (t.categoria === 'Moradia' && !/utilidades|saco de lixo|fita crepe/i.test(t.descricao || ''));
+    }).forEach(f => {
+      const origDay = (f.data && f.data.split('-')[2]) ? f.data.split('-')[2] : '05';
+      result.push({
+        ...f,
+        id: Date.now() + (idOffset++),
+        data: `${yNum}-${mNum}-${origDay}`,
+        ciclo: info.tag,
+        status: 'Pendente'
+      });
+    });
+
+    // 3. PARCELAS ATIVAS DO MÊS ANTERIOR (Avança ex: 1/3 -> 2/3; ignora 3/3 finalizadas)
+    list.forEach(p => {
+      if (!p || p.tipo === 'Receita') return;
+      let atual = Number(p.parcelaAtual || p.parcela_atual || 0);
+      let total = Number(p.totalParcelas || p.total_parcelas || 0);
+      const match = String(p.descricao || '').match(/\((\d+)\/(\d+)/);
+      if (match) {
+        atual = parseInt(match[1], 10);
+        total = parseInt(match[2], 10);
+      }
+      if (total > 1 && atual > 0 && atual < total) {
+        const prox = atual + 1;
+        const origDay = (p.data && p.data.split('-')[2]) ? p.data.split('-')[2] : '10';
+        const novaDesc = String(p.descricao || '').replace(/\(\d+\/\d+[^)]*\)/, `(${prox}/${total}${prox === total ? ' - Final' : ''})`);
+        result.push({
+          ...p,
+          id: Date.now() + (idOffset++),
+          data: `${yNum}-${mNum}-${origDay}`,
+          descricao: novaDesc,
+          tipo: 'Despesa Parcelada',
+          parcelaAtual: prox,
+          totalParcelas: total,
+          parcela_atual: prox,
+          total_parcelas: total,
+          ciclo: info.tag,
+          status: 'Pendente'
+        });
+      }
+    });
+
+    return result;
+  };
+
+  // Carrega ciclos customizados salvos no localStorage (e corrige automaticamente ciclos criados sem Salário)
   try {
     const savedCustomCycles = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
     if (savedCustomCycles && typeof savedCustomCycles === 'object') {
+      let modifiedCustom = false;
+      const fallbackSource = window.appCyclesData['out_2026'];
+      Object.keys(savedCustomCycles).forEach(ck => {
+        const cc = savedCustomCycles[ck];
+        if (cc && Array.isArray(cc.transactions)) {
+          const hasReceita = cc.transactions.some(t => t && t.tipo === 'Receita');
+          if (!hasReceita && fallbackSource && Array.isArray(fallbackSource.transactions)) {
+            const fixedIncomes = fallbackSource.transactions.filter(t => t && t.tipo === 'Receita');
+            const parts = String(cc.startIso || '2026-11-05').split('-');
+            const yNum = parts[0] || '2026';
+            const mNum = parts[1] || '11';
+            fixedIncomes.forEach((inc, i) => {
+              const origDay = (inc.data && inc.data.split('-')[2]) ? inc.data.split('-')[2] : '05';
+              cc.transactions.push({
+                ...inc,
+                id: Date.now() + 500 + i,
+                data: `${yNum}-${mNum}-${origDay}`,
+                ciclo: cc.tag,
+                status: 'Recebido'
+              });
+            });
+            const recSum = cc.transactions.filter(t => t && t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+            const despSum = cc.transactions.filter(t => t && t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+            cc.salario = fallbackSource.salario || recSum;
+            cc.totalReceitas = recSum;
+            cc.totalDespesas = despSum;
+            modifiedCustom = true;
+          }
+        }
+      });
+      if (modifiedCustom) {
+        try { localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustomCycles)); } catch (_) {}
+      }
       Object.assign(window.appCyclesData, savedCustomCycles);
     }
     const trashedMap = window.getTrashedCyclesMap();
@@ -38714,19 +38893,24 @@ window.openHealthMedsModal = function() {
     });
   } catch (e) {}
 
-  // 1. Alternância de Ciclo e Recálculo Global
+  window.updateMetrics = function() {
+    if (typeof updateDashboard === 'function') updateDashboard();
+  };
+
+  // 1. Alternância de Ciclo e Recálculo Global Imediato
   window.setActiveCycle = function(cycleKey) {
     if (!window.appCyclesData[cycleKey]) return;
     window.currentActiveCycleKey = cycleKey;
     localStorage.setItem('ctrlpig_active_cycle', cycleKey);
     
     const cycle = window.appCyclesData[cycleKey];
-    window.transactions = cycle.transactions;
+    currentCycle = cycle.tag || currentCycle;
+    localStorage.setItem('financas_active_cycle', currentCycle);
+    transactions = Array.isArray(cycle.transactions) ? cycle.transactions : [];
+    window.transactions = transactions;
+
     if (typeof window.syncGlobalCycleState === 'function') {
-      window.syncGlobalCycleState(cycle.tag, cycle.transactions);
-    }
-    if (typeof window.syncApprovedDesignWithAppData === 'function') {
-      window.syncApprovedDesignWithAppData();
+      window.syncGlobalCycleState(cycle.tag, transactions);
     }
 
     // Atualiza título (Ex: Novembro 2026) e subtítulo (Ex: 05/Nov a 04/Dez) no cabeçalho
@@ -38735,9 +38919,15 @@ window.openHealthMedsModal = function() {
     if (heroTitle) heroTitle.textContent = cycle.name || 'Outubro 2026';
     if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag);
 
-    // Atualiza métricas e dashboard
-    if (typeof updateMetrics === 'function') updateMetrics();
-    if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+    // Atualiza IMEDIATAMENTE o Card de Saldo Atual, Receitas, Despesas, Dias Restantes, Comprometido e Parcelados
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof window.syncApprovedDesignWithAppData === 'function') {
+      window.syncApprovedDesignWithAppData();
+    }
+    if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
+    if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
+    if (typeof renderInstallments === 'function') renderInstallments();
+    if (typeof renderCyclesList === 'function') renderCyclesList();
 
     // Fecha modal
     window.closeSelectCycleModal();
@@ -38781,18 +38971,7 @@ window.openHealthMedsModal = function() {
 
     if (window.currentActiveCycleKey === cycleKey) {
       const nextKey = allRemainingKeys[0];
-      window.currentActiveCycleKey = nextKey;
-      localStorage.setItem('ctrlpig_active_cycle', nextKey);
-      const nextC = window.appCyclesData[nextKey];
-      if (nextC) {
-        window.transactions = nextC.transactions;
-        const heroTitle = document.getElementById('heroCycleTitle');
-        const heroTag = document.getElementById('heroCycleTag');
-        if (heroTitle) heroTitle.textContent = nextC.name || 'Outubro 2026';
-        if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(nextC.subtitle || nextC.tag);
-        if (typeof updateMetrics === 'function') updateMetrics();
-        if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
-      }
+      window.setActiveCycle(nextKey);
     }
 
     window.renderCyclesList();
@@ -38951,6 +39130,26 @@ window.openHealthMedsModal = function() {
       if (m.parentElement !== document.body) document.body.appendChild(m);
       m.classList.remove('hidden');
       m.style.display = 'flex';
+      // Sugere automaticamente o próximo mês sequencial ainda não criado
+      const startEl = document.getElementById('inputStandardCycleStartDate');
+      const endEl = document.getElementById('inputStandardCycleEndDate');
+      if (startEl && endEl && window.appCyclesData && typeof window.computeStandardCycleFromDates === 'function') {
+        const candidates = [
+          ['2026-11-05', '2026-12-04'],
+          ['2026-12-05', '2027-01-04'],
+          ['2027-01-05', '2027-02-04'],
+          ['2027-02-05', '2027-03-04'],
+          ['2027-03-05', '2027-04-04']
+        ];
+        for (const [sIso, eIso] of candidates) {
+          const candInfo = window.computeStandardCycleFromDates(sIso, eIso);
+          if (!window.appCyclesData[candInfo.key]) {
+            startEl.value = sIso;
+            endEl.value = eIso;
+            break;
+          }
+        }
+      }
       window.updateStandardCyclePreview();
     }
   };
@@ -38967,30 +39166,26 @@ window.openHealthMedsModal = function() {
     const endEl = document.getElementById('inputStandardCycleEndDate');
     const copyFixas = document.getElementById('checkNewCycleCopyFixas')?.checked !== false;
 
-    const info = window.computeStandardCycleFromDates(
-      startEl ? startEl.value : '2026-11-05',
-      endEl ? endEl.value : '2026-12-04'
-    );
+    const startIso = startEl ? startEl.value : '2026-11-05';
+    const endIso = endEl ? endEl.value : '2026-12-04';
+    const info = window.computeStandardCycleFromDates(startIso, endIso);
 
-    const prevCycle = window.appCyclesData[window.currentActiveCycleKey];
-    const prevTxs = (prevCycle && Array.isArray(prevCycle.transactions)) ? prevCycle.transactions : [];
-    const newTxs = [];
+    // Busca o ciclo anterior como referência (ciclo ativo ou Outubro 2026 'out_2026')
+    const prevCycle = (window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey])
+      || (window.appCyclesData && window.appCyclesData['out_2026'])
+      || null;
+    const prevTxs = (prevCycle && Array.isArray(prevCycle.transactions) && prevCycle.transactions.length > 0)
+      ? prevCycle.transactions
+      : (Array.isArray(window.transactions) ? window.transactions : []);
 
-    if (copyFixas && prevTxs.length > 0) {
-      const mNum = String(info.monthNum || 11).padStart(2, '0');
-      const yNum = String(info.yearNum || 2026);
-      prevTxs.filter(t => t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia').forEach((f, idx) => {
-        const origDay = (f.data && f.data.split('-')[2]) ? f.data.split('-')[2] : '05';
-        newTxs.push({
-          ...f,
-          id: Date.now() + idx,
-          data: `${yNum}-${mNum}-${origDay}`,
-          ciclo: info.tag,
-          status: 'Pendente'
-        });
-      });
+    let newTxs = [];
+    if (copyFixas && typeof window.buildRecurringTransactionsForCycle === 'function') {
+      newTxs = window.buildRecurringTransactionsForCycle(prevTxs, prevCycle, info);
     }
 
+    const totalRec = newTxs.filter(t => t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
+    const totalSalario = newTxs.filter(t => t.tipo === 'Receita' && /sal[aá]rio/i.test(`${t.categoria || ''} ${t.descricao || ''}`)).reduce((s, t) => s + (Number(t.valor) || 0), 0);
+    const totalExtras = Math.max(0, totalRec - totalSalario);
     const totalDesp = newTxs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
 
     window.appCyclesData[info.key] = {
@@ -38998,9 +39193,11 @@ window.openHealthMedsModal = function() {
       name: info.name,
       subtitle: info.subtitle,
       tag: info.tag,
-      salario: 0,
-      extras: 0,
-      totalReceitas: 0,
+      startIso: startIso,
+      endIso: endIso,
+      salario: totalSalario || totalRec,
+      extras: totalExtras,
+      totalReceitas: totalRec,
       totalDespesas: totalDesp,
       transactions: newTxs
     };
@@ -39209,10 +39406,25 @@ window.openHealthMedsModal = function() {
     }
   };
 
-  // Inicializa ciclo ativo (Dados reais apenas para o Master Oficial; conta nova/sócio inicia limpa e isolada)
+  // Inicializa ciclo ativo (Dados reais apenas para o Master Oficial ou ciclos customizados; conta nova/sócio inicia limpa e isolada)
+  if (window.appCyclesData && !window.appCyclesData[window.currentActiveCycleKey]) {
+    window.currentActiveCycleKey = 'out_2026';
+  }
   const isMasterUser = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
-  if (isMasterUser && window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey]) {
-    window.transactions = window.appCyclesData[window.currentActiveCycleKey].transactions;
+  if (window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey]) {
+    const initCycleObj = window.appCyclesData[window.currentActiveCycleKey];
+    let isCustomActive = false;
+    try {
+      const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+      isCustomActive = !!(savedCustom && savedCustom[window.currentActiveCycleKey]);
+    } catch (_) {}
+    if (isMasterUser || isCustomActive) {
+      window.transactions = initCycleObj.transactions;
+      if (typeof transactions !== 'undefined') transactions = initCycleObj.transactions;
+      if (typeof currentCycle !== 'undefined' && initCycleObj.tag) currentCycle = initCycleObj.tag;
+    } else {
+      window.transactions = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : [];
+    }
   } else if (!isMasterUser) {
     window.transactions = (typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : [];
   }
@@ -39220,9 +39432,15 @@ window.openHealthMedsModal = function() {
   // Executa na carga da página
   document.addEventListener('DOMContentLoaded', () => {
     window.applyProfileModulesToDashboard();
-    const heroTag = document.getElementById('heroCycleTag');
-    if (heroTag && window.appCyclesData[window.currentActiveCycleKey]) {
-      heroTag.textContent = window.appCyclesData[window.currentActiveCycleKey].tag;
+    if (window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey]) {
+      const activeObj = window.appCyclesData[window.currentActiveCycleKey];
+      const heroTitle = document.getElementById('heroCycleTitle');
+      const heroTag = document.getElementById('heroCycleTag');
+      if (heroTitle && activeObj.name) heroTitle.textContent = activeObj.name;
+      if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(activeObj.subtitle || activeObj.tag);
+      if (typeof currentCycle !== 'undefined' && activeObj.tag) currentCycle = activeObj.tag;
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData();
     }
   });
 </script>
@@ -39363,6 +39581,14 @@ window.openHealthMedsModal = function() {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
 
       if (!isMaster) {
+        if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey] && Array.isArray(window.appCyclesData[window.currentActiveCycleKey].transactions)) {
+          try {
+            const savedCustom = JSON.parse(localStorage.getItem('ctrlpig_custom_cycles_v1') || '{}');
+            if (savedCustom && savedCustom[window.currentActiveCycleKey]) {
+              return window.appCyclesData[window.currentActiveCycleKey].transactions;
+            }
+          } catch (_) {}
+        }
         const uKey = (typeof getUserTransactionsStorageKey === 'function') ? getUserTransactionsStorageKey(session) : null;
         let uTxs = [];
         if (uKey) {
@@ -39372,12 +39598,12 @@ window.openHealthMedsModal = function() {
         return uTxs;
       }
 
-      // Conta Master / Rodrigo: ciclo ativo com todas as transações reais de Outubro 2026
-      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey] && Array.isArray(window.appCyclesData[window.currentActiveCycleKey].transactions) && window.appCyclesData[window.currentActiveCycleKey].transactions.length) {
+      // Conta Master / Rodrigo: retorna as transações do ciclo ativo (inclusive quando novo ciclo ou vazio)
+      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey] && Array.isArray(window.appCyclesData[window.currentActiveCycleKey].transactions)) {
         return window.appCyclesData[window.currentActiveCycleKey].transactions;
       }
-      if (Array.isArray(window.transactions) && window.transactions.length) return window.transactions;
-      if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length) return transactions;
+      if (Array.isArray(window.transactions)) return window.transactions;
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions)) return transactions;
       if (typeof INITIAL_TRANSACTIONS !== 'undefined' && Array.isArray(INITIAL_TRANSACTIONS) && INITIAL_TRANSACTIONS.length) {
         return INITIAL_TRANSACTIONS.filter(t => isTransactionInCycle(t, window.currentActiveCycleKey || '05/Out a 04/Nov 2026'));
       }
@@ -39735,18 +39961,16 @@ window.openHealthMedsModal = function() {
   }
 
   const originalSync = window.syncApprovedDesignWithAppData;
-  if (typeof originalSync === 'function') {
-    window.syncApprovedDesignWithAppData = function (...args) {
-      const result = originalSync.apply(this, args);
-      const txs = getCycleTransactions();
-      refreshBalanceMascot(txs);
-      refreshHomeCategoryBreakdown(txs);
-      refreshHomeRecentTransactions(txs);
-      if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI();
-      if (typeof window.applyUserDashboardModulesVisibility === 'function') window.applyUserDashboardModulesVisibility();
-      return result;
-    };
-  }
+  window.syncApprovedDesignWithAppData = function (...args) {
+    const result = typeof originalSync === 'function' ? originalSync.apply(this, args) : undefined;
+    const txs = getCycleTransactions();
+    refreshBalanceMascot(txs);
+    refreshHomeCategoryBreakdown(txs);
+    refreshHomeRecentTransactions(txs);
+    if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI();
+    if (typeof window.applyUserDashboardModulesVisibility === 'function') window.applyUserDashboardModulesVisibility();
+    return result;
+  };
   const originalSaveData = window.saveData;
   if (typeof originalSaveData === 'function') {
     window.saveData = function (...args) {
