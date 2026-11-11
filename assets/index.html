@@ -6758,42 +6758,41 @@ html, body {
       const activeCycleObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
       const target = String(targetCycle || (activeCycleObj && activeCycleObj.tag) || currentCycle || '05/Out a 04/Nov 2026');
 
-      // Se estivermos consultando o ciclo ativo e a transação faz parte da lista oficial desse ciclo, pertence a ele
+      // Se a transação faz parte da lista em memória do ciclo ativo
       if (activeCycleObj && Array.isArray(activeCycleObj.transactions) && (!targetCycle || targetCycle === currentCycle || targetCycle === activeCycleObj.tag)) {
         if (activeCycleObj.transactions.includes(t)) return true;
       }
 
-      const clean = (s) => String(s || '').replace(/[\s\-–—]+/g, ' ').trim().toLowerCase();
+      const clean = (s) => String(s || '').replace(/[\s\-_–—]+/g, '').trim().toLowerCase();
       const tNorm = clean(t.ciclo);
       const cNorm = clean(target);
 
-      // Match direto normalizado (com ou sem traço ' - ')
-      if (tNorm && cNorm && (tNorm === cNorm || tNorm.replace(/\s+/g, '') === cNorm.replace(/\s+/g, ''))) {
-        return true;
+      // Match exato do ciclo
+      if (tNorm && cNorm && tNorm === cNorm) return true;
+
+      // Se t.ciclo existir e for de outro ciclo conhecido diferente, bloqueia categoricamente
+      if (tNorm && cNorm && tNorm !== cNorm) return false;
+
+      // Se t.ciclo não estiver preenchido, valida pelos limites ISO do ciclo
+      let sIso = activeCycleObj ? activeCycleObj.startIso : null;
+      let eIso = activeCycleObj ? activeCycleObj.endIso : null;
+
+      if (!sIso || !eIso) {
+        if (window.appCyclesData) {
+          for (const k in window.appCyclesData) {
+            const item = window.appCyclesData[k];
+            if (item && (item.tag === target || item.name === target || item.key === target)) {
+              sIso = item.startIso;
+              eIso = item.endIso;
+              break;
+            }
+          }
+        }
       }
 
-      // Match pelo mês de abertura do ciclo (ex: '05/out a 04/nov' -> mês inicial 'out'; '05/nov a 04/dez' -> mês inicial 'nov')
-      const monthMap = {
-        'jan': '01', 'fev': '02', 'mar': '03', 'abr': '04', 'mai': '05', 'jun': '06',
-        'jul': '07', 'ago': '08', 'set': '09', 'out': '10', 'nov': '11', 'dez': '12'
-      };
-      const extractStartMonth = (str) => {
-        const m = String(str || '').match(/\b\d{1,2}\/([a-zç]{3})/i) || String(str || '').match(/\b(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)/i);
-        return m ? m[1].toLowerCase().substring(0, 3) : null;
-      };
-
-      const cStartMon = extractStartMonth(cNorm);
-      if (tNorm && cStartMon) {
-        const tStartMon = extractStartMonth(tNorm);
-        if (tStartMon && tStartMon === cStartMon) return true;
-      }
-
-      // Match por data ISO caso t.ciclo não esteja preenchido
-      if (!tNorm && t.data && cStartMon && monthMap[cStartMon]) {
-        const d = String(t.data);
-        const yearMatch = cNorm.match(/\b(20\d{2})\b/);
-        const yPrefix = yearMatch ? yearMatch[1] : '2026';
-        if (d.startsWith(`${yPrefix}-${monthMap[cStartMon]}`)) return true;
+      if (sIso && eIso && t.data) {
+        const dStr = String(t.data).substring(0, 10);
+        return dStr >= sIso && dStr <= eIso;
       }
 
       return false;
@@ -8450,10 +8449,7 @@ html, body {
         ? transactions
         : (Array.isArray(window.transactions) ? window.transactions : ((typeof isCurrentUserMaster === 'function' && isCurrentUserMaster()) ? INITIAL_TRANSACTIONS : []));
 
-      let list = allSource.filter(t => isTxInCycle(t, currentCycle));
-      if (list.length === 0 && allSource.length > 0) {
-        list = allSource.slice(0, 30);
-      }
+            let list = allSource.filter(t => isTxInCycle(t, currentCycle));
 
       const search = (document.getElementById('filterSearch')?.value || '').toLowerCase().trim();
       if (search) {
@@ -9839,14 +9835,11 @@ html, body {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const activeCycleObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
 
-      let activeTxs = [];
-      if ((isMaster || isCustomCycle) && activeCycleObj && Array.isArray(activeCycleObj.transactions)) {
+            let activeTxs = [];
+      if (activeCycleObj && Array.isArray(activeCycleObj.transactions)) {
         activeTxs = activeCycleObj.transactions;
       } else {
         activeTxs = transactions.filter(t => isTxInCycle(t, currentCycle));
-        if (activeTxs.length === 0 && transactions.length > 0 && !isCustomCycle) {
-          activeTxs = transactions.slice(0, 30);
-        }
       }
 
       const isReceita = (t) => t.tipo === 'Receita' || (t.tipo && t.tipo.toLowerCase() === 'receita');
@@ -10071,12 +10064,15 @@ html, body {
       if (typeof renderPriceHistoryTable === 'function') renderPriceHistoryTable();
       if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
     }
-    function refreshHomeRecentTransactions(activeTxs) {
+        function refreshHomeRecentTransactions(activeTxs) {
       const container = document.getElementById('dashboardRecentTransactionsList');
       if (!container) return;
-      const txs = (Array.isArray(activeTxs) && activeTxs.length > 0)
-        ? activeTxs
-        : ((Array.isArray(transactions) && transactions.length > 0) ? transactions.filter(t => isTxInCycle(t, currentCycle)) : []);
+      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
+        ? window.appCyclesData[window.currentActiveCycleKey].tag
+        : currentCycle;
+      const txs = (Array.isArray(activeTxs))
+        ? activeTxs.filter(t => isTxInCycle(t, activeCycleTag))
+        : ((Array.isArray(transactions) && transactions.length > 0) ? transactions.filter(t => isTxInCycle(t, activeCycleTag)) : []);
 
       if (!txs || txs.length === 0) {
         container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
@@ -39537,6 +39533,9 @@ window.openHealthMedsModal = function() {
       window.syncApprovedDesignWithAppData();
     }
     if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
+    if (typeof window.renderApprovedTransactionsList === 'function') {
+      window.renderApprovedTransactionsList();
+    }
     if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
     if (typeof renderInstallments === 'function') renderInstallments();
     if (typeof renderCyclesList === 'function') renderCyclesList();
@@ -40261,16 +40260,17 @@ window.openHealthMedsModal = function() {
         return uTxs;
       }
 
-      // Conta Master / Rodrigo: retorna as transações do ciclo ativo (inclusive quando novo ciclo ou vazio)
-      if (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey] && Array.isArray(window.appCyclesData[window.currentActiveCycleKey].transactions)) {
-        return window.appCyclesData[window.currentActiveCycleKey].transactions;
+            const activeObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+      const targetTag = (activeObj && activeObj.tag) || currentCycle;
+
+      // Conta Master / Rodrigo: retorna estritamente as transações do ciclo ativo (inclusive quando novo ciclo vazio)
+      if (activeObj && Array.isArray(activeObj.transactions)) {
+        return activeObj.transactions.filter(t => isTxInCycle(t, targetTag));
       }
-      if (Array.isArray(window.transactions)) return window.transactions;
-      if (typeof transactions !== 'undefined' && Array.isArray(transactions)) return transactions;
-      if (typeof INITIAL_TRANSACTIONS !== 'undefined' && Array.isArray(INITIAL_TRANSACTIONS) && INITIAL_TRANSACTIONS.length) {
-        return INITIAL_TRANSACTIONS.filter(t => isTransactionInCycle(t, window.currentActiveCycleKey || '05/Out a 04/Nov 2026'));
-      }
-      return [];
+      const pool = (Array.isArray(window.transactions) && window.transactions.length > 0)
+        ? window.transactions
+        : ((typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : []);
+      return pool.filter(t => isTxInCycle(t, targetTag));
     } catch (_) { return []; }
   };
 
@@ -40460,14 +40460,18 @@ window.openHealthMedsModal = function() {
   }
   window.refreshHomeCategoryBreakdown = refreshHomeCategoryBreakdown;
 
-  function refreshHomeRecentTransactions(txs) {
+    function refreshHomeRecentTransactions(txs) {
     const dashboard = document.getElementById('screen_dashboard');
     if (!dashboard) return;
     const heading = [...dashboard.querySelectorAll('h3')].find(el => /lan[cç]amentos recentes/i.test(el.textContent));
     const card = heading && heading.closest('.bg-white.rounded-3xl');
     const list = card && [...card.querySelectorAll('div')].find(el => el.classList.contains('space-y-2.5'));
     if (!list) return;
-    const latest = [...txs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
+    const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
+      ? window.appCyclesData[window.currentActiveCycleKey].tag
+      : currentCycle;
+    const cleanTxs = (Array.isArray(txs) ? txs : []).filter(t => isTxInCycle(t, activeCycleTag));
+    const latest = [...cleanTxs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
     if (!latest.length) {
       list.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
       return;
@@ -42430,13 +42434,18 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ensureActiveTransactionsLoaded();
       }
 
-      let allTxs = (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions.length > 0)
-        ? transactions
-        : (Array.isArray(window.transactions) ? window.transactions : ((typeof isCurrentUserMaster === 'function' && isCurrentUserMaster()) ? INITIAL_TRANSACTIONS : []));
+            const activeObj = (window.appCyclesData && window.currentActiveCycleKey) ? window.appCyclesData[window.currentActiveCycleKey] : null;
+      const activeCycleTag = (activeObj && activeObj.tag) ? activeObj.tag : currentCycle;
 
-      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
-        ? window.appCyclesData[window.currentActiveCycleKey].tag
-        : currentCycle;
+      let allTxs = [];
+      if (activeObj && Array.isArray(activeObj.transactions)) {
+        allTxs = activeObj.transactions;
+      } else if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        allTxs = transactions;
+      } else if (Array.isArray(window.transactions)) {
+        allTxs = window.transactions;
+      }
+
       let txs = allTxs.filter(t => isTxInCycle(t, activeCycleTag));
 
       // Card Resumo no Topo de Transações (Total Gasto, Entradas e Saldo)
