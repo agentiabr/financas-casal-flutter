@@ -3436,6 +3436,24 @@ html, body {
       border-radius: 0 !important;
       box-shadow: none !important;
     }
+    #modalFamilyChat #chatMembersDirectoryView {
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+    }
+    #modalFamilyChat #chatActiveConversationView {
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+    #modalFamilyChat #chatActiveConversationView.hidden {
+      display: none !important;
+    }
+    #modalFamilyChat #chatMembersDirectoryView.hidden {
+      display: none !important;
+    }
     #modalFamilyChat #chatMessagesFeed {
       flex: 1 1 0% !important;
       min-height: 0 !important;
@@ -16384,6 +16402,222 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     window.currentChatTab = 'conversa';
+    window.isInsideChatConversation = false;
+    window.currentChatMember = null;
+
+    window.getAvailableChatMembersList = function() {
+      const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+      const activeUser = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Rodrigo';
+      const isMarcia = /m[aá]rcia/i.test(activeUser);
+      const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+      const members = [];
+
+      if (isMaster) {
+        if (isMarcia) {
+          members.push({ key: 'rodrigo', name: 'Rodrigo', avatar: '👨', role: 'Parceiro • Titular' });
+        } else {
+          members.push({ key: 'marcia', name: 'Márcia', avatar: '👩', role: 'Parceira • Esposa' });
+        }
+        din.forEach(m => {
+          const n = (m.nome || '').trim();
+          if (n && !/^(rodrigo|m[aá]rcia)$/i.test(n)) {
+            members.push({
+              key: m.id || n.toLowerCase(),
+              name: n,
+              avatar: m.avatar || '👤',
+              role: m.parentesco || 'Membro da Família'
+            });
+          }
+        });
+      } else {
+        din.forEach(m => {
+          const n = (m.nome || '').trim();
+          if (n) {
+            members.push({
+              key: m.id || n.toLowerCase(),
+              name: n,
+              avatar: m.avatar || '👤',
+              role: m.parentesco || 'Membro da Família'
+            });
+          }
+        });
+        if (members.length === 0) {
+          const partnerName = (typeof getDynamicPartnerDisplayName === 'function') ? getDynamicPartnerDisplayName() : 'Parceiro(a)';
+          const cleanPartner = (partnerName && partnerName !== 'Família') ? partnerName : 'Parceiro(a) da Família';
+          members.push({
+            key: 'parceiro',
+            name: cleanPartner,
+            avatar: '💑',
+            role: 'Parceiro(a) • Família'
+          });
+        }
+      }
+
+      members.push({
+        key: 'todos',
+        name: 'Família (Todos)',
+        avatar: '👨‍👩‍👧‍👦',
+        role: 'Grupo da Família & Lista de Compras'
+      });
+
+      return members;
+    };
+
+    window.renderChatMembersDirectory = function() {
+      const listEl = document.getElementById('chatMembersDirectoryList');
+      if (!listEl) return;
+
+      const members = window.getAvailableChatMembersList();
+      const msgs = typeof getCleanChatMessages === 'function' ? getCleanChatMessages() : [];
+      const regularMsgs = msgs.filter(m => m.type !== 'shopping_list_card');
+      const lastMsg = regularMsgs.length > 0 ? regularMsgs[regularMsgs.length - 1] : null;
+      const items = typeof getActiveShoppingItems === 'function' ? getActiveShoppingItems() : [];
+      const itemCount = items.length;
+
+      const lastPreviewText = lastMsg
+        ? `${lastMsg.sender ? lastMsg.sender + ': ' : ''}${lastMsg.text || '📸 Foto enviada'}`
+        : 'Toque para conversar ou abrir a Lista de Compras';
+      const lastTimeText = (lastMsg && lastMsg.time) ? lastMsg.time : 'Agora';
+
+      listEl.innerHTML = members.map((m, idx) => {
+        const safeKey = String(m.key || '').replace(/'/g, "\\'");
+        const safeName = String(m.name || '').replace(/'/g, "\\'");
+        const safeAvatar = String(m.avatar || '👤').replace(/'/g, "\\'");
+        const safeRole = String(m.role || '').replace(/'/g, "\\'");
+        const isGroup = m.key === 'todos';
+
+        return `
+          <div onclick="window.openChatWithMember('${safeKey}', '${safeName}', '${safeAvatar}', '${safeRole}')"
+               class="bg-white dark:bg-slate-900 hover:bg-blue-50/60 dark:hover:bg-slate-800/90 active:scale-[0.99] transition-all rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5 cursor-pointer group">
+            <!-- Avatar Circular Estilo WhatsApp com Indicador Online -->
+            <div class="relative flex-shrink-0">
+              <div class="w-13 h-13 rounded-full ${isGroup ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white' : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white'} flex items-center justify-center text-2xl shadow-sm">
+                ${m.avatar || '👤'}
+              </div>
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" title="Online"></span>
+            </div>
+
+            <!-- Nome, Papel, Última Mensagem e Badges -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2 mb-0.5">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <h4 class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">${escapeHtml(m.name)}</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold whitespace-nowrap">${escapeHtml(m.role)}</span>
+                </div>
+                <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">${escapeHtml(lastTimeText)}</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-2 mt-1">
+                <p class="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">
+                  ${escapeHtml(lastPreviewText)}
+                </p>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  ${itemCount > 0 ? `
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
+                      <span>🛒</span><span>${itemCount}</span>
+                    </span>
+                  ` : ''}
+                  <span class="w-6 h-6 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.showChatMembersDirectory = function() {
+      window.isInsideChatConversation = false;
+      const dirView = document.getElementById('chatMembersDirectoryView');
+      const convView = document.getElementById('chatActiveConversationView');
+      if (dirView) dirView.classList.remove('hidden');
+      if (convView) convView.classList.add('hidden');
+
+      const titleEl = document.getElementById('chatHeaderTitle');
+      const subEl = document.getElementById('chatHeaderSubtitle');
+      if (titleEl) titleEl.innerHTML = '<span>💬</span><span>Chat da Família</span>';
+      if (subEl) subEl.textContent = 'Toque em um membro para conversar ou ver a Lista de Compras';
+
+      window.renderChatMembersDirectory();
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.openChatWithMember = function(memberKey, memberName, memberAvatar, memberRole, initialTab) {
+      window.isInsideChatConversation = true;
+      window.currentChatMember = {
+        key: memberKey || 'todos',
+        name: memberName || 'Família',
+        avatar: memberAvatar || '💬',
+        role: memberRole || 'Membro da Família'
+      };
+
+      const dirView = document.getElementById('chatMembersDirectoryView');
+      const convView = document.getElementById('chatActiveConversationView');
+      if (dirView) dirView.classList.add('hidden');
+      if (convView) convView.classList.remove('hidden');
+
+      const titleEl = document.getElementById('chatHeaderTitle');
+      const subEl = document.getElementById('chatHeaderSubtitle');
+      if (titleEl) {
+        titleEl.innerHTML = `<span>${window.currentChatMember.avatar}</span><span>${escapeHtml(window.currentChatMember.name)}</span>`;
+      }
+      if (subEl) {
+        subEl.textContent = `${window.currentChatMember.role} • online`;
+      }
+
+      const badgeAv = document.getElementById('chatActiveMemberAvatarBadge');
+      const badgeNm = document.getElementById('chatActiveMemberNameLabel');
+      const badgeRl = document.getElementById('chatActiveMemberRoleLabel');
+      if (badgeAv) badgeAv.textContent = window.currentChatMember.avatar;
+      if (badgeNm) badgeNm.textContent = window.currentChatMember.name;
+      if (badgeRl) badgeRl.textContent = `● ${window.currentChatMember.role} • Conversar & Lista de Compras`;
+
+      const msgInput = document.getElementById('chatMessageInput');
+      if (msgInput) {
+        msgInput.placeholder = `Mensagem para ${window.currentChatMember.name}...`;
+      }
+
+      const targetTab = (initialTab === 'lista') ? 'lista' : 'conversa';
+      if (typeof window.switchChatViewTab === 'function') {
+        window.switchChatViewTab(targetTab);
+      }
+
+      renderCleanChatStream();
+      updateCartSummaryUI();
+      if (typeof window.updateChatStoreStatusHeader === 'function') {
+        window.updateChatStoreStatusHeader();
+      }
+      if (window.lucide) lucide.createIcons();
+
+      setTimeout(() => {
+        const feed = document.getElementById('chatMessagesFeed');
+        if (feed && window.currentChatTab === 'conversa') feed.scrollTop = feed.scrollHeight;
+      }, 50);
+    };
+
+    window.handleChatHeaderBack = function() {
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
+      if (!isIndiv && window.isInsideChatConversation) {
+        window.showChatMembersDirectory();
+        return;
+      }
+      closeFamilyChatModal();
+    };
+
+    window.setChatRecipient = function(key) {
+      const members = window.getAvailableChatMembersList();
+      const found = members.find(m => String(m.key).toLowerCase() === String(key).toLowerCase()) || members[0];
+      if (found) window.openChatWithMember(found.key, found.name, found.avatar, found.role);
+    };
+    window.selectChatRecipient = function(name) {
+      const members = window.getAvailableChatMembersList();
+      const found = members.find(m => String(m.name).toLowerCase() === String(name).toLowerCase()) || members[0];
+      if (found) window.openChatWithMember(found.key, found.name, found.avatar, found.role);
+    };
 
     window.switchChatViewTab = function(tab) {
       window.currentChatTab = tab;
@@ -16436,10 +16670,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
 
       const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
-      const targetTab = isIndiv ? 'lista' : (defaultTab === 'lista' ? 'lista' : 'conversa');
 
-      if (typeof window.switchChatViewTab === 'function') {
-        window.switchChatViewTab(targetTab);
+      if (isIndiv) {
+        window.isInsideChatConversation = true;
+        const dirView = document.getElementById('chatMembersDirectoryView');
+        const convView = document.getElementById('chatActiveConversationView');
+        if (dirView) dirView.classList.add('hidden');
+        if (convView) convView.classList.remove('hidden');
+        if (typeof window.switchChatViewTab === 'function') {
+          window.switchChatViewTab('lista');
+        }
+      } else {
+        // No Modo Casal/Família, exibe primeiro a Lista de Membros estilo WhatsApp para clicar e entrar!
+        window.showChatMembersDirectory();
       }
 
       renderCleanChatStream();
@@ -16448,11 +16691,6 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         window.updateChatStoreStatusHeader();
       }
       if (window.lucide) lucide.createIcons();
-
-      setTimeout(() => {
-        const feed = document.getElementById('chatMessagesFeed');
-        if (feed && window.currentChatTab === 'conversa') feed.scrollTop = feed.scrollHeight;
-      }, 50);
     }
 
     function closeFamilyChatModal() {
@@ -17165,7 +17403,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
                   </button>
                 </div>
               </div>
+              ${m.photoUrl ? `
+                <div class="mb-2 relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-900/5">
+                  <img src="${m.photoUrl}" alt="Foto enviada no chat" class="max-h-56 w-auto mx-auto rounded-lg object-contain">
+                  <button type="button" onclick="deleteChatPhoto('${m.id}')" class="absolute top-1.5 right-1.5 px-2 py-1 rounded-lg bg-slate-900/75 hover:bg-rose-600 text-white text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all" title="Apagar foto">
+                    <span>🗑️</span><span>Apagar</span>
+                  </button>
+                </div>
+              ` : ''}
               <div class="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed font-normal">${escapeHtml(m.text || '')}</div>
+              ${Array.isArray(m.actions) && m.actions.length > 0 ? `
+                <div class="mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex flex-wrap gap-1.5">
+                  ${m.actions.map(act => `
+                    <button type="button" onclick="${act.onClick}" class="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold shadow-2xs transition-all active:scale-95 cursor-pointer">
+                      ${escapeHtml(act.label || 'Confirmar')}
+                    </button>
+                  `).join('')}
+                </div>
+              ` : ''}
               ${m.isVoiceList ? `
                 <div class="mt-2 pt-2 border-t border-white/20 flex justify-end">
                   <button type="button" onclick="sendWhatsAppShoppingReminder()" class="px-2 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer" title="Avisar no WhatsApp que a lista foi postada">
@@ -17866,7 +18121,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       saveActiveShoppingItems(items);
       updateCartSummaryUI();
       renderCleanChatStream();
-      showToastUndo('Item removido da lista de mercado.', false);
+      showToastUndo('Item removido da lista de compras.', false);
     }
 
     function openAddNewItemPrompt() {
@@ -17948,7 +18203,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       closeEditItemModal();
       updateCartSummaryUI();
       renderCleanChatStream();
-      showToastUndo(`Item "${nome}" salvo na lista de mercado!`, false);
+      showToastUndo(`Item "${nome}" salvo na lista de compras!`, false);
     }
 
     // ==========================================
@@ -18009,7 +18264,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const precoStr = pVal > 0 ? ` (R$ ${pVal.toFixed(2).replace('.', ',')})` : '';
       msgs.push({
         id: 'sys_' + Date.now(),
-        sender: 'Lista de Mercado',
+        sender: 'Lista de Compras',
         avatar: '🛒',
         isMe: false,
         text: `✅ "${nome}"${precoStr} adicionado diretamente ao carrinho!`,
@@ -18364,8 +18619,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
 
     function handleSendCleanChatMessage(e) {
-      e.preventDefault();
-      const input = document.getElementById('inputChatMessageClean');
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const input = document.getElementById('inputChatMessageClean') || document.getElementById('chatMessageInput');
       const text = input ? input.value.trim() : '';
       if (!text) return;
 
@@ -18448,7 +18703,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             sender: 'Assistente de Compras',
             avatar: '🛒',
             isMe: false,
-            text: `✅ Perfeito! Incluí ${numVal} un de "${prodNome}" na nossa lista de mercado!`,
+            text: `✅ Perfeito! Incluí ${numVal} un de "${prodNome}" na nossa lista de compras!`,
             time: timeStr
           });
 
@@ -18574,7 +18829,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           updateCartSummaryUI();
           msgs.push({
             id: 'sys_' + Date.now(),
-            sender: 'Lista de Mercado',
+            sender: 'Lista de Compras',
             avatar: '🛒',
             isMe: false,
             text: `✅ Adicionado à lista de compras: "${addedNames.join(', ')}"! Marque o preço na gôndola.`,
@@ -23982,24 +24237,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT FAMILIAR & LISTA DE MERCADO NA GÔNDOLA (V1.4.9)   -->
   <!-- ============================================================== -->
-  <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, FOCADO EM COMPRAS)      -->
+  <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, COM SELEÇÃO DE MEMBRO + CONVERSAR & LISTA DE COMPRAS) -->
   <!-- ============================================================== -->
   <div id="modalFamilyChat" class="fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
-    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET) -->
+    <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET / WHATSAPP) -->
     <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933]">
-      <div class="flex items-center gap-2.5">
-        <button type="button" onclick="closeFamilyChatModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button type="button" id="btnChatHeaderBack" onclick="handleChatHeaderBack()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer flex-shrink-0" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
-        <div>
-          <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
+        <div class="min-w-0 cursor-pointer" onclick="if(window.isInsideChatConversation && !(typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode())) showChatMembersDirectory();" title="Toque para trocar de membro">
+          <h2 id="chatHeaderTitle" class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight truncate">
             <span>💬</span><span>Chat da Família</span>
           </h2>
-          <p class="text-[11px] text-blue-200" id="chatHeaderSubtitle">Rodrigo &amp; Márcia • online</p>
+          <p class="text-[11px] text-blue-200 truncate" id="chatHeaderSubtitle">Toque em um membro para conversar ou ver a Lista de Compras</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-1.5 flex-shrink-0">
         <!-- 1. Botão de Telefone / Ligação / WhatsApp Ativo -->
         <button type="button" onclick="handleChatPhoneCallAction()" class="w-8 h-8 rounded-full bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-200 hover:text-white border border-emerald-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xs" title="Ligar ou conversar no WhatsApp">
           <i data-lucide="phone" class="w-4 h-4 text-emerald-300"></i>
@@ -24018,78 +24273,128 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS (PADRÃO MUNDO PET) -->
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
 
-    <!-- Barra Dinâmica Alinhada à Esquerda: Para: Todos / Titular / Membros -->
-    <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-start gap-2 overflow-x-auto flex-shrink-0 select-none text-left">
-      <!-- Seletor de Destinatário da Mensagem Alinhado à Esquerda -->
-      <div class="flex items-center justify-start gap-1.5 flex-shrink-0 text-left" id="chatRecipientSelector">
-        <span class="text-[11px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider mr-0.5">Para:</span>
-        <button type="button" onclick="setChatRecipient('todos')" id="btnRecipient_todos" class="px-3 py-1 rounded-full text-xs font-extrabold transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👥</span> <span>Todos</span>
-        </button>
-        <button type="button" onclick="setChatRecipient('rodrigo')" id="btnRecipient_rodrigo" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👨</span> <span>Rodrigo (Titular)</span>
-        </button>
-        <button type="button" onclick="setChatRecipient('marcia')" id="btnRecipient_marcia" class="px-3 py-1 rounded-full text-xs font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 flex items-center gap-1 active:scale-95 cursor-pointer">
-          <span>👩</span> <span>Márcia</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Barra Dinâmica de Abas: [ 💬 Conversa ] vs [ 🛒 Lista de Mercado ] -->
-    <div id="chatViewModeTabs" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-1.5 flex items-center gap-2 flex-shrink-0 select-none">
-      <button type="button" id="btnChatTabConversa" onclick="switchChatViewTab('conversa')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-blue-600 text-white shadow-xs relative cursor-pointer active:scale-98">
-        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-        <span>Conversa</span>
-        <span id="chatTabConversaUnreadBadge" class="hidden w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-      </button>
-      <button type="button" id="btnChatTabLista" onclick="switchChatViewTab('lista')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer active:scale-98">
-        <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
-        <span>Lista de Mercado</span>
-        <span id="chatTabListaCountBadge" class="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold">0</span>
-      </button>
-    </div>
-
-    <!-- 1. FEED DA CONVERSA (MENSAGENS LIMPAS + CARD COMPACTO COM OPÇÕES) -->
-    <div id="chatMessagesFeed" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
-      <div id="chatMessagesList" class="space-y-2">
-        <!-- Renderizado dinamicamente por renderCleanChatStream() -->
-      </div>
-    </div>
-
-    <!-- 2. FEED DA LISTA DE MERCADO (GÔNDOLA COMPLETA COM CONEXÃO DA CONVERSA) -->
-    <div id="chatShoppingListFeed" class="hidden flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
-      <!-- Faixa de Conexão Rápida com a Conversa (para não perder o que a família fala) -->
-      <div id="chatShoppingFloatingMsgBar" class="bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 rounded-2xl p-3.5 sm:p-4 min-h-[72px] sm:min-h-[78px] flex items-center justify-between gap-3 shadow-sm mb-3 transition-all">
-        <div class="flex items-center gap-3 min-w-0 flex-1">
-          <div class="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-sm flex-shrink-0 shadow-xs">
-            💬
+      <!-- ============================================================== -->
+      <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
+      <!-- ============================================================== -->
+      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto p-4 space-y-3 bg-[#DFEAF7] dark:bg-slate-950">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs flex-shrink-0">
+              💬
+            </div>
+            <div class="min-w-0">
+              <h3 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Toque no membro para abrir a conversa e a Lista de Compras</p>
+            </div>
           </div>
-          <div class="min-w-0 flex-1">
-            <span class="text-xs font-black text-blue-700 dark:text-blue-300 block leading-tight tracking-wide" id="chatShoppingLastSender">Última mensagem na conversa:</span>
-            <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-medium line-clamp-2 mt-1 leading-snug break-words" id="chatShoppingLastMessage">Nenhuma mensagem recente.</p>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold border border-emerald-200 dark:border-emerald-800 whitespace-nowrap">
+            ● Online
+          </span>
+        </div>
+
+        <!-- Lista de Membros Estilo WhatsApp (Renderizada Dinamicamente) -->
+        <div id="chatMembersDirectoryList" class="space-y-2.5">
+          <!-- Preenchido por renderChatMembersDirectory() -->
+        </div>
+
+        <!-- Atalho para gerenciar/adicionar membros da família -->
+        <div class="pt-2">
+          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3 px-4 rounded-2xl bg-white/80 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-98 cursor-pointer">
+            <i data-lucide="user-plus" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+            <span>Adicionar ou Gerenciar Membros da Família</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================================== -->
+      <!-- TELA 2 (DEPOIS DE CLICAR NO MEMBRO): CONVERSAR & LISTA DE COMPRAS -->
+      <!-- ============================================================== -->
+      <div id="chatActiveConversationView" class="hidden flex-1 flex flex-col overflow-hidden">
+
+        <!-- Barra Compacta do Membro Selecionado + Botão Voltar para Lista de Membros -->
+        <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 flex-shrink-0 select-none">
+          <div class="flex items-center gap-2 min-w-0" id="chatRecipientSelector">
+            <span id="chatActiveMemberAvatarBadge" class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 text-base flex items-center justify-center flex-shrink-0">👩</span>
+            <div class="min-w-0">
+              <span id="chatActiveMemberNameLabel" class="text-xs font-black text-slate-900 dark:text-white block truncate leading-tight">Márcia</span>
+              <span id="chatActiveMemberRoleLabel" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block truncate leading-tight">● online agora</span>
+            </div>
+          </div>
+          <button type="button" onclick="showChatMembersDirectory()" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer flex-shrink-0" title="Voltar para a lista de membros">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+            <span>Trocar Membro</span>
+          </button>
+        </div>
+
+        <!-- Barra Dinâmica de Abas: [ 💬 Conversar ] vs [ 🛒 Lista de Compras ] -->
+        <div id="chatViewModeTabs" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-1.5 flex items-center gap-2 flex-shrink-0 select-none">
+          <button type="button" id="btnChatTabConversa" onclick="switchChatViewTab('conversa')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-blue-600 text-white shadow-xs relative cursor-pointer active:scale-98">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+            <span>Conversar</span>
+            <span id="chatTabConversaUnreadBadge" class="hidden w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          </button>
+          <button type="button" id="btnChatTabLista" onclick="switchChatViewTab('lista')" class="flex-1 py-1.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer active:scale-98">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+            <span>Lista de Compras</span>
+            <span id="chatTabListaCountBadge" class="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold">0</span>
+          </button>
+        </div>
+
+        <!-- 1. FEED DA CONVERSA (MENSAGENS LIMPAS + CARD COMPACTO COM OPÇÕES) -->
+        <div id="chatMessagesFeed" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+          <div id="chatMessagesList" class="space-y-2">
+            <!-- Renderizado dinamicamente por renderCleanChatStream() -->
           </div>
         </div>
-        <button type="button" onclick="switchChatViewTab('conversa')" class="px-3.5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5">
-          <span>Ver Conversa</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
+
+        <!-- 2. FEED DA LISTA DE COMPRAS (GÔNDOLA COMPLETA COM CONEXÃO DA CONVERSA) -->
+        <div id="chatShoppingListFeed" class="hidden flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+          <!-- Faixa de Conexão Rápida com a Conversa (para não perder o que a família fala) -->
+          <div id="chatShoppingFloatingMsgBar" class="bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 rounded-2xl p-3.5 sm:p-4 min-h-[72px] sm:min-h-[78px] flex items-center justify-between gap-3 shadow-sm mb-3 transition-all">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-sm flex-shrink-0 shadow-xs">
+                💬
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-xs font-black text-blue-700 dark:text-blue-300 block leading-tight tracking-wide" id="chatShoppingLastSender">Última mensagem na conversa:</span>
+                <p class="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-medium line-clamp-2 mt-1 leading-snug break-words" id="chatShoppingLastMessage">Nenhuma mensagem recente.</p>
+              </div>
+            </div>
+            <button type="button" onclick="switchChatViewTab('conversa')" class="px-3.5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs flex-shrink-0 cursor-pointer active:scale-95 flex items-center gap-1.5">
+              <span>Conversar</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Gôndola Completa de Produtos -->
+          <div id="chatShoppingGondolaList"></div>
+        </div>
+
+        <!-- Barra Inferior de Envio Estilo WhatsApp (Input + Câmera, Microfone e Enviar) -->
+        <div id="chatInputFooter" class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 py-2.5 sm:px-4 sm:py-3 flex-shrink-0 pb-safe">
+          <input type="file" id="chatPhotoInput" accept="image/*" class="hidden" onchange="handleChatPhotoUpload(event)">
+          <form id="chatMessageForm" onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2 max-w-4xl mx-auto">
+            <!-- Pill Estilo WhatsApp: Campo de Texto + Ícone de Câmera Embutido -->
+            <div class="flex-1 flex items-center bg-slate-100 dark:bg-slate-800 rounded-full pl-4 pr-2 py-1 border border-slate-200 dark:border-slate-700 focus-within:ring-2 focus-within:ring-blue-500 transition-all shadow-2xs gap-1.5">
+              <input type="text" id="chatMessageInput" placeholder="Mensagem ou itens da lista..." 
+                     class="flex-1 bg-transparent text-slate-900 dark:text-white py-1.5 text-xs sm:text-sm focus:outline-none placeholder-slate-400 min-w-0">
+              <button type="button" id="btnChatCameraFooter" onclick="openPhotoGuidanceModal()" class="w-8 h-8 rounded-full hover:bg-slate-200/80 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-all active:scale-95 cursor-pointer flex-shrink-0" title="Câmera: fotografar produto, preço na gôndola ou nota">
+                <i data-lucide="camera" class="w-4.5 h-4.5"></i>
+              </button>
+            </div>
+
+            <!-- Botão Microfone Estilo WhatsApp -->
+            <button type="button" id="btnChatVoiceMic" onclick="window.startCleanChatVoice()" class="w-10 h-10 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-md cursor-pointer flex-shrink-0" title="Gravar áudio ou ditar lista de compras por voz">
+              <i data-lucide="mic" class="w-4.5 h-4.5"></i>
+            </button>
+
+            <!-- Botão Enviar Estilo WhatsApp -->
+            <button type="submit" id="btnChatSendMsg" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-md cursor-pointer flex-shrink-0" title="Enviar mensagem">
+              <i data-lucide="send" class="w-4.5 h-4.5"></i>
+            </button>
+          </form>
+        </div>
       </div>
-
-      <!-- Gôndola Completa de Produtos -->
-      <div id="chatShoppingGondolaList"></div>
-    </div>
-
-    <!-- Barra Inferior de Envio Fixa -->
-    <div id="chatInputFooter" class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-3 sm:p-4 flex-shrink-0 pb-safe">
-      <form id="chatMessageForm" onsubmit="handleSendCleanChatMessage(event)" class="flex items-center gap-2 max-w-4xl mx-auto">
-        <input type="text" id="chatMessageInput" placeholder="Escreva uma mensagem para a família..." 
-               class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400">
-        
-        <button type="submit" class="w-10 h-10 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition-all shadow-md cursor-pointer flex-shrink-0" title="Enviar mensagem">
-          <i data-lucide="send" class="w-4.5 h-4.5"></i>
-        </button>
-      </form>
-    </div>
     </div>
   </div>
 
@@ -33722,7 +34027,8 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       hud = document.createElement('div');
       hud.id = 'voiceRecordingActiveHud';
       // Estilo barra de áudio do WhatsApp mantendo as cores do app (Azul/Esmeralda ControlPig)
-      hud.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[130] max-w-lg w-[95vw] p-3 rounded-3xl bg-slate-900/98 text-white border-2 border-sky-500 shadow-2xl backdrop-blur-md transition-all';
+      hud.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[4000] max-w-lg w-[95vw] p-3 rounded-3xl bg-slate-900/98 text-white border-2 border-sky-500 shadow-2xl backdrop-blur-md transition-all';
+      hud.style.zIndex = '4000';
       document.body.appendChild(hud);
     }
 
@@ -33887,11 +34193,20 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     showToastUndo('🗑️ Gravação de áudio cancelada.', false);
   };
 
-  // Garante que ao receber o resultado final do botão Enviar Áudio na Lista de Compras, adicione os itens imediatamente
+  // Garante que ao receber o resultado final do botão Enviar Áudio no Chat ou na Lista de Compras, envie na conversa ou adicione os itens imediatamente
   window.onNativeChatVoiceResult = function(spokenText) {
     window.onNativeMicrophoneRecordingState(false, '');
     const clean = String(spokenText || '').trim();
     if (!clean) return;
+    if (_waVoiceMode === 'chat' && window.currentChatTab === 'conversa') {
+      const chatInp = document.getElementById('chatMessageInput') || document.getElementById('inputChatMessageClean');
+      if (chatInp && typeof window.handleSendCleanChatMessage === 'function') {
+        chatInp.value = clean;
+        const formEl = document.getElementById('chatMessageForm');
+        window.handleSendCleanChatMessage({ preventDefault: function(){}, currentTarget: formEl });
+        return;
+      }
+    }
     if (typeof window.processVoiceShoppingInput === 'function') {
       window.processVoiceShoppingInput(clean);
     } else if (typeof window.parseShoppingListSpeechWithGemini === 'function') {
@@ -34435,28 +34750,16 @@ window.syncIndividualAndFamilyModeUI = function() {
             if (floatMsgBar) floatMsgBar.classList.add('hidden');
             if (inputFooter) inputFooter.classList.add('hidden');
         } else {
-            if (titleEl) titleEl.innerHTML = '💬 Chat da Família';
+            if (!window.isInsideChatConversation) {
+                if (titleEl) titleEl.innerHTML = '<span>💬</span><span>Chat da Família</span>';
+                if (subEl) subEl.textContent = 'Toque em um membro para conversar ou ver a Lista de Compras';
+            }
             if (tabsBar) tabsBar.classList.remove('hidden');
             if (floatMsgBar) floatMsgBar.classList.remove('hidden');
             if (inputFooter) inputFooter.classList.remove('hidden');
-            if (recBar) {
-                recBar.classList.remove('hidden');
-                if (!isMaster) {
-                    const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
-                    const titular = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
-                    if (subEl) {
-                        subEl.textContent = din.length > 0
-                            ? `${titular}, ${din.map(m => m.nome).join(', ')} • Sincronizado`
-                            : `${titular} • Adicione membros no Painel do Usuário`;
-                    }
-                    const btnsHtml = [
-                        `<button type="button" onclick="selectChatRecipient('Todos')" id="btnRecipient_Todos" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-2xs transition-all whitespace-nowrap cursor-pointer">👨‍👩‍👧‍👦 Todos</button>`,
-                        `<button type="button" onclick="selectChatRecipient('${titular.replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">👤 ${titular}</button>`,
-                        ...din.map(m => `<button type="button" onclick="selectChatRecipient('${(m.nome || '').replace(/'/g, "\'")}')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all whitespace-nowrap cursor-pointer">${m.avatar || '👤'} ${escapeHtml(m.nome)}</button>`)
-                    ].join('');
-                    recBar.className = 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-start gap-1.5 overflow-x-auto flex-shrink-0 select-none text-left';
-                    recBar.innerHTML = `<span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex-shrink-0 mr-0.5">Para:</span>` + btnsHtml;
-                }
+            if (recBar) recBar.classList.remove('hidden');
+            if (typeof window.renderChatMembersDirectory === 'function') {
+                window.renderChatMembersDirectory();
             }
         }
     }
@@ -41037,13 +41340,26 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     ensureElementVisible('modalFamilyChat');
     const bH = document.getElementById('chatHeaderBadge');
     if (bH) bH.classList.add('hidden');
+    const bF = document.getElementById('chatFloatingBadge');
+    if (bF) bF.classList.add('hidden');
     if (typeof window.syncIndividualAndFamilyModeUI === 'function') {
       window.syncIndividualAndFamilyModeUI();
     }
     const isIndiv = typeof window.isUserInIndividualMode === 'function' ? window.isUserInIndividualMode() : false;
-    const targetTab = isIndiv ? 'lista' : (defaultTab === 'lista' ? 'lista' : 'conversa');
-    if (typeof window.switchChatViewTab === 'function') {
-      window.switchChatViewTab(targetTab);
+    if (isIndiv) {
+      window.isInsideChatConversation = true;
+      const dirView = document.getElementById('chatMembersDirectoryView');
+      const convView = document.getElementById('chatActiveConversationView');
+      if (dirView) dirView.classList.add('hidden');
+      if (convView) convView.classList.remove('hidden');
+      if (typeof window.switchChatViewTab === 'function') {
+        window.switchChatViewTab('lista');
+      }
+    } else {
+      // Exibe primeiro a lista de membros estilo WhatsApp para clicar e entrar
+      if (typeof window.showChatMembersDirectory === 'function') {
+        window.showChatMembersDirectory();
+      }
     }
     if (typeof renderCleanChatStream === 'function') renderCleanChatStream();
     if (typeof updateCartSummaryUI === 'function') updateCartSummaryUI();
