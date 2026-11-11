@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../services/speech_service.dart';
@@ -187,7 +186,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.139+216';
+  static const String _kCurrentAppVersion = '2.1.139+217';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
@@ -559,13 +558,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           }
         """);
       } else if (action == 'stop_speak') {
-        if (mounted) {
-          setState(() {
-            _isAlarmRinging = false;
-          });
-        }
-        _flutterTts?.stop();
-        await NativeChannelService.stopNativeAlarm();
+        _silenceAllAlarmsNow();
       } else if (action == 'update_launcher_icon') {
         final isPositive = data['isPositive'] as bool? ?? true;
         await NativeChannelService.setLauncherIcon(isPositive);
