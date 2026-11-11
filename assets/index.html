@@ -42942,6 +42942,24 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             <!-- Renderizado dinamicamente via renderKidStagesTrackUI() -->
           </div>
         </div>
+        <!-- Card 4: Loja de Expansões de Fases & Novos Mundos (Continuidade Infinita) -->
+        <div class="bg-gradient-to-br from-purple-900/90 via-slate-900 to-indigo-950 text-white rounded-3xl p-4 border border-purple-400/40 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
+            <div>
+              <h3 class="font-black text-sm text-white flex items-center gap-1.5">
+                <span>📦</span> <span>Expansões de Fases &amp; Novos Mundos</span>
+              </h3>
+              <p class="text-[11px] text-purple-200">Adquira novos mundos e desafios contínuos sem nunca perder suas moedas e estrelas!</p>
+            </div>
+            <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-500/30 border border-purple-400 text-purple-200">
+              Novas Fases
+            </span>
+          </div>
+
+          <div id="kidExpansionPacksContainer" class="space-y-2.5 pt-0.5">
+            <!-- Renderizado dinamicamente via renderKidExpansionPacksUI() -->
+          </div>
+        </div>
       </div>
 
       <!-- ======================================================== -->
@@ -43827,8 +43845,9 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (!active) return;
       const prof = active.gameProfile || initKidGameProfile(active.age || 8);
       const tier = prof.tier || 'explorador';
-      const stages = KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador;
-      const stage = stages.find(s => s.id === stageId) || stages[0];
+      let allPossibleStages = [...(KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador)];
+      EXPANSION_PACKS_CATALOG.forEach(p => { if (p.stages) allPossibleStages.push(...p.stages); });
+      const stage = allPossibleStages.find(s => s.id === stageId) || allPossibleStages[0];
       if (!stage) return;
 
       window.currentActiveChallengeData = { stage, kidId: active.id };
@@ -44222,6 +44241,151 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     
+    
+    // Catálogo de Pacotes de Expansão de Novas Fases
+    const EXPANSION_PACKS_CATALOG = [
+      {
+        id: 'pack_pizzaria',
+        title: '🍕 A Grande Pizzaria do Piggy',
+        desc: 'Mundo Empreendedor: Compre farinha e queijo no atacado, calcule preço da pizza e contrate entregadores!',
+        stagesCount: 3,
+        unlockCostCoins: 150,
+        unlockedTier: 'Todos',
+        stages: [
+          {
+            id: 101, title: 'Expansão: Compras no Atacado', icon: '🧀',
+            story: 'Para sua pizzaria lucrar mais, você precisa comprar farinha e queijo em grande quantidade.',
+            question: 'Onde um dono de pizzaria compra os ingredientes?',
+            optA: { text: 'No supermercado mais caro da esquina pagando no cartão.', correct: false, exp: 'Comprar no varejo encarece seu custo e reduz sua margem de lucro!' },
+            optB: { text: 'No distribuidor atacadista pesquisando o melhor preço por quilo! 📦', correct: true, exp: 'Perfeito! Comprar no atacado reduz o custo unitário e aumenta o lucro da pizzaria!' },
+            coins: 30, xp: 45
+          },
+          {
+            id: 102, title: 'Expansão: O Preço da Pizza', icon: '🍕',
+            story: 'Cada pizza gasta R$ 15,00 de ingredientes e gás. Você quer uma margem saudável de lucro.',
+            question: 'Por quanto você deve vender a pizza?',
+            optA: { text: 'Por R$ 38,00 (Cobre os R$ 15 de custo e sobra R$ 23 de lucro) 💰', correct: true, exp: 'Excelente precificação! Cobriu os custos diretos, embalagem e deixou lucro!' },
+            optB: { text: 'Por R$ 14,00 para vender mais que todo mundo.', correct: false, exp: 'Vender abaixo do custo gera prejuízo a cada venda e quebra o negócio!' },
+            coins: 35, xp: 50
+          },
+          {
+            id: 103, title: 'Expansão: Contratar o Entregador', icon: '🛵',
+            story: 'Sua pizzaria está vendendo 50 pizzas por noite e você não dá conta de entregar sozinho.',
+            question: 'Qual a decisão de um líder visionário?',
+            optA: { text: 'Contratar um entregador parceiro para atender mais clientes satisfeitos! 🚀', correct: true, exp: 'Visão de magnata! Delegar tarefas permite que sua empresa cresça muito mais!' },
+            optB: { text: 'Parar de vender pizza porque cansa muito.', correct: false, exp: 'Empreendedores contratam ajuda para expandir as vendas e gerar empregos!' },
+            coins: 40, xp: 60
+          }
+        ]
+      },
+      {
+        id: 'pack_viagem',
+        title: '✈️ A Viagem dos Sonhos em Família',
+        desc: 'Planejamento de Viagem: Cotação de passagens, conversão de moeda estrangeira e mala sem compras por impulso!',
+        stagesCount: 2,
+        unlockCostCoins: 200,
+        unlockedTier: 'Todos',
+        stages: [
+          {
+            id: 201, title: 'Expansão: Planejar a Passagem com Antecedência', icon: '🛫',
+            story: 'A família vai viajar nas férias de fim de ano. Quando é mais barato comprar passagens aéreas e hotel?',
+            question: 'Qual a melhor estratégia para economizar na viagem?',
+            optA: { text: 'Pesquisar e comprar com meses de antecedência na baixa temporada! 📅', correct: true, exp: 'Espetacular! Comprar com antecedência gera economia de até 50% em passagens e hospedagem!' },
+            optB: { text: 'Deixar para comprar no dia do embarque no balcão do aeroporto.', correct: false, exp: 'Comprar de última hora é a forma mais cara de viajar!' },
+            coins: 35, xp: 50
+          },
+          {
+            id: 202, title: 'Expansão: O Câmbio e Lembrancinhas', icon: '🧳',
+            story: 'Durante a viagem, você tem um orçamento de R$ 50 para lembrancinhas.',
+            question: 'Como aproveitar a viagem sem estourar o limite?',
+            optA: { text: 'Escolher 1 ou 2 lembranças significativas dentro do orçamento! 🎁', correct: true, exp: 'Maturidade de mestre! Memórias inesquecíveis não dependem de gastar em excesso!' },
+            optB: { text: 'Comprar tudo o que vê na frente e pedir dinheiro emprestado.', correct: false, exp: 'Gastar por impulso em viagens gera dívidas que estragam as férias.' },
+            coins: 40, xp: 60
+          }
+        ]
+      }
+    ];
+
+    window.unlockKidExpansionPack = function(packId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age || 8);
+      
+      const pack = EXPANSION_PACKS_CATALOG.find(p => p.id === packId);
+      if (!pack) return;
+
+      if (!Array.isArray(active.gameProfile.unlockedPacks)) {
+        active.gameProfile.unlockedPacks = [];
+      }
+
+      if (active.gameProfile.unlockedPacks.includes(packId)) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo(`📦 O pacote "${pack.title}" já está desbloqueado e ativo na trilha!`, false);
+        }
+        return;
+      }
+
+      const cost = pack.unlockCostCoins || 100;
+      if ((active.gameProfile.coins || 0) < cost) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo(`🪙 São necessárias ${cost} PiggyCoins para liberar "${pack.title}". Cumpra fases ou missões reais para acumular!`, false);
+        }
+        return;
+      }
+
+      active.gameProfile.coins -= cost;
+      active.gameProfile.unlockedPacks.push(packId);
+
+      // Adiciona o primeiro ID das novas fases aos unlockedStages para a criança poder jogar imediatamente!
+      if (!Array.isArray(active.gameProfile.unlockedStages)) {
+        active.gameProfile.unlockedStages = [1];
+      }
+      if (pack.stages && pack.stages[0]) {
+        active.gameProfile.unlockedStages.push(pack.stages[0].id);
+      }
+
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🎉 NOVO MUNDO DESBLOQUEADO: "${pack.title}"! ${pack.stagesCount} novas fases adicionadas à trilha sem perder nenhuma moeda!`, false);
+      }
+    };
+
+    function renderKidExpansionPacksUI(prof) {
+      const container = document.getElementById('kidExpansionPacksContainer');
+      if (!container) return;
+
+      const unlockedPacks = Array.isArray(prof.unlockedPacks) ? prof.unlockedPacks : [];
+
+      container.innerHTML = EXPANSION_PACKS_CATALOG.map(pack => {
+        const isUnlocked = unlockedPacks.includes(pack.id);
+        return `
+          <div class="p-3 rounded-2xl bg-white/10 dark:bg-slate-800/90 border ${isUnlocked ? 'border-emerald-400/60 bg-emerald-950/20' : 'border-purple-300/40'} flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <strong class="text-xs font-black text-white truncate">${escapeHtml(pack.title)}</strong>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${isUnlocked ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-400/50' : 'bg-purple-500/30 text-purple-200 border border-purple-400/50'}">
+                  ${isUnlocked ? '✓ Ativo na Trilha' : `+${pack.stagesCount} Fases Novas`}
+                </span>
+              </div>
+              <p class="text-[10px] text-purple-200 dark:text-purple-300 mt-0.5 line-clamp-1">${escapeHtml(pack.desc)}</p>
+            </div>
+            <div class="flex-shrink-0">
+              ${isUnlocked ? `
+                <span class="text-emerald-300 font-black text-xs flex items-center gap-1">
+                  <span>✓ Instalado</span>
+                </span>
+              ` : `
+                <button type="button" onclick="unlockKidExpansionPack('${pack.id}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 active:scale-95 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1">
+                  <span>Desbloquear (${pack.unlockCostCoins} 🪙)</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderKidCityBuildingsUI(prof) {
       const container = document.getElementById('kidCityBuildingsGrid');
       if (!container) return;
@@ -44256,7 +44420,16 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (!container) return;
 
       const tier = prof.tier || 'explorador';
-      const stages = KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador;
+      let stages = [...(KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador)];
+
+      // Junta as fases dos pacotes de expansão desbloqueados sem nunca resetar o progresso
+      const unlockedPacks = Array.isArray(prof.unlockedPacks) ? prof.unlockedPacks : [];
+      unlockedPacks.forEach(packId => {
+        const pack = EXPANSION_PACKS_CATALOG.find(p => p.id === packId);
+        if (pack && Array.isArray(pack.stages)) {
+          stages.push(...pack.stages);
+        }
+      });
       const completed = prof.completedStages || {};
       const unlocked = prof.unlockedStages || [1];
 
@@ -44427,6 +44600,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         renderKidCityBuildingsUI(prof);
         renderKidStagesTrackUI(prof);
         renderParentMissionsUI(prof);
+        if (typeof renderKidExpansionPacksUI === 'function') renderKidExpansionPacksUI(prof);
 
         if (titleEl) titleEl.textContent = `Boletim de ${active.name}`;
         if (subEl) subEl.textContent = `${active.school || 'Escola não informada'} ${active.gradeYear ? `• ${active.gradeYear}` : ''}`;
