@@ -17,6 +17,20 @@ jobs:
     steps:
       - name: Baixar Código do Repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determinar Versão da Release
+        id: determine_version
+        run: |
+          if [[ "${GITHUB_REF_NAME}" =~ ^v[0-9] ]]; then
+            RELEASE_TAG="${GITHUB_REF_NAME}"
+          else
+            RAW_VER=$(grep '^version:' pubspec.yaml | sed 's/version: //' | cut -d'+' -f1 | tr -d ' \r\n')
+            RELEASE_TAG="v${RAW_VER}"
+          fi
+          echo "RELEASE_TAG=${RELEASE_TAG}" >> $GITHUB_ENV
+          echo "Tag identificada: ${RELEASE_TAG}"
 
       - name: Configurar Java JDK 17
         uses: actions/setup-java@v5
@@ -25,31 +39,32 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Configurar Flutter SDK (Versão Stable)
+      - name: Configurar Flutter SDK (Versão Stable Garantida)
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.9'
           channel: 'stable'
           cache: true
+
+      - name: Dar permissão de execução ao Gradle Wrapper
+        run: chmod +x android/gradlew
 
       - name: Instalar Dependências Flutter
         run: flutter pub get
 
-      - name: Compilar APK Universal e Otimizados
-        run: |
-          flutter build apk --release --verbose --android-skip-build-dependency-validation
-          flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
+      - name: Compilar APK Universal
+        run: flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation
+
+      - name: Compilar APKs Otimizados por Arquitetura (Split ABI)
+        run: flutter build apk --release --split-per-abi --no-tree-shake-icons --android-skip-build-dependency-validation
 
       - name: Organizar e Renomear APKs
         run: |
           mkdir -p apks_dist
-          TAG_VAL="${GITHUB_REF_NAME:-v2.1.81}"
-          if [ "$TAG_VAL" = "main" ] || [ "$TAG_VAL" = "master" ]; then
-            TAG_VAL="v2.1.81"
-          fi
-          echo "Utilizando prefixo de versao: $TAG_VAL"
-          cp build/app/outputs/flutter-apk/app-release.apk "apks_dist/ControlPig_${TAG_VAL}_Universal.apk"
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "apks_dist/ControlPig_${TAG_VAL}_32bit_armeabi.apk"
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "apks_dist/ControlPig_${TAG_VAL}_64bit_arm64.apk"
+          echo "Utilizando prefixo de versao: ${RELEASE_TAG}"
+          cp build/app/outputs/flutter-apk/app-release.apk "apks_dist/ControlPig_${RELEASE_TAG}_Universal.apk"
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "apks_dist/ControlPig_${RELEASE_TAG}_32bit_armeabi.apk"
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "apks_dist/ControlPig_${RELEASE_TAG}_64bit_arm64.apk"
           ls -la apks_dist/
 
       - name: Disponibilizar APKs para Download (Artifacts)
@@ -61,25 +76,25 @@ jobs:
           retention-days: 30
 
       - name: Publicar GitHub Release Oficial
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           files: apks_dist/*.apk
-          name: ControlPig ${{ github.ref_name }} - APKs 32-bit, 64-bit e Universal
+          name: ControlPig ${{ env.RELEASE_TAG }} - APKs 32-bit, 64-bit e Universal
           body: |
-            ## ControlPig ${{ github.ref_name }} 🐷
+            ## ControlPig ${{ env.RELEASE_TAG }} 🐷
             Novidades desta versão:
             - Atualização dinâmica instantânea do Saldo Atual e métricas ao registrar receitas e despesas
             - Olhinho de privacidade completo: oculta 100% dos valores e números do card Saldo Atual
             - Gestão de Membros completa com navegação por abas e opção de Editar Membro
-            - Remoção da seção de teste de visão do usuário
             - Downloads diretos para todas as arquiteturas (Universal, 32-bit e 64-bit)
             
             ### Downloads Diretos:
-            - **Universal**: [ControlPig_${{ github.ref_name }}_Universal.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_Universal.apk)
-            - **32-bit**: [ControlPig_${{ github.ref_name }}_32bit_armeabi.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_32bit_armeabi.apk)
-            - **64-bit**: [ControlPig_${{ github.ref_name }}_64bit_arm64.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ github.ref_name }}/ControlPig_${{ github.ref_name }}_64bit_arm64.apk)
+            - **Universal**: [ControlPig_${{ env.RELEASE_TAG }}_Universal.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ env.RELEASE_TAG }}/ControlPig_${{ env.RELEASE_TAG }}_Universal.apk)
+            - **32-bit**: [ControlPig_${{ env.RELEASE_TAG }}_32bit_armeabi.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ env.RELEASE_TAG }}/ControlPig_${{ env.RELEASE_TAG }}_32bit_armeabi.apk)
+            - **64-bit**: [ControlPig_${{ env.RELEASE_TAG }}_64bit_arm64.apk](https://github.com/agentiabr/financas-casal-flutter/releases/download/${{ env.RELEASE_TAG }}/ControlPig_${{ env.RELEASE_TAG }}_64bit_arm64.apk)
           draft: false
           prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
