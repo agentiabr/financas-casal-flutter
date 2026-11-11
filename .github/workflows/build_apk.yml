@@ -68,7 +68,7 @@ jobs:
           ls -la apks_dist/
 
       - name: Disponibilizar APKs para Download (Artifacts)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: financas-casal-apks
           path: apks_dist/*.apk
