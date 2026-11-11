@@ -174,7 +174,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.136+213';
+  static const String _kCurrentAppVersion = '2.1.137+214';
 
   Future<void> _requestPostLoginPermissions() async {
     try {
