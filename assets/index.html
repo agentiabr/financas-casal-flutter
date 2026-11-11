@@ -42905,6 +42905,24 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           </div>
         </div>
 
+        
+        <!-- Banner Chamada Rápida: JOGAR ARCADE CORRIDA DAS MOEDAS (60 FPS) -->
+        <div class="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-700 text-white shadow-lg flex items-center justify-between gap-3 border border-pink-400/40 animate-in fade-in">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-11 h-11 rounded-2xl bg-white/20 text-2xl flex items-center justify-center animate-bounce flex-shrink-0 shadow-sm">🕹️</div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-black text-xs sm:text-sm text-white truncate">Piggy Catch: Corrida das Moedas</h4>
+                <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider flex-shrink-0">Arcade 60 FPS</span>
+              </div>
+              <p class="text-[10px] text-pink-100 truncate mt-0.5">Mova o Piggy com o dedo, colete moedas e desvie dos boletos em tempo real!</p>
+            </div>
+          </div>
+          <button type="button" onclick="openKidArcadeGame(1)" class="px-4 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs shadow-xl transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0 animate-pulse">
+            <span>▶️ JOGAR AGORA</span>
+          </button>
+        </div>
+
         <!-- Card 2: A Cidade do Piggy (Tycoon / Construção Infinito) -->
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
           <div class="flex items-center justify-between gap-2">
@@ -43204,6 +43222,97 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <p class="text-[11px] leading-relaxed" id="challengeFeedbackDesc"></p>
         <button type="button" onclick="confirmKidGameChallengeResult()" id="btnChallengeContinue" class="w-full py-2.5 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer">
           Continuar!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ========================================================================= -->
+  <!-- MODAL ARCADE: O CAÇADOR DE MOEDAS & DEFENSOR DO COFRINHO (60 FPS)        -->
+  <!-- ========================================================================= -->
+  <div id="modalKidArcadeGame" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[3960] hidden flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+    <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full flex flex-col shadow-2xl border-2 border-pink-400 overflow-hidden relative">
+      <!-- Barra Superior do Jogo -->
+      <div class="px-4 py-2.5 bg-slate-950/80 border-b border-pink-500/30 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeKidArcadeGame()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center font-bold cursor-pointer">✕</button>
+          <div>
+            <h4 id="arcadeStageTitle" class="font-black text-xs sm:text-sm text-pink-300">Fase 1: O Pomar do Piggy</h4>
+            <span id="arcadeStageObjective" class="text-[10px] text-slate-400">Meta: 100 Moedas</span>
+          </div>
+        </div>
+
+        <!-- Indicador de Vidas e Placar da Partida -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-0.5 text-sm" id="arcadeLivesDisplay" title="Vidas">
+            <span>❤️</span><span>❤️</span><span>❤️</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-black text-xs flex items-center gap-1">
+            <span>🪙</span><span id="arcadeScoreDisplay">0</span>/<span id="arcadeGoalDisplay">100</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de Jogo Canvas 2D -->
+      <div class="relative w-full bg-gradient-to-b from-sky-900 via-indigo-950 to-slate-950 flex items-center justify-center overflow-hidden" style="touch-action: none;">
+        <canvas id="piggyArcadeCanvas" width="400" height="420" class="w-full h-[360px] sm:h-[420px] block cursor-pointer"></canvas>
+
+        <!-- Overlay de Vitória / Conclusão de Fase -->
+        <div id="arcadeVictoryOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm hidden flex flex-col items-center justify-center p-5 text-center space-y-3 animate-in zoom-in-95 duration-200">
+          <div class="text-5xl animate-bounce">🏆</div>
+          <span class="text-xs font-black uppercase tracking-wider text-pink-400">Sensacional! Fase Concluída!</span>
+          <h3 id="arcadeVictoryStageName" class="font-black text-lg text-white">O Pomar do Piggy Vencido!</h3>
+          <div class="flex items-center justify-center gap-1 text-2xl text-amber-400" id="arcadeVictoryStars">
+            ⭐ ⭐ ⭐
+          </div>
+          <div class="p-3 rounded-2xl bg-white/10 border border-white/10 text-xs text-slate-200 space-y-1">
+            <div>Você coletou: <strong class="text-amber-300 font-mono font-black text-sm" id="arcadeEarnedCoinsText">+100 PiggyCoins</strong>!</div>
+            <div class="text-[11px] text-blue-300 font-bold">+50 XP para seu nível de Magnata!</div>
+          </div>
+          <p class="text-[11px] text-pink-200 max-w-xs" id="arcadeEducationalTip">
+            Dica do Piggy: Fugir dos boletos e focar nas moedas garantiu seu sucesso!
+          </p>
+          <div class="flex items-center gap-2 w-full pt-1">
+            <button type="button" onclick="restartCurrentArcadeStage()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer">
+              Jogar de Novo
+            </button>
+            <button type="button" onclick="closeKidArcadeGame(true)" class="flex-1 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs shadow-md cursor-pointer">
+              Próxima Fase ▶️
+            </button>
+          </div>
+        </div>
+
+        <!-- Overlay de Game Over (Se perder as 3 vidas) -->
+        <div id="arcadeGameOverOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm hidden flex flex-col items-center justify-center p-5 text-center space-y-3 animate-in zoom-in-95 duration-200">
+          <div class="text-5xl animate-pulse">💸</div>
+          <span class="text-xs font-black uppercase tracking-wider text-rose-400">Os Boletos Venceram Desta Vez!</span>
+          <h3 class="font-black text-base text-white">Não desista! Tente novamente!</h3>
+          <p class="text-[11px] text-slate-300 max-w-xs">
+            Desvie com rapidez dos boletos em chamas 🔥 e foque apenas em pegar as moedas de ouro e diamantes!
+          </p>
+          <div class="flex items-center gap-2 w-full pt-2">
+            <button type="button" onclick="closeKidArcadeGame()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs cursor-pointer">
+              Sair
+            </button>
+            <button type="button" onclick="restartCurrentArcadeStage()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md cursor-pointer">
+              Tentar Novamente 🔄
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Controles de Toque para Celular -->
+      <div class="px-4 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-3 select-none">
+        <button type="button" id="btnArcadeMoveLeft" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:bg-pink-600 active:scale-95 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-1 shadow-md transition-all cursor-pointer">
+          <span class="text-lg">◀</span><span>Esquerda</span>
+        </button>
+        <div class="text-center px-1">
+          <span class="text-[9px] uppercase font-bold text-slate-400 block">Arraste ou Toque</span>
+          <span class="text-[10px] text-pink-300 font-bold">no Porquinho</span>
+        </div>
+        <button type="button" id="btnArcadeMoveRight" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 active:bg-pink-600 active:scale-95 text-white font-black text-sm rounded-2xl flex items-center justify-center gap-1 shadow-md transition-all cursor-pointer">
+          <span>Direita</span><span class="text-lg">▶</span>
         </button>
       </div>
     </div>
@@ -44032,6 +44141,464 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
     window.activeKidId = null;
 
+    
+    // =========================================================================
+    // 7. MOTOR ARCADE DINÂMICO 60 FPS: O CAÇADOR DE MOEDAS (HTML5 CANVAS)
+    // =========================================================================
+    let _arcadeAudioCtx = null;
+    function playArcadeAudio(type) {
+      try {
+        if (!_arcadeAudioCtx) {
+          _arcadeAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (_arcadeAudioCtx.state === 'suspended') {
+          _arcadeAudioCtx.resume();
+        }
+        const now = _arcadeAudioCtx.currentTime;
+        const osc = _arcadeAudioCtx.createOscillator();
+        const gain = _arcadeAudioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(_arcadeAudioCtx.destination);
+
+        if (type === 'coin') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(987.77, now); // B5
+          osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'gem') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1046.50, now); // C6
+          osc.frequency.setValueAtTime(1318.51, now + 0.06); // E6
+          osc.frequency.setValueAtTime(1567.98, now + 0.12); // G6
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'hit') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(60, now + 0.25);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'win') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const o = _arcadeAudioCtx.createOscillator();
+            const g = _arcadeAudioCtx.createGain();
+            o.type = 'triangle';
+            o.connect(g);
+            g.connect(_arcadeAudioCtx.destination);
+            o.frequency.setValueAtTime(freq, now + idx * 0.1);
+            g.gain.setValueAtTime(0.25, now + idx * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.25);
+            o.start(now + idx * 0.1);
+            o.stop(now + idx * 0.1 + 0.25);
+          });
+        }
+      } catch (e) {
+        // Audio desativado no ambiente, continua silencioso sem quebrar
+      }
+    }
+
+    let _arcadeState = {
+      running: false,
+      stageId: 1,
+      kidId: null,
+      score: 0,
+      goal: 100,
+      lives: 3,
+      playerX: 175,
+      playerY: 360,
+      playerW: 52,
+      playerH: 48,
+      items: [],
+      particles: [],
+      floatingTexts: [],
+      lastSpawn: 0,
+      spawnRate: 650, // ms
+      baseSpeed: 3.0,
+      animId: null,
+      keyLeft: false,
+      keyRight: false
+    };
+
+    window.openKidArcadeGame = function(stageId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age || 8);
+
+      const m = document.getElementById('modalKidArcadeGame');
+      const canvas = document.getElementById('piggyArcadeCanvas');
+      if (!m || !canvas) return;
+
+      m.classList.remove('hidden');
+
+      // Calibra meta e velocidade com base na fase e idade
+      const sId = parseInt(stageId, 10) || 1;
+      const targetGoal = 60 + sId * 25;
+      const stageSpeed = 2.4 + sId * 0.35;
+
+      _arcadeState.running = true;
+      _arcadeState.stageId = sId;
+      _arcadeState.kidId = active.id;
+      _arcadeState.score = 0;
+      _arcadeState.goal = targetGoal;
+      _arcadeState.lives = 3;
+      _arcadeState.items = [];
+      _arcadeState.particles = [];
+      _arcadeState.floatingTexts = [];
+      _arcadeState.lastSpawn = performance.now();
+      _arcadeState.baseSpeed = stageSpeed;
+      _arcadeState.playerX = (canvas.width / 2) - 26;
+
+      document.getElementById('arcadeStageTitle').textContent = `Fase ${sId}: Corrida das Moedas`;
+      document.getElementById('arcadeStageObjective').textContent = `Meta: Coletar ${targetGoal} Moedas sem estourar boletos!`;
+      document.getElementById('arcadeGoalDisplay').textContent = targetGoal;
+      document.getElementById('arcadeScoreDisplay').textContent = '0';
+      document.getElementById('arcadeVictoryOverlay').classList.add('hidden');
+      document.getElementById('arcadeGameOverOverlay').classList.add('hidden');
+      updateArcadeLivesUI();
+
+      initArcadeCanvasControls(canvas);
+      if (_arcadeState.animId) cancelAnimationFrame(_arcadeState.animId);
+      _arcadeState.animId = requestAnimationFrame(arcadeGameLoop);
+    };
+
+    window.closeKidArcadeGame = function(goToNext) {
+      _arcadeState.running = false;
+      if (_arcadeState.animId) cancelAnimationFrame(_arcadeState.animId);
+      const m = document.getElementById('modalKidArcadeGame');
+      if (m) m.classList.add('hidden');
+
+      if (goToNext && _arcadeState.stageId) {
+        setTimeout(() => {
+          window.openKidArcadeGame(_arcadeState.stageId + 1);
+        }, 200);
+      }
+    };
+
+    window.restartCurrentArcadeStage = function() {
+      window.openKidArcadeGame(_arcadeState.stageId || 1);
+    };
+
+    function updateArcadeLivesUI() {
+      const el = document.getElementById('arcadeLivesDisplay');
+      if (!el) return;
+      let hearts = '';
+      for (let i = 0; i < 3; i++) {
+        hearts += i < _arcadeState.lives ? '<span>❤️</span>' : '<span class="opacity-30">🖤</span>';
+      }
+      el.innerHTML = hearts;
+    }
+
+    function initArcadeCanvasControls(canvas) {
+      // Touch e Mouse Drag direto na tela
+      function handleMove(clientX) {
+        if (!_arcadeState.running) return;
+        const rect = canvas.getBoundingClientRect();
+        const scale = canvas.width / rect.width;
+        const x = (clientX - rect.left) * scale;
+        _arcadeState.playerX = Math.max(10, Math.min(canvas.width - _arcadeState.playerW - 10, x - (_arcadeState.playerW / 2)));
+      }
+
+      canvas.onpointerdown = (e) => handleMove(e.clientX);
+      canvas.onpointermove = (e) => {
+        if (e.buttons > 0) handleMove(e.clientX);
+      };
+      canvas.ontouchstart = (e) => {
+        if (e.touches[0]) handleMove(e.touches[0].clientX);
+      };
+      canvas.ontouchmove = (e) => {
+        if (e.touches[0]) handleMove(e.touches[0].clientX);
+      };
+
+      // Botões touch inferiores para dedos
+      const btnL = document.getElementById('btnArcadeMoveLeft');
+      const btnR = document.getElementById('btnArcadeMoveRight');
+
+      if (btnL) {
+        btnL.onpointerdown = (e) => { e.preventDefault(); _arcadeState.keyLeft = true; };
+        btnL.onpointerup = () => { _arcadeState.keyLeft = false; };
+        btnL.onpointerleave = () => { _arcadeState.keyLeft = false; };
+      }
+      if (btnR) {
+        btnR.onpointerdown = (e) => { e.preventDefault(); _arcadeState.keyRight = true; };
+        btnR.onpointerup = () => { _arcadeState.keyRight = false; };
+        btnR.onpointerleave = () => { _arcadeState.keyRight = false; };
+      }
+
+      // Teclado para PC
+      window.onkeydown = (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'a') _arcadeState.keyLeft = true;
+        if (e.key === 'ArrowRight' || e.key === 'd') _arcadeState.keyRight = true;
+      };
+      window.onkeyup = (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'a') _arcadeState.keyLeft = false;
+        if (e.key === 'ArrowRight' || e.key === 'd') _arcadeState.keyRight = false;
+      };
+    }
+
+    function spawnArcadeItem(canvasWidth) {
+      const rand = Math.random();
+      let type = 'coin';
+      let emoji = '🪙';
+      let value = 10;
+      let isObstacle = false;
+
+      if (rand < 0.50) {
+        type = 'coin'; emoji = '🪙'; value = 10;
+      } else if (rand < 0.65) {
+        type = 'money_bag'; emoji = '💰'; value = 25;
+      } else if (rand < 0.75) {
+        type = 'gem'; emoji = '💎'; value = 50;
+      } else if (rand < 0.82) {
+        type = 'apple'; emoji = '🍎'; value = 0; // recupera vida
+      } else {
+        type = 'boleto'; emoji = '🔥'; value = -15; isObstacle = true;
+      }
+
+      const size = 32;
+      const x = Math.random() * (canvasWidth - size - 20) + 10;
+      const speed = _arcadeState.baseSpeed * (0.8 + Math.random() * 0.5);
+
+      _arcadeState.items.push({
+        type,
+        emoji,
+        value,
+        isObstacle,
+        x,
+        y: -30,
+        size,
+        speed,
+        rotation: 0,
+        rotSpeed: (Math.random() - 0.5) * 0.08
+      });
+    }
+
+    function arcadeGameLoop(timestamp) {
+      if (!_arcadeState.running) return;
+
+      const canvas = document.getElementById('piggyArcadeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      // Movimentação via botões / teclado
+      if (_arcadeState.keyLeft) {
+        _arcadeState.playerX = Math.max(10, _arcadeState.playerX - 6);
+      }
+      if (_arcadeState.keyRight) {
+        _arcadeState.playerX = Math.min(canvas.width - _arcadeState.playerW - 10, _arcadeState.playerX + 6);
+      }
+
+      // Spawna novos itens
+      if (timestamp - _arcadeState.lastSpawn > _arcadeState.spawnRate) {
+        spawnArcadeItem(canvas.width);
+        _arcadeState.lastSpawn = timestamp;
+      }
+
+      // Limpa tela com gradiente suave
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Fundo estrelado com grama na base
+      ctx.fillStyle = '#101827';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Linha do chão de moedas
+      ctx.fillStyle = '#064e3b';
+      ctx.fillRect(0, canvas.height - 18, canvas.width, 18);
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(0, canvas.height - 18, canvas.width, 3);
+
+      // Desenha o Jogador (Piggy com Cestinha de Moedas)
+      ctx.font = '40px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🐷', _arcadeState.playerX + 24, _arcadeState.playerY + 18);
+
+      // Cestinha dourada na mão do Piggy
+      ctx.font = '22px Arial';
+      ctx.fillText('🧺', _arcadeState.playerX + 44, _arcadeState.playerY + 28);
+
+      // Atualiza e desenha itens caindo
+      for (let i = _arcadeState.items.length - 1; i >= 0; i--) {
+        const item = _arcadeState.items[i];
+        item.y += item.speed;
+        item.rotation += item.rotSpeed;
+
+        ctx.save();
+        ctx.translate(item.x + item.size / 2, item.y + item.size / 2);
+        ctx.rotate(item.rotation);
+        ctx.font = '28px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(item.emoji, 0, 0);
+        ctx.restore();
+
+        // Colisão com o Piggy
+        const piggyBox = {
+          x: _arcadeState.playerX,
+          y: _arcadeState.playerY,
+          w: _arcadeState.playerW + 15,
+          h: _arcadeState.playerH
+        };
+
+        const itemBox = {
+          x: item.x,
+          y: item.y,
+          w: item.size,
+          h: item.size
+        };
+
+        const collided = (
+          piggyBox.x < itemBox.x + itemBox.w &&
+          piggyBox.x + piggyBox.w > itemBox.x &&
+          piggyBox.y < itemBox.y + itemBox.h &&
+          piggyBox.y + piggyBox.h > itemBox.y
+        );
+
+        if (collided) {
+          if (item.isObstacle) {
+            // Pegou boleto / dívida!
+            _arcadeState.lives--;
+            updateArcadeLivesUI();
+            playArcadeAudio('hit');
+            _arcadeState.floatingTexts.push({
+              text: '💥 -1 VIDA! Boleto!',
+              x: piggyBox.x,
+              y: piggyBox.y - 10,
+              color: '#f43f5e',
+              life: 40
+            });
+
+            if (_arcadeState.lives <= 0) {
+              triggerArcadeGameOver();
+              return;
+            }
+          } else {
+            // Pegou Moeda / Diamante / Maçã
+            if (item.type === 'apple') {
+              if (_arcadeState.lives < 3) {
+                _arcadeState.lives++;
+                updateArcadeLivesUI();
+              }
+              playArcadeAudio('gem');
+              _arcadeState.floatingTexts.push({
+                text: '❤️ +1 VIDA!',
+                x: piggyBox.x,
+                y: piggyBox.y - 10,
+                color: '#ec4899',
+                life: 40
+              });
+            } else {
+              _arcadeState.score += item.value;
+              document.getElementById('arcadeScoreDisplay').textContent = _arcadeState.score;
+              playArcadeAudio(item.type === 'gem' ? 'gem' : 'coin');
+
+              // Partículas brilhantes
+              for (let p = 0; p < 8; p++) {
+                _arcadeState.particles.push({
+                  x: item.x + 16,
+                  y: item.y + 16,
+                  vx: (Math.random() - 0.5) * 6,
+                  vy: (Math.random() - 0.5) * 6,
+                  color: item.type === 'gem' ? '#06b6d4' : '#fbbf24',
+                  life: 25
+                });
+              }
+
+              _arcadeState.floatingTexts.push({
+                text: `+${item.value} 🪙`,
+                x: item.x,
+                y: item.y,
+                color: item.type === 'gem' ? '#22d3ee' : '#facc15',
+                life: 30
+              });
+
+              // Bateu a meta da fase!
+              if (_arcadeState.score >= _arcadeState.goal) {
+                triggerArcadeVictory();
+                return;
+              }
+            }
+          }
+
+          _arcadeState.items.splice(i, 1);
+          continue;
+        }
+
+        // Se passar do chão, remove
+        if (item.y > canvas.height) {
+          _arcadeState.items.splice(i, 1);
+        }
+      }
+
+      // Renderiza partículas
+      for (let p = _arcadeState.particles.length - 1; p >= 0; p--) {
+        const pt = _arcadeState.particles[p];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life--;
+        ctx.fillStyle = pt.color;
+        ctx.fillRect(pt.x, pt.y, 3, 3);
+        if (pt.life <= 0) _arcadeState.particles.splice(p, 1);
+      }
+
+      // Renderiza textos flutuantes
+      for (let t = _arcadeState.floatingTexts.length - 1; t >= 0; t--) {
+        const ft = _arcadeState.floatingTexts[t];
+        ft.y -= 1.2;
+        ft.life--;
+        ctx.font = 'bold 13px Arial';
+        ctx.fillStyle = ft.color;
+        ctx.fillText(ft.text, ft.x + 20, ft.y);
+        if (ft.life <= 0) _arcadeState.floatingTexts.splice(t, 1);
+      }
+
+      _arcadeState.animId = requestAnimationFrame(arcadeGameLoop);
+    }
+
+    function triggerArcadeVictory() {
+      _arcadeState.running = false;
+      playArcadeAudio('win');
+
+      const coinsEarned = _arcadeState.score;
+      const xpEarned = Math.round(coinsEarned * 0.7);
+
+      // Adiciona saldo permanente ao perfil da criança
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === _arcadeState.kidId) || list[0];
+      if (active && active.gameProfile) {
+        active.gameProfile.coins = (active.gameProfile.coins || 0) + coinsEarned;
+        active.gameProfile.xp = (active.gameProfile.xp || 0) + xpEarned;
+        active.gameProfile.stars = (active.gameProfile.stars || 0) + 1;
+
+        if (!active.gameProfile.completedStages) active.gameProfile.completedStages = {};
+        active.gameProfile.completedStages[_arcadeState.stageId] = 3;
+
+        if (!Array.isArray(active.gameProfile.unlockedStages)) active.gameProfile.unlockedStages = [1];
+        if (!active.gameProfile.unlockedStages.includes(_arcadeState.stageId + 1)) {
+          active.gameProfile.unlockedStages.push(_arcadeState.stageId + 1);
+        }
+
+        window.saveKidsList(list);
+      }
+
+      document.getElementById('arcadeEarnedCoinsText').textContent = `+${coinsEarned} PiggyCoins`;
+      document.getElementById('arcadeVictoryStageName').textContent = `Fase ${_arcadeState.stageId} Vencida com Maestria!`;
+      document.getElementById('arcadeVictoryOverlay').classList.remove('hidden');
+    }
+
+    function triggerArcadeGameOver() {
+      _arcadeState.running = false;
+      document.getElementById('arcadeGameOverOverlay').classList.remove('hidden');
+    }
+
     window.openKidsAreaModal = function() {
       const m = document.getElementById('modalKidsArea');
       if (m) {
@@ -44452,14 +45019,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         if (isDone) {
           cardBorderCls = 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30';
           actionBtnHtml = `
-            <button type="button" onclick="openKidGameChallenge(${st.id})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs active:scale-95 cursor-pointer flex items-center gap-1">
+            <button type="button" onclick="openKidArcadeGame(${st.id})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs active:scale-95 cursor-pointer flex items-center gap-1">
               <span>✓ Jogar de Novo</span>
             </button>
           `;
         } else if (isUnlocked) {
           cardBorderCls = 'border-pink-400 dark:border-pink-500 bg-white dark:bg-slate-800 shadow-md ring-2 ring-pink-300/40 animate-pulse';
           actionBtnHtml = `
-            <button type="button" onclick="openKidGameChallenge(${st.id})" class="px-3.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs shadow-md active:scale-95 cursor-pointer flex items-center gap-1 animate-bounce">
+            <button type="button" onclick="openKidArcadeGame(${st.id})" class="px-3.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs shadow-md active:scale-95 cursor-pointer flex items-center gap-1 animate-bounce">
               <span>▶️ Jogar Desafio</span>
             </button>
           `;
