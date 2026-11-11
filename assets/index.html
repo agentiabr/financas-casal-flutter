@@ -42823,18 +42823,201 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </button>
       </div>
 
+      <!-- NAVEGAÇÃO SEGMENTADA POR ABAS DO ESPAÇO KIDS -->
+      <div class="grid grid-cols-4 gap-1 p-1 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 shadow-xs text-center select-none">
+        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+          <span class="text-sm">🎮</span><span class="truncate">Cidade do Piggy</span>
+        </button>
+        <button type="button" id="tabBtnKids_missoes" onclick="switchKidsAreaTab('missoes')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+          <span class="text-sm">🏅</span><span class="truncate">Missões Pais</span>
+        </button>
+        <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+          <span class="text-sm">📝</span><span class="truncate">Boletim &amp; Aulas</span>
+        </button>
+        <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+          <span class="text-sm">🎓</span><span class="truncate">Despesas</span>
+        </button>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ABA 1: CIDADE DO PIGGY & GAME FINANCEIRO EVOLUTIVO       -->
+      <!-- ======================================================== -->
+      <div id="kidsViewSection_game" class="space-y-3.5">
+        <!-- Card 1: Perfil do Jogador & Status Gamificado -->
+        <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-pink-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg border border-pink-400/40 relative overflow-hidden space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-12 h-12 rounded-2xl bg-pink-500/30 border-2 border-pink-400 text-2xl flex items-center justify-center shadow-md flex-shrink-0">
+                🐷
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h3 id="kidGamePlayerName" class="font-black text-sm sm:text-base text-white truncate">Lucas</h3>
+                  <span id="kidGameTierBadge" class="px-2 py-0.5 rounded-full bg-pink-500/30 border border-pink-400 text-pink-200 text-[10px] font-black uppercase tracking-wider flex-shrink-0">7 a 10 anos</span>
+                </div>
+                <p id="kidGameLevelTitle" class="text-[11px] text-pink-200 font-bold">Nível 2 • Pequeno Magnata</p>
+              </div>
+            </div>
+            
+            <!-- Seletor Rápido de Calibração de Idade -->
+            <div class="flex flex-col items-end flex-shrink-0">
+              <span class="text-[9px] uppercase font-black text-pink-300 tracking-wider">Ajustar Idade</span>
+              <select id="quickSelectKidAge" onchange="changeActiveKidAge(this.value)" class="text-[10px] font-black px-2 py-1 rounded-xl bg-slate-800 text-white border border-pink-400/50 focus:outline-none cursor-pointer">
+                <option value="5">🌱 4 a 6 anos</option>
+                <option value="8">🧭 7 a 10 anos</option>
+                <option value="12">🚀 11 a 14 anos</option>
+                <option value="16">💎 15+ anos</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Placar de Recursos: Moedas, Estrelas, XP -->
+          <div class="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-amber-300 font-black block uppercase">PiggyCoins</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-amber-300">
+                <span>🪙</span><span id="kidGameCoinsCount">120</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-yellow-300 font-black block uppercase">Estrelas</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-yellow-300">
+                <span>⭐</span><span id="kidGameStarsCount">8</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-cyan-300 font-black block uppercase">Nível &amp; XP</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-cyan-300">
+                <span>🏆</span><span id="kidGameXpCount">280 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barra de XP para o próximo nível -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-bold text-pink-200">
+              <span>Progresso para o Nível <strong id="kidGameNextLevelNum">3</strong></span>
+              <span id="kidGameXpProgressLabel">280 / 400 XP</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-black/40 overflow-hidden border border-white/15">
+              <div id="kidGameXpProgressBar" class="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-amber-400 rounded-full transition-all duration-500" style="width: 70%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: A Cidade do Piggy (Tycoon / Construção Infinito) -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🏡</span> <span>A Cidade do Piggy (Construção &amp; Renda)</span>
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Evolua suas construções e colha moedas todos os dias!</p>
+            </div>
+            <button type="button" onclick="harvestKidCityDailyCoins()" id="btnHarvestCityCoins" class="px-3 py-1.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs shadow-sm transition-all flex items-center gap-1 cursor-pointer">
+              <span>🌾</span><span>Colher Diário</span>
+            </button>
+          </div>
+
+          <!-- Grade de Construções da Cidade -->
+          <div id="kidCityBuildingsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <!-- Renderizado dinamicamente via renderKidCityBuildingsUI() -->
+          </div>
+        </div>
+
+        <!-- Card 3: Trilha de Fases (Mapa de Mundos e Desafios Adaptativos) -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+            <div>
+              <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🗺️</span> <span id="kidGameWorldTitle">Mundo: Exploradores da Feirinha</span>
+              </h3>
+              <p id="kidGameWorldSub" class="text-[11px] text-slate-500 dark:text-slate-400">Desafios práticos de compras, troco e economia consciente</p>
+            </div>
+            <span id="kidGameWorldProgressBadge" class="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-black text-[10px]">Fase 2 de 5</span>
+          </div>
+
+          <!-- Trilha Visual de Fases Conectadas -->
+          <div id="kidGameStagesTrackContainer" class="space-y-2.5 pt-1">
+            <!-- Renderizado dinamicamente via renderKidStagesTrackUI() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ABA 2: MISSÕES DOS PAIS (TAREFAS DO MUNDO REAL)          -->
+      <!-- ======================================================== -->
+      <div id="kidsViewSection_missoes" class="hidden space-y-3.5">
+        <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-4 shadow-sm space-y-2 border border-blue-400/30">
+          <div class="flex items-center justify-between">
+            <h3 class="font-black text-sm flex items-center gap-1.5">
+              <span>🏅</span><span>Painel dos Pais: Missões do Mundo Real</span>
+            </h3>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ganha PiggyCoins</span>
+          </div>
+          <p class="text-[11px] text-blue-100 leading-relaxed">
+            Cadastre tarefas reais de casa para seu filho(a). Quando ele cumprir, você aprova com 1 toque e ele ganha moedas e XP para evoluir a Cidade do Piggy no game!
+          </p>
+        </div>
+
+        <!-- Formulário para Criar Nova Missão -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
+          <h4 class="font-black text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+            <span>➕</span><span>Adicionar Missão Real para o Filho(a)</span>
+          </h4>
+          <form onsubmit="handleCreateParentMission(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <input type="text" id="inputMissionTitle" required placeholder="Ex: Arrumar a própria cama, Lição de casa..." class="sm:col-span-2 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] font-black text-amber-500">🪙 Moedas:</span>
+              <input type="number" id="inputMissionRewardCoins" min="5" max="200" value="20" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold text-xs text-center">
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black text-xs shadow-xs cursor-pointer">+ Criar Missão</button>
+          </form>
+          <!-- Sugestões Rápidas -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
+            <button type="button" onclick="fillQuickMissionPreset('🛏️ Arrumar a própria cama', 15)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🛏️ Arrumar cama (15 🪙)</button>
+            <button type="button" onclick="fillQuickMissionPreset('📚 Fazer lição de casa sem reclamar', 25)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">📚 Lição de casa (25 🪙)</button>
+            <button type="button" onclick="fillQuickMissionPreset('💰 Guardar 20% da mesada no cofrinho físico', 50)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">💰 Guardar mesada (50 🪙)</button>
+            <button type="button" onclick="fillQuickMissionPreset('🧸 Guardar todos os brinquedos', 20)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🧸 Guardar brinquedos (20 🪙)</button>
+          </div>
+        </div>
+
+        <!-- Lista de Missões Ativas & Concluídas -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <span class="font-black text-xs text-slate-900 dark:text-white">Tarefas &amp; Aprovações</span>
+            <span id="kidsPendingMissionsBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">0 pendentes</span>
+          </div>
+          <div id="parentMissionsListContainer" class="space-y-2">
+            <!-- Injetado dinamicamente via renderParentMissionsUI() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ABA 3: BOLETIM ESCOLAR & HORÁRIOS DE ATIVIDADES EXTRAS   -->
+      <!-- ======================================================== -->
+      <div id="kidsViewSection_escola" class="hidden space-y-3.5">
+
       <!-- Formulário Cadastrar Filho(a) -->
       <div id="boxAddKidForm" class="hidden bg-white rounded-3xl p-4 border border-pink-300 shadow-md space-y-2.5">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
           <h4 class="font-black text-sm text-slate-900">🧒 Cadastrar Filho(a)</h4>
           <button type="button" onclick="toggleAddKidForm(false)" class="text-slate-400 hover:text-slate-700 font-bold text-xs cursor-pointer">Fechar</button>
         </div>
-        <form onsubmit="handleSaveKidProfile(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <form onsubmit="handleSaveKidProfile(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
           <input type="text" id="inputKidName" required placeholder="Nome do Filho(a) *" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
-          <input type="text" id="inputKidSchool" placeholder="Escola / Colégio (Ex: Etapa, Objetivo...)" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+          <select id="inputKidAge" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900" title="Faixa Etária para Calibração do Jogo">
+            <option value="5">🌱 4 a 6 anos (Pequenos)</option>
+            <option value="8" selected>🧭 7 a 10 anos (Explorador)</option>
+            <option value="12">🚀 11 a 14 anos (Júnior)</option>
+            <option value="16">💎 15+ anos (Jovem Magnata)</option>
+          </select>
+          <input type="text" id="inputKidSchool" placeholder="Escola (Ex: Objetivo...)" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
           <div class="flex items-center gap-2">
-            <input type="text" id="inputKidGradeYear" placeholder="Série/Ano (Ex: 6º Ano)" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
-            <button type="submit" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black cursor-pointer">Salvar</button>
+            <input type="text" id="inputKidGradeYear" placeholder="Série/Ano" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black cursor-pointer flex-shrink-0">Salvar</button>
           </div>
         </form>
       </div>
@@ -42926,29 +43109,84 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <div id="kidsExtraActivitiesListContainer" class="space-y-2"></div>
       </div>
 
-      <!-- Card Integração Financeira: Gastos com Educação & Filhos -->
-      <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
-              <span>🎓</span> <span>Gastos com Educação &amp; Filhos no Ciclo</span>
-            </h3>
-            <p class="text-[11px] text-slate-500">Integrado automaticamente às Transações do ciclo selecionado</p>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ABA 4: DESPESAS COM EDUCAÇÃO NO CICLO ATUAL              -->
+      <!-- ======================================================== -->
+      <div id="kidsViewSection_gastos" class="hidden space-y-3.5">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>🎓</span> <span>Gastos com Educação &amp; Filhos no Ciclo</span>
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Integrado automaticamente às Transações do ciclo selecionado</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Total no Ciclo</span>
+              <strong id="kidsEducationTotalSpent" class="text-sm font-black font-mono text-rose-600">R$ 0,00</strong>
+            </div>
           </div>
-          <div class="text-right">
-            <span class="text-[10px] font-bold uppercase text-slate-400 block">Total no Ciclo</span>
-            <strong id="kidsEducationTotalSpent" class="text-sm font-black font-mono text-rose-600">R$ 0,00</strong>
+
+          <!-- Formulário Lançar Despesa Escolar Direto nas Transações -->
+          <form onsubmit="handleSaveKidEducationExpense(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 p-2.5 rounded-2xl bg-indigo-50/60 border border-indigo-200">
+            <input type="text" id="inputKidExpDesc" required placeholder="Ex: Mensalidade Escolar, Material, Uniforme..." class="sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-bold text-slate-900">
+            <input type="number" step="0.01" id="inputKidExpVal" required placeholder="Valor (R$)" class="px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-mono font-bold text-slate-900">
+            <button type="submit" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black cursor-pointer">+ Lançar Gasto</button>
+          </form>
+
+          <div id="kidsEducationTransactionsList" class="space-y-1.5"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL INTERATIVO: DESAFIO FINANCEIRO DA FASE (GAME KIDS)                  -->
+  <!-- ========================================================================= -->
+  <div id="modalKidGameChallenge" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[3950] hidden flex items-center justify-center p-4 select-none">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-5 shadow-2xl border-2 border-pink-400 space-y-4 text-xs animate-in zoom-in-95 duration-200">
+      <!-- Cabeçalho do Desafio -->
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-2xl bg-pink-100 dark:bg-pink-950 text-2xl flex items-center justify-center shadow-xs">
+            🎮
+          </div>
+          <div>
+            <span id="challengeModalPhaseBadge" class="text-[10px] font-black uppercase text-pink-600 tracking-wider">Fase 1 • Nível Fácil</span>
+            <h3 id="challengeModalTitle" class="font-black text-sm text-slate-900 dark:text-white">Desafio Financeiro</h3>
           </div>
         </div>
+        <button type="button" onclick="closeKidGameChallengeModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold cursor-pointer">✕</button>
+      </div>
 
-        <!-- Formulário Lançar Despesa Escolar Direto nas Transações -->
-        <form onsubmit="handleSaveKidEducationExpense(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 p-2.5 rounded-2xl bg-indigo-50/60 border border-indigo-200">
-          <input type="text" id="inputKidExpDesc" required placeholder="Ex: Mensalidade Escolar, Material, Uniforme..." class="sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-bold text-slate-900">
-          <input type="number" step="0.01" id="inputKidExpVal" required placeholder="Valor (R$)" class="px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-white font-mono font-bold text-slate-900">
-          <button type="submit" class="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black cursor-pointer">+ Lançar Gasto</button>
-        </form>
+      <!-- Historinha e Mascote do Desafio -->
+      <div class="p-3.5 rounded-2xl bg-pink-50/70 dark:bg-pink-950/40 border border-pink-200/80 dark:border-pink-800/60 flex items-start gap-3">
+        <div class="text-3xl flex-shrink-0 animate-bounce">🐷</div>
+        <p id="challengeModalStory" class="text-xs text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
+          História da fase aqui...
+        </p>
+      </div>
 
-        <div id="kidsEducationTransactionsList" class="space-y-1.5"></div>
+      <!-- Pergunta do Desafio -->
+      <div class="space-y-1">
+        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">O que você decide fazer?</span>
+        <h4 id="challengeModalQuestion" class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Qual a melhor atitude para um magnata?</h4>
+      </div>
+
+      <!-- Opções A e B -->
+      <div id="challengeModalOptionsContainer" class="space-y-2">
+        <!-- Injetado dinamicamente -->
+      </div>
+
+      <!-- Feedback Educativo Instantâneo (aparece após responder) -->
+      <div id="challengeModalFeedbackBox" class="hidden p-3.5 rounded-2xl border space-y-2 animate-in fade-in duration-200">
+        <div class="flex items-center gap-2 font-black text-xs" id="challengeFeedbackTitle"></div>
+        <p class="text-[11px] leading-relaxed" id="challengeFeedbackDesc"></p>
+        <button type="button" onclick="confirmKidGameChallengeResult()" id="btnChallengeContinue" class="w-full py-2.5 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer">
+          Continuar!
+        </button>
       </div>
     </div>
   </div>
@@ -43330,6 +43568,413 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     // 5. Módulo Crianças, Boletim Escolar & Gastos com Educação (modalKidsArea)
+    
+    // =========================================================================
+    // 6. MOTOR DO GAME KIDS & A CIDADE DO PIGGY (TYCOON & EDUCAÇÃO FINANCEIRA)
+    // =========================================================================
+    window.activeKidsTab = 'game';
+
+    window.switchKidsAreaTab = function(tabName) {
+      window.activeKidsTab = tabName;
+      ['game', 'missoes', 'escola', 'gastos'].forEach(t => {
+        const btn = document.getElementById(`tabBtnKids_${t}`);
+        const view = document.getElementById(`kidsViewSection_${t}`);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer';
+          } else {
+            btn.className = 'py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer';
+          }
+        }
+        if (view) {
+          if (t === tabName) {
+            view.classList.remove('hidden');
+          } else {
+            view.classList.add('hidden');
+          }
+        }
+      });
+      if (typeof window.renderKidsAreaUI === 'function') window.renderKidsAreaUI();
+    };
+
+    function getKidTierFromAge(age) {
+      const a = parseInt(age, 10) || 8;
+      if (a <= 6) return 'iniciante';
+      if (a <= 10) return 'explorador';
+      if (a <= 14) return 'empreendedor';
+      return 'magnata';
+    }
+
+    function getTierBadgeInfo(tier) {
+      switch(tier) {
+        case 'iniciante': return { label: '🌱 4 a 6 anos • Pequeno Poupador', title: 'Mundo 1: O Pomar do Piggy', sub: 'Conceito visual de moedas, guardar no cofre e paciência' };
+        case 'empreendedor': return { label: '🚀 11 a 14 anos • Júnior', title: 'Mundo 3: A Fábrica & Empreendedorismo', sub: 'Custo, lucro real, reinvestimento e juros compostos' };
+        case 'magnata': return { label: '💎 15+ anos • Jovem Magnata', title: 'Mundo 4: A Ilha dos Investimentos', sub: 'Reserva de 6 meses, crédito sem dívidas e patrimônio' };
+        default: return { label: '🧭 7 a 10 anos • Explorador', title: 'Mundo 2: A Feirinha da Vila', sub: 'Troco no caixa, necessidade vs. desejo e orçamento da mesada' };
+      }
+    }
+
+    function initKidGameProfile(age) {
+      const tier = getKidTierFromAge(age);
+      return {
+        tier: tier,
+        age: parseInt(age, 10) || 8,
+        coins: 120,
+        stars: 4,
+        xp: 240,
+        level: 2,
+        lastHarvestDate: null,
+        unlockedStages: [1, 2, 3],
+        completedStages: { 1: 3, 2: 2 },
+        city: {
+          pomar: { level: 2, name: 'Pomar de Maçãs', icon: '🍏', yieldCoins: 15, upgradeCost: 50 },
+          vendinha: { level: 1, name: 'Vendinha da Vila', icon: '🏪', yieldCoins: 25, upgradeCost: 90 },
+          banco: { level: 0, name: 'Banco Mágico', icon: '🏦', yieldCoins: 40, upgradeCost: 150 },
+          casa: { level: 1, name: 'Casinha do Piggy', icon: '🏡', yieldCoins: 5, upgradeCost: 35 }
+        },
+        parentMissions: [
+          { id: 'pm_1', title: '🛏️ Arrumar a própria cama', rewardCoins: 15, rewardXp: 20, status: 'pendente' },
+          { id: 'pm_2', title: '📚 Fazer lição de casa no horário', rewardCoins: 25, rewardXp: 35, status: 'aprovada' },
+          { id: 'pm_3', title: '💰 Guardar 20% da mesada no cofrinho real', rewardCoins: 50, rewardXp: 60, status: 'pendente' }
+        ]
+      };
+    }
+
+    const KID_STAGES_BY_TIER = {
+      iniciante: [
+        {
+          id: 1, title: 'Fase 1: As Moedinhas de Ouro', icon: '🪙',
+          story: 'O Piggy passeava pelo jardim e encontrou 3 moedinhas de ouro brilhando na grama!',
+          question: 'Onde o Piggy deve guardar as moedas para não perdê-las?',
+          optA: { text: 'Guardar seguro dentro do Cofrinho Porquinho! 🐷', correct: true, exp: 'Muito bem! Guardar no cofrinho protege suas moedinhas para o futuro!' },
+          optB: { text: 'Jogar no chão ou esquecer no bolso furado.', correct: false, exp: 'Cuidado! Moedas soltas se perdem facilmente. O cofrinho é o lugar certo!' },
+          coins: 15, xp: 25
+        },
+        {
+          id: 2, title: 'Fase 2: Maçã Gostosa vs. Bala', icon: '🍎',
+          story: 'Na saída da escolinha, o Piggy está com fominha. Ele tem 2 moedas para um lanchinho.',
+          question: 'Qual a melhor escolha para crescer forte e com saúde?',
+          optA: { text: 'Comprar um pacote de chicletes que dá cárie no dente.', correct: false, exp: 'Doces em excesso fazem mal aos dentes e não sustentam a fominha!' },
+          optB: { text: 'Comprar uma maçã vermelha fresca e saudável! 🍎', correct: true, exp: 'Excelente escolha! Comida saudável dá energia de herói e seu dinheiro rende mais!' },
+          coins: 20, xp: 30
+        },
+        {
+          id: 3, title: 'Fase 3: O Trenzinho dos Sonhos', icon: '🚂',
+          story: 'O Piggy viu um trenzinho de brinquedo lindo na vitrine por 5 moedas, mas hoje só tem 3 moedas.',
+          question: 'O que um pequeno sábio decide fazer?',
+          optA: { text: 'Ter paciência, juntar mais 2 moedas no cofre e comprar feliz! ⭐', correct: true, exp: 'Parabéns pela paciência! Economizar um pouquinho a cada dia realiza grandes sonhos!' },
+          optB: { text: 'Chorar no chão da loja até ganhar o brinquedo.', correct: false, exp: 'Fazer birra não resolve. Juntar moedas no cofre com calma é o caminho do sucesso!' },
+          coins: 25, xp: 40
+        }
+      ],
+      explorador: [
+        {
+          id: 1, title: 'Fase 1: O Troco na Feirinha', icon: '🥕',
+          story: 'O coelho da vila foi até a sua banquinha, comprou R$ 6,00 de cenouras e te deu uma nota de R$ 10,00.',
+          question: 'Quanto você deve devolver de troco para o coelho?',
+          optA: { text: 'Devolver R$ 4,00 de troco (10 - 6 = 4) 💰', correct: true, exp: 'Cálculo perfeito! Troco honesto e exato cria clientes fiéis para a vida inteira!' },
+          optB: { text: 'Devolver apenas R$ 2,00 de troco.', correct: false, exp: 'Atenção à conta: 10 menos 6 é igual a 4! O cliente ficaria no prejuízo.' },
+          coins: 20, xp: 30
+        },
+        {
+          id: 2, title: 'Fase 2: Necessidade vs. Desejo', icon: '🛒',
+          story: 'Você está no mercado ajudando nas compras da casa com orçamento controlado.',
+          question: 'Qual destes itens é uma NECESSIDADE essencial?',
+          optA: { text: 'Arroz, feijão, ovos, leite e legumes 🥦', correct: true, exp: 'Isso aí! Alimentos essenciais garantem a sobrevivência e saúde da família.' },
+          optB: { text: 'Pacote de figurinhas raras e salgadinho caro.', correct: false, exp: 'Figurinhas são desejos (lazer), não necessidades biológicas essenciais.' },
+          coins: 25, xp: 35
+        },
+        {
+          id: 3, title: 'Fase 3: O Segredo da Mesada', icon: '💵',
+          story: 'Você ganhou sua mesada no sábado. Como um futuro magnata deve se organizar?',
+          question: 'Qual a estratégia recomendada pelos maiores educadores?',
+          optA: { text: 'Poupar 30% no cofre para metas futuras e usar o resto com sabedoria! 🏆', correct: true, exp: 'Espetacular! Guardar uma parte antes de gastar constrói riqueza contínua.' },
+          optB: { text: 'Gastar todos os centavos nos primeiros 15 minutos.', correct: false, exp: 'Quem gasta tudo rápido fica a semana toda sem nada no bolso.' },
+          coins: 30, xp: 45
+        },
+        {
+          id: 4, title: 'Fase 4: A Chuva na Lojinha', icon: '☔',
+          story: 'Uma tempestade começou e uma telha quebrou na lojinha da vila! O conserto custa 30 moedas.',
+          question: 'Para que serve a famosa Reserva de Emergência?',
+          optA: { text: 'Para cobrir imprevistos sem precisar fechar o negócio ou se endividar! 🛡️', correct: true, exp: 'Perfeito! A reserva de emergência é o guarda-chuva financeiro dos dias difíceis!' },
+          optB: { text: 'Para comprar guloseimas sem ninguém ver.', correct: false, exp: 'Reserva não é para gastar à toa, é para socorrer emergências reais.' },
+          coins: 35, xp: 50
+        }
+      ],
+      empreendedor: [
+        {
+          id: 1, title: 'Fase 1: Custo vs. Lucro Real', icon: '🍊',
+          story: 'Você gastou R$ 10,00 em laranjas e copos descartáveis. Vendeu 10 copos por R$ 3,00 cada (Total R$ 30,00).',
+          question: 'Qual foi o seu Lucro Líquido na banquinha?',
+          optA: { text: 'Lucro de R$ 20,00 (Receita R$ 30 - Custo R$ 10) 📈', correct: true, exp: 'Brilhante! Lucro é o dinheiro limpo que sobra após pagar os custos!' },
+          optB: { text: 'Lucro de R$ 30,00.', correct: false, exp: 'R$ 30,00 foi a Receita Bruta (Faturamento). Você precisa descontar os R$ 10 gastos.' },
+          coins: 30, xp: 40
+        },
+        {
+          id: 2, title: 'Fase 2: Reinvestir para Multiplicar', icon: '🌱',
+          story: 'Com os R$ 20,00 de lucro no bolso, qual a melhor decisão para seu negócio crescer?',
+          question: 'O que fazer com o lucro obtido?',
+          optA: { text: 'Reinvestir R$ 15,00 comprando mais frutas para vender o dobro amanhã! 🚀', correct: true, exp: 'Visão de magnata! Reinvestir o lucro é o motor do crescimento empresarial!' },
+          optB: { text: 'Gastar tudo em figurinhas e ficar sem mercadoria amanhã.', correct: false, exp: 'Se gastar tudo, seu negócio para de vender e morre.' },
+          coins: 35, xp: 50
+        },
+        {
+          id: 3, title: 'Fase 3: Juros Compostos (O Dinheiro Trabalha)', icon: '🏦',
+          story: 'No Banco Mágico, R$ 100 guardados rendem 10% todo mês. No 1º mês você tem R$ 110.',
+          question: 'No 2º mês, você ganha 10% sobre qual valor?',
+          optA: { text: 'Sobre os R$ 110 acumulados, ganhando R$ 11 de juros sobre juros! ✨', correct: true, exp: 'Sensacional! Essa é a mágica dos juros compostos: dinheiro gerando mais dinheiro!' },
+          optB: { text: 'Sempre sobre os R$ 100 iniciais apenas.', correct: false, exp: 'Nos juros compostos, o lucro anterior também rende juros novos!' },
+          coins: 40, xp: 60
+        }
+      ],
+      magnata: [
+        {
+          id: 1, title: 'Fase 1: O Cartão de Crédito Inteligente', icon: '💳',
+          story: 'O banco aprovou um limite de R$ 2.000 no cartão, mas sua renda mensal é de R$ 800.',
+          question: 'Qual a regra fundamental de um jovem investidor?',
+          optA: { text: 'Só gastar no cartão o que puder pagar integralmente na fatura sem juros! 💎', correct: true, exp: 'Excelente maturidade! O rotativo do cartão cobra mais de 400% ao ano de juros!' },
+          optB: { text: 'Achar que o limite é dinheiro grátis e pagar o mínimo da fatura.', correct: false, exp: 'Pagar o mínimo é a armadilha mais perigosa do sistema financeiro!' },
+          coins: 35, xp: 50
+        },
+        {
+          id: 2, title: 'Fase 2: A Reserva de Liquidez Diária', icon: '🛡️',
+          story: 'Seu custo de vida fixo mensal é de R$ 1.000. Você quer começar a investir em ações e negócios.',
+          question: 'O que você deve construir antes de tomar risco em renda variável?',
+          optA: { text: 'Reserva de 6 meses (R$ 6.000) aplicada em investimento seguro com liquidez diária! 🏰', correct: true, exp: 'Perfeição técnica! Sem reserva, qualquer emergência te obriga a vender investimentos na baixa.' },
+          optB: { text: 'Investir tudo em apostas esportivas e criptos arriscadas.', correct: false, exp: 'Especulação sem reserva de base leva à ruína financeira.' },
+          coins: 45, xp: 70
+        }
+      ]
+    };
+
+    window.changeActiveKidAge = function(newAge) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      active.age = parseInt(newAge, 10) || 8;
+      const newTier = getKidTierFromAge(active.age);
+      if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age);
+      active.gameProfile.tier = newTier;
+      active.gameProfile.age = active.age;
+      window.saveKidsList(list);
+      const tierInfo = getTierBadgeInfo(newTier);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🎮 Jogo calibrado para ${active.age} anos (${tierInfo.label})!`, false);
+      }
+    };
+
+    window.harvestKidCityDailyCoins = function() {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age || 8);
+      
+      const prof = active.gameProfile;
+      const today = new Date().toISOString().split('T')[0];
+      if (prof.lastHarvestDate === today) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('🌾 Você já colheu as moedas de hoje! Volte amanhã para colher mais!', false);
+        }
+        return;
+      }
+
+      let totalYield = 0;
+      Object.values(prof.city || {}).forEach(b => {
+        if (b.level > 0) totalYield += (b.yieldCoins || 5) * b.level;
+      });
+      if (totalYield === 0) totalYield = 20;
+
+      prof.coins = (prof.coins || 0) + totalYield;
+      prof.xp = (prof.xp || 0) + 15;
+      prof.lastHarvestDate = today;
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🌾 Colheita realizada! +${totalYield} PiggyCoins e +15 XP para ${active.name}!`, false);
+      }
+    };
+
+    window.upgradeCityBuilding = function(buildingKey) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active || !active.gameProfile || !active.gameProfile.city) return;
+      const b = active.gameProfile.city[buildingKey];
+      if (!b) return;
+
+      const cost = b.upgradeCost || 50;
+      if ((active.gameProfile.coins || 0) < cost) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo(`🪙 Você precisa de ${cost} PiggyCoins para evoluir "${b.name}"! Complete fases ou missões reais!`, false);
+        }
+        return;
+      }
+
+      active.gameProfile.coins -= cost;
+      b.level = (b.level || 0) + 1;
+      b.upgradeCost = Math.round(cost * 1.5);
+      b.yieldCoins = Math.round((b.yieldCoins || 10) * 1.4);
+      active.gameProfile.xp = (active.gameProfile.xp || 0) + 25;
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🎉 "${b.name}" evoluiu para o Nível ${b.level}! Rende mais moedas diárias!`, false);
+      }
+    };
+
+    window.currentActiveChallengeData = null;
+
+    window.openKidGameChallenge = function(stageId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      const prof = active.gameProfile || initKidGameProfile(active.age || 8);
+      const tier = prof.tier || 'explorador';
+      const stages = KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador;
+      const stage = stages.find(s => s.id === stageId) || stages[0];
+      if (!stage) return;
+
+      window.currentActiveChallengeData = { stage, kidId: active.id };
+
+      const m = document.getElementById('modalKidGameChallenge');
+      if (!m) return;
+      m.classList.remove('hidden');
+
+      document.getElementById('challengeModalPhaseBadge').textContent = `Fase ${stage.id} • ${prof.age || 8} anos`;
+      document.getElementById('challengeModalTitle').textContent = stage.title;
+      document.getElementById('challengeModalStory').textContent = stage.story;
+      document.getElementById('challengeModalQuestion').textContent = stage.question;
+
+      const optContainer = document.getElementById('challengeModalOptionsContainer');
+      const feedbackBox = document.getElementById('challengeModalFeedbackBox');
+      if (feedbackBox) feedbackBox.classList.add('hidden');
+
+      if (optContainer) {
+        optContainer.innerHTML = `
+          <button type="button" onclick="answerKidGameChallenge('A')" class="w-full text-left p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-pink-50 dark:hover:bg-pink-950/40 border border-slate-200 dark:border-slate-700 hover:border-pink-400 font-bold text-xs transition-all flex items-start gap-2.5 active:scale-98 cursor-pointer">
+            <span class="w-6 h-6 rounded-full bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 font-black text-xs flex items-center justify-center flex-shrink-0">A</span>
+            <span class="text-slate-800 dark:text-slate-100">${escapeHtml(stage.optA.text)}</span>
+          </button>
+          <button type="button" onclick="answerKidGameChallenge('B')" class="w-full text-left p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-pink-50 dark:hover:bg-pink-950/40 border border-slate-200 dark:border-slate-700 hover:border-pink-400 font-bold text-xs transition-all flex items-start gap-2.5 active:scale-98 cursor-pointer">
+            <span class="w-6 h-6 rounded-full bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 font-black text-xs flex items-center justify-center flex-shrink-0">B</span>
+            <span class="text-slate-800 dark:text-slate-100">${escapeHtml(stage.optB.text)}</span>
+          </button>
+        `;
+      }
+    };
+
+    window.closeKidGameChallengeModal = function() {
+      const m = document.getElementById('modalKidGameChallenge');
+      if (m) m.classList.add('hidden');
+      window.currentActiveChallengeData = null;
+    };
+
+    window.answerKidGameChallenge = function(choice) {
+      if (!window.currentActiveChallengeData) return;
+      const { stage, kidId } = window.currentActiveChallengeData;
+      const selectedOpt = choice === 'A' ? stage.optA : stage.optB;
+      const isCorrect = !!selectedOpt.correct;
+
+      const feedbackBox = document.getElementById('challengeModalFeedbackBox');
+      const feedbackTitle = document.getElementById('challengeFeedbackTitle');
+      const feedbackDesc = document.getElementById('challengeFeedbackDesc');
+      const btnCont = document.getElementById('btnChallengeContinue');
+      if (!feedbackBox) return;
+
+      feedbackBox.classList.remove('hidden');
+      if (isCorrect) {
+        feedbackBox.className = 'p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 space-y-2 animate-in fade-in duration-200';
+        feedbackTitle.innerHTML = `<span class="text-lg">🎉</span><span>Decisão de Mestre! +${stage.coins} PiggyCoins e +${stage.xp} XP</span>`;
+        feedbackDesc.textContent = selectedOpt.exp;
+        btnCont.className = 'w-full py-2.5 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer';
+        btnCont.textContent = 'Coletar Recompensa & Continuar ⭐';
+
+        // Atualiza progresso do garoto
+        const list = window.getKidsList();
+        const active = list.find(k => k.id === kidId) || list[0];
+        if (active && active.gameProfile) {
+          active.gameProfile.coins = (active.gameProfile.coins || 0) + stage.coins;
+          active.gameProfile.xp = (active.gameProfile.xp || 0) + stage.xp;
+          active.gameProfile.stars = (active.gameProfile.stars || 0) + 1;
+          if (!active.gameProfile.completedStages) active.gameProfile.completedStages = {};
+          active.gameProfile.completedStages[stage.id] = 3;
+          if (!Array.isArray(active.gameProfile.unlockedStages)) active.gameProfile.unlockedStages = [1];
+          if (!active.gameProfile.unlockedStages.includes(stage.id + 1)) {
+            active.gameProfile.unlockedStages.push(stage.id + 1);
+          }
+          // Level up check
+          const nextLevelXp = (active.gameProfile.level || 1) * 200;
+          if (active.gameProfile.xp >= nextLevelXp) {
+            active.gameProfile.level = (active.gameProfile.level || 1) + 1;
+            if (typeof showToastUndo === 'function') {
+              showToastUndo(`🏆 SUBIU DE NÍVEL! ${active.name} agora é Nível ${active.gameProfile.level}!`, false);
+            }
+          }
+          window.saveKidsList(list);
+        }
+      } else {
+        feedbackBox.className = 'p-3.5 rounded-2xl border border-amber-300 bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-100 space-y-2 animate-in fade-in duration-200';
+        feedbackTitle.innerHTML = `<span class="text-lg">💡</span><span>Quase lá! Vamos aprender juntos</span>`;
+        feedbackDesc.textContent = selectedOpt.exp;
+        btnCont.className = 'w-full py-2.5 rounded-xl font-black text-xs bg-amber-600 hover:bg-amber-500 text-white shadow-md cursor-pointer';
+        btnCont.textContent = 'Tentar Novamente 🔄';
+      }
+    };
+
+    window.confirmKidGameChallengeResult = function() {
+      window.closeKidGameChallengeModal();
+      window.renderKidsAreaUI();
+    };
+
+    window.fillQuickMissionPreset = function(title, coins) {
+      const inpT = document.getElementById('inputMissionTitle');
+      const inpC = document.getElementById('inputMissionRewardCoins');
+      if (inpT) inpT.value = title;
+      if (inpC) inpC.value = coins;
+    };
+
+    window.handleCreateParentMission = function(e) {
+      if (e) e.preventDefault();
+      const title = (document.getElementById('inputMissionTitle')?.value || '').trim();
+      const rewardCoins = parseInt(document.getElementById('inputMissionRewardCoins')?.value || '20', 10);
+      if (!title) return;
+
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active) return;
+      if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age || 8);
+      if (!Array.isArray(active.gameProfile.parentMissions)) active.gameProfile.parentMissions = [];
+
+      active.gameProfile.parentMissions.unshift({
+        id: 'pm_' + Date.now(),
+        title,
+        rewardCoins,
+        rewardXp: Math.round(rewardCoins * 1.4),
+        status: 'pendente'
+      });
+
+      window.saveKidsList(list);
+      document.getElementById('inputMissionTitle').value = '';
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🏅 Missão "${title}" criada para ${active.name}! Valendo ${rewardCoins} PiggyCoins!`, false);
+      }
+    };
+
+    window.approveParentMission = function(missionId) {
+      const list = window.getKidsList();
+      const active = list.find(k => k.id === window.activeKidId) || list[0];
+      if (!active || !active.gameProfile || !Array.isArray(active.gameProfile.parentMissions)) return;
+
+      const m = active.gameProfile.parentMissions.find(x => x.id === missionId);
+      if (!m || m.status === 'aprovada') return;
+
+      m.status = 'aprovada';
+      active.gameProfile.coins = (active.gameProfile.coins || 0) + (m.rewardCoins || 20);
+      active.gameProfile.xp = (active.gameProfile.xp || 0) + (m.rewardXp || 30);
+
+      window.saveKidsList(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`✅ Missão "${m.title}" APROVADA pelos pais! +${m.rewardCoins} PiggyCoins entregues a ${active.name}!`, false);
+      }
+    };
+
     const STARTER_KIDS_DATA = [
       {
         id: 'kid_exemplo_1',
@@ -43402,11 +44047,22 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     window.handleSaveKidProfile = function(e) {
       if (e) e.preventDefault();
       const name = (document.getElementById('inputKidName')?.value || '').trim();
+      const ageVal = parseInt(document.getElementById('inputKidAge')?.value || '8', 10);
       const school = (document.getElementById('inputKidSchool')?.value || '').trim();
       const gradeYear = (document.getElementById('inputKidGradeYear')?.value || '').trim();
       if (!name) return;
       const list = window.getKidsList();
-      const newKid = { id: 'kid_' + Date.now(), name, school, gradeYear, grades: [] };
+      const age = isNaN(ageVal) ? 8 : ageVal;
+      const newKid = {
+        id: 'kid_' + Date.now(),
+        name,
+        age: age,
+        school,
+        gradeYear,
+        grades: [],
+        extraActivities: [],
+        gameProfile: initKidGameProfile(age)
+      };
       list.push(newKid);
       window.activeKidId = newKid.id;
       window.saveKidsList(list);
@@ -43414,7 +44070,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       document.getElementById('inputKidSchool').value = '';
       document.getElementById('inputKidGradeYear').value = '';
       window.toggleAddKidForm(false);
-      if (typeof showToastUndo === 'function') showToastUndo(`🧒 Perfil de "${name}" adicionado!`, false);
+      if (typeof showToastUndo === 'function') showToastUndo(`🧒 Perfil de "${name}" adicionado com calibração de jogo para ${age} anos!`, false);
     };
 
     window.deleteKidProfile = function(kidId) {
@@ -43565,6 +44221,142 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (typeof showToastUndo === 'function') showToastUndo(`🎓 Gasto "${newTx.descricao}" integrado às Transações do ciclo!`, false);
     };
 
+    
+    function renderKidCityBuildingsUI(prof) {
+      const container = document.getElementById('kidCityBuildingsGrid');
+      if (!container) return;
+      const city = prof.city || {};
+      const keys = ['pomar', 'vendinha', 'banco', 'casa'];
+      container.innerHTML = keys.map(k => {
+        const b = city[k] || { name: k, icon: '🏠', level: 1, yieldCoins: 10, upgradeCost: 50 };
+        const isMax = b.level >= 5;
+        return `
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col justify-between text-center space-y-2">
+            <div class="space-y-1">
+              <div class="text-3xl">${b.icon || '🏠'}</div>
+              <strong class="text-xs font-black text-slate-800 dark:text-white block truncate">${escapeHtml(b.name)}</strong>
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300">
+                Nível ${b.level || 1}
+              </span>
+            </div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">
+              Rende <strong class="text-amber-500">+${(b.yieldCoins || 5) * (b.level || 1)} 🪙</strong>/dia
+            </div>
+            <button type="button" onclick="upgradeCityBuilding('${k}')" ${isMax ? 'disabled' : ''} class="w-full py-1 px-1.5 rounded-xl text-[10px] font-black transition-all cursor-pointer ${isMax ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-2xs active:scale-95'}">
+              ${isMax ? 'Nível Máx ⭐' : `🛠️ Evoluir (${b.upgradeCost || 50} 🪙)`}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderKidStagesTrackUI(prof) {
+      const container = document.getElementById('kidGameStagesTrackContainer');
+      const badgeCount = document.getElementById('kidGameWorldProgressBadge');
+      if (!container) return;
+
+      const tier = prof.tier || 'explorador';
+      const stages = KID_STAGES_BY_TIER[tier] || KID_STAGES_BY_TIER.explorador;
+      const completed = prof.completedStages || {};
+      const unlocked = prof.unlockedStages || [1];
+
+      const completedCount = Object.keys(completed).length;
+      if (badgeCount) badgeCount.textContent = `Progresso: ${completedCount} de ${stages.length} Concluídas`;
+
+      container.innerHTML = stages.map((st, idx) => {
+        const isDone = !!completed[st.id];
+        const isUnlocked = unlocked.includes(st.id);
+        const starsNum = completed[st.id] || 0;
+        const starsStr = isDone ? '⭐'.repeat(starsNum) : (isUnlocked ? '⭐⭐⭐' : '🔒');
+
+        let cardBorderCls = 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 opacity-70';
+        let actionBtnHtml = `
+          <button type="button" disabled class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-400 font-black text-xs cursor-not-allowed">
+            🔒 Bloqueado
+          </button>
+        `;
+
+        if (isDone) {
+          cardBorderCls = 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30';
+          actionBtnHtml = `
+            <button type="button" onclick="openKidGameChallenge(${st.id})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs active:scale-95 cursor-pointer flex items-center gap-1">
+              <span>✓ Jogar de Novo</span>
+            </button>
+          `;
+        } else if (isUnlocked) {
+          cardBorderCls = 'border-pink-400 dark:border-pink-500 bg-white dark:bg-slate-800 shadow-md ring-2 ring-pink-300/40 animate-pulse';
+          actionBtnHtml = `
+            <button type="button" onclick="openKidGameChallenge(${st.id})" class="px-3.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-black text-xs shadow-md active:scale-95 cursor-pointer flex items-center gap-1 animate-bounce">
+              <span>▶️ Jogar Desafio</span>
+            </button>
+          `;
+        }
+
+        return `
+          <div class="p-3 sm:p-3.5 rounded-2xl border ${cardBorderCls} flex items-center justify-between gap-3 transition-all">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-2xl ${isDone ? 'bg-emerald-100 text-emerald-800' : (isUnlocked ? 'bg-pink-100 text-pink-700' : 'bg-slate-200 text-slate-400')} text-xl flex items-center justify-center font-black flex-shrink-0 shadow-2xs">
+                ${st.icon || '🎯'}
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white truncate">${escapeHtml(st.title)}</h4>
+                  <span class="text-xs text-amber-500">${starsStr}</span>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(st.story)}</p>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              ${actionBtnHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderParentMissionsUI(prof) {
+      const container = document.getElementById('parentMissionsListContainer');
+      const pendingBadge = document.getElementById('kidsPendingMissionsBadge');
+      if (!container) return;
+
+      const missions = prof.parentMissions || [];
+      const pendingCount = missions.filter(m => m.status === 'pendente').length;
+      if (pendingBadge) pendingBadge.textContent = `${pendingCount} pendente(s)`;
+
+      if (missions.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-slate-400 text-xs">Nenhuma missão cadastrada ainda. Crie uma acima para incentivar seu filho!</div>';
+        return;
+      }
+
+      container.innerHTML = missions.map(m => {
+        const isPending = m.status === 'pendente';
+        return `
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border ${isPending ? 'border-amber-300 dark:border-amber-800/80 bg-amber-50/40' : 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/30'} flex items-center justify-between gap-2.5">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <strong class="text-xs font-black text-slate-800 dark:text-white">${escapeHtml(m.title)}</strong>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${isPending ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                  ${isPending ? '⏳ Aguardando Aprovação' : '✅ Concluída'}
+                </span>
+              </div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold mt-0.5">
+                Recompensa: <strong class="text-amber-500 font-black">+${m.rewardCoins} 🪙</strong> &amp; <strong class="text-blue-500 font-black">+${m.rewardXp} XP</strong>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              ${isPending ? `
+                <button type="button" onclick="approveParentMission('${m.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs shadow-xs cursor-pointer flex items-center gap-1">
+                  <span>✓ Aprovar</span>
+                </button>
+              ` : `
+                <span class="text-emerald-600 font-black text-xs">Pago ✓</span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     window.renderKidsAreaUI = function() {
       const pillsEl = document.getElementById('kidsSelectorPills');
       const gradesEl = document.getElementById('kidsGradesListContainer');
@@ -43592,6 +44384,50 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }).join('');
 
       if (active) {
+        if (!active.gameProfile) active.gameProfile = initKidGameProfile(active.age || 8);
+        const prof = active.gameProfile;
+        const tier = prof.tier || getKidTierFromAge(active.age || 8);
+        const tierInfo = getTierBadgeInfo(tier);
+
+        const nameEl = document.getElementById('kidGamePlayerName');
+        const badgeEl = document.getElementById('kidGameTierBadge');
+        const levelTitleEl = document.getElementById('kidGameLevelTitle');
+        const coinsEl = document.getElementById('kidGameCoinsCount');
+        const starsEl = document.getElementById('kidGameStarsCount');
+        const xpEl = document.getElementById('kidGameXpCount');
+        const nextLvlEl = document.getElementById('kidGameNextLevelNum');
+        const xpProgLabel = document.getElementById('kidGameXpProgressLabel');
+        const xpBar = document.getElementById('kidGameXpProgressBar');
+        const worldTitle = document.getElementById('kidGameWorldTitle');
+        const worldSub = document.getElementById('kidGameWorldSub');
+        const quickAge = document.getElementById('quickSelectKidAge');
+
+        if (nameEl) nameEl.textContent = active.name;
+        if (badgeEl) badgeEl.textContent = tierInfo.label;
+        if (levelTitleEl) levelTitleEl.textContent = `Nível ${prof.level || 1} • ${prof.level >= 3 ? 'Grande Magnata' : (prof.level >= 2 ? 'Pequeno Magnata' : 'Iniciante Curioso')}`;
+        if (coinsEl) coinsEl.textContent = prof.coins || 0;
+        if (starsEl) starsEl.textContent = prof.stars || 0;
+        if (xpEl) xpEl.textContent = `${prof.xp || 0} XP`;
+        if (quickAge) quickAge.value = active.age || 8;
+
+        const curLvl = prof.level || 1;
+        const nextLvl = curLvl + 1;
+        const targetXp = curLvl * 200;
+        if (nextLvlEl) nextLvlEl.textContent = nextLvl;
+        if (xpProgLabel) xpProgLabel.textContent = `${prof.xp || 0} / ${targetXp} XP`;
+        if (xpBar) {
+          const pct = Math.min(100, Math.round(((prof.xp || 0) / targetXp) * 100));
+          xpBar.style.width = `${pct}%`;
+        }
+
+        if (worldTitle) worldTitle.textContent = tierInfo.title;
+        if (worldSub) worldSub.textContent = tierInfo.sub;
+
+        // Renderiza subcomponentes do jogo
+        renderKidCityBuildingsUI(prof);
+        renderKidStagesTrackUI(prof);
+        renderParentMissionsUI(prof);
+
         if (titleEl) titleEl.textContent = `Boletim de ${active.name}`;
         if (subEl) subEl.textContent = `${active.school || 'Escola não informada'} ${active.gradeYear ? `• ${active.gradeYear}` : ''}`;
         const grades = Array.isArray(active.grades) ? active.grades : [];
