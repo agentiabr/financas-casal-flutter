@@ -2,48 +2,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A"
+    android:background="@drawable/bg_alarm_activity_gradient"
     android:padding="20dp"
     android:gravity="center">
 
-    <!-- Card Central do Alarme -->
+    <!-- Card Central do Alarme com Efeito Liquid Glass -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#1E293B"
-        android:padding="24dp"
+        android:background="@drawable/bg_liquid_glass_card"
+        android:padding="26dp"
         android:gravity="center_horizontal"
-        android:elevation="12dp">
+        android:elevation="16dp">
 
-        <!-- Badge Superior -->
+        <!-- Badge Superior Neon Glass -->
         <TextView
             android:id="@+id/tv_alarm_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⏰ CONTROLPIG • ALARME ATIVO"
+            android:background="@drawable/bg_alarm_badge"
+            android:text="⏰ CONTROLPIG • ALARME DE SAÚDE"
             android:textSize="11sp"
             android:textStyle="bold"
             android:textColor="#38BDF8"
             android:letterSpacing="0.08"
-            android:paddingBottom="12dp" />
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Ícone Grande -->
         <TextView
             android:id="@+id/tv_alarm_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⏰"
+            android:text="💊"
             android:textSize="54sp"
             android:gravity="center"
-            android:paddingBottom="8dp" />
+            android:layout_marginBottom="8dp" />
 
         <!-- Título do Alarme -->
         <TextView
             android:id="@+id/tv_alarm_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hora do Medicamento"
+            android:text="Hora do Remédio"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -55,46 +60,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirme a conclusão ou adie por 5 minutos."
-            android:textSize="15sp"
-            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:textColor="#BAE6FD"
             android:gravity="center"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp" />
 
-        <!-- Botão 1: Desligar Alarme (Em destaque vermelho para fácil toque) -->
-        <Button
-            android:id="@+id/btn_alarm_dismiss"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="🛑 DESLIGAR ALARME"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#DC2626"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Botão 2 (Principal): Concluído / Já Tomei -->
+        <!-- Botão 1: Concluído / Já Tomei (Verde Esmeralda Liquid) -->
         <Button
             android:id="@+id/btn_alarm_taken"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="54dp"
             android:text="✓ JÁ TOMEI / CONCLUÍDO"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#16A34A"
-            android:layout_marginBottom="10dp" />
+            android:background="@drawable/bg_btn_taken_liquid"
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="12dp" />
 
-        <!-- Botão 3: Adiar 5 Minutos -->
+        <!-- Botão 2: Adiar 5 Minutos (Frosted Glass) -->
         <Button
             android:id="@+id/btn_alarm_snooze"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="⏰ ADIAR 5 MINUTOS"
+            android:text="💤 ADIAR 5 MINUTOS"
             android:textSize="13sp"
             android:textStyle="bold"
+            android:textColor="#F1F5F9"
+            android:background="@drawable/bg_btn_snooze_liquid"
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Botão 3: Desligar Alarme (Ruby Red Liquid) -->
+        <Button
+            android:id="@+id/btn_alarm_dismiss"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="🛑 DESLIGAR ALARME AGORA"
+            android:textSize="14sp"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#D97706" />
+            android:background="@drawable/bg_btn_dismiss_liquid"
+            android:stateListAnimator="@null" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -187,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.145+223';
+  static const String _kCurrentAppVersion = '2.1.146+224';
 
   Future<void> _requestPostLoginPermissions() async {
     // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
@@ -1485,17 +1485,6 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             }
           """);
         } catch (_) {}
-      }
-      if (mounted && !calledFromWebView) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('🔕 Todos os alarmes foram desligados com sucesso.'),
-            backgroundColor: Color(0xFF0F172A),
-            duration: Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
       }
     } finally {
       Future.delayed(const Duration(milliseconds: 1500), () {
