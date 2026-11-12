@@ -5395,6 +5395,27 @@ html, body {
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-4 pb-28 space-y-3.5 shadow-2xl">
       
+      <!-- CAIXA EXPLICATIVA: LISTA DE COMPRAS INTELIGENTE & CHAT DA FAMÍLIA -->
+      <div id="shoppingListIntroBanner" class="bg-white dark:bg-slate-850 rounded-3xl p-3.5 sm:p-4 shadow-sm border border-blue-200/80 dark:border-slate-750 flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+          🛒
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-1 mb-1">
+            <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>Lista de Compras &amp; Família</span>
+            </h4>
+            <button type="button" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/80 px-2.5 py-1 rounded-xl border border-blue-200 dark:border-blue-800 flex items-center gap-1 transition-all cursor-pointer shadow-2xs active:scale-95">
+              <i data-lucide="message-circle" class="w-3 h-3"></i>
+              <span>Conversar</span>
+            </button>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+            Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente sincronizada em tempo real, comparar preços entre estabelecimentos e acompanhar o carrinho ao vivo!
+          </p>
+        </div>
+      </div>
+
       <!-- CARD 1: ABAS PRINCIPAIS -->
       <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-200/80">
         <div class="flex items-center gap-2">
@@ -11719,7 +11740,7 @@ html, body {
 
     function openShoppingListModal() { setTimeout(updateSendListButtonLabel, 100);
       if (false && typeof window.showProfPiggySpotlight === 'function') {
-        window.showProfPiggySpotlight('shopping', '🛒 Comparador & Lista de Compras', 'Aqui você monta suas listas e compara preços entre mercados. Dica: use o botão "Escanear QR Code da Nota" para cadastrar automaticamente todos os produtos da sua compra!');
+        window.showProfPiggySpotlight('shopping', '🛒 Lista de Compras Inteligente', 'Nesta seção você pode conversar com seus familiares, enviar uma lista de compras inteligente sincronizada em tempo real e comparar preços entre supermercados para economizar!');
       }
       const modal = document.getElementById('modalShoppingListHistory');
       if (modal) {
@@ -18077,7 +18098,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <div class="rounded-2xl bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-750 p-6 text-center my-4 shadow-sm">
             <span class="text-4xl block mb-2">🛒</span>
             <h4 class="text-sm font-black text-slate-800 dark:text-white mb-1">Nenhuma lista de compras ativa</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Monte uma nova lista de compras ou envie pelo chat para acompanhar seus gastos no mercado.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente sincronizada em tempo real e comparar preços.</p>
             <div class="flex flex-wrap items-center justify-center gap-2">
               <button type="button" onclick="closeFamilyChatModal(); openShoppingListModal(); switchShoppingModalTab('builder');" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs shadow-xs cursor-pointer active:scale-95 inline-flex items-center gap-1.5">
                 <i data-lucide="plus" class="w-4 h-4"></i>
@@ -36712,7 +36733,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
       badge: 'Lista de Compras',
       tag: 'Carrinho & Checklist Holográfico',
       title: 'Compras Inteligentes & Economia Real',
-      desc: 'Com cestinha de compras e checklist holográfico em tempo real, organizo sua lista por voz ou foto e comparo os preços no supermercado!',
+      desc: 'Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente, comparar preços entre estabelecimentos e acompanhar o carrinho em tempo real!',
       btn: 'Ver Minha Lista de Compras',
       action: function() { if(typeof openShoppingListModal === 'function') openShoppingListModal(); }
     },
@@ -37291,7 +37312,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
           header: "Lista de Compras Inteligente",
           badge: "🛒 Pitaco do Piggy Compras",
           badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-          text: `“Atenção no carrinho! Vocês já atingiram <strong>${pct}% do orçamento previsto de alimentação</strong> este mês. Que tal priorizar os itens essenciais da despensa?”`,
+          text: `“Nesta seção você pode conversar com seus familiares e enviar uma lista de compras inteligente! Atenção no carrinho: vocês já atingiram <strong>${pct}% do orçamento de alimentação</strong> este mês.”`,
           img: MASCOTES_OFICIAIS_B64.compras
         };
       } else {
@@ -37299,7 +37320,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
           header: "Lista de Compras Inteligente",
           badge: "🛒 Dica do Piggy Compras",
           badgeColor: "bg-sky-500/20 text-sky-300 border-sky-400/40",
-          text: "“Monte sua lista de compras por corredor de mercado e compare preços entre estabelecimentos para economizar em cada ida às compras!”",
+          text: "“Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente, comparar preços entre estabelecimentos e acompanhar o carrinho em tempo real!”",
           img: MASCOTES_OFICIAIS_B64.compras
         };
       }
@@ -41329,7 +41350,7 @@ window.openHealthMedsModal = function() {
   ];
 
   const QUICKHUB_METADATA = {
-    compras: { label: 'Lista de Compras', icon: '🛒', desc: 'Itens e mercado' },
+    compras: { label: 'Lista de Compras', icon: '🛒', desc: 'Conversar e lista inteligente' },
     chat: { label: 'Chat da Família', icon: '💬', desc: 'Mensagens e lista' },
     pet: { label: 'Pets & Vacinas', icon: '🐾', desc: 'Vacinas e carteirinha' },
     saude: { label: 'Minha Saúde', icon: '💊', desc: 'Remédios e cartelas' },
@@ -45801,6 +45822,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       lista_compras: {
         title: '🛒 Insights da Lista de Compras & Histórico QR Code',
         tips: [
+          '💡 <strong>Conversar & Lista Inteligente:</strong> Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente e acompanhar o carrinho em tempo real!',
           '💡 <strong>Lista Zerada para Planejamento:</strong> A aba <b>Montar Lista</b> inicia com valores zerados (R$ 0,00) para você escolher livremente o que precisa comprar.',
           '💡 <strong>QR Code da Nota Fiscal → Histórico por Supermercado:</strong> Quando você escaneia uma nota fiscal, os produtos e seus preços individuais vão direto para o <b>Histórico de Preços</b> divididos por supermercado.',
           '💡 <strong>Botão "+ Incluir na Lista":</strong> No Histórico de Preços, toque em <b>"+ Incluir na Lista"</b> nos itens desejados para disponibilizá-los imediatamente quando for enviar a lista para o Chat!'
