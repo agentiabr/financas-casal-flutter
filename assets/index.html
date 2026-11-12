@@ -4412,13 +4412,32 @@ html, body {
       box-shadow: 0 2px 8px rgba(4, 20, 64, 0.10) !important;
     }
 
-    /* 5. MODAIS FULL SCREEN */
+    /* 5. MODAIS FULL SCREEN E DIÁLOGOS LIQUID GLASS */
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
       background-attachment: fixed !important;
       background-repeat: no-repeat !important;
       background-size: cover !important;
+    }
+
+    /* Modais de Lançamentos Futuros & Contas a Pagar: Liquid Glass Sapphire (Sem Fundo Preto) */
+    #modalBillsReminder,
+    #modalRegisterBill {
+      background-color: rgba(6, 26, 74, 0.65) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+    }
+
+    #modalBillsReminder > div,
+    #modalRegisterBill > div {
+      background: var(--liquid-card-bg) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1.5px solid var(--liquid-card-border) !important;
+      box-shadow: var(--liquid-card-shadow) !important;
+      border-radius: 28px !important;
+      color: #0f172a !important;
     }
 
     /* 6. DOCK DE NAVEGAÇÃO INFERIOR LIQUID GLASS */
@@ -20376,23 +20395,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         if (isPaid) paidCount++;
 
         let statusBadge = '';
-        let rowBorder = 'border-slate-800 bg-slate-950/60';
+        let rowBorder = 'border-white/80 bg-white/85 shadow-2xs';
 
         if (isPaid) {
-          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold flex items-center gap-1">✓ Paga no Ciclo</span>`;
-          rowBorder = 'border-emerald-500/40 bg-emerald-950/15';
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300/80 font-bold flex items-center gap-1">✓ Paga no Ciclo</span>`;
+          rowBorder = 'border-emerald-200/90 bg-emerald-50/70 shadow-2xs';
         } else if (b.diaVencimento === today) {
-          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 font-black animate-pulse flex items-center gap-1">⚠️ VENCE HOJE</span>`;
-          rowBorder = 'border-amber-500/60 bg-amber-950/20';
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-400 font-black animate-pulse flex items-center gap-1">⚠️ VENCE HOJE</span>`;
+          rowBorder = 'border-amber-300 bg-amber-50/80 shadow-xs';
         } else if (b.diaVencimento > today && (b.diaVencimento - today) <= b.alertaDias) {
           const diff = b.diaVencimento - today;
-          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">🚨 Vence em ${diff} dia(s)</span>`;
-          rowBorder = 'border-amber-500/40 bg-amber-950/15';
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold">🚨 Vence em ${diff} dia(s)</span>`;
+          rowBorder = 'border-amber-200/90 bg-amber-50/60 shadow-2xs';
         } else if (b.diaVencimento < today) {
-          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-red-950/60 text-red-300 border border-red-800 font-bold">❗ Venceu dia ${b.diaVencimento}</span>`;
-          rowBorder = 'border-red-500/40 bg-red-950/15';
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold">❗ Venceu dia ${b.diaVencimento}</span>`;
+          rowBorder = 'border-rose-200/90 bg-rose-50/60 shadow-2xs';
         } else {
-          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-bold">⏳ Vence dia ${b.diaVencimento}</span>`;
+          statusBadge = `<span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-bold">⏳ Vence dia ${b.diaVencimento}</span>`;
+          rowBorder = 'border-white/80 bg-white/85 shadow-2xs';
         }
 
         const prevBillExp = typeof findPreviousExpenseByText === 'function' ? findPreviousExpenseByText(b.nome) : null;
@@ -20403,37 +20423,37 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h5 class="font-extrabold text-sm text-white ${isPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(b.nome)}</h5>
+                  <h5 class="font-extrabold text-sm text-slate-900 ${isPaid ? 'line-through text-slate-400' : ''}">${escapeHtml(b.nome)}</h5>
                   ${statusBadge}
-                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${escapeHtml(b.categoria)}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/80 font-medium">${escapeHtml(b.categoria)}</span>
                 </div>
 
-                <div class="mt-1 flex items-center gap-3 text-xs text-slate-400 flex-wrap">
-                  <span>📅 Vencimento: <strong class="text-white">Dia ${b.diaVencimento}</strong></span>
-                  <span>💰 Valor Estimado: <strong class="text-emerald-400 font-mono">R$ ${(b.valorMedio || 0).toFixed(2).replace('.', ',')}</strong></span>
-                  ${prevBillExp && prevBillExp.valor ? `<span class="text-[10px] text-slate-400">🕒 Paguei <strong class="text-slate-300">R$ ${Number(prevBillExp.valor).toFixed(2).replace('.', ',')}</strong> anteriormente</span>` : ''}
-                  <span>👤 Responsável: <strong class="text-slate-300">${b.responsavel || 'Ambos'}</strong></span>
+                <div class="mt-1 flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                  <span>📅 Vencimento: <strong class="text-slate-900 font-bold">Dia ${b.diaVencimento}</strong></span>
+                  <span>💰 Valor Estimado: <strong class="text-emerald-600 font-mono font-bold">R$ ${(b.valorMedio || 0).toFixed(2).replace('.', ',')}</strong></span>
+                  ${prevBillExp && prevBillExp.valor ? `<span class="text-[10px] text-slate-500">🕒 Paguei <strong class="text-slate-700">R$ ${Number(prevBillExp.valor).toFixed(2).replace('.', ',')}</strong> anteriormente</span>` : ''}
+                  <span>👤 Responsável: <strong class="text-slate-700">${b.responsavel || 'Ambos'}</strong></span>
                 </div>
               </div>
 
               <!-- Ações da Conta -->
               <div class="flex items-center gap-1.5 flex-shrink-0">
                 ${!isPaid ? `
-                  <button type="button" onclick="promptPayRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1 shadow-sm transition-all active:scale-95" title="Dar baixa e lançar nas despesas">
+                  <button type="button" onclick="promptPayRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95" title="Dar baixa e lançar nas despesas">
                     <i data-lucide="check" class="w-3.5 h-3.5"></i>
                     <span>Pagar</span>
                   </button>
                 ` : `
-                  <button type="button" onclick="toggleReopenRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold text-xs flex items-center gap-1 border border-slate-700" title="Reabrir como pendente">
+                  <button type="button" onclick="toggleReopenRecurringBill('${b.id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs flex items-center gap-1 border border-emerald-300" title="Reabrir como pendente">
                     <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
                     <span>Paga ✓</span>
                   </button>
                 `}
 
-                <button type="button" onclick="openRegisterBillModal('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Editar conta">
+                <button type="button" onclick="openRegisterBillModal('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" title="Editar conta">
                   <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
                 </button>
-                <button type="button" onclick="deleteRecurringBill('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors" title="Excluir conta">
+                <button type="button" onclick="deleteRecurringBill('${b.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Excluir conta">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -25672,43 +25692,43 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: GESTOR DE VENCIMENTOS & LEMBRETES DE CONTAS A PAGAR     -->
   <!-- ============================================================== -->
-  <div id="modalBillsReminder" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeBillsReminderModal()">
-    <div class="bg-slate-900 text-slate-100 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-800 text-xs flex flex-col">
+  <div id="modalBillsReminder" class="fixed inset-0 bg-[#061e56]/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeBillsReminderModal()">
+    <div class="bg-white/90 text-slate-800 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/80 text-xs flex flex-col">
       
       <!-- Cabeçalho -->
-      <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 flex-shrink-0">
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200/70 flex-shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-emerald-950/60 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-800 shadow-sm">
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg border border-amber-200/80 shadow-xs">
             📅
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="font-black text-base text-white">Contas a Pagar & Lembretes de Vencimento</h3>
-              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold rounded-full">Ciclo Atual</span>
+              <h3 class="font-black text-base text-slate-900">Lançamentos Futuros & Contas a Pagar</h3>
+              <span class="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full">Ciclo Atual</span>
             </div>
-            <p class="text-[11px] text-slate-400">Cartão de crédito, condomínio, aluguel, luz, internet e contas recorrentes.</p>
+            <p class="text-[11px] text-slate-500 font-medium">Cartão de crédito, condomínio, aluguel, luz, internet e contas recorrentes.</p>
           </div>
         </div>
         
-        <button type="button" onclick="closeBillsReminderModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-700" title="Fechar">
+        <button type="button" onclick="closeBillsReminderModal()" class="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all shadow-xs border border-slate-200/80" title="Fechar">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <!-- Barra de Ações & Resumo -->
-      <div class="py-3.5 border-b border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div class="py-3.5 border-b border-slate-200/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-bold">Total Previsto:</span>
-            <span class="text-xs font-black text-emerald-400 font-mono ml-1" id="billsSummaryTotalAmount">R$ 0,00</span>
+          <div class="bg-white/80 px-3.5 py-1.5 rounded-xl border border-white/90 shadow-2xs">
+            <span class="text-[10px] text-slate-500 uppercase font-bold">Total Previsto:</span>
+            <span class="text-xs font-black text-emerald-600 font-mono ml-1" id="billsSummaryTotalAmount">R$ 0,00</span>
           </div>
-          <div class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase font-bold">Status:</span>
-            <span class="text-xs font-bold text-white ml-1" id="billsSummaryPaidCount">0 de 0 pagas</span>
+          <div class="bg-white/80 px-3.5 py-1.5 rounded-xl border border-white/90 shadow-2xs">
+            <span class="text-[10px] text-slate-500 uppercase font-bold">Status:</span>
+            <span class="text-xs font-bold text-slate-800 ml-1" id="billsSummaryPaidCount">0 de 0 pagas</span>
           </div>
         </div>
 
-        <button type="button" onclick="openRegisterBillModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm">
+        <button type="button" onclick="openRegisterBillModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-95">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Cadastrar Nova Conta</span>
         </button>
@@ -25720,9 +25740,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <!-- Rodapé do Modal -->
-      <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-        <span class="text-slate-400 text-[11px]">💡 Ao dar baixa, você pode lançar o valor direto nas despesas do ciclo.</span>
-        <button type="button" onclick="closeBillsReminderModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition-colors">
+      <div class="pt-3 border-t border-slate-200/70 flex items-center justify-between text-xs">
+        <span class="text-slate-500 text-[11px] font-medium">💡 Ao dar baixa, você pode lançar o valor direto nas despesas do ciclo.</span>
+        <button type="button" onclick="closeBillsReminderModal()" class="px-4 py-1.5 rounded-xl bg-white/80 hover:bg-white text-slate-700 font-bold border border-slate-200/80 shadow-2xs transition-colors">
           Fechar
         </button>
       </div>
@@ -25733,13 +25753,13 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CADASTRAR OU EDITAR CONTA A PAGAR RECORRENTE             -->
   <!-- ============================================================== -->
-  <div id="modalRegisterBill" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 text-white shadow-2xl">
-      <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-800">
-        <h4 class="font-black text-sm sm:text-base text-white flex items-center gap-2" id="registerBillModalTitle">
+  <div id="modalRegisterBill" class="fixed inset-0 bg-[#061e56]/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white/95 border border-white/90 rounded-3xl max-w-md w-full p-5 sm:p-6 text-slate-800 shadow-xl">
+      <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-200/70">
+        <h4 class="font-black text-sm sm:text-base text-slate-900 flex items-center gap-2" id="registerBillModalTitle">
           <span>💳</span> Cadastrar Conta a Pagar
         </h4>
-        <button type="button" onclick="closeRegisterBillModal()" class="p-1 text-slate-400 hover:text-white">
+        <button type="button" onclick="closeRegisterBillModal()" class="p-1 text-slate-400 hover:text-slate-700">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -25748,14 +25768,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <input type="hidden" id="inputBillId">
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Nome da Conta / Despesa *</label>
-          <input type="text" id="inputBillNome" required placeholder="Ex: Fatura Cartão Nubank, Condomínio, Aluguel, Luz" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold focus:outline-none focus:border-emerald-500">
+          <label class="block font-bold text-slate-700 mb-1">Nome da Conta / Despesa *</label>
+          <input type="text" id="inputBillNome" required placeholder="Ex: Fatura Cartão Nubank, Condomínio, Aluguel, Luz" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-slate-900 font-bold focus:outline-none focus:border-blue-500 shadow-2xs">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Categoria *</label>
-            <select id="inputBillCategoria" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-bold">
+            <label class="block font-bold text-slate-700 mb-1">Categoria *</label>
+            <select id="inputBillCategoria" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-blue-500 font-bold shadow-2xs">
               <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
               <option value="Moradia">🏠 Aluguel / Moradia</option>
               <option value="Condomínio">🏢 Condomínio</option>
@@ -25768,19 +25788,19 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Dia do Vencimento (1 a 31) *</label>
-            <input type="number" min="1" max="31" id="inputBillDia" required placeholder="Ex: 10" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-emerald-500">
+            <label class="block font-bold text-slate-700 mb-1">Dia do Vencimento (1 a 31) *</label>
+            <input type="number" min="1" max="31" id="inputBillDia" required placeholder="Ex: 10" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-blue-500 shadow-2xs">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Valor Médio / Estimado (R$)</label>
-            <input type="number" step="0.01" min="0" id="inputBillValor" placeholder="0,00" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-mono font-bold focus:outline-none focus:border-emerald-500">
+            <label class="block font-bold text-slate-700 mb-1">Valor Médio / Estimado (R$)</label>
+            <input type="number" step="0.01" min="0" id="inputBillValor" placeholder="0,00" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-emerald-600 font-mono font-black focus:outline-none focus:border-emerald-500 shadow-2xs">
           </div>
           <div>
-            <label class="block font-bold text-slate-300 mb-1">Responsável</label>
-            <select id="inputBillResponsavel" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+            <label class="block font-bold text-slate-700 mb-1">Responsável</label>
+            <select id="inputBillResponsavel" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-blue-500 shadow-2xs">
               <option value="Ambos">👫 Ambos (Casal)</option>
               <option value="Rodrigo">👨 Rodrigo</option>
               <option value="Márcia">👩 Márcia</option>
@@ -25789,8 +25809,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
         <div>
-          <label class="block font-bold text-slate-300 mb-1">Alerta de Antecedência</label>
-          <select id="inputBillAlertaDias" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+          <label class="block font-bold text-slate-700 mb-1">Alerta de Antecedência</label>
+          <select id="inputBillAlertaDias" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-blue-500 shadow-2xs">
             <option value="3">🔔 Avisar 3 dias antes</option>
             <option value="1">🔔 Avisar 1 dia antes</option>
             <option value="5">🔔 Avisar 5 dias antes</option>
@@ -25799,10 +25819,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
         <div class="pt-2 flex items-center gap-2">
-          <button type="button" onclick="closeRegisterBillModal()" class="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold hover:bg-slate-800 transition-colors">
+          <button type="button" onclick="closeRegisterBillModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-100 transition-colors">
             Cancelar
           </button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-md transition-all">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-xs transition-all">
             Salvar Conta
           </button>
         </div>
