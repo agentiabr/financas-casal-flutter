@@ -4188,6 +4188,212 @@ html, body {
   nav.bottom-nav.cp-nav-over-modules { z-index: 1000001 !important; }
   nav.bottom-nav.cp-nav-hidden { display: none !important; }
 </style>
+
+  <!-- ========================================================================= -->
+  <!-- CONTROLPIG FINTECH DESIGN SYSTEM - LIQUID GLASS & DARK EDITION (V2.3)     -->
+  <!-- Fundo escuro azul profundo com cards translúcidos frosted glass líquido   -->
+  <!-- ========================================================================= -->
+  <style id="ctrlpigLiquidGlassTheme">
+    :root {
+      /* Paleta Fundo Escuro Moderno (Midnight Deep Navy) */
+      --liquid-bg-main: #020c24;
+      --liquid-bg-gradient: linear-gradient(180deg, #020b22 0%, #03143c 28%, #051d52 65%, #020b22 100%);
+      --liquid-bg-ambient: radial-gradient(circle at 85% 12%, rgba(56, 189, 248, 0.16) 0%, transparent 45%),
+                           radial-gradient(circle at 15% 42%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+                           radial-gradient(circle at 75% 78%, rgba(14, 165, 233, 0.12) 0%, transparent 45%);
+
+      /* Superfície Liquid Glass: Cards Translúcidos Frosted Ice */
+      --liquid-card-bg: rgba(255, 255, 255, 0.88);
+      --liquid-card-border: rgba(255, 255, 255, 0.75);
+      --liquid-card-shadow: 0 14px 38px -6px rgba(2, 10, 36, 0.42), 
+                            0 4px 12px 0 rgba(2, 10, 36, 0.18), 
+                            inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95), 
+                            inset 0 -1.5px 2px 0 rgba(100, 160, 255, 0.14);
+      --liquid-card-radius: 26px;
+      
+      /* Navegação Inferior */
+      --liquid-dock-bg: rgba(2, 11, 34, 0.90);
+    }
+
+    /* 1. FUNDO GERAL DO APP */
+    body,
+    html,
+    #approvedAppContainer {
+      background-color: var(--liquid-bg-main) !important;
+      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
+    }
+
+    /* Remove a bacia cinza clara #DFEAF7 tornando os containers fluidos e escuros */
+    .bg-\[\#DFEAF7\],
+    [class*="bg-[#DFEAF7]"],
+    div[class*="bg-[#DFEAF7]"],
+    div[id*="Container"].bg-\[\#DFEAF7\],
+    #comparativoMercadosDynamicBody,
+    #chatMembersDirectoryView {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    /* Topo Aurora integrado ao fundo */
+    #fintechAuroraHero {
+      background: transparent !important;
+    }
+
+    /* 2. CARDS LIQUID GLASS FROSTED (Dashboard, Transações, Minha Rotina e Modais) */
+    #screen_dashboard .bg-white.rounded-3xl,
+    #screen_transacoes .bg-white.rounded-3xl,
+    #screen_familia .bg-white.rounded-2xl,
+    .full-screen-page .bg-white.rounded-3xl,
+    .full-screen-page .bg-white.rounded-2xl,
+    .card-fintech,
+    #heroCardBanner {
+      background: var(--liquid-card-bg) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1.5px solid var(--liquid-card-border) !important;
+      box-shadow: var(--liquid-card-shadow) !important;
+      border-radius: var(--liquid-card-radius) !important;
+      position: relative;
+    }
+
+    /* Card Principal de Saldo com onda líquida no canto inferior */
+    #heroCardBanner {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(228, 242, 255, 0.88) 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+      box-shadow: 0 16px 42px -6px rgba(2, 10, 36, 0.45), 
+                  inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95), 
+                  inset 0 -1.5px 2px 0 rgba(100, 160, 255, 0.15) !important;
+      border-radius: 28px !important;
+      overflow: hidden;
+    }
+
+    #heroCardBanner::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      right: -30px;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(37, 99, 235, 0.15) 50%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(14px);
+    }
+
+    /* Mini Cards Receitas e Despesas */
+    #heroCardBanner .bg-emerald-50 {
+      background: rgba(236, 253, 245, 0.88) !important;
+      border: 1.5px solid rgba(167, 243, 208, 0.8) !important;
+      border-radius: 20px !important;
+    }
+
+    #heroCardBanner .bg-rose-50 {
+      background: rgba(254, 242, 242, 0.88) !important;
+      border: 1.5px solid rgba(254, 205, 211, 0.8) !important;
+      border-radius: 20px !important;
+    }
+
+    /* Balão Dica do Piggy dentro do Card de Saldo */
+    #heroCardBanner .bg-blue-50\/80 {
+      background: rgba(239, 246, 255, 0.88) !important;
+      border: 1.5px solid rgba(191, 219, 254, 0.8) !important;
+      border-radius: 20px !important;
+    }
+
+    /* Indicadores: Dias, Comprometido e Parcelados */
+    #heroCardBanner .bg-slate-50 {
+      background: rgba(248, 250, 252, 0.85) !important;
+      border: 1px solid rgba(226, 232, 240, 0.8) !important;
+      border-radius: 18px !important;
+    }
+
+    /* 3. ACESSO RÁPIDO LIQUID GLASS (GRID DE 4 ÍCONES) */
+    #screen_dashboard .grid-cols-4 > div,
+    #screen_transacoes .grid-cols-4 > div {
+      background: rgba(255, 255, 255, 0.78) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.72) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 6px 18px -2px rgba(2, 10, 36, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+    }
+
+    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS */
+    #screen_familia .grid-cols-2 > div {
+      background: var(--liquid-card-bg) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border: 1.5px solid var(--liquid-card-border) !important;
+      box-shadow: 0 8px 24px -2px rgba(2, 10, 36, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+      border-radius: 20px !important;
+    }
+
+    /* 5. MODAIS FULL SCREEN (Minha Rotina, Transações, Lista de Compras, Saúde, Pets, etc.) */
+    .full-screen-page {
+      background-color: var(--liquid-bg-main) !important;
+      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
+      background-attachment: fixed !important;
+    }
+
+    .full-screen-page > div.bg-\[\#071933\],
+    .full-screen-page > div[class*="bg-[#071933]"] {
+      background: transparent !important;
+    }
+
+    /* 6. DOCK DE NAVEGAÇÃO INFERIOR LIQUID GLASS */
+    nav.bottom-nav,
+    #appBottomNavBar {
+      background: var(--liquid-dock-bg) !important;
+      backdrop-filter: blur(28px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+      box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .bottom-nav-item {
+      color: rgba(200, 220, 255, 0.6) !important;
+      transition: all 0.2s ease;
+    }
+
+    .bottom-nav-item.active {
+      color: #38bdf8 !important;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    }
+
+    .bottom-nav-item.active i,
+    .bottom-nav-item.active svg {
+      color: #38bdf8 !important;
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+    }
+
+    /* Botão Central (+) Flutuante */
+    .bottom-nav button[onclick*="openActionHubModal"] {
+      background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+      border: 2px solid rgba(255, 255, 255, 0.45) !important;
+      box-shadow: 0 0 24px rgba(0, 160, 255, 0.65), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* 7. TRANSAÇÕES E LISTAS (Liquid Glass Tiles) */
+    .list-item-fintech,
+    #dashboardRecentTransactionsList > div,
+    #dashboardFutureBillsList > div,
+    #screenTransactionsListContainer > div {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(255, 255, 255, 0.75) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 4px 14px rgba(2, 10, 36, 0.08) !important;
+    }
+
+    /* Textos e contrastes externos sobre o fundo escuro */
+    #screen_familia span.text-slate-600,
+    #screen_familia span.text-slate-500,
+    #screen_dashboard .text-slate-600 {
+      color: #bfdbfe;
+    }
+  </style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -4598,7 +4804,7 @@ html, body {
             <div class="w-20 h-1.5 bg-black/15 rounded-full blur-[2px] -mt-1 mr-2 pointer-events-none"></div>
           </div>
 
-          <div id="heroCardBanner" style="background: linear-gradient(135deg, #FFFFFF 0%, #EEF4FA 100%) !important;" class="rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
+          <div id="heroCardBanner" class="rounded-3xl p-5 shadow-xl border border-slate-200/90 transition-all select-none text-slate-900 relative z-10">
             
             <div class="flex items-start justify-between">
               <div>
