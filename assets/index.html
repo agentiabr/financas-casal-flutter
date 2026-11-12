@@ -4343,7 +4343,7 @@ html, body {
       box-shadow: 0 6px 18px -2px rgba(4, 20, 64, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS LIQUID GLASS */
+    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS NO ESTILO ACESSO RÁPIDO */
     #screen_familia .bg-\[\#DFEAF7\] {
       background: linear-gradient(180deg, rgba(8, 30, 85, 0.40) 0%, rgba(5, 22, 65, 0.75) 100%) !important;
       backdrop-filter: blur(16px) !important;
@@ -4352,20 +4352,17 @@ html, body {
     }
 
     #screen_familia .grid-cols-2 > div {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(226, 242, 255, 0.82) 45%, rgba(190, 222, 255, 0.65) 100%) !important;
-      backdrop-filter: blur(24px) saturate(190%) !important;
-      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.90) !important;
-      box-shadow: 0 10px 28px -4px rgba(4, 20, 64, 0.35), 
-                  0 3px 10px 0 rgba(4, 20, 64, 0.15), 
-                  inset 0 1.5px 2px 0 rgba(255, 255, 255, 1), 
-                  inset 0 -1.5px 2px 0 rgba(59, 130, 246, 0.18) !important;
-      border-radius: 22px !important;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(215, 235, 255, 0.68) 100%) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.80) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 6px 18px -2px rgba(4, 20, 64, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
     }
 
     #screen_familia .grid-cols-2 > div:hover {
       border-color: rgba(255, 255, 255, 1) !important;
-      box-shadow: 0 14px 34px -4px rgba(4, 20, 64, 0.45), inset 0 2px 2px rgba(255, 255, 255, 1) !important;
+      box-shadow: 0 10px 24px -2px rgba(4, 20, 64, 0.28), inset 0 1.5px 1.5px rgba(255, 255, 255, 1) !important;
     }
 
     #screen_familia .grid-cols-2 > div h4 {
@@ -5376,154 +5373,137 @@ html, body {
           <!-- CAIXA ARREDONDADA PREENCHENDO ATÉ EMBAIXO SEM ULTRAPASSAR E SEM GERAR SCROLL -->
           <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-7 pb-3.5 shadow-inner">
             
-            <div class="flex items-center justify-between mb-1 flex-shrink-0">
+            <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
               <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
               <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
             </div>
 
-            <!-- GRADE 2 COLUNAS x 5 LINHAS (CARDS MAIS QUADRADOS OCUPANDO ATÉ EMBAIXO SEM SCROLL E SEM CORTAR NO RODAPÉ) -->
-            <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-1.5">
-              
-              <!-- 1. Educação -->
-              <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="graduation-cap" class="w-5 h-5 text-blue-600"></i>
+            <!-- CARD DE FUNDO CONTENDO O GRID DOS MÓDULOS NO ESTILO ACESSO RÁPIDO -->
+            <div class="flex-1 min-h-0 bg-white/70 backdrop-blur-md rounded-3xl p-2.5 sm:p-3 border border-white/80 shadow-xs flex flex-col overflow-hidden">
+              <!-- GRADE 2 COLUNAS x 5 LINHAS COM ÍCONES DIRETOS NO ESTILO ACESSO RÁPIDO -->
+              <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-1.5">
+                
+                <!-- 1. Educação -->
+                <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Educação</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Cursos e formação</p>
-                </div>
-              </div>
-
-              <!-- 2. Lista de Compras -->
-              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Educação</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Cursos e formação</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Lista de Compras</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Mercado e histórico</p>
-                </div>
-              </div>
 
-              <!-- 3. Pets e Vacinas -->
-              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="paw-print" class="w-5 h-5 text-rose-500"></i>
+                <!-- 2. Lista de Compras -->
+                <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="shopping-cart" class="w-6 h-6 text-emerald-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Pets e Vacinas</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Cuidados e gastos</p>
-                </div>
-              </div>
-
-              <!-- 4. Vida Saudável -->
-              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-600"></i>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Lista de Compras</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Mercado e histórico</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Vida Saudável</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Rotina e remédios</p>
-                </div>
-              </div>
 
-              <!-- 5. Transporte & Manutenção -->
-              <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="car" class="w-5 h-5 text-sky-600"></i>
+                <!-- 3. Pets e Vacinas -->
+                <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="paw-print" class="w-6 h-6 text-amber-500"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Transporte</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Veículos e revisão</p>
-                </div>
-              </div>
-
-              <!-- 6. Meus Prestadores -->
-              <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="wrench" class="w-5 h-5 text-indigo-600"></i>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Pets e Vacinas</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Cuidados e gastos</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Prestadores</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Contatos úteis</p>
-                </div>
-              </div>
 
-              <!-- 7. Cofrinho e Metas -->
-              <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="piggy-bank" class="w-5 h-5 text-amber-600"></i>
+                <!-- 4. Vida Saudável -->
+                <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="heart-pulse" class="w-6 h-6 text-rose-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cofrinho e Metas</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Sonhos e reservas</p>
-                </div>
-              </div>
-
-              <!-- 8. Cartões -->
-              <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="credit-card" class="w-5 h-5 text-indigo-600"></i>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Vida Saudável</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Rotina e remédios</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cartões</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Limites e faturas</p>
-                </div>
-              </div>
 
-              <!-- 9. Garantias de Produtos -->
-              <div onclick="openProductWarrantiesModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-emerald-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i>
+                <!-- 5. Transporte & Manutenção -->
+                <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="car" class="w-6 h-6 text-sky-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Prazos de produtos</p>
-                </div>
-              </div>
-
-              <!-- 10. Crianças & Escola -->
-              <div onclick="openKidsAreaModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-purple-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
-                <div class="flex items-center justify-between">
-                  <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <i data-lucide="smile" class="w-5 h-5 text-purple-600"></i>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Transporte</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Veículos e revisão</p>
                   </div>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Crianças &amp; Notas</h4>
-                  <p class="text-[10px] text-slate-400 truncate leading-tight">Boletim e gastos</p>
-                </div>
-              </div>
 
+                <!-- 6. Meus Prestadores -->
+                <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="wrench" class="w-6 h-6 text-indigo-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Prestadores</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Contatos úteis</p>
+                  </div>
+                </div>
+
+                <!-- 7. Cofrinho e Metas -->
+                <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="piggy-bank" class="w-6 h-6 text-amber-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cofrinho e Metas</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Sonhos e reservas</p>
+                  </div>
+                </div>
+
+                <!-- 8. Cartões -->
+                <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="credit-card" class="w-6 h-6 text-purple-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Cartões</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Limites e faturas</p>
+                  </div>
+                </div>
+
+                <!-- 9. Garantias de Produtos -->
+                <div onclick="openProductWarrantiesModal()" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-teal-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Prazos de produtos</p>
+                  </div>
+                </div>
+
+                <!-- 10. Crianças & Escola -->
+                <div onclick="openKidsAreaModal()" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
+                  <div class="flex items-center justify-between">
+                    <i data-lucide="smile" class="w-6 h-6 text-pink-600"></i>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Crianças &amp; Notas</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Boletim e gastos</p>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
           </div>
