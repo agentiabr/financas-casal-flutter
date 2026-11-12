@@ -4195,30 +4195,36 @@ html, body {
   <!-- ========================================================================= -->
   <style id="ctrlpigLiquidGlassTheme">
     :root {
-      /* Paleta Fundo Escuro Moderno - Azul Escuro com Degradê Vibrante (Sem Fundo Preto) */
+      /* Paleta Fundo Escuro Oficial do Dashboard: Azul Safira Profundo com Degradê Vibrante (Sem Fundo Preto) */
       --liquid-bg-main: #061e56;
       --liquid-bg-gradient: linear-gradient(180deg, #072263 0%, #0b3182 25%, #0e3d9e 50%, #09286c 80%, #051a4a 100%);
       --liquid-bg-ambient: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
                            radial-gradient(circle at 15% 45%, rgba(99, 102, 241, 0.20) 0%, transparent 50%),
                            radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.18) 0%, transparent 45%);
 
-      /* Superfície Liquid Glass: Cards Mais Azulados Translúcidos com Degradê Suave nos Cantos */
-      --liquid-card-bg: linear-gradient(145deg, rgba(240, 248, 255, 0.86) 0%, rgba(212, 234, 255, 0.70) 45%, rgba(175, 212, 255, 0.50) 100%);
+      /* Superfície Liquid Glass Padronizada para Todos os Cards */
+      --liquid-card-bg: linear-gradient(145deg, rgba(240, 248, 255, 0.88) 0%, rgba(212, 234, 255, 0.72) 45%, rgba(175, 212, 255, 0.52) 100%);
       --liquid-card-border: rgba(255, 255, 255, 0.80);
-      --liquid-card-shadow: 0 16px 42px -6px rgba(4, 20, 64, 0.45), 
-                            0 4px 14px 0 rgba(4, 20, 64, 0.20), 
+      /* Sombra Sutil e Elegante (Sem manchas escuras pesadas) */
+      --liquid-card-shadow: 0 8px 24px -4px rgba(4, 20, 64, 0.16), 
+                            0 2px 6px 0 rgba(4, 20, 64, 0.08), 
                             inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95), 
-                            inset 0 -2px 3px 0 rgba(70, 140, 255, 0.20);
+                            inset 0 -1.5px 2px 0 rgba(70, 140, 255, 0.15);
       --liquid-card-radius: 26px;
       
       /* Navegação Inferior */
       --liquid-dock-bg: rgba(6, 26, 74, 0.90);
     }
 
-    /* 1. FUNDO GERAL DO APP (Azul Escuro com Degradê Suave) */
+    /* 1. FUNDO GERAL DO APP E DE TODAS AS SEÇÕES (Padronizado 100% com o Dashboard) */
     body,
     html,
-    #approvedAppContainer {
+    #approvedAppContainer,
+    #screen_dashboard,
+    #screen_transacoes,
+    #screen_familia,
+    #screen_chat,
+    .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
       background-attachment: fixed !important;
@@ -4226,26 +4232,35 @@ html, body {
       background-size: cover !important;
     }
 
-    /* Remove a bacia cinza clara #DFEAF7 tornando os containers fluidos e azul escuro */
+    /* Remove fundos escuros pretos/sólidos e bacias cinzas em todas as seções e modais */
+    .bg-\[\#071933\],
+    [class*="bg-[#071933]"],
+    section[class*="bg-[#071933]"],
+    div[class*="bg-[#071933]"],
+    header[class*="bg-[#071933]"],
     .bg-\[\#DFEAF7\],
     [class*="bg-[#DFEAF7]"],
     div[class*="bg-[#DFEAF7]"],
     div[id*="Container"].bg-\[\#DFEAF7\],
+    #screen_transacoes,
+    #screen_familia,
+    #screen_chat,
+    #fintechAuroraHero,
     #comparativoMercadosDynamicBody,
     #chatMembersDirectoryView {
       background: transparent !important;
       box-shadow: none !important;
     }
 
-    /* Topo Aurora integrado ao fundo azul escuro */
-    #fintechAuroraHero {
-      background: transparent !important;
-    }
-
-    /* 2. CARDS LIQUID GLASS FROSTED COM DEGRADÊ AZULADO */
+    /* 2. CARDS LIQUID GLASS FROSTED COM CORES PADRONIZADAS E SOMBRA SUTIL */
     #screen_dashboard .bg-white.rounded-3xl,
     #screen_transacoes .bg-white.rounded-3xl,
-    #screen_familia .bg-white.rounded-2xl,
+    #screen_transacoes div[class*="from-white"][class*="rounded-3xl"],
+    #screen_familia .bg-white.rounded-3xl,
+    #screen_familia .bg-white\/70.rounded-3xl,
+    #screen_familia .bg-white\/80.rounded-3xl,
+    #screen_familia #familyModulesContainerCard,
+    #screen_chat div.rounded-3xl,
     .full-screen-page .bg-white.rounded-3xl,
     .full-screen-page .bg-white.rounded-2xl,
     .card-fintech,
@@ -4259,11 +4274,11 @@ html, body {
       position: relative;
     }
 
-    /* Card Principal de Saldo com onda líquida no canto inferior */
+    /* Card Principal de Saldo com sombra sutil e onda líquida no canto inferior */
     #heroCardBanner {
       background: linear-gradient(135deg, rgba(245, 250, 255, 0.92) 0%, rgba(220, 238, 255, 0.78) 50%, rgba(180, 215, 255, 0.55) 100%) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
-      box-shadow: 0 16px 42px -6px rgba(4, 20, 64, 0.45), 
+      box-shadow: 0 10px 28px -4px rgba(4, 20, 64, 0.18), 
                   inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95), 
                   inset 0 -1.5px 2px 0 rgba(100, 160, 255, 0.15) !important;
       border-radius: 28px !important;
@@ -4284,15 +4299,27 @@ html, body {
     }
 
     /* Mini Cards Receitas e Despesas */
-    #heroCardBanner .bg-emerald-50 {
+    #heroCardBanner .bg-emerald-50,
+    #screen_transacoes .bg-emerald-50,
+    #screen_transacoes .bg-emerald-50\/80 {
       background: rgba(236, 253, 245, 0.88) !important;
       border: 1.5px solid rgba(167, 243, 208, 0.8) !important;
       border-radius: 20px !important;
     }
 
-    #heroCardBanner .bg-rose-50 {
+    #heroCardBanner .bg-rose-50,
+    #screen_transacoes .bg-rose-50,
+    #screen_transacoes .bg-rose-50\/80 {
       background: rgba(254, 242, 242, 0.88) !important;
       border: 1.5px solid rgba(254, 205, 211, 0.8) !important;
+      border-radius: 20px !important;
+    }
+
+    #heroCardBanner .bg-blue-50,
+    #screen_transacoes .bg-blue-50,
+    #screen_transacoes .bg-blue-50\/80 {
+      background: rgba(239, 246, 255, 0.88) !important;
+      border: 1.5px solid rgba(191, 219, 254, 0.8) !important;
       border-radius: 20px !important;
     }
 
@@ -4335,34 +4362,38 @@ html, body {
     /* 3. ACESSO RÁPIDO LIQUID GLASS (GRID DE 4 ÍCONES FLAT) */
     #screen_dashboard .grid-cols-4 > div,
     #screen_transacoes .grid-cols-4 > div {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(215, 235, 255, 0.65) 100%) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
-      border-radius: 20px !important;
-      box-shadow: 0 6px 18px -2px rgba(4, 20, 64, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
-    }
-
-    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS NO ESTILO ACESSO RÁPIDO */
-    #screen_familia .bg-\[\#DFEAF7\] {
-      background: linear-gradient(180deg, rgba(8, 30, 85, 0.40) 0%, rgba(5, 22, 65, 0.75) 100%) !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
-    }
-
-    #screen_familia .grid-cols-2 > div {
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(215, 235, 255, 0.68) 100%) !important;
       backdrop-filter: blur(16px) !important;
       -webkit-backdrop-filter: blur(16px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.80) !important;
       border-radius: 20px !important;
-      box-shadow: 0 6px 18px -2px rgba(4, 20, 64, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 4px 14px -2px rgba(4, 20, 64, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
+    }
+
+    /* 4. TELA MINHA ROTINA (FAMÍLIA) - CARD DE FUNDO E OS 10 MÓDULOS PADRONIZADOS */
+    #screen_familia #familyModulesContainerCard,
+    #screen_familia .bg-white\/70.rounded-3xl,
+    #screen_familia .bg-white\/80.rounded-3xl {
+      background: var(--liquid-card-bg) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1.5px solid var(--liquid-card-border) !important;
+      border-radius: var(--liquid-card-radius) !important;
+      box-shadow: var(--liquid-card-shadow) !important;
+    }
+
+    #screen_familia .grid-cols-2 > div {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(220, 238, 255, 0.70) 100%) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 4px 12px -2px rgba(4, 20, 64, 0.10), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
     }
 
     #screen_familia .grid-cols-2 > div:hover {
       border-color: rgba(255, 255, 255, 1) !important;
-      box-shadow: 0 10px 24px -2px rgba(4, 20, 64, 0.28), inset 0 1.5px 1.5px rgba(255, 255, 255, 1) !important;
+      box-shadow: 0 6px 16px -2px rgba(4, 20, 64, 0.18), inset 0 1.5px 1.5px rgba(255, 255, 255, 1) !important;
     }
 
     #screen_familia .grid-cols-2 > div h4 {
@@ -4386,11 +4417,8 @@ html, body {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
       background-attachment: fixed !important;
-    }
-
-    .full-screen-page > div.bg-\[\#071933\],
-    .full-screen-page > div[class*="bg-[#071933]"] {
-      background: transparent !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
     }
 
     /* 6. DOCK DE NAVEGAÇÃO INFERIOR LIQUID GLASS */
@@ -4400,7 +4428,7 @@ html, body {
       backdrop-filter: blur(28px) saturate(200%) !important;
       -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
       border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
-      box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+      box-shadow: 0 -6px 24px 0 rgba(0, 0, 0, 0.35) !important;
     }
 
     .bottom-nav-item {
@@ -4423,7 +4451,7 @@ html, body {
     .bottom-nav button[onclick*="openActionHubModal"] {
       background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
       border: 2px solid rgba(255, 255, 255, 0.45) !important;
-      box-shadow: 0 0 24px rgba(0, 160, 255, 0.65), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+      box-shadow: 0 0 20px rgba(0, 160, 255, 0.50), 0 4px 12px rgba(0, 0, 0, 0.30) !important;
     }
 
     /* 7. LANÇAMENTOS E CONTAS: SEM CARDS DENTRO DE CARDS, APENAS LINHAS SEPARADORAS CLARAS E TEXTOS NÍTIDOS */
@@ -4448,17 +4476,26 @@ html, body {
       font-weight: 600 !important;
     }
 
-    /* Proteção de contraste para textos dentro dos cards brancos/liquid glass */
+    /* Proteção de contraste para textos dentro dos cards liquid glass */
     #screen_dashboard .bg-white.rounded-3xl span.text-slate-600,
-    #screen_dashboard .bg-white.rounded-3xl .text-slate-600 {
+    #screen_dashboard .bg-white.rounded-3xl .text-slate-600,
+    #screen_transacoes span.text-slate-500,
+    #screen_transacoes span.text-slate-600 {
       color: #1e293b !important;
       font-weight: 700 !important;
     }
 
+    /* Suavização de sombras pesadas globais em cards */
+    .shadow-2xl,
+    .shadow-xl {
+      box-shadow: 0 8px 24px -4px rgba(4, 20, 64, 0.16) !important;
+    }
+
     /* Textos e contrastes externos sobre o fundo escuro (apenas títulos externos, fora dos cards) */
     #screen_familia > div > div > span.text-slate-600,
-    #screen_familia span.text-slate-300 {
-      color: #bfdbfe;
+    #screen_familia span.text-slate-300,
+    #screen_familia span.text-slate-400 {
+      color: #bfdbfe !important;
     }
   </style>
 </head>
@@ -5349,7 +5386,7 @@ html, body {
           
           <!-- BANNER HERO NO TAMANHO ORIGINAL COM O PIGGY -->
           <div class="px-5 pt-1 relative z-20 flex-shrink-0">
-            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-blue-400/40 shadow-xl">
+            <div class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-md">
               <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
               
               <div class="relative z-10 flex items-center justify-between gap-3">
@@ -5374,12 +5411,12 @@ html, body {
           <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-7 pb-3.5 shadow-inner">
             
             <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
-              <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Módulos da Família</span>
-              <span class="text-[10px] font-bold text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-100">Módulos da Família</span>
+              <span class="text-[10px] font-bold text-sky-200 bg-sky-500/25 border border-sky-400/30 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
             </div>
 
             <!-- CARD DE FUNDO CONTENDO O GRID DOS MÓDULOS NO ESTILO ACESSO RÁPIDO -->
-            <div class="flex-1 min-h-0 bg-white/70 backdrop-blur-md rounded-3xl p-2.5 sm:p-3 border border-white/80 shadow-xs flex flex-col overflow-hidden">
+            <div id="familyModulesContainerCard" class="flex-1 min-h-0 bg-white/80 backdrop-blur-md rounded-3xl p-2.5 sm:p-3 border border-white/80 shadow-xs flex flex-col overflow-hidden">
               <!-- GRADE 2 COLUNAS x 5 LINHAS COM ÍCONES DIRETOS NO ESTILO ACESSO RÁPIDO -->
               <div class="flex-1 min-h-0 grid grid-cols-2 grid-rows-5 gap-1.5">
                 
