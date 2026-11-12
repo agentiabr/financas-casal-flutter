@@ -23875,113 +23875,17 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
     function initHealthMedScheduler() {
       if (healthSchedulerInterval) clearInterval(healthSchedulerInterval);
-      healthSchedulerInterval = setInterval(checkHealthScheduleTimers, 30000);
+      healthSchedulerInterval = setInterval(() => {
+        if (typeof window.checkHealthScheduleTimers === 'function') {
+          window.checkHealthScheduleTimers();
+        }
+      }, 30000);
     }
 
     function checkHealthScheduleTimers() {
-      if (typeof window.checkHealthScheduleTimers === 'function' && window.checkHealthScheduleTimers !== checkHealthScheduleTimers) {
+      if (typeof window.checkHealthScheduleTimers === 'function') {
         window.checkHealthScheduleTimers();
-        return;
       }
-      if (typeof checkPetCareScheduleTimers === 'function') {
-        checkPetCareScheduleTimers();
-      }
-      const settings = getHealthScheduleSettings();
-      if (!settings.voiceAlarmEnabled) return;
-
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      // Verifica vencimento / fim de estoque de medicamentos (5 dias antes, 2 dias antes e no dia agendado)
-      try {
-        const meds = (typeof getHealthMeds === 'function') ? getHealthMeds() : [];
-        const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        meds.forEach(m => {
-          if (!m || !m.nome) return;
-          const dosesDia = (m.dosePorVez || 1) * Math.max(1, (Array.isArray(m.rotinas) && m.rotinas.length > 0 ? m.rotinas.length : (Array.isArray(m.horariosPadrao) && m.horariosPadrao.length > 0 ? m.horariosPadrao.length : 1)));
-          let diffDays = typeof m.estoqueAtual === 'number' ? Math.floor(m.estoqueAtual / dosesDia) : null;
-          const rawDate = m.dataVencimento || m.dataFim || m.proximaDose || '';
-          if (rawDate) {
-            const targetDate = new Date(rawDate + 'T00:00:00');
-            if (!isNaN(targetDate.getTime())) {
-              const dateDiff = Math.round((targetDate - todayZero) / (1000 * 60 * 60 * 24));
-              if (diffDays === null || dateDiff < diffDays) diffDays = dateDiff;
-            }
-          }
-          if (diffDays === 5 || diffDays === 2 || diffDays === 0) {
-            const alertKey = `ctrlpig_med_exp_alert_${m.id}_${diffDays}_${todayStr}`;
-            if (!localStorage.getItem(alertKey)) {
-              localStorage.setItem(alertKey, '1');
-              const quandoTxt = diffDays === 0 ? 'vence/acaba HOJE' : `vai vencer/acabar em ${diffDays} dias`;
-              const speech = `Atenção: o medicamento ${m.nome} ${quandoTxt}. Os alarmes de 2 dias antes e no dia agendado estão ativos.`;
-              speakAccessibility(speech);
-              showFloatingHealthAlarmBanner(`💊 Alerta de Remédio (${diffDays === 0 ? 'HOJE' : 'Faltam ' + diffDays + ' dias'})`, `O medicamento ${m.nome} ${quandoTxt} (${m.estoqueAtual || 0} comp. restantes).`, 'morning');
-            }
-          }
-        });
-      } catch (e) {}
-
-      const [mH, mM] = (settings.morningTime || '08:00').split(':').map(Number);
-      const morningTargetMinutes = mH * 60 + mM;
-
-      const [eH, eM] = (settings.eveningTime || '20:00').split(':').map(Number);
-      const eveningTargetMinutes = eH * 60 + eM;
-
-      const diffMorning = morningTargetMinutes - currentMinutes;
-      if (diffMorning >= 9 && diffMorning <= 10 && settings.lastAlarmNotification !== `morning_10min_${todayStr}`) {
-        settings.lastAlarmNotification = `morning_10min_${todayStr}`;
-        saveHealthScheduleSettings(settings);
-
-        const speech = `Atenção Rodrigo: faltam 10 minutos para o horário de tomar o seu remédio de pressão das ${settings.morningTime}. Você precisa tomar 1 comprimido de Aradois, 1 de Besilato de Anlodipino e 1 de Hidroclorotiazida.`;
-        speakAccessibility(speech);
-        showFloatingHealthAlarmBanner('☀️ Remédios de Pressão (08h)', 'Faltam 10 minutos para a dose da manhã: Aradois, Anlodipino e Hidroclorotiazida (3 comprimidos).', 'morning');
-      }
-
-      const diffEvening = eveningTargetMinutes - currentMinutes;
-      if (diffEvening >= 9 && diffEvening <= 10 && settings.lastAlarmNotification !== `evening_10min_${todayStr}`) {
-        settings.lastAlarmNotification = `evening_10min_${todayStr}`;
-        saveHealthScheduleSettings(settings);
-
-        const speech = `Atenção Rodrigo: faltam 10 minutos para tomar os seus remédios das ${settings.eveningTime}. Você precisa tomar 3 comprimidos: 1 comprimido de Aradois e 1 de Besilato de Anlodipino para pressão, e 1 comprimido de Glifage XR para glicemia.`;
-        speakAccessibility(speech);
-        showFloatingHealthAlarmBanner('🌙 Remédios da Noite (20h)', 'Faltam 10 minutos para a dose da noite: Aradois, Anlodipino e Glifage XR 500 (3 comprimidos).', 'evening');
-      }
-    }
-
-    function showFloatingHealthAlarmBanner(title, message, routine) {
-      let banner = document.getElementById('floatingHealthAlarmBanner');
-      if (!banner) {
-        banner = document.createElement('div');
-        banner.id = 'floatingHealthAlarmBanner';
-        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-sky-400 flex flex-col gap-2.5 animate-bounce';
-        document.body.appendChild(banner);
-      }
-
-      banner.innerHTML = `
-        <div class="flex items-start justify-between">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">⏰</span>
-            <div>
-              <h4 class="font-black text-sm text-sky-300">${title}</h4>
-              <p class="text-xs text-slate-200 mt-0.5 leading-tight">${message}</p>
-            </div>
-          </div>
-          <button type="button" onclick="document.getElementById('floatingHealthAlarmBanner').remove()" class="p-1 text-slate-400 hover:text-white cursor-pointer">✕</button>
-        </div>
-        <div class="flex items-center gap-2 pt-1">
-          <button type="button" onclick="promptTakeRoutine('${routine}'); document.getElementById('floatingHealthAlarmBanner').remove();" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 font-black text-xs text-white rounded-xl shadow-md transition-all cursor-pointer">
-            ✓ Já Tomei Agora
-          </button>
-          <button type="button" onclick="openHealthMedsModal(); document.getElementById('floatingHealthAlarmBanner').remove();" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl cursor-pointer">
-            Ver Rotina
-          </button>
-        </div>
-      `;
-
-      setTimeout(() => {
-        if (banner && banner.parentNode) banner.remove();
-      }, 30000);
     }
 
     // ==============================================================================
@@ -31500,7 +31404,6 @@ Frase falada: "${spokenText}"`;
     }
 
     if (window.lucide) lucide.createIcons();
-    window.checkFiveDaysMedStockWarning();
   };
 
   // Override openEditMedicationModal e saveEditedMedication para SEMPRE permitir horário individualizado
@@ -31681,52 +31584,8 @@ Frase falada: "${spokenText}"`;
     } catch (e) {}
   };
 
-  // Atualiza o Banner de Alarme de Remédios com o botão "💤 Adiar 5 min"
-  window.showFloatingHealthAlarmBanner = function(title, message, routine) {
-    // Alarme exclusivo em tela cheia / overlay sem repetir na barra de notificações do Android
-
-    let banner = document.getElementById('floatingHealthAlarmBanner');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'floatingHealthAlarmBanner';
-      banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[98] max-w-md w-[94vw] p-4 bg-slate-900 text-white rounded-3xl shadow-2xl border-2 border-rose-500 flex flex-col gap-3';
-      document.body.appendChild(banner);
-    }
-
-    const safeTitle = String(title || '⏰ Hora do Remédio').replace(/'/g, "\\'");
-    const safeMsg = String(message || 'Tomar medicamento programado').replace(/'/g, "\\'");
-    const safeRoutine = String(routine || 'custom').replace(/'/g, "\\'");
-
-    banner.innerHTML = `
-      <div class="flex items-start justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl animate-bounce">⏰</span>
-          <div>
-            <h4 class="font-black text-sm text-amber-300">${title || '⏰ Hora do Remédio'}</h4>
-            <p class="text-xs text-slate-200 mt-0.5 leading-snug">${message || ''}</p>
-          </div>
-        </div>
-        <button type="button" onclick="stopMedicationAlarmAudio()" class="px-2.5 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs cursor-pointer flex-shrink-0">
-          ✕
-        </button>
-      </div>
-      <div class="grid grid-cols-3 gap-2 pt-1">
-        <button type="button" onclick="snoozeMedicationAlarm5Min('${safeTitle}', '${safeMsg}', '${safeRoutine}')" class="py-2.5 px-2 bg-amber-500 hover:bg-amber-400 font-black text-[11px] text-slate-950 rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>💤 Adiar 5 min</span>
-        </button>
-        <button type="button" onclick="stopMedicationAlarmAudio()" class="py-2.5 px-2 bg-rose-600 hover:bg-rose-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>🔕 Desligar</span>
-        </button>
-        <button type="button" onclick="stopMedicationAlarmAudio(); if('${safeRoutine}'==='morning' || '${safeRoutine}'==='evening') { promptTakeRoutine('${safeRoutine}'); } else { openHealthMedsModal(); }" class="py-2.5 px-2 bg-emerald-600 hover:bg-emerald-500 font-black text-[11px] text-white rounded-xl shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95">
-          <span>✓ Já Tomei</span>
-        </button>
-      </div>
-    `;
-  };
-
   window.checkHealthScheduleTimers = function() {
     if (typeof window.checkSnoozedMedicationAlarm === 'function') window.checkSnoozedMedicationAlarm();
-    if (typeof window.checkFiveDaysMedStockWarning === 'function') window.checkFiveDaysMedStockWarning();
     if (typeof window._canonicalCheckHealthScheduleTimers === 'function') {
       window._canonicalCheckHealthScheduleTimers();
     }
@@ -34178,7 +34037,6 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     }
 
     if (typeof window.checkSnoozedMedicationAlarm === 'function') window.checkSnoozedMedicationAlarm();
-    if (typeof window.checkFiveDaysMedStockWarning === 'function') window.checkFiveDaysMedStockWarning();
     if (typeof window.checkSnoozedShoppingListAlert === 'function') window.checkSnoozedShoppingListAlert();
 
     const settings = (typeof getHealthScheduleSettings === 'function') ? getHealthScheduleSettings() : { morningTime: '08:00', eveningTime: '20:00', voiceAlarmEnabled: true };
