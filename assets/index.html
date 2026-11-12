@@ -4195,27 +4195,27 @@ html, body {
   <!-- ========================================================================= -->
   <style id="ctrlpigLiquidGlassTheme">
     :root {
-      /* Paleta Fundo Escuro Moderno (Midnight Deep Navy) */
-      --liquid-bg-main: #020c24;
-      --liquid-bg-gradient: linear-gradient(180deg, #020b22 0%, #03143c 28%, #051d52 65%, #020b22 100%);
-      --liquid-bg-ambient: radial-gradient(circle at 85% 12%, rgba(56, 189, 248, 0.16) 0%, transparent 45%),
-                           radial-gradient(circle at 15% 42%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
-                           radial-gradient(circle at 75% 78%, rgba(14, 165, 233, 0.12) 0%, transparent 45%);
+      /* Paleta Fundo Escuro Moderno - Azul Escuro com Degradê Vibrante (Sem Fundo Preto) */
+      --liquid-bg-main: #061e56;
+      --liquid-bg-gradient: linear-gradient(180deg, #072263 0%, #0b3182 25%, #0e3d9e 50%, #09286c 80%, #051a4a 100%);
+      --liquid-bg-ambient: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
+                           radial-gradient(circle at 15% 45%, rgba(99, 102, 241, 0.20) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.18) 0%, transparent 45%);
 
-      /* Superfície Liquid Glass: Cards Translúcidos Frosted Ice */
-      --liquid-card-bg: rgba(255, 255, 255, 0.88);
-      --liquid-card-border: rgba(255, 255, 255, 0.75);
-      --liquid-card-shadow: 0 14px 38px -6px rgba(2, 10, 36, 0.42), 
-                            0 4px 12px 0 rgba(2, 10, 36, 0.18), 
-                            inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95), 
-                            inset 0 -1.5px 2px 0 rgba(100, 160, 255, 0.14);
+      /* Superfície Liquid Glass: Cards Mais Azulados Translúcidos com Degradê Suave nos Cantos */
+      --liquid-card-bg: linear-gradient(145deg, rgba(240, 248, 255, 0.86) 0%, rgba(212, 234, 255, 0.70) 45%, rgba(175, 212, 255, 0.50) 100%);
+      --liquid-card-border: rgba(255, 255, 255, 0.80);
+      --liquid-card-shadow: 0 16px 42px -6px rgba(4, 20, 64, 0.45), 
+                            0 4px 14px 0 rgba(4, 20, 64, 0.20), 
+                            inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.95), 
+                            inset 0 -2px 3px 0 rgba(70, 140, 255, 0.20);
       --liquid-card-radius: 26px;
       
       /* Navegação Inferior */
-      --liquid-dock-bg: rgba(2, 11, 34, 0.90);
+      --liquid-dock-bg: rgba(6, 26, 74, 0.90);
     }
 
-    /* 1. FUNDO GERAL DO APP */
+    /* 1. FUNDO GERAL DO APP (Azul Escuro com Degradê Suave) */
     body,
     html,
     #approvedAppContainer {
@@ -4226,7 +4226,7 @@ html, body {
       background-size: cover !important;
     }
 
-    /* Remove a bacia cinza clara #DFEAF7 tornando os containers fluidos e escuros */
+    /* Remove a bacia cinza clara #DFEAF7 tornando os containers fluidos e azul escuro */
     .bg-\[\#DFEAF7\],
     [class*="bg-[#DFEAF7]"],
     div[class*="bg-[#DFEAF7]"],
@@ -4237,12 +4237,12 @@ html, body {
       box-shadow: none !important;
     }
 
-    /* Topo Aurora integrado ao fundo */
+    /* Topo Aurora integrado ao fundo azul escuro */
     #fintechAuroraHero {
       background: transparent !important;
     }
 
-    /* 2. CARDS LIQUID GLASS FROSTED (Dashboard, Transações, Minha Rotina e Modais) */
+    /* 2. CARDS LIQUID GLASS FROSTED COM DEGRADÊ AZULADO */
     #screen_dashboard .bg-white.rounded-3xl,
     #screen_transacoes .bg-white.rounded-3xl,
     #screen_familia .bg-white.rounded-2xl,
@@ -4261,9 +4261,9 @@ html, body {
 
     /* Card Principal de Saldo com onda líquida no canto inferior */
     #heroCardBanner {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(228, 242, 255, 0.88) 100%) !important;
+      background: linear-gradient(135deg, rgba(245, 250, 255, 0.92) 0%, rgba(220, 238, 255, 0.78) 50%, rgba(180, 215, 255, 0.55) 100%) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
-      box-shadow: 0 16px 42px -6px rgba(2, 10, 36, 0.45), 
+      box-shadow: 0 16px 42px -6px rgba(4, 20, 64, 0.45), 
                   inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95), 
                   inset 0 -1.5px 2px 0 rgba(100, 160, 255, 0.15) !important;
       border-radius: 28px !important;
@@ -4310,28 +4310,28 @@ html, body {
       border-radius: 18px !important;
     }
 
-    /* 3. ACESSO RÁPIDO LIQUID GLASS (GRID DE 4 ÍCONES) */
+    /* 3. ACESSO RÁPIDO LIQUID GLASS (GRID DE 4 ÍCONES FLAT) */
     #screen_dashboard .grid-cols-4 > div,
     #screen_transacoes .grid-cols-4 > div {
-      background: rgba(255, 255, 255, 0.78) !important;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.85) 0%, rgba(215, 235, 255, 0.65) 100%) !important;
       backdrop-filter: blur(16px) !important;
       -webkit-backdrop-filter: blur(16px) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.72) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
       border-radius: 20px !important;
-      box-shadow: 0 6px 18px -2px rgba(2, 10, 36, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 6px 18px -2px rgba(4, 20, 64, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
     }
 
-    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS */
+    /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS LIQUID GLASS */
     #screen_familia .grid-cols-2 > div {
       background: var(--liquid-card-bg) !important;
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
       border: 1.5px solid var(--liquid-card-border) !important;
-      box-shadow: 0 8px 24px -2px rgba(2, 10, 36, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 8px 24px -2px rgba(4, 20, 64, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
       border-radius: 20px !important;
     }
 
-    /* 5. MODAIS FULL SCREEN (Minha Rotina, Transações, Lista de Compras, Saúde, Pets, etc.) */
+    /* 5. MODAIS FULL SCREEN */
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
@@ -4349,7 +4349,7 @@ html, body {
       background: var(--liquid-dock-bg) !important;
       backdrop-filter: blur(28px) saturate(200%) !important;
       -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-      border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
       box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.5) !important;
     }
 
@@ -4376,15 +4376,12 @@ html, body {
       box-shadow: 0 0 24px rgba(0, 160, 255, 0.65), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
     }
 
-    /* 7. TRANSAÇÕES E LISTAS (Liquid Glass Tiles) */
-    .list-item-fintech,
+    /* 7. LANÇAMENTOS E CONTAS: SEM CARDS DENTRO DE CARDS, APENAS LINHAS SEPARADORAS */
     #dashboardRecentTransactionsList > div,
-    #dashboardFutureBillsList > div,
-    #screenTransactionsListContainer > div {
-      background: rgba(255, 255, 255, 0.85) !important;
-      border: 1px solid rgba(255, 255, 255, 0.75) !important;
-      border-radius: 18px !important;
-      box-shadow: 0 4px 14px rgba(2, 10, 36, 0.08) !important;
+    #dashboardFutureBillsList > div {
+      background: transparent !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
     }
 
     /* Textos e contrastes externos sobre o fundo escuro */
@@ -4943,30 +4940,30 @@ html, body {
             </div>
 
             <div class="grid grid-cols-4 gap-2 text-center select-none">
-              <div onclick="switchScreen('chat')" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-blue-600 flex items-center justify-center text-lg mb-1">
-                  💬
+              <div onclick="switchScreen('chat')" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-11 h-11 rounded-full bg-blue-100/80 text-blue-600 flex items-center justify-center mb-1 shadow-2xs">
+                  <i data-lucide="message-circle" class="w-5 h-5 text-blue-600"></i>
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Chat</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-10 h-10 rounded-xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center text-lg mb-1">
-                  🛒
+              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-11 h-11 rounded-full bg-emerald-100/80 text-emerald-600 flex items-center justify-center mb-1 shadow-2xs">
+                  <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Compras</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-10 h-10 rounded-xl bg-rose-100/70 text-rose-600 flex items-center justify-center text-lg mb-1">
-                  💊
+              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-11 h-11 rounded-full bg-rose-100/80 text-rose-600 flex items-center justify-center mb-1 shadow-2xs">
+                  <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-600"></i>
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Saúde</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-600 flex items-center justify-center text-lg mb-1">
-                  🐾
+              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <div class="w-11 h-11 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center mb-1 shadow-2xs">
+                  <i data-lucide="paw-print" class="w-5 h-5 text-amber-600"></i>
                 </div>
                 <span class="text-[11px] font-bold text-slate-800">Pets</span>
               </div>
@@ -5325,7 +5322,9 @@ html, body {
               <!-- 1. Educação -->
               <div onclick="triggerSectionWithIntelligentMascot('educacao', openEducacaoHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base flex-shrink-0">🎓</div>
+                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-blue-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5337,7 +5336,9 @@ html, body {
               <!-- 2. Lista de Compras -->
               <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛒</div>
+                  <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5349,7 +5350,9 @@ html, body {
               <!-- 3. Pets e Vacinas -->
               <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-base flex-shrink-0">🐾</div>
+                  <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="paw-print" class="w-5 h-5 text-rose-500"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5361,7 +5364,9 @@ html, body {
               <!-- 4. Vida Saudável -->
               <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-base flex-shrink-0">❤️</div>
+                  <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5373,7 +5378,9 @@ html, body {
               <!-- 5. Transporte & Manutenção -->
               <div onclick="triggerSectionWithIntelligentMascot('veiculos', openVeiculosHub);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base flex-shrink-0">🚗</div>
+                  <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="car" class="w-5 h-5 text-sky-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5385,7 +5392,9 @@ html, body {
               <!-- 6. Meus Prestadores -->
               <div onclick="triggerSectionWithIntelligentMascot('prestadores', openServiceProvidersModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">🔧</div>
+                  <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="wrench" class="w-5 h-5 text-indigo-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5397,7 +5406,9 @@ html, body {
               <!-- 7. Cofrinho e Metas -->
               <div onclick="triggerSectionWithIntelligentMascot('cofrinhos', openCreatePiggyModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base flex-shrink-0">🐷</div>
+                  <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="piggy-bank" class="w-5 h-5 text-amber-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5409,7 +5420,9 @@ html, body {
               <!-- 8. Cartões -->
               <div onclick="triggerSectionWithIntelligentMascot('cartoes', openManageCardsModal);" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-slate-200/80 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base flex-shrink-0">💳</div>
+                  <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="credit-card" class="w-5 h-5 text-indigo-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5421,7 +5434,9 @@ html, body {
               <!-- 9. Garantias de Produtos -->
               <div onclick="openProductWarrantiesModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-emerald-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base flex-shrink-0">🛡️</div>
+                  <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -5433,7 +5448,9 @@ html, body {
               <!-- 10. Crianças & Escola -->
               <div onclick="openKidsAreaModal()" class="h-full min-h-0 bg-white rounded-2xl p-2.5 shadow-xs border border-purple-200/90 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                 <div class="flex items-center justify-between">
-                  <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base flex-shrink-0">🧒</div>
+                  <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <i data-lucide="smile" class="w-5 h-5 text-purple-600"></i>
+                  </div>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 flex-shrink-0"></i>
                 </div>
                 <div class="min-w-0">
@@ -10449,14 +10466,14 @@ html, body {
       const sorted = [...txs].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 5);
 
       const getCatIcon = (cat, tipo) => {
-        if (tipo === 'Receita') return { icon: '💼', bg: 'bg-emerald-100 text-emerald-700' };
+        if (tipo === 'Receita') return { icon: '<i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-600"></i>', bg: 'bg-emerald-100/90 text-emerald-600' };
         const c = (cat || '').toLowerCase();
-        if (c.includes('supermercado') || c.includes('alimento') || c.includes('shake')) return { icon: '🛒', bg: 'bg-amber-100 text-amber-700' };
-        if (c.includes('farm') || c.includes('saúde') || c.includes('medic')) return { icon: '💊', bg: 'bg-rose-100 text-rose-700' };
-        if (c.includes('pet') || c.includes('ração')) return { icon: '🐾', bg: 'bg-indigo-100 text-indigo-700' };
-        if (c.includes('transporte') || c.includes('combustível') || c.includes('carro')) return { icon: '🚗', bg: 'bg-blue-100 text-blue-700' };
-        if (c.includes('moradia') || c.includes('condom') || c.includes('luz') || c.includes('aluguel')) return { icon: '🏠', bg: 'bg-purple-100 text-purple-700' };
-        return { icon: '💳', bg: 'bg-slate-100 text-slate-700' };
+        if (c.includes('supermercado') || c.includes('alimento') || c.includes('shake')) return { icon: '<i data-lucide="shopping-cart" class="w-4 h-4 text-rose-600"></i>', bg: 'bg-rose-100/90 text-rose-600' };
+        if (c.includes('farm') || c.includes('saúde') || c.includes('medic')) return { icon: '<i data-lucide="heart-pulse" class="w-4 h-4 text-rose-600"></i>', bg: 'bg-rose-100/90 text-rose-600' };
+        if (c.includes('pet') || c.includes('ração')) return { icon: '<i data-lucide="paw-print" class="w-4 h-4 text-amber-600"></i>', bg: 'bg-amber-100/90 text-amber-600' };
+        if (c.includes('transporte') || c.includes('combustível') || c.includes('carro')) return { icon: '<i data-lucide="car" class="w-4 h-4 text-rose-600"></i>', bg: 'bg-rose-100/90 text-rose-600' };
+        if (c.includes('moradia') || c.includes('condom') || c.includes('luz') || c.includes('aluguel')) return { icon: '<i data-lucide="home" class="w-4 h-4 text-purple-600"></i>', bg: 'bg-purple-100/90 text-purple-600' };
+        return { icon: '<i data-lucide="arrow-up-right" class="w-4 h-4 text-rose-600"></i>', bg: 'bg-rose-100/90 text-rose-600' };
       };
 
       container.innerHTML = sorted.map(t => {
@@ -10467,9 +10484,9 @@ html, body {
         const color = isRec ? 'text-emerald-600' : 'text-rose-600';
         const dataStr = t.data ? t.data.split('-').reverse().slice(0, 2).join('/') : '';
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100/70 transition-all cursor-pointer" onclick="openEditTxModal(${t.id})">
+          <div class="flex items-center justify-between py-2.5 px-1 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-blue-500/5 transition-colors cursor-pointer" onclick="openEditTxModal(${t.id})">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-9 h-9 rounded-xl ${info.bg} flex items-center justify-center font-bold text-sm flex-shrink-0">
+              <div class="w-9 h-9 rounded-full ${info.bg} flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs">
                 ${info.icon}
               </div>
               <div class="min-w-0">
@@ -10481,6 +10498,9 @@ html, body {
           </div>
         `;
       }).join('');
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons({ root: container }); } catch (e) {}
+      }
     }
 
     function refreshHomeFutureBills(activeTxs) {
@@ -10529,16 +10549,16 @@ html, body {
         }
 
         const c = ((b.categoria || '') + ' ' + (b.nome || '')).toLowerCase();
-        let icon = '📅';
+        let icon = '<i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>';
         let bg = 'bg-amber-100 text-amber-700';
-        if (c.includes('cartão') || c.includes('nubank') || c.includes('fatura')) { icon = '💳'; bg = 'bg-purple-100 text-purple-700'; }
-        else if (c.includes('aluguel') || c.includes('condom') || c.includes('moradia')) { icon = '🏠'; bg = 'bg-blue-100 text-blue-700'; }
-        else if (c.includes('luz') || c.includes('energia') || c.includes('enel')) { icon = '💡'; bg = 'bg-amber-100 text-amber-700'; }
-        else if (c.includes('água') || c.includes('agua') || c.includes('saneamento')) { icon = '💧'; bg = 'bg-sky-100 text-sky-700'; }
-        else if (c.includes('internet') || c.includes('fibra') || c.includes('telecom')) { icon = '🌐'; bg = 'bg-indigo-100 text-indigo-700'; }
-        else if (c.includes('saúde') || c.includes('saude') || c.includes('plano')) { icon = '💊'; bg = 'bg-rose-100 text-rose-700'; }
-        else if (c.includes('pet')) { icon = '🐾'; bg = 'bg-emerald-100 text-emerald-700'; }
-        else if (c.includes('carro') || c.includes('veículo')) { icon = '🚗'; bg = 'bg-slate-100 text-slate-700'; }
+        if (c.includes('cartão') || c.includes('nubank') || c.includes('fatura')) { icon = '<i data-lucide="credit-card" class="w-4 h-4 text-purple-600"></i>'; bg = 'bg-purple-100 text-purple-700'; }
+        else if (c.includes('aluguel') || c.includes('condom') || c.includes('moradia')) { icon = '<i data-lucide="home" class="w-4 h-4 text-blue-600"></i>'; bg = 'bg-blue-100 text-blue-700'; }
+        else if (c.includes('luz') || c.includes('energia') || c.includes('enel')) { icon = '<i data-lucide="zap" class="w-4 h-4 text-amber-600"></i>'; bg = 'bg-amber-100 text-amber-700'; }
+        else if (c.includes('água') || c.includes('agua') || c.includes('saneamento')) { icon = '<i data-lucide="droplet" class="w-4 h-4 text-sky-600"></i>'; bg = 'bg-sky-100 text-sky-700'; }
+        else if (c.includes('internet') || c.includes('fibra') || c.includes('telecom')) { icon = '<i data-lucide="wifi" class="w-4 h-4 text-indigo-600"></i>'; bg = 'bg-indigo-100 text-indigo-700'; }
+        else if (c.includes('saúde') || c.includes('saude') || c.includes('plano')) { icon = '<i data-lucide="heart-pulse" class="w-4 h-4 text-rose-600"></i>'; bg = 'bg-rose-100 text-rose-700'; }
+        else if (c.includes('pet')) { icon = '<i data-lucide="paw-print" class="w-4 h-4 text-emerald-600"></i>'; bg = 'bg-emerald-100 text-emerald-700'; }
+        else if (c.includes('carro') || c.includes('veículo')) { icon = '<i data-lucide="car" class="w-4 h-4 text-slate-600"></i>'; bg = 'bg-slate-100 text-slate-700'; }
 
         return {
           type: 'bill',
@@ -10584,7 +10604,7 @@ html, body {
             diff: diffDays,
             badge: `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">⏳ Agendado (${parts[2]}/${parts[1]})</span>`,
             borderClass: 'border-purple-100 bg-purple-50/20',
-            icon: '📌',
+            icon: '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
             bg: 'bg-purple-100 text-purple-700'
           });
         }
@@ -10649,9 +10669,9 @@ html, body {
         const clickAction = item.type === 'bill' ? 'openBillsReminderModal()' : `openEditTxModal(${item.id})`;
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-2xl border ${item.borderClass} hover:brightness-95 transition-all cursor-pointer" onclick="${clickAction}">
+          <div class="flex items-center justify-between py-2.5 px-1 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-blue-500/5 transition-colors cursor-pointer" onclick="${clickAction}">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-9 h-9 rounded-xl ${item.bg} flex items-center justify-center font-bold text-sm flex-shrink-0">
+              <div class="w-9 h-9 rounded-full ${item.bg} flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs">
                 ${item.icon}
               </div>
               <div class="min-w-0">
@@ -10672,10 +10692,14 @@ html, body {
                 ${displayVal}
               </span>
               ${actionBtn}
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
             </div>
           </div>
         `;
       }).join('');
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        try { lucide.createIcons({ root: container }); } catch (e) {}
+      }
     }
 
     function renderFamilyMembersSpending(activeTxs) {
