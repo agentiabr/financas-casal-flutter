@@ -187,15 +187,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.144+222';
+  static const String _kCurrentAppVersion = '2.1.145+223';
 
   Future<void> _requestPostLoginPermissions() async {
+    // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
+    // Cada recurso solicita permissão sob demanda (just-in-time) ao ser acessado:
+    // - Notificações de remédios: ao abrir a seção de Saúde
+    // - Câmera: ao acionar scanner de nota ou fotos
+    // - Microfone: ao acionar gravação de voz no chat
     try {
-      await [
-        Permission.notification,
-        Permission.camera,
-        Permission.microphone,
-      ].request();
       final notifGranted = await Permission.notification.isGranted;
       _controller.runJavaScript("""
         if (typeof window.onNativeNotificationPermissionResult === 'function') {
@@ -203,7 +203,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
         }
       """);
     } catch (e) {
-      debugPrint('Aviso ao solicitar permissoes pos-login: $e');
+      debugPrint('Aviso ao verificar status de permissoes: $e');
     }
   }
 

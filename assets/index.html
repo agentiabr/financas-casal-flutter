@@ -4296,11 +4296,33 @@ html, body {
       border-radius: 20px !important;
     }
 
-    /* Balão Dica do Piggy dentro do Card de Saldo */
+    /* Balão Dica do Piggy dentro do Card de Saldo: Escuro com Alto Destaque */
     #heroCardBanner .bg-blue-50\/80 {
-      background: rgba(239, 246, 255, 0.88) !important;
-      border: 1.5px solid rgba(191, 219, 254, 0.8) !important;
+      background: linear-gradient(135deg, #071e4d 0%, #0d2e6e 100%) !important;
+      border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+      box-shadow: 0 8px 24px -2px rgba(2, 10, 36, 0.50), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
       border-radius: 20px !important;
+    }
+    #heroCardBanner .bg-blue-50\/80 #previewTipText {
+      color: #f8fafc !important;
+      font-weight: 600 !important;
+    }
+    #heroCardBanner .bg-blue-50\/80 button {
+      background: rgba(255, 255, 255, 0.15) !important;
+      color: #38bdf8 !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+    #heroCardBanner .bg-blue-50\/80 button:hover {
+      background: #38bdf8 !important;
+      color: #071e4d !important;
+    }
+    #heroCardBanner .bg-blue-50\/80 span.bg-blue-200\/50 {
+      background: rgba(56, 189, 248, 0.25) !important;
+      border: 1px solid rgba(56, 189, 248, 0.4) !important;
+      color: #38bdf8 !important;
+    }
+    #heroCardBanner .bg-blue-50\/80 #previewTipCategory {
+      color: #7dd3fc !important;
     }
 
     /* Indicadores: Dias, Comprometido e Parcelados */
@@ -4322,13 +4344,44 @@ html, body {
     }
 
     /* 4. TELA 3 (MINHA ROTINA / FAMÍLIA) - OS 10 CARDS DE MÓDULOS LIQUID GLASS */
+    #screen_familia .bg-\[\#DFEAF7\] {
+      background: linear-gradient(180deg, rgba(8, 30, 85, 0.40) 0%, rgba(5, 22, 65, 0.75) 100%) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
+    }
+
     #screen_familia .grid-cols-2 > div {
-      background: var(--liquid-card-bg) !important;
-      backdrop-filter: blur(20px) !important;
-      -webkit-backdrop-filter: blur(20px) !important;
-      border: 1.5px solid var(--liquid-card-border) !important;
-      box-shadow: 0 8px 24px -2px rgba(4, 20, 64, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
-      border-radius: 20px !important;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(226, 242, 255, 0.82) 45%, rgba(190, 222, 255, 0.65) 100%) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.90) !important;
+      box-shadow: 0 10px 28px -4px rgba(4, 20, 64, 0.35), 
+                  0 3px 10px 0 rgba(4, 20, 64, 0.15), 
+                  inset 0 1.5px 2px 0 rgba(255, 255, 255, 1), 
+                  inset 0 -1.5px 2px 0 rgba(59, 130, 246, 0.18) !important;
+      border-radius: 22px !important;
+    }
+
+    #screen_familia .grid-cols-2 > div:hover {
+      border-color: rgba(255, 255, 255, 1) !important;
+      box-shadow: 0 14px 34px -4px rgba(4, 20, 64, 0.45), inset 0 2px 2px rgba(255, 255, 255, 1) !important;
+    }
+
+    #screen_familia .grid-cols-2 > div h4 {
+      color: #0f172a !important;
+      font-weight: 800 !important;
+    }
+
+    #screen_familia .grid-cols-2 > div p {
+      color: #334155 !important;
+      font-weight: 600 !important;
+    }
+
+    #screen_familia .grid-cols-2 > div .w-10 {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 2px 8px rgba(4, 20, 64, 0.10) !important;
     }
 
     /* 5. MODAIS FULL SCREEN */
@@ -4376,18 +4429,38 @@ html, body {
       box-shadow: 0 0 24px rgba(0, 160, 255, 0.65), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
     }
 
-    /* 7. LANÇAMENTOS E CONTAS: SEM CARDS DENTRO DE CARDS, APENAS LINHAS SEPARADORAS */
+    /* 7. LANÇAMENTOS E CONTAS: SEM CARDS DENTRO DE CARDS, APENAS LINHAS SEPARADORAS CLARAS E TEXTOS NÍTIDOS */
     #dashboardRecentTransactionsList > div,
     #dashboardFutureBillsList > div {
       background: transparent !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.70) !important;
     }
 
-    /* Textos e contrastes externos sobre o fundo escuro */
-    #screen_familia span.text-slate-600,
-    #screen_familia span.text-slate-500,
-    #screen_dashboard .text-slate-600 {
+    #dashboardRecentTransactionsList > div:last-child,
+    #dashboardFutureBillsList > div:last-child {
+      border-bottom: none !important;
+    }
+
+    #dashboardRecentTransactionsList span.text-slate-500,
+    #dashboardRecentTransactionsList span.text-slate-600,
+    #dashboardFutureBillsList span.text-slate-500,
+    #dashboardFutureBillsList span.text-slate-600 {
+      color: #334155 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Proteção de contraste para textos dentro dos cards brancos/liquid glass */
+    #screen_dashboard .bg-white.rounded-3xl span.text-slate-600,
+    #screen_dashboard .bg-white.rounded-3xl .text-slate-600 {
+      color: #1e293b !important;
+      font-weight: 700 !important;
+    }
+
+    /* Textos e contrastes externos sobre o fundo escuro (apenas títulos externos, fora dos cards) */
+    #screen_familia > div > div > span.text-slate-600,
+    #screen_familia span.text-slate-300 {
       color: #bfdbfe;
     }
   </style>
@@ -4940,31 +5013,23 @@ html, body {
             </div>
 
             <div class="grid grid-cols-4 gap-2 text-center select-none">
-              <div onclick="switchScreen('chat')" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-11 h-11 rounded-full bg-blue-100/80 text-blue-600 flex items-center justify-center mb-1 shadow-2xs">
-                  <i data-lucide="message-circle" class="w-5 h-5 text-blue-600"></i>
-                </div>
+              <div onclick="switchScreen('chat')" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <i data-lucide="message-circle" class="w-6 h-6 text-blue-600 mb-1"></i>
                 <span class="text-[11px] font-bold text-slate-800">Chat</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-11 h-11 rounded-full bg-emerald-100/80 text-emerald-600 flex items-center justify-center mb-1 shadow-2xs">
-                  <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
-                </div>
+              <div onclick="triggerSectionWithIntelligentMascot('compras', openShoppingListModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <i data-lucide="shopping-cart" class="w-6 h-6 text-emerald-600 mb-1"></i>
                 <span class="text-[11px] font-bold text-slate-800">Compras</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-11 h-11 rounded-full bg-rose-100/80 text-rose-600 flex items-center justify-center mb-1 shadow-2xs">
-                  <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-600"></i>
-                </div>
+              <div onclick="triggerSectionWithIntelligentMascot('saude', openHealthMedsModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <i data-lucide="heart-pulse" class="w-6 h-6 text-rose-600 mb-1"></i>
                 <span class="text-[11px] font-bold text-slate-800">Saúde</span>
               </div>
 
-              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
-                <div class="w-11 h-11 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center mb-1 shadow-2xs">
-                  <i data-lucide="paw-print" class="w-5 h-5 text-amber-600"></i>
-                </div>
+              <div onclick="triggerSectionWithIntelligentMascot('pet', openPetAreaModal);" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+                <i data-lucide="paw-print" class="w-6 h-6 text-amber-600 mb-1"></i>
                 <span class="text-[11px] font-bold text-slate-800">Pets</span>
               </div>
             </div>
@@ -5042,11 +5107,11 @@ html, body {
 
             <!-- Barra de Progresso Geral de Quitação -->
             <div class="mt-3">
-              <div class="flex items-center justify-between text-[11px] font-bold text-slate-600 mb-1">
-                <span>Progresso de Quitação Geral</span>
-                <span id="percentParcelasQuitado" class="text-purple-700">65% pago</span>
+              <div class="flex items-center justify-between text-[11px] font-bold text-slate-800 mb-1">
+                <span class="text-slate-800 font-bold">Progresso de Quitação Geral</span>
+                <span id="percentParcelasQuitado" class="text-purple-700 font-black">65% pago</span>
               </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="w-full h-2 bg-slate-200/80 rounded-full overflow-hidden">
                 <div id="barParcelasProgresso" class="h-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full transition-all duration-500" style="width: 65%"></div>
               </div>
             </div>
@@ -14700,16 +14765,9 @@ html, body {
       if (typeof window.sanitizeNonMasterOwnerSelects === 'function') {
         setTimeout(window.sanitizeNonMasterOwnerSelects, 150);
       }
-      // Solicita as permissões logo no início, imediatamente após o login no app
+      // Permissões agora são solicitadas sob demanda ao entrar na seção respectiva (Ex: Saúde/Remédios)
       setTimeout(() => {
-        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-          try {
-            window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_all_permissions' }));
-          } catch(e) {}
-        }
-        if (typeof window.checkFirstAccessPermissions === 'function') {
-          window.checkFirstAccessPermissions();
-        }
+        // Inicialização pós-login sem interromper o usuário com diálogos de permissão
       }, 350);
     };
 
@@ -23076,6 +23134,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         runPharma10PriceComparison();
         if (window.lucide) lucide.createIcons();
       }
+      // Solicita a permissão de notificações de remédios ao entrar na seção pela primeira vez
+      if (!localStorage.getItem('ctrlpig_health_perm_prompted')) {
+        localStorage.setItem('ctrlpig_health_perm_prompted', 'true');
+        if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+          try {
+            window.FlutterBridge.postMessage(JSON.stringify({ action: 'request_notification_permission' }));
+          } catch(e) {}
+        }
+      }
     }
 
     function closeHealthMedsModal() {
@@ -29442,25 +29509,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     };
 
-    // 4. Modal de Permissões no Primeiro Acesso (Por Conta Logada, Logo Após o Login)
+    // 4. Modal de Permissões (Desativado no início do app; permissões solicitadas sob demanda ao entrar na seção)
     window.checkFirstAccessPermissions = function() {
-      const permKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_onboarding_perm_done') : 'ctrlpig_onboarding_perm_done';
-      const done = localStorage.getItem(permKey) === 'true';
-      if (done) return;
-
-      // Não exibe se o app estiver bloqueado ou na tela de login
-      if (document.documentElement.classList.contains('require-auth')) return;
-      const authEl = document.getElementById('authOverlayContainer');
-      if (authEl && !authEl.classList.contains('hidden') && authEl.style.display !== 'none') return;
-
-      const modal = document.getElementById('modalFirstAccessPermissions');
-      if (modal) {
-        if (modal.parentElement !== document.body) document.body.appendChild(modal);
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        modal.style.zIndex = '99999';
-        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
-      }
+      return;
     };
 
     window.grantFirstAccessPermissions = function() {
