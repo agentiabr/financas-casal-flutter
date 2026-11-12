@@ -5395,24 +5395,39 @@ html, body {
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-4 pb-28 space-y-3.5 shadow-2xl">
       
-      <!-- CAIXA EXPLICATIVA: LISTA DE COMPRAS INTELIGENTE & CHAT DA FAMÍLIA -->
+      <!-- CAIXA EXPLICATIVA: O QUE VOCÊ PODE FAZER NA SEÇÃO -->
       <div id="shoppingListIntroBanner" class="bg-white dark:bg-slate-850 rounded-3xl p-3.5 sm:p-4 shadow-sm border border-blue-200/80 dark:border-slate-750 flex items-start gap-3">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
-          🛒
+          💡
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-1 mb-1">
-            <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span>Lista de Compras &amp; Família</span>
-            </h4>
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+              Nessa seção você pode:
+            </span>
             <button type="button" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/80 px-2.5 py-1 rounded-xl border border-blue-200 dark:border-blue-800 flex items-center gap-1 transition-all cursor-pointer shadow-2xs active:scale-95">
               <i data-lucide="message-circle" class="w-3 h-3"></i>
-              <span>Conversar</span>
+              <span>Abrir Chat</span>
             </button>
           </div>
-          <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-            Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente sincronizada em tempo real, comparar preços entre estabelecimentos e acompanhar o carrinho ao vivo!
-          </p>
+          <ul class="space-y-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-medium">
+            <li class="flex items-start gap-1.5">
+              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+              <span>Criar a sua lista de compras</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+              <span>Enviar a lista para chat do membro que vai fazer as compras</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+              <span>Visualizar o Histórico de suas compras</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+              <span>Comparativo com compras anteriores</span>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -37320,7 +37335,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
           header: "Lista de Compras Inteligente",
           badge: "🛒 Dica do Piggy Compras",
           badgeColor: "bg-sky-500/20 text-sky-300 border-sky-400/40",
-          text: "“Nesta seção você pode conversar com seus familiares, montar e enviar uma lista de compras inteligente, comparar preços entre estabelecimentos e acompanhar o carrinho em tempo real!”",
+          text: "“Nessa seção você pode criar sua lista de compras, enviar para o chat do membro que vai comprar, ver o histórico e comparar com compras anteriores!”",
           img: MASCOTES_OFICIAIS_B64.compras
         };
       }
