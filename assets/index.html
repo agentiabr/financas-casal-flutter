@@ -311,13 +311,13 @@
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
-    padding: 1.25rem 1rem 6.5rem 1rem !important; /* Margem e respiro generoso */
+    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
   }
 
   /* Cartões brancos limpos com cantos arredondados dentro das telas */
@@ -3535,13 +3535,13 @@ html, body {
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
-    padding: 1.25rem 1rem 6.5rem 1rem !important; /* Margem e respiro generoso */
+    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
   }
 
   /* Cartões brancos limpos com cantos arredondados dentro das telas */
@@ -3562,9 +3562,9 @@ html, body {
     z-index: 99999 !important;
   }
   .mascot-speech-bubble-v2 {
-    background: #FFFFFF !important;
-    color: #0F172A !important;
-    border: 2px solid #38BDF8 !important;
+    background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.55) 0%, rgba(10, 26, 65, 0.94) 58%, rgba(5, 12, 32, 0.99) 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
     border-radius: 1.5rem !important;
     box-shadow: 0 20px 40px -10px rgba(10, 57, 129, 0.35) !important;
   }
@@ -4323,27 +4323,27 @@ html, body {
       border-radius: 20px !important;
     }
 
-    /* Balão Dica do Piggy dentro do Card de Saldo: Degradê Suave Escuro com Efeito Glass */
+    /* Balão Dica do Piggy dentro do Card de Saldo: Liquid Glass Claro Azulado Luminoso */
     #heroCardBanner .bg-blue-50\/80 {
-      background: linear-gradient(145deg, rgba(8, 25, 65, 0.95) 0%, rgba(12, 38, 95, 0.92) 50%, rgba(7, 20, 55, 0.96) 100%) !important;
-      border: 1px solid rgba(147, 197, 253, 0.3) !important;
-      box-shadow: 0 10px 28px -4px rgba(2, 8, 26, 0.55), inset 0 1px 2px rgba(255, 255, 255, 0.15) !important;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.96) 0%, rgba(224, 242, 254, 0.92) 55%, rgba(238, 242, 255, 0.96) 100%) !important;
+      border: 1px solid rgba(147, 197, 253, 0.75) !important;
+      box-shadow: 0 6px 18px -6px rgba(30, 64, 175, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
       border-radius: 20px !important;
-      backdrop-filter: blur(12px) !important;
-      -webkit-backdrop-filter: blur(12px) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
     }
     #heroCardBanner .bg-blue-50\/80 #previewTipText {
-      color: #f8fafc !important;
+      color: #1e293b !important;
       font-weight: 600 !important;
     }
     #heroCardBanner .bg-blue-50\/80 button {
-      background: rgba(255, 255, 255, 0.15) !important;
-      color: #38bdf8 !important;
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      background: rgba(37, 99, 235, 0.10) !important;
+      color: #1d4ed8 !important;
+      border: 1px solid rgba(59, 130, 246, 0.25) !important;
     }
     #heroCardBanner .bg-blue-50\/80 button:hover {
-      background: #38bdf8 !important;
-      color: #071e4d !important;
+      background: #2563eb !important;
+      color: #ffffff !important;
     }
     #heroCardBanner .bg-blue-50\/80 span.bg-blue-200\/50 {
       background: rgba(56, 189, 248, 0.25) !important;
@@ -5400,13 +5400,13 @@ html, body {
               </button>
               <div class="flex-1 text-center min-w-0 px-1">
                 <div class="flex items-center justify-center gap-1.5 mb-1">
-                  <span class="text-[10px] font-black uppercase tracking-wider text-sky-200 bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-400/30 flex items-center gap-1">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-200 flex items-center gap-1">
                     <span id="previewTipBadgeIcon">💡</span>
                     <span id="previewTipCategory">Dica do Piggy</span>
                   </span>
-                  <span id="previewTipIndex" class="text-[9px] font-black text-sky-300 bg-white/10 px-1.5 py-0.2 rounded-md">1/10</span>
+                  <span id="previewTipIndex" class="text-[9px] font-black text-blue-700 bg-white/80 border border-blue-200/80 px-1.5 py-0.2 rounded-md">1/10</span>
                 </div>
-                <p id="previewTipText" class="text-xs font-medium text-sky-100 leading-snug drop-shadow-xs">
+                <p id="previewTipText" class="text-xs font-semibold text-slate-800 leading-snug">
                   "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
                 </p>
                 <div id="previewTipDots" class="flex items-center justify-center gap-1 mt-1.5">
@@ -5681,7 +5681,7 @@ html, body {
         </div>
 
         <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
-        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-4 sm:px-5 pt-4 pb-6 space-y-3.5 shadow-2xl">
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-4 sm:px-5 pt-3 pb-6 space-y-3 shadow-2xl">
           
           <!-- CARD RESUMO TOTAL DA TELA DE TRANSAÇÕES (DESTAQUE PARA GASTO TOTAL) -->
           <div class="bg-gradient-to-br from-white via-white to-rose-50/50 rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -6025,7 +6025,10 @@ html, body {
     <!-- ============================================================ -->
     <!-- DOCK INFERIOR FIXO COM 5 BOTÕES: Início / Transações / (+) / Mercado / Minha Rotina -->
     <!-- ============================================================ -->
-    <nav class="bottom-nav">
+    <button type="button" onclick="openFamilyChatModal()" id="btnFloatingFamilyChat" class="fixed bottom-20 right-4 z-40 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all border-2 border-white dark:border-slate-800 cursor-pointer" title="Abrir Chat Familiar">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+      </button>
+      <nav class="bottom-nav">
       <div class="bottom-nav-grid">
         
         <!-- 1. Início -->
@@ -6152,7 +6155,7 @@ html, body {
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-4 pb-28 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3 shadow-2xl">
       
       <!-- CAIXA EXPLICATIVA: O QUE VOCÊ PODE FAZER NA SEÇÃO -->
       <div id="shoppingListIntroBanner" class="bg-white dark:bg-slate-850 rounded-3xl p-3.5 sm:p-4 shadow-sm border border-blue-200/80 dark:border-slate-750 flex items-start gap-3">
@@ -6644,46 +6647,46 @@ html, body {
   <!-- MODAL: CRIAR NOVO PORQUINHO 🐷 -->
   <div id="modalCreatePiggy" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
     <div class="relative w-full max-w-sm p-6 sm:p-7 rounded-[32px] overflow-hidden border border-white/25 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1.5px_1.5px_rgba(255,255,255,0.45)] text-white" style="background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.45) 0%, rgba(10, 26, 65, 0.90) 58%, rgba(5, 12, 32, 0.98) 100%); backdrop-filter: blur(28px) saturate(190%); -webkit-backdrop-filter: blur(28px) saturate(190%);">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-white/15">
         <div class="flex items-center gap-2">
           <span class="text-xl">🐷</span>
-          <h3 class="font-bold text-base text-slate-800">Novo Porquinho / Meta</h3>
+          <h3 class="font-black text-base text-white">Novo Porquinho / Meta</h3>
         </div>
-        <button onclick="closeCreatePiggyModal()" class="p-1 text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button type="button" onclick="closeCreatePiggyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <form onsubmit="handleCreatePiggy(event)" class="space-y-3 mt-4">
+      <form onsubmit="handleCreatePiggy(event)" class="space-y-3 mt-4 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Nome do Objetivo</label>
-          <input type="text" id="inputNewPiggyName" required placeholder="Ex.: Viagem de Férias, Reforma, Carro..." class="w-full px-3 py-2 rounded-none border border-slate-300">
+          <label class="block font-bold text-blue-100 mb-1">Nome do Objetivo</label>
+          <input type="text" id="inputNewPiggyName" required placeholder="Ex.: Viagem de Férias, Reforma, Carro..." class="w-full px-3 py-2.5 rounded-xl border border-white/25 bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-sky-400">
         </div>
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Destino da Viagem <span class="text-[10px] font-normal text-slate-400">(Opcional para Cofrinho de Viagem)</span></label>
-          <input type="text" id="inputNewPiggyDestino" placeholder="Ex.: Gramado, Maragogi, Orlando, Paris, Buenos Aires..." class="w-full px-3 py-2 rounded-none border border-slate-300">
+          <label class="block font-bold text-blue-100 mb-1">Destino da Viagem <span class="text-[10px] font-normal text-sky-200/80">(Opcional para Cofrinho de Viagem)</span></label>
+          <input type="text" id="inputNewPiggyDestino" placeholder="Ex.: Gramado, Maragogi, Orlando, Paris, Buenos Aires..." class="w-full px-3 py-2.5 rounded-xl border border-white/25 bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-sky-400">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Meta Alvo (R$)</label>
-            <input type="number" step="100" id="inputNewPiggyTarget" required placeholder="3000" class="w-full px-3 py-2 font-bold rounded-none border border-slate-300">
+            <label class="block font-bold text-blue-100 mb-1">Meta Alvo (R$)</label>
+            <input type="number" step="100" id="inputNewPiggyTarget" required placeholder="3000" class="w-full px-3 py-2.5 font-bold rounded-xl border border-white/25 bg-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-sky-400">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Ícone</label>
-            <select id="inputNewPiggyIcon" class="w-full px-3 py-2 rounded-none border border-slate-300 text-base">
-              <option value="🐷">🐷 Porquinho</option>
-              <option value="✈️">✈️ Viagem</option>
-              <option value="🏠">🏠 Casa / Reforma</option>
-              <option value="🛡️">🛡️ Reserva Emergência</option>
-              <option value="🚗">🚗 Carro / Moto</option>
-              <option value="💍">💍 Sonho Especial</option>
+            <label class="block font-bold text-blue-100 mb-1">Ícone</label>
+            <select id="inputNewPiggyIcon" class="w-full px-3 py-2 rounded-xl border border-white/25 bg-white/10 text-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400">
+              <option value="🐷" class="bg-slate-900 text-white">🐷 Porquinho</option>
+              <option value="✈️" class="bg-slate-900 text-white">✈️ Viagem</option>
+              <option value="🏠" class="bg-slate-900 text-white">🏠 Casa / Reforma</option>
+              <option value="🛡️" class="bg-slate-900 text-white">🛡️ Reserva Emergência</option>
+              <option value="🚗" class="bg-slate-900 text-white">🚗 Carro / Moto</option>
+              <option value="💍" class="bg-slate-900 text-white">💍 Sonho Especial</option>
             </select>
           </div>
         </div>
-        <p class="text-[10px] text-slate-400">Todos os porquinhos iniciam zerados em R$ 0,00.</p>
+        <p class="text-[10px] text-sky-200/80">Todos os porquinhos iniciam zerados em R$ 0,00.</p>
         <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeCreatePiggyModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-none border border-slate-300">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-blue-600 text-white font-bold rounded-none shadow-sm">Criar Porquinho</button>
+          <button type="button" onclick="closeCreatePiggyModal()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition-all cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-black rounded-xl shadow-md transition-all cursor-pointer">Criar Porquinho</button>
         </div>
       </form>
     </div>
@@ -6945,28 +6948,28 @@ html, body {
 
   <div id="modalNewTx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white/95 dark:bg-slate-900/95 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/60 dark:border-slate-700/60 text-slate-800 dark:text-slate-100 backdrop-blur-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-white/15">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-700/80">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-md">
             <i data-lucide="plus" class="w-5 h-5 text-white stroke-[2.8]"></i>
           </div>
           <div>
-            <h3 class="font-black text-base text-white tracking-tight leading-tight">Novo Lançamento</h3>
-            <span class="text-[10px] text-blue-200">Receitas, despesas diárias e compromissos</span>
+            <h3 class="font-black text-base text-slate-900 dark:text-white tracking-tight leading-tight">Novo Lançamento</h3>
+            <span class="text-[10px] text-slate-500 dark:text-slate-400">Receitas, despesas diárias e compromissos</span>
           </div>
         </div>
-        <button type="button" onclick="closeNewTxModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4 text-white stroke-[2.5]"></i>
+        <button type="button" onclick="closeNewTxModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 flex items-center justify-center text-slate-600 dark:text-slate-200 transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
         </button>
       </div>
 
       <!-- BOTÃO DESTACADO: CADASTRAR VENCIMENTO DE CONTA / RECORRENTE -->
-      <div class="mt-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-blue-500/20 to-indigo-500/20 border border-amber-300/40 flex items-center justify-between gap-2 cursor-pointer hover:border-amber-300 transition-all active:scale-98 shadow-sm" onclick="closeNewTxModal(); openBillsReminderModal();" title="Toque para cadastrar uma conta com vencimento mensal">
+      <div class="mt-3 p-3 rounded-2xl bg-gradient-to-r from-amber-50 via-blue-50 to-indigo-50 dark:from-amber-950/40 dark:via-blue-950/40 dark:to-indigo-950/40 border border-amber-300/80 dark:border-amber-700/50 flex items-center justify-between gap-2 cursor-pointer hover:border-amber-400 transition-all active:scale-98 shadow-sm" onclick="closeNewTxModal(); openBillsReminderModal();" title="Toque para cadastrar uma conta com vencimento mensal">
         <div class="flex items-center gap-2.5 min-w-0">
           <span class="text-xl flex-shrink-0">📅</span>
           <div class="min-w-0 leading-tight">
-            <strong class="text-xs font-black text-amber-200 block truncate">Cadastrar Vencimento de Conta</strong>
-            <span class="text-[10px] text-blue-100 block truncate">Agendar boleto ou conta fixa que vence todo mês</span>
+            <strong class="text-xs font-black text-amber-800 dark:text-amber-300 block truncate">Cadastrar Vencimento de Conta</strong>
+            <span class="text-[10px] text-slate-600 dark:text-slate-300 block truncate">Agendar boleto ou conta fixa que vence todo mês</span>
           </div>
         </div>
         <button type="button" class="px-2.5 py-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] flex-shrink-0 shadow-xs">
@@ -7311,7 +7314,7 @@ html, body {
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD: LISTA DE CARTÕES ATUAIS -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -7461,18 +7464,18 @@ html, body {
   <!-- MODAL: DETALHES DE COMPRAS PARCELADAS -->
   <div id="modalInstallmentsDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white/95 dark:bg-slate-900/95 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar text-xs border border-white/60 dark:border-slate-700/60 text-slate-800 dark:text-slate-100 backdrop-blur-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-white/15">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-700/80">
         <div class="flex items-center gap-2.5 min-w-0">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center flex-shrink-0 shadow-md">
             <i data-lucide="layers" class="w-5 h-5 text-white"></i>
           </div>
           <div>
-            <h3 class="font-black text-sm sm:text-base text-white leading-tight">Detalhamento de Compras Parceladas</h3>
-            <span class="text-[10px] text-purple-200 font-medium">Progresso de quitação e próximas parcelas</span>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Detalhamento de Compras Parceladas</h3>
+            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Progresso de quitação e próximas parcelas</span>
           </div>
         </div>
-        <button type="button" onclick="closeInstallmentsDetailModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4 text-white stroke-[2.5]"></i>
+        <button onclick="closeInstallmentsDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 flex items-center justify-center text-slate-600 dark:text-slate-200 transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
         </button>
       </div>
 
@@ -11076,16 +11079,20 @@ html, body {
       // Funções Globais de Controle de Quitação de Contas Recorrentes (Lançamentos Futuros)
   window.markRecurringBillAsPaid = function(billId, isPaid) {
     try {
+      const cycleName = (typeof currentCycle !== 'undefined' && currentCycle) ? currentCycle : 'ciclo';
+      const cycleKey = `${cycleName}_${billId}`;
       const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
-      const cycleKey = `${activeCycleKey}_${billId}`;
+      const altCycleKey = `${activeCycleKey}_${billId}`;
       const statusMap = typeof getBillsPaidStatusMap === 'function' ? getBillsPaidStatusMap() : JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
       if (isPaid) {
         statusMap[cycleKey] = true;
+        statusMap[altCycleKey] = true;
         if (typeof showToastUndo === 'function') {
           showToastUndo('✓ Conta marcada como paga neste ciclo!', false);
         }
       } else {
         delete statusMap[cycleKey];
+        delete statusMap[altCycleKey];
         if (typeof showToastUndo === 'function') {
           showToastUndo('Conta reaberta como pendente!', false);
         }
@@ -11257,15 +11264,15 @@ html, body {
         if (item.type === 'bill') {
           if (!item.isPaid) {
             actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); markRecurringBillAsPaid('${item.id}', true);" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
-                <span>✓</span>
+              <button type="button" onclick="event.stopPropagation(); markRecurringBillAsPaid('${item.id}', true);" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
                 <span>Pagar</span>
               </button>
             `;
           } else {
             actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); toggleReopenRecurringBill('${item.id}');" class="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-[10px] rounded-xl transition-all cursor-pointer" title="Reabrir / Desmarcar">
-                <span>Reabrir</span>
+              <button type="button" onclick="event.stopPropagation(); toggleReopenRecurringBill('${item.id}');" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Toque para reabrir">
+                <span>✓</span>
+                <span>Pago</span>
               </button>
             `;
           }
@@ -25871,20 +25878,22 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
       <!-- ============================================================== -->
-      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto p-4 space-y-3 bg-[#DFEAF7] dark:bg-slate-950">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs flex-shrink-0">
-              💬
+      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto p-4 space-y-3.5 bg-[#DFEAF7] dark:bg-slate-950">
+        <div class="bg-white/95 dark:bg-slate-900 rounded-3xl p-5 min-h-[112px] border border-slate-200/90 dark:border-slate-700/80 shadow-sm flex flex-col justify-center gap-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                💬
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-snug">Toque em um membro abaixo para iniciar a conversa ou compartilhar itens da Lista de Compras.</p>
+              </div>
             </div>
-            <div class="min-w-0">
-              <h3 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Toque no membro para abrir a conversa e a Lista de Compras</p>
-            </div>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold border border-emerald-200 dark:border-emerald-800 whitespace-nowrap self-start">
+              ● Online
+            </span>
           </div>
-          <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold border border-emerald-200 dark:border-emerald-800 whitespace-nowrap">
-            ● Online
-          </span>
         </div>
 
         <!-- Lista de Membros Estilo WhatsApp (Renderizada Dinamicamente) -->
@@ -26723,7 +26732,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
     
     <!-- SELETOR DE PETS DA FAMÍLIA (AVATARES COM FOTO E NOME, ATÉ 10 PETS) -->
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -27033,7 +27042,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD 1: ROTINA DO MEMBRO ATIVO (MANTIDO EXATAMENTE CONFORME SOLICITADO) -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -28372,7 +28381,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -28478,7 +28487,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -33130,7 +33139,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
 
       <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
       <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
@@ -37573,14 +37582,14 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   <!-- Card Balão com Mascote Oficial Caracterizado e Cores Oficiais -->
   <div class="relative z-10 max-w-sm w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
     <div class="mascot-speech-bubble-v2 p-6 text-center text-white mb-3 w-full relative rounded-[32px] border border-white/25 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),inset_0_1.5px_1.5px_rgba(255,255,255,0.45)] backdrop-blur-2xl" style="background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.45) 0%, rgba(10, 26, 65, 0.90) 58%, rgba(5, 12, 32, 0.98) 100%);">
-      <button type="button" onclick="confirmEnterSectionFromPitaco()" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer shadow-2xs active:scale-90" title="Pular dica e entrar na seção">✕</button>
-      <div id="mascotPitacoBadge" class="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-300 border-sky-300">
+      <button type="button" onclick="confirmEnterSectionFromPitaco()" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer shadow-2xs active:scale-90" title="Pular dica e entrar na seção">✕</button>
+      <div id="mascotPitacoBadge" class="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-400/20 text-sky-200 border-sky-300/40">
         ⚡ Dica do Piggy
       </div>
-      <h3 id="mascotPitacoHeader" class="font-black text-lg text-slate-900 dark:text-white mb-2 tracking-tight">
+      <h3 id="mascotPitacoHeader" class="font-black text-lg text-white mb-2 tracking-tight">
         Minha Saúde &amp; Remédios
       </h3>
-      <div id="mascotPitacoText" class="text-xs text-slate-700 dark:text-slate-200 leading-relaxed font-medium mb-4 bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-left">
+      <div id="mascotPitacoText" class="text-xs text-sky-50 leading-relaxed font-medium mb-4 bg-white/10 p-3.5 rounded-2xl border border-white/20 text-left">
         <!-- Texto explicativo injetado dinamicamente -->
       </div>
 
@@ -39670,6 +39679,17 @@ window.openHealthMedsModal = function() {
   
   // Função Global de Saída Nativa do App
   window.exitApp = function() {
+    try {
+      currentUserSession = null;
+      window.currentUserSession = null;
+      localStorage.removeItem('financas_auth_user');
+      localStorage.removeItem('financas_logged_in');
+      localStorage.removeItem('financas_usuario_ativo');
+      localStorage.setItem('financas_auth_logged_out', 'true');
+      localStorage.setItem('financas_session_locked', 'true');
+      sessionStorage.removeItem('pigctrl_session_authenticated');
+      sessionStorage.clear();
+    } catch(_) {}
     if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
       try {
         window.FlutterBridge.postMessage(JSON.stringify({ action: 'exit_app' }));
@@ -39680,20 +39700,21 @@ window.openHealthMedsModal = function() {
   };
 
   window.logoutUser = function(keepInLogin) {
-    if (!keepInLogin && window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
-      try {
-        window.FlutterBridge.postMessage(JSON.stringify({ action: 'exit_app' }));
-        return;
-      } catch(_) {}
-    }
     currentUserSession = null;
     window.currentUserSession = null;
     localStorage.removeItem('financas_auth_user');
     localStorage.removeItem('financas_logged_in');
     localStorage.removeItem('financas_usuario_ativo');
     localStorage.setItem('financas_auth_logged_out', 'true');
+    localStorage.setItem('financas_session_locked', 'true');
     sessionStorage.removeItem('pigctrl_session_authenticated');
     sessionStorage.clear();
+    if (!keepInLogin && window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
+      try {
+        window.FlutterBridge.postMessage(JSON.stringify({ action: 'exit_app' }));
+        return;
+      } catch(_) {}
+    }
     if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
       try { window.FlutterBridge.postMessage(JSON.stringify({ action: 'auth_signout' })); } catch(_) {}
     }
@@ -39771,7 +39792,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
           <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
@@ -41739,7 +41760,7 @@ window.openHealthMedsModal = function() {
     list.replaceChildren(...latest.map(t => {
       const isIncome = t.tipo === 'Receita';
       const row = document.createElement('div');
-      row.className = 'flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-slate-50 border border-slate-100';
+      row.className = 'flex items-center justify-between gap-2 py-2.5 px-1 border-b border-slate-200/80 dark:border-slate-700/60 last:border-b-0 cursor-pointer hover:bg-slate-50/60 transition-colors';
       row.innerHTML = `<div class="flex items-center gap-3 min-w-0"><div class="w-9 h-9 rounded-xl ${isIncome ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} flex items-center justify-center font-bold text-sm flex-shrink-0"><i data-lucide="${isIncome ? 'arrow-down-left' : 'shopping-bag'}" class="w-4 h-4"></i></div><div class="min-w-0"><span class="text-xs font-bold text-slate-900 block leading-tight truncate"></span><span class="text-[10px] text-slate-500"></span></div></div><span class="text-xs font-black whitespace-nowrap ${isIncome ? 'text-emerald-700' : 'text-rose-600'}"></span>`;
       row.querySelector('.text-xs.font-bold').textContent = t.descricao || t.categoria || 'Lançamento';
       const rowSpans = row.querySelectorAll('span');
@@ -41913,7 +41934,7 @@ window.openHealthMedsModal = function() {
       if (elDias) elDias.textContent = '•• dias';
       if (elComp) elComp.textContent = '••%';
       if (elParc) elParc.textContent = '• ativas';
-      if (elBadge) elBadge.innerHTML = '<span>•••••</span>';
+      if (elBadge) { elBadge.textContent = ''; elBadge.style.display = 'none'; }
       const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
       eyeIcons.forEach(eyeIcon => eyeIcon.setAttribute('data-lucide', 'eye-off'));
     }
@@ -41958,7 +41979,7 @@ window.openHealthMedsModal = function() {
       if (elDias) elDias.textContent = '•• dias';
       if (elComp) elComp.textContent = '••%';
       if (elParc) elParc.textContent = '• ativas';
-      if (elBadge) elBadge.innerHTML = '<span>•••••</span>';
+      if (elBadge) { elBadge.textContent = ''; elBadge.style.display = 'none'; }
       const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
       eyeIcons.forEach(eyeIcon => {
         eyeIcon.setAttribute('data-lucide', 'eye-off');
@@ -43874,9 +43895,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       for (const [dateStr, items] of Object.entries(groups)) {
         html += `
-          <div>
-            <span class="text-[11px] font-extrabold text-blue-200 uppercase tracking-wider block mb-1.5 px-1">${window.formatDateBR ? window.formatDateBR(dateStr) : dateStr}</span>
-            <div class="space-y-1.5">
+          <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-3.5 shadow-sm mb-3">
+            <div class="flex items-center justify-between mb-2 px-1">
+              <span class="text-[11px] font-black text-blue-200 uppercase tracking-wider">${window.formatDateBR ? window.formatDateBR(dateStr) : dateStr}</span>
+              <span class="text-[10px] font-bold text-white/60">${items.length} ${items.length === 1 ? 'lançamento' : 'lançamentos'}</span>
+            </div>
+            <div class="divide-y divide-white/10">
         `;
 
         items.forEach(t => {
@@ -43885,48 +43909,41 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           const isPago = t.status === 'Pago' || t.status === 'Recebido';
           const valNum = parseFloat(t.valor) || 0;
           const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
-          const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
-          const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
-          const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : '';
-          
+          const valColor = isRec ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
+          const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-white/15 text-white' };
           const btnQuitar = isFixa ? `
-            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'}" title="Clique para alterar status">
-              ${isPago ? 'Pago ✓' : 'Quitar ⚡'}
+            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${t.id}); window.renderApprovedTransactionsList(); }" class="px-2.5 py-1 rounded-xl text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400/40' : 'bg-amber-500/25 text-amber-200 border-amber-400/40 animate-pulse'}" title="Clique para alterar status">
+              ${isPago ? 'Pago ✓' : 'Pagar ⚡'}
             </button>
           ` : '';
 
           html += `
-            <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1.5" data-tx-id="${t.id}">
-              <div class="swipe-tx-card relative bg-white rounded-2xl p-3 shadow-xs border border-slate-200/70 flex items-center justify-between cursor-pointer hover:border-blue-400 z-10 transition-transform duration-100 ease-out will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
-                    ${meta.emoji}
-                  </div>
-                  <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                      <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
-                      ${memberBadge}
-                      ${btnQuitar}
-                    </div>
+            <div class="flex items-center justify-between py-2.5 px-1 hover:bg-white/5 transition-colors cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
+                  ${meta.emoji}
+                </div>
+                <div class="min-w-0">
+                  <h4 class="font-bold text-xs text-white truncate leading-tight">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
+                  <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <span class="text-[10px] text-blue-200">${escapeHtml(t.categoria || 'Geral')}</span>
+                    ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : ''}
                   </div>
                 </div>
-                <div class="flex items-center gap-1.5 flex-shrink-0">
-                  <span class="font-black text-xs ${valColor}">${valFormatted}</span>
-                  <button type="button" onclick="event.stopPropagation(); if (typeof window.deleteTxWithAnimation === 'function') { window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container')); } else if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
-                </div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                <span class="font-mono text-xs ${valColor}">${valFormatted}</span>
+                ${btnQuitar}
+                <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/40 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-white/40"></i>
               </div>
             </div>
           `;
         });
 
-        html += `
-            </div>
-          </div>
-        `;
+        html += `</div></div>`;
       }
 
       container.innerHTML = html;
