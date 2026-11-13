@@ -4521,18 +4521,30 @@ html, body {
 
     
     /* ========================================================================= */
-    /* CHAT DA FAMÍLIA EM FINTECH LIQUID GLASS DARK                              */
+    /* CHAT DA FAMÍLIA EM FINTECH LIQUID GLASS SAPPHIRE COM MÁXIMA LEGIBILIDADE  */
     /* ========================================================================= */
     #modalFamilyChat .bg-\[\#DFEAF7\] {
-      background: linear-gradient(180deg, #072263 0%, #0b3182 40%, #082467 100%) !important;
+      background: linear-gradient(180deg, #071e48 0%, #0a2963 50%, #071933 100%) !important;
     }
-    #modalFamilyChat .bg-white {
-      background: rgba(255, 255, 255, 0.12) !important;
-      border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    #modalFamilyChat .chat-card-container {
+      background: rgba(255, 255, 255, 0.10) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
       color: #ffffff !important;
-      backdrop-filter: blur(16px) !important;
-      -webkit-backdrop-filter: blur(16px) !important;
-      border-radius: 20px !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-radius: 24px !important;
+    }
+    #modalFamilyChat .bubble-me {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+      color: #ffffff !important;
+      font-weight: 500 !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+    }
+    #modalFamilyChat .bubble-other {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #0f172a !important;
+      font-weight: 500 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     }
     #modalFamilyChat #chatMessagesFeed {
       background: transparent !important;
@@ -5269,7 +5281,7 @@ html, body {
         <div class="px-4 -mt-10 relative z-20 w-full select-none">
           
           <!-- O PIGGY PISANDO NA BORDA SUPERIOR DIREITA DA CAIXA BRANCA -->
-          <div class="absolute -top-[124px] right-4 z-30 pointer-events-none select-none flex flex-col items-end">
+          <div class="absolute -top-[124px] right-4 z-30 pointer-events-none select-none flex flex-col items-center">
             <img id="mascotImage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" 
                  alt="Piggy Mascote Pisando na Caixa Branca" 
                  class="h-[142px] w-auto max-h-[142px] object-contain pointer-events-auto cursor-pointer drop-shadow-[0_8px_14px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-105 active:scale-95" 
@@ -5381,29 +5393,29 @@ html, body {
               </span>
             </div>
 
-            <!-- Balão de Dica do Piggy dentro do card de saldo com setinhas de navegação funcionais -->
-            <div class="mt-4 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-100 flex items-center justify-between gap-2.5 select-none">
-              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90" title="Dica anterior">
+            <!-- Balão de Dica do Piggy (Design System: Luminous Sapphire Degradee com Alta Legibilidade) -->
+            <div class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-[#0c2e68] via-[#0f3e8c] to-[#0a2656] border border-sky-400/35 shadow-md flex items-center justify-between gap-2.5 select-none text-white">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-sky-200 hover:text-white border border-white/20 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Dica anterior">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
               </button>
               <div class="flex-1 text-center min-w-0 px-1">
-                <div class="flex items-center justify-center gap-1.5 mb-0.5">
-                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-200/50 px-2 py-0.2 rounded-full flex items-center gap-1">
+                <div class="flex items-center justify-center gap-1.5 mb-1">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-sky-200 bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-400/30 flex items-center gap-1">
                     <span id="previewTipBadgeIcon">💡</span>
                     <span id="previewTipCategory">Dica do Piggy</span>
                   </span>
-                  <span id="previewTipIndex" class="text-[9px] font-bold text-blue-600">1/3</span>
+                  <span id="previewTipIndex" class="text-[9px] font-black text-sky-300 bg-white/10 px-1.5 py-0.2 rounded-md">1/10</span>
                 </div>
-                <p id="previewTipText" class="text-xs font-semibold text-slate-800 leading-snug">
+                <p id="previewTipText" class="text-xs font-medium text-sky-100 leading-snug drop-shadow-xs">
                   "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
                 </p>
                 <div id="previewTipDots" class="flex items-center justify-center gap-1 mt-1.5">
-                  <span class="w-2 h-1 rounded-full bg-blue-600"></span>
-                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
-                  <span class="w-1 h-1 rounded-full bg-blue-300"></span>
+                  <span class="w-2.5 h-1 rounded-full bg-sky-400"></span>
+                  <span class="w-1.5 h-1 rounded-full bg-sky-400/40"></span>
+                  <span class="w-1.5 h-1 rounded-full bg-sky-400/40"></span>
                 </div>
               </div>
-              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white shadow-xs text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors active:scale-90" title="Próxima dica">
+              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-sky-200 hover:text-white border border-white/20 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Próxima dica">
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
               </button>
             </div>
@@ -5807,7 +5819,7 @@ html, body {
       <!-- ============================================================ -->
       <!-- TELA 3: FAMÍLIA & VIDA (CARD ORIGINAL + 10 CARDS 2x5 SEM SCROLL) -->
       <!-- ============================================================ -->
-      <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] overflow-hidden" style="height: calc(100dvh - 82px); max-height: calc(100dvh - 82px);">
+      <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] min-h-screen overflow-y-auto pb-24">
         
         <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
         <div class="px-4 pt-2 pb-1 flex items-center justify-between text-white flex-shrink-0 relative z-30">
@@ -5850,7 +5862,7 @@ html, body {
           </div>
 
           <!-- CAIXA ARREDONDADA PREENCHENDO ATÉ EMBAIXO SEM ULTRAPASSAR E SEM GERAR SCROLL -->
-          <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-hidden px-4 pt-7 pb-3.5 shadow-inner">
+          <div class="flex-1 min-h-0 bg-[#DFEAF7] rounded-t-[32px] -mt-7 relative z-10 flex flex-col overflow-y-auto px-4 pt-4 pb-12 shadow-inner">
             
             <div class="flex items-center justify-between mb-1.5 flex-shrink-0">
               <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-100">Módulos da Família</span>
@@ -6630,8 +6642,8 @@ html, body {
   </div>
 
   <!-- MODAL: CRIAR NOVO PORQUINHO 🐷 -->
-  <div id="modalCreatePiggy" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-none max-w-sm w-full p-6 shadow-2xl relative text-xs border border-slate-300">
+  <div id="modalCreatePiggy" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="relative w-full max-w-sm p-6 sm:p-7 rounded-[32px] overflow-hidden border border-white/25 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1.5px_1.5px_rgba(255,255,255,0.45)] text-white" style="background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.45) 0%, rgba(10, 26, 65, 0.90) 58%, rgba(5, 12, 32, 0.98) 100%); backdrop-filter: blur(28px) saturate(190%); -webkit-backdrop-filter: blur(28px) saturate(190%);">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <div class="flex items-center gap-2">
           <span class="text-xl">🐷</span>
@@ -6931,8 +6943,8 @@ html, body {
     </div>
   </div>
 
-  <div id="modalNewTx" class="fixed inset-0 bg-[#061e56]/70 backdrop-blur-xl z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-gradient-to-br from-[#0c2656]/95 via-[#081b3e]/95 to-[#040f24]/98 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/20 text-white backdrop-blur-2xl">
+  <div id="modalNewTx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white/95 dark:bg-slate-900/95 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/60 dark:border-slate-700/60 text-slate-800 dark:text-slate-100 backdrop-blur-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-white/15">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-md">
@@ -7447,8 +7459,8 @@ html, body {
   </div>
 
   <!-- MODAL: DETALHES DE COMPRAS PARCELADAS -->
-  <div id="modalInstallmentsDetail" class="fixed inset-0 bg-[#061e56]/70 backdrop-blur-xl z-[1050] hidden flex items-center justify-center p-4">
-    <div class="bg-gradient-to-br from-[#0c2656]/95 via-[#081b3e]/95 to-[#040f24]/98 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar text-xs border border-white/20 text-white backdrop-blur-2xl">
+  <div id="modalInstallmentsDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[1050] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white/95 dark:bg-slate-900/95 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto overflow-x-hidden custom-scrollbar text-xs border border-white/60 dark:border-slate-700/60 text-slate-800 dark:text-slate-100 backdrop-blur-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-white/15">
         <div class="flex items-center gap-2.5 min-w-0">
           <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center flex-shrink-0 shadow-md">
@@ -11061,7 +11073,48 @@ html, body {
     if (window.lucide) lucide.createIcons();
   };
 
-    function refreshHomeFutureBills(activeTxs) {
+      // Funções Globais de Controle de Quitação de Contas Recorrentes (Lançamentos Futuros)
+  window.markRecurringBillAsPaid = function(billId, isPaid) {
+    try {
+      const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+      const cycleKey = `${activeCycleKey}_${billId}`;
+      const statusMap = typeof getBillsPaidStatusMap === 'function' ? getBillsPaidStatusMap() : JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
+      if (isPaid) {
+        statusMap[cycleKey] = true;
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('✓ Conta marcada como paga neste ciclo!', false);
+        }
+      } else {
+        delete statusMap[cycleKey];
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('Conta reaberta como pendente!', false);
+        }
+      }
+      if (typeof saveBillsPaidStatusMap === 'function') {
+        saveBillsPaidStatusMap(statusMap);
+      } else {
+        localStorage.setItem('financas_status_contas_pagas', JSON.stringify(statusMap));
+      }
+      if (typeof refreshHomeFutureBills === 'function') {
+        refreshHomeFutureBills();
+      }
+      if (typeof renderBillsReminderList === 'function') {
+        renderBillsReminderList();
+      }
+      if (typeof updateBillsReminderCard === 'function') {
+        updateBillsReminderCard();
+      }
+    } catch (e) {
+      console.error('Erro ao atualizar status de conta paga:', e);
+    }
+  };
+
+  window.toggleReopenRecurringBill = function(billId) {
+    window.markRecurringBillAsPaid(billId, false);
+  };
+
+
+  function refreshHomeFutureBills(activeTxs) {
       const container = document.getElementById('dashboardFutureBillsList');
       if (!container) return;
 
@@ -11267,21 +11320,15 @@ html, body {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
 
+      // Sempre lista os membros da família (Rodrigo, Márcia e demais cadastrados)
       let members = [];
-      if (isMaster) {
-        members.push({ id: 'rodrigo', nome: 'Rodrigo', avatar: '👨', color: 'blue' });
-        members.push({ id: 'marcia', nome: 'Márcia', avatar: '👩', color: 'rose' });
-        din.forEach((m, idx) => {
+      members.push({ id: 'rodrigo', nome: 'Rodrigo', avatar: '👨', color: 'blue' });
+      members.push({ id: 'marcia', nome: 'Márcia', avatar: '👩', color: 'rose' });
+      din.forEach((m, idx) => {
+        if (!members.some(x => x.nome.toLowerCase() === m.nome.toLowerCase())) {
           members.push({ id: m.id, nome: m.nome, avatar: m.avatar || '👤', color: idx % 2 === 0 ? 'emerald' : 'purple' });
-        });
-      } else {
-        const uNome = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
-        const uAvatar = (window.currentUserSession && window.currentUserSession.avatar) || '👤';
-        members.push({ id: 'titular', nome: uNome, avatar: uAvatar, color: 'blue' });
-        din.forEach((m, idx) => {
-          members.push({ id: m.id, nome: m.nome, avatar: m.avatar || '👤', color: idx % 2 === 0 ? 'rose' : 'emerald' });
-        });
-      }
+        }
+      });
 
       const txs = Array.isArray(activeTxs) ? activeTxs : [];
       const despesasTxs = txs.filter(t => t && t.tipo !== 'Receita');
@@ -27242,17 +27289,43 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <div id="fitnessExercisesList" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar"></div>
       </div>
 
-      <div class="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-        <div>
-          <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">Meta de Hidratação Diária</div>
-          <div id="fitnessWaterDisplay" class="text-sm font-black text-sky-600 dark:text-sky-300">0 / 2.500 ml</div>
-          <div class="w-32 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1 overflow-hidden">
-            <div id="fitnessWaterProgressBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+      <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+              <span>💧</span><span>Meta de Hidratação Diária</span>
+            </div>
+            <div id="fitnessWaterDisplay" class="text-sm font-black text-sky-600 dark:text-sky-300 mt-0.5">0 / 2.500 ml</div>
+          </div>
+          <!-- Seletor de Meta Diária -->
+          <div class="flex items-center gap-1">
+            <label class="text-[10px] font-bold text-slate-500 dark:text-slate-400">Meta:</label>
+            <select id="selectDailyWaterGoal" onchange="setCustomDailyWaterGoal(this.value)" class="text-[11px] font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500">
+              <option value="1500">1.500 ml</option>
+              <option value="2000">2.000 ml</option>
+              <option value="2500" selected>2.500 ml</option>
+              <option value="3000">3.000 ml</option>
+              <option value="3500">3.500 ml</option>
+            </select>
           </div>
         </div>
-        <div class="flex gap-1.5">
-          <button type="button" onclick="addFitnessWater(250)" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold cursor-pointer">+250ml</button>
-          <button type="button" onclick="addFitnessWater(500)" class="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold cursor-pointer">+500ml</button>
+
+        <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+          <div id="fitnessWaterProgressBar" class="bg-gradient-to-r from-sky-500 to-blue-600 h-full w-0 transition-all rounded-full"></div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+          <!-- Toggle de Alarme de Hidratação (Default desligado) -->
+          <label class="flex items-center gap-1.5 cursor-pointer select-none">
+            <input type="checkbox" id="chkHydrationAlarmToggle" onchange="toggleHydrationAlarm(this.checked)" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500 w-3.5 h-3.5 cursor-pointer">
+            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+              <span>⏰</span><span>Alarme de Água (a cada 2h)</span>
+            </span>
+          </label>
+          <div class="flex gap-1.5">
+            <button type="button" onclick="addFitnessWater(250)" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold cursor-pointer transition-all active:scale-95">+250ml</button>
+            <button type="button" onclick="addFitnessWater(500)" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-bold cursor-pointer transition-all active:scale-95">+500ml</button>
+          </div>
         </div>
       </div>
     </div>
@@ -37499,7 +37572,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
   <!-- Card Balão com Mascote Oficial Caracterizado e Cores Oficiais -->
   <div class="relative z-10 max-w-sm w-full flex flex-col items-center select-none animate-in fade-in zoom-in-95 duration-200">
-    <div class="mascot-speech-bubble-v2 p-5 text-center text-slate-900 dark:text-slate-100 mb-3 w-full relative bg-white dark:bg-slate-900 border-2 border-sky-400 rounded-3xl shadow-2xl">
+    <div class="mascot-speech-bubble-v2 p-6 text-center text-white mb-3 w-full relative rounded-[32px] border border-white/25 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),inset_0_1.5px_1.5px_rgba(255,255,255,0.45)] backdrop-blur-2xl" style="background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.45) 0%, rgba(10, 26, 65, 0.90) 58%, rgba(5, 12, 32, 0.98) 100%);">
       <button type="button" onclick="confirmEnterSectionFromPitaco()" class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer shadow-2xs active:scale-90" title="Pular dica e entrar na seção">✕</button>
       <div id="mascotPitacoBadge" class="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 border bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-300 border-sky-300">
         ⚡ Dica do Piggy
@@ -40001,7 +40074,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
   <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[3600] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-[#071933] border-b border-white/10 shadow-sm">
+    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -40023,7 +40096,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-3.5 shadow-2xl">
+    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3.5 shadow-2xl">
       
       <!-- Card Total Geral de Mercado -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -41429,10 +41502,18 @@ window.openHealthMedsModal = function() {
       return;
     }
 
+    canvas._slices = [];
     let currentAngle = -0.5 * Math.PI;
     dataValues.forEach((val, i) => {
       const sliceAngle = (val / total) * 2 * Math.PI;
       if (sliceAngle <= 0) return;
+
+      canvas._slices.push({
+        index: i,
+        startAngle: currentAngle,
+        endAngle: currentAngle + sliceAngle,
+        value: val
+      });
 
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
@@ -41452,6 +41533,36 @@ window.openHealthMedsModal = function() {
       currentAngle += sliceAngle;
     });
     ctx.restore();
+
+    if (!canvas._hasSliceClickListener) {
+      canvas._hasSliceClickListener = true;
+      canvas.style.cursor = 'pointer';
+      canvas.addEventListener('click', function(evt) {
+        const rect = canvas.getBoundingClientRect();
+        const x = evt.clientX - rect.left - (width / 2);
+        const y = evt.clientY - rect.top - (height / 2);
+        const dist = Math.sqrt(x * x + y * y);
+        if (dist >= 30 && dist <= 80 && canvas._slices) {
+          let angle = Math.atan2(y, x);
+          let norm = angle;
+          if (norm < -0.5 * Math.PI) norm += 2 * Math.PI;
+          const slice = canvas._slices.find(s => norm >= s.startAngle && norm <= s.endAngle);
+          if (slice && window._lastCategoryDonutLabels) {
+            const catName = window._lastCategoryDonutLabels[slice.index] || 'Categoria';
+            const catVal = slice.value;
+            const pct = total > 0 ? ((catVal / total) * 100).toFixed(1) : 0;
+            const fmt = typeof formatBRL === 'function' ? formatBRL(catVal, 'despesa') : ('R$ ' + catVal.toFixed(2));
+            const totalLabel = document.getElementById('previewDonutTotalVal');
+            if (totalLabel) {
+              totalLabel.innerHTML = '<span class="text-[10px] text-sky-500 font-bold block truncate leading-none">' + escapeHtml(catName) + '</span><span class="text-sm font-black text-slate-900 leading-tight block">' + fmt + '</span><span class="text-[9px] text-slate-400 block">(' + pct + '%)</span>';
+            }
+            if (typeof showToastUndo === 'function') {
+              showToastUndo('📊 ' + catName + ': ' + fmt + ' (' + pct + '%)', false);
+            }
+          }
+        }
+      });
+    }
   }
 
   function refreshHomeCategoryBreakdown(txs) {
@@ -41470,6 +41581,7 @@ window.openHealthMedsModal = function() {
 
     if (chartCanvas) {
       const labels = top.map(item => item[0]);
+      window._lastCategoryDonutLabels = labels;
       const dataValues = top.map(item => item[1]);
 
       if (dataValues.length === 0 || totalExpenses <= 0) {
@@ -41868,6 +41980,9 @@ window.openHealthMedsModal = function() {
     const txs = getCycleTransactions();
     refreshHomeCategoryBreakdown(txs);
     refreshHomeRecentTransactions(txs);
+    if (typeof refreshHomeFutureBills === 'function') {
+      refreshHomeFutureBills(txs);
+    }
   }, { once: true });
   window.addEventListener('resize', () => {
     const input = document.activeElement;
@@ -44570,12 +44685,21 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const hist = (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) ? priceHistory : [];
 
-      if (hist.length === 0 && !isMaster) {
+      // Exibe mensagem informativa caso ainda não existam dados comparativos suficientes (mínimo 2 estabelecimentos)
+      const distinctStores = new Set(hist.map(h => (h.estabelecimento || '').trim()).filter(Boolean));
+      if (distinctStores.size < 2 && !isMaster) {
         body.innerHTML = `
-          <div class="bg-white rounded-3xl p-6 text-center shadow-sm border border-slate-200/80 space-y-2">
-            <span class="text-3xl block">📊</span>
-            <h3 class="font-black text-sm text-slate-900">Comparativo de Supermercados</h3>
-            <p class="text-xs text-slate-500">Escaneie o QR Code das suas Notas Fiscais ou registre itens no Histórico de Preços para comparar qual supermercado está mais barato para sua família!</p>
+          <div class="bg-white rounded-3xl p-7 text-center shadow-sm border border-slate-200/80 space-y-3 my-auto">
+            <span class="text-4xl block">📊</span>
+            <h3 class="font-black text-base text-slate-900">Comparativo de Supermercados</h3>
+            <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto font-medium">
+              O comparativo estará disponível assim que houver produtos cadastrados em pelo menos 2 estabelecimentos distintos para comparação de preços.
+            </p>
+            <div class="pt-2">
+              <button type="button" onclick="closeComparativoMercadosModal()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-2xl shadow-sm transition-all cursor-pointer">
+                Entendi
+              </button>
+            </div>
           </div>
         `;
         return;
@@ -49112,6 +49236,30 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     else boot();
   }
 })();
+</script>
+<script>
+  // Funções de Gestão de Hidratação & Alarme de Água
+  window.getDailyWaterGoal = function() {
+    return parseInt(localStorage.getItem('ctrlpig_hydration_goal_ml') || '2500', 10);
+  };
+
+  window.setCustomDailyWaterGoal = function(val) {
+    const goal = parseInt(val, 10) || 2500;
+    localStorage.setItem('ctrlpig_hydration_goal_ml', goal);
+    const sel = document.getElementById('selectDailyWaterGoal');
+    if (sel) sel.value = String(goal);
+    if (typeof updateFitnessWaterUI === 'function') updateFitnessWaterUI();
+    if (typeof showToastUndo === 'function') showToastUndo(`💧 Meta de água definida para ${goal} ml!`, false);
+  };
+
+  window.toggleHydrationAlarm = function(enabled) {
+    localStorage.setItem('ctrlpig_hydration_alarm_enabled', enabled ? 'true' : 'false');
+    const chk = document.getElementById('chkHydrationAlarmToggle');
+    if (chk) chk.checked = enabled;
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(enabled ? '⏰ Alarme de hidratação ativado (lembretes a cada 2h)!' : '🔕 Alarme de hidratação desativado.', false);
+    }
+  };
 </script>
 </body>
 </html>

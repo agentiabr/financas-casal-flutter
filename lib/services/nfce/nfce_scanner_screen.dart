@@ -60,7 +60,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
-      autoStart: true,
+      autoStart: false,
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
@@ -885,57 +885,65 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
               ),
             ),
 
-          // 2. Máscara escura com recorte retangular transparente para a moldura (suporta QR Code e Código de Barras horizontal)
-          CustomPaint(
-            size: size,
-            painter: _ScannerOverlayPainter(
-              boxWidth: boxWidth,
-              boxHeight: boxHeight,
-              overlayColor: Colors.black.withOpacity(0.65),
-              borderColor: const Color(0xFF10B981), // Emerald
+          // 2. Máscara escura com recorte retangular transparente para a moldura (IgnorePointer para não bloquear toques)
+          IgnorePointer(
+            ignoring: true,
+            child: CustomPaint(
+              size: size,
+              painter: _ScannerOverlayPainter(
+                boxWidth: boxWidth,
+                boxHeight: boxHeight,
+                overlayColor: Colors.black.withOpacity(0.65),
+                borderColor: const Color(0xFF10B981), // Emerald
+              ),
             ),
           ),
 
-          // Indicador de suporte duplo (QR Code e Código de Barras)
+          // Indicador de suporte duplo (QR Code e Código de Barras) - IgnorePointer
           Positioned(
             top: ((size.height - boxHeight) / 2 - 38).clamp(70.0, 400.0),
             left: 0,
             right: 0,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF10B981).withOpacity(0.6)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.qr_code_scanner, color: Color(0xFF10B981), size: 15),
-                    SizedBox(width: 6),
-                    Text(
-                      'QR Code ou Código de Barras',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.2,
+            child: IgnorePointer(
+              ignoring: true,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFF10B981).withOpacity(0.6)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.qr_code_scanner, color: Color(0xFF10B981), size: 15),
+                      SizedBox(width: 6),
+                      Text(
+                        'QR Code ou Código de Barras',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.2,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
 
-          // 3. Linha de laser animada dentro da moldura
+          // 3. Linha de laser animada dentro da moldura (IgnorePointer para não bloquear toques)
           if (!_isProcessing)
-            Center(
-              child: SizedBox(
-                width: boxWidth,
-                height: boxHeight,
-                child: AnimatedBuilder(
+            IgnorePointer(
+              ignoring: true,
+              child: Center(
+                child: SizedBox(
+                  width: boxWidth,
+                  height: boxHeight,
+                  child: AnimatedBuilder(
                   animation: _scanLineAnimation,
                   builder: (context, child) {
                     final topOffset = _scanLineAnimation.value * (boxHeight - 4);
@@ -971,6 +979,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                   },
                 ),
               ),
+            ),
             ),
 
           // 4. Barra Superior do Scanner

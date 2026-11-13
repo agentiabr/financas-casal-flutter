@@ -158,8 +158,8 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       final difference = _lastPausedTime != null ? now.difference(_lastPausedTime!) : Duration.zero;
       _lastPausedTime = null;
 
-      // Tolerância de 5 minutos: só bloqueia por inatividade se o usuário ficou fora por 5 min ou mais
-      if (difference.inMinutes >= 5 && !_isPickingExternalMedia) {
+      // Bloqueio seguro ao retornar do segundo plano (valida biometria/login se habilitado)
+      if (!_isPickingExternalMedia) {
         _controller.runJavaScript("""
           if (typeof window.lockAppSessionNow === 'function') {
             window.lockAppSessionNow();
@@ -187,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.154+232';
+  static const String _kCurrentAppVersion = '2.1.155+232';
 
   Future<void> _requestPostLoginPermissions() async {
     // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
