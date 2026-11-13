@@ -187,7 +187,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.153+231';
+  static const String _kCurrentAppVersion = '2.1.154+232';
 
   Future<void> _requestPostLoginPermissions() async {
     // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
@@ -275,9 +275,17 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       );
       platform.setOnPlatformPermissionRequest(
         (request) async {
-          final cameraStatus = await Permission.camera.request();
-          final micStatus = await Permission.microphone.request();
-          if (cameraStatus.isGranted || micStatus.isGranted) {
+          bool anyGranted = false;
+          for (final type in request.types) {
+            if (type == WebViewPermissionResourceType.camera) {
+              final status = await Permission.camera.request();
+              if (status.isGranted) anyGranted = true;
+            } else if (type == WebViewPermissionResourceType.microphone) {
+              final status = await Permission.microphone.request();
+              if (status.isGranted) anyGranted = true;
+            }
+          }
+          if (anyGranted) {
             request.grant();
           } else {
             request.deny();

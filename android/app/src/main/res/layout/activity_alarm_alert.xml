@@ -41,7 +41,20 @@
             android:text="💊"
             android:textSize="54sp"
             android:gravity="center"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="4dp" />
+
+        <!-- Horário em Destaque Monospace -->
+        <TextView
+            android:id="@+id/tv_alarm_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="08:00"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginBottom="6dp" />
 
         <!-- Título do Alarme -->
         <TextView
@@ -49,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hora do Remédio"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:gravity="center" />
@@ -60,11 +73,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirme a conclusão ou adie por 5 minutos."
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textColor="#BAE6FD"
             android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="22dp" />
 
         <!-- Botão 1: Concluído / Já Tomei (Verde Esmeralda Liquid) -->
         <Button
@@ -87,7 +100,7 @@
             android:text="💤 ADIAR 5 MINUTOS"
             android:textSize="13sp"
             android:textStyle="bold"
-            android:textColor="#F1F5F9"
+            android:textColor="#FDE68A"
             android:background="@drawable/bg_btn_snooze_liquid"
             android:stateListAnimator="@null"
             android:layout_marginBottom="12dp" />

@@ -23279,7 +23279,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         if (c.status !== 'Pendente' || !c.alarmeAtivo || !c.data) return;
         const diffDays = Math.ceil((new Date(c.data + 'T00:00:00') - new Date(todayStr + 'T00:00:00')) / (1000 * 60 * 60 * 24));
         const targetHora = c.hora || '09:00';
-        if ((diffDays === 0 || diffDays === 2 || diffDays === 5) && targetHora === curTime) {
+        if (diffDays === 0 && targetHora === curTime) {
           const firedKey = `ctrlpig_pet_fired_${c.id}_${diffDays}_${todayStr}`;
           if (localStorage.getItem(firedKey) === 'true') return;
           localStorage.setItem(firedKey, 'true');
@@ -23312,7 +23312,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         const pet = pets.find(p => p.id === v.petId) || (typeof getActivePet === 'function' ? getActivePet() : { nome: 'Pet' });
 
         const vaxTargetHora = v.hora || '09:00';
-        if ((diffDays === 5 || diffDays === 2 || diffDays === 0) && curTime === vaxTargetHora) {
+        if (diffDays === 0 && curTime === vaxTargetHora) {
           const firedKey = `ctrlpig_vax_fired_${v.id}_${diffDays}_${todayStr}`;
           if (localStorage.getItem(firedKey) === 'true') return;
           localStorage.setItem(firedKey, 'true');
@@ -27566,55 +27566,55 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- ============================================================== -->
   <!-- MODAL DE ALARME EM TELA CHEIA (REMÉDIOS & CUIDADOS PET)        -->
-  <!-- DESIGN SYSTEM: LIQUID GLASS SAPPHIRE COM DEGRADEE SUAVE        -->
+  <!-- DESIGN SYSTEM: ULTRA-PREMIUM LIQUID GLASS SAPPHIRE AURORA     -->
   <!-- ============================================================== -->
-  <div id="modalFullScreenAlarmOverlay" class="fixed inset-0 bg-[#040915]/90 backdrop-blur-2xl z-[99999999] hidden flex items-center justify-center p-4" style="z-index: 99999999;">
-    <div class="relative w-full max-w-sm p-6 sm:p-7 rounded-[32px] text-center flex flex-col items-center overflow-hidden border border-white/20 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.4),0_0_35px_rgba(56,189,248,0.20)]" style="background: radial-gradient(circle at 50% 0%, rgba(30, 80, 180, 0.40) 0%, rgba(10, 25, 60, 0.85) 60%, rgba(6, 16, 40, 0.95) 100%); backdrop-filter: blur(28px) saturate(190%); -webkit-backdrop-filter: blur(28px) saturate(190%);">
+  <div id="modalFullScreenAlarmOverlay" class="fixed inset-0 bg-[#040915]/95 backdrop-blur-2xl z-[99999999] hidden flex items-center justify-center p-4" style="z-index: 99999999;">
+    <div class="relative w-full max-w-sm p-6 sm:p-7 rounded-[34px] text-center flex flex-col items-center overflow-hidden border border-white/25 shadow-[0_30px_75px_-15px_rgba(0,0,0,0.85),inset_0_1.5px_1.5px_rgba(255,255,255,0.45),0_0_40px_rgba(56,189,248,0.25)]" style="background: radial-gradient(circle at 50% 0%, rgba(30, 85, 195, 0.45) 0%, rgba(10, 26, 65, 0.90) 58%, rgba(5, 12, 32, 0.98) 100%); backdrop-filter: blur(32px) saturate(200%); -webkit-backdrop-filter: blur(32px) saturate(200%);">
       
-      <!-- Reflexo Liquid Glass Superior -->
-      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-36 bg-gradient-to-b from-sky-400/25 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+      <!-- Reflexo Liquid Glass Superior (Curvatura Fluida) -->
+      <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-80 h-44 bg-gradient-to-b from-sky-400/30 via-blue-500/10 to-transparent rounded-full blur-2xl pointer-events-none"></div>
 
       <!-- Badge Superior Neon Glass -->
-      <span id="fullAlarmBadge" class="relative z-10 text-[10px] font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30 mb-4 shadow-[0_0_15px_rgba(56,189,248,0.25)] flex items-center gap-1.5">
+      <span id="fullAlarmBadge" class="relative z-10 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40 mb-4 shadow-[0_0_18px_rgba(56,189,248,0.30)] flex items-center gap-1.5 backdrop-blur-md">
         ⏰ ALARME PROGRAMADO
       </span>
 
-      <!-- Ícone Grande Liquid Glass -->
-      <div id="fullAlarmIcon" class="relative z-10 w-20 h-20 rounded-3xl bg-gradient-to-br from-sky-400/20 via-blue-500/15 to-indigo-600/25 border border-white/30 backdrop-blur-xl flex items-center justify-center text-4xl mb-3 shadow-[0_10px_30px_rgba(56,189,248,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] animate-pulse">
+      <!-- Ícone Grande Liquid Glass com Halo Pulsante -->
+      <div id="fullAlarmIcon" class="relative z-10 w-22 h-22 rounded-3xl bg-gradient-to-br from-sky-400/30 via-blue-500/20 to-indigo-600/30 border border-white/40 backdrop-blur-2xl flex items-center justify-center text-4xl mb-3 shadow-[0_12px_32px_rgba(56,189,248,0.30),inset_0_2px_2px_rgba(255,255,255,0.55)] animate-pulse">
         ⏰
       </div>
 
-      <!-- Horário em Destaque Monospace -->
-      <div id="fullAlarmTime" class="relative z-10 text-4xl font-black font-mono tracking-tight text-white mb-1.5 drop-shadow-[0_2px_12px_rgba(255,255,255,0.35)]">
+      <!-- Horário em Destaque Monospace com Brilho -->
+      <div id="fullAlarmTime" class="relative z-10 text-4xl font-black font-mono tracking-tight text-white mb-1.5 drop-shadow-[0_2px_14px_rgba(255,255,255,0.40)]">
         08:00
       </div>
 
       <!-- Título do Alarme -->
-      <h3 id="fullAlarmTitle" class="relative z-10 text-lg font-black text-sky-100 leading-snug mb-1.5">
+      <h3 id="fullAlarmTitle" class="relative z-10 text-lg font-black text-sky-100 leading-snug mb-1.5 drop-shadow-sm">
         Hora do Remédio
       </h3>
 
       <!-- Descrição / Detalhes -->
-      <p id="fullAlarmBody" class="relative z-10 text-xs text-sky-200/80 leading-relaxed mb-6 max-w-xs font-medium">
+      <p id="fullAlarmBody" class="relative z-10 text-xs text-sky-200/90 leading-relaxed mb-6 max-w-xs font-medium">
         Hora de tomar seus medicamentos diários programados.
       </p>
 
       <!-- Botões de Ação Liquid Glass -->
       <div class="relative z-10 w-full space-y-2.5">
-        <!-- 1. Botão Principal: Já Tomei -->
-        <button type="button" id="btnFullAlarmTaken" onclick="handleFullAlarmTaken()" class="w-full py-4 px-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-sm rounded-2xl shadow-[0_10px_25px_rgba(16,185,129,0.35)] border border-emerald-300/40 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer">
+        <!-- 1. Botão Principal: Já Tomei (Emerald Liquid Glass) -->
+        <button type="button" id="btnFullAlarmTaken" onclick="handleFullAlarmTaken()" class="w-full py-4 px-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-sm rounded-2xl shadow-[0_10px_25px_rgba(16,185,129,0.35),inset_0_1px_1px_rgba(255,255,255,0.35)] border border-emerald-300/40 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer hover:brightness-105">
           <span class="text-base">✓</span>
           <span id="txtFullAlarmTaken">JÁ TOMEI / CONCLUÍDO</span>
         </button>
 
-        <!-- 2. Botão Secundário: Adiar 5 Minutos -->
-        <button type="button" id="btnFullAlarmSnooze" onclick="handleFullAlarmSnooze()" class="w-full py-3 px-4 bg-white/10 hover:bg-white/15 text-slate-100 font-bold text-xs rounded-2xl border border-white/20 backdrop-blur-md shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer">
+        <!-- 2. Botão Secundário: Adiar 5 Minutos (Amber Frosted Glass) -->
+        <button type="button" id="btnFullAlarmSnooze" onclick="handleFullAlarmSnooze()" class="w-full py-3 px-4 bg-amber-500/15 hover:bg-amber-500/25 text-amber-200 font-bold text-xs rounded-2xl border border-amber-400/30 backdrop-blur-md shadow-[0_8px_20px_rgba(245,158,11,0.20),inset_0_1px_1px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer">
           <span>💤</span>
           <span>ADIAR 5 MINUTOS</span>
         </button>
 
-        <!-- 3. Botão Desligar Alarme: Ruby Red Glass -->
-        <button type="button" id="btnFullAlarmDismiss" onclick="handleFullAlarmDismiss()" class="w-full py-3.5 px-4 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-sm rounded-2xl border border-rose-400/40 shadow-[0_10px_25px_rgba(225,29,72,0.40)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2">
+        <!-- 3. Botão Desligar Alarme: Ruby Red Liquid Glass -->
+        <button type="button" id="btnFullAlarmDismiss" onclick="handleFullAlarmDismiss()" class="w-full py-3.5 px-4 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-sm rounded-2xl border border-rose-400/40 shadow-[0_10px_25px_rgba(225,29,72,0.40),inset_0_1px_1px_rgba(255,255,255,0.3)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 hover:brightness-105">
           <span class="text-base">🛑</span>
           <span>DESLIGAR ALARME AGORA</span>
         </button>
@@ -32086,6 +32086,11 @@ Frase falada: "${spokenText}"`;
       if (!raw) return;
       const data = JSON.parse(raw);
       if (!data || !data.triggerAt) return;
+      // Se o adiamento expirou há mais de 10 minutos ou é de outro dia, descarta silenciosamente para nunca disparar ao abrir o app
+      if (Date.now() - data.triggerAt > 10 * 60 * 1000) {
+        localStorage.removeItem('ctrlpig_snoozed_med_alarm');
+        return;
+      }
       if (Date.now() >= data.triggerAt) {
         localStorage.removeItem('ctrlpig_snoozed_med_alarm');
         const speech = `Atenção: passaram 5 minutos do adiamento. ${data.message}`;
@@ -34404,6 +34409,36 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   // Função unificada para fechar e remover COMPLETAMENTE todos os avisos, caixas e modais de alarme
   // Impede que pré-alarme e alarme principal fiquem sobrepostos na tela (evita ter que interagir duas vezes)
+  // Limpeza de segurança de alarmes na inicialização (previne que alarmes antigos ou de teste disparem ao abrir o app)
+  (function cleanStaleAlarmsOnBoot() {
+    try {
+      const modal = document.getElementById('modalFullScreenAlarmOverlay');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      const rawSnooze = localStorage.getItem('ctrlpig_snoozed_med_alarm');
+      if (rawSnooze) {
+        try {
+          const data = JSON.parse(rawSnooze);
+          if (!data || !data.triggerAt || (Date.now() - data.triggerAt > 10 * 60 * 1000)) {
+            localStorage.removeItem('ctrlpig_snoozed_med_alarm');
+          }
+        } catch (_) {
+          localStorage.removeItem('ctrlpig_snoozed_med_alarm');
+        }
+      }
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('ctrlpig_med_exp_alert_') || k.startsWith('ctrlpig_med_5days_alert_') || k.startsWith('ctrlpig_alarm_fired_legacy_'))) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+    } catch (_) {}
+  })();
+
   window.dismissAllHealthAlarmBanners = function() {
     try {
       // 1. Remove qualquer banner flutuante existente no DOM

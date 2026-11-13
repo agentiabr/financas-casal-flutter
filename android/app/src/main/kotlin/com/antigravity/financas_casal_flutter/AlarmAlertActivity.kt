@@ -78,11 +78,15 @@ class AlarmAlertActivity : Activity() {
 
         val tvBadge = findViewById<TextView>(R.id.tv_alarm_badge)
         val tvIcon = findViewById<TextView>(R.id.tv_alarm_icon)
+        val tvTime = findViewById<TextView>(R.id.tv_alarm_time)
         val tvTitle = findViewById<TextView>(R.id.tv_alarm_title)
         val tvBody = findViewById<TextView>(R.id.tv_alarm_body)
         val btnTaken = findViewById<Button>(R.id.btn_alarm_taken)
         val btnSnooze = findViewById<Button>(R.id.btn_alarm_snooze)
         val btnDismiss = findViewById<Button>(R.id.btn_alarm_dismiss)
+
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        tvTime?.text = if (!slot.isNullOrBlank()) slot else sdf.format(java.util.Date())
 
         val isShopping = title.contains("Compras", ignoreCase = true) ||
                          title.contains("Lista", ignoreCase = true) ||
