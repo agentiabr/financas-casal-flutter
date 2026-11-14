@@ -4368,35 +4368,46 @@ html, body {
       border-radius: 20px !important;
     }
 
-    /* Balão Dica do Piggy dentro do Card de Saldo: Liquid Glass Claro Azulado Luminoso */
-    #heroCardBanner .bg-blue-50\/80 {
-      background: linear-gradient(135deg, rgba(239, 246, 255, 0.96) 0%, rgba(224, 242, 254, 0.92) 55%, rgba(238, 242, 255, 0.96) 100%) !important;
-      border: 1px solid rgba(147, 197, 253, 0.75) !important;
-      box-shadow: 0 6px 18px -6px rgba(30, 64, 175, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+    /* Caixa de 10 Destaques / Dica do Piggy no Card Saldo Atual: Liquid Glass Claro com Fontes Azul Escura */
+    #piggyTipsBox,
+    #heroCardBanner #piggyTipsBox {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.68) 100%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;
       border-radius: 20px !important;
-      backdrop-filter: blur(14px) !important;
-      -webkit-backdrop-filter: blur(14px) !important;
     }
-    #heroCardBanner .bg-blue-50\/80 #previewTipText {
-      color: #1e293b !important;
-      font-weight: 600 !important;
+    #piggyTipsBox #previewTipText,
+    #heroCardBanner #piggyTipsBox #previewTipText {
+      color: #0A2540 !important;
+      font-weight: 700 !important;
     }
-    #heroCardBanner .bg-blue-50\/80 button {
-      background: rgba(37, 99, 235, 0.10) !important;
+    #piggyTipsBox #previewTipCategory,
+    #heroCardBanner #piggyTipsBox #previewTipCategory {
+      color: #0A2540 !important;
+      font-weight: 900 !important;
+    }
+    #piggyTipsBox #previewTipIndex,
+    #heroCardBanner #piggyTipsBox #previewTipIndex {
+      color: #0A2540 !important;
+      font-weight: 900 !important;
+    }
+    #piggyTipsBox button,
+    #heroCardBanner #piggyTipsBox button {
+      background: rgba(255, 255, 255, 0.92) !important;
+      color: #0A2540 !important;
+      border: 1px solid rgba(191, 219, 254, 0.85) !important;
+      box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;
+    }
+    #piggyTipsBox button:hover,
+    #heroCardBanner #piggyTipsBox button:hover {
+      background: #eff6ff !important;
       color: #1d4ed8 !important;
-      border: 1px solid rgba(59, 130, 246, 0.25) !important;
     }
-    #heroCardBanner .bg-blue-50\/80 button:hover {
-      background: #2563eb !important;
-      color: #ffffff !important;
-    }
-    #heroCardBanner .bg-blue-50\/80 span.bg-blue-200\/50 {
-      background: rgba(56, 189, 248, 0.25) !important;
-      border: 1px solid rgba(56, 189, 248, 0.4) !important;
-      color: #38bdf8 !important;
-    }
-    #heroCardBanner .bg-blue-50\/80 #previewTipCategory {
-      color: #7dd3fc !important;
+    #piggyTipsBox #previewTipDots,
+    #heroCardBanner #piggyTipsBox #previewTipDots {
+      display: none !important;
     }
 
     /* Indicadores: Dias, Comprometido e Parcelados */
@@ -5443,30 +5454,26 @@ html, body {
               </span>
             </div>
 
-            <!-- Balão de Dica do Piggy (Design System: Luminous Frosted Sapphire com Alta Legibilidade) -->
-            <div class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-[#0d2a5e]/90 via-[#133d82]/90 to-[#0e2f69]/90 border border-sky-300/35 shadow-md flex items-center justify-between gap-2.5 select-none text-white backdrop-blur-md">
-              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-white hover:text-sky-200 border border-white/25 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Dica anterior">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            <!-- Balão de Dica do Piggy (Design System: Liquid Glass Claro com Fontes Azul Escura para Alto Contraste) -->
+            <div id="piggyTipsBox" class="mt-4 p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 select-none" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.68) 100%) !important; backdrop-filter: blur(20px) saturate(180%) !important; -webkit-backdrop-filter: blur(20px) saturate(180%) !important; border: 1.5px solid rgba(255, 255, 255, 0.95) !important; box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: rgba(255, 255, 255, 0.92) !important; color: #0A2540 !important; border: 1px solid rgba(191, 219, 254, 0.85) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Destaque anterior">
+                <i data-lucide="chevron-left" class="w-4 h-4 text-[#0A2540]"></i>
               </button>
               <div class="flex-1 text-center min-w-0 px-1">
                 <div class="flex items-center justify-center gap-1.5 mb-1.5">
-                  <span class="text-[10px] font-black uppercase tracking-wider text-sky-200 bg-sky-400/20 px-2.5 py-0.5 rounded-full border border-sky-300/30 flex items-center gap-1">
+                  <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1" style="background: rgba(219, 234, 254, 0.90) !important; border: 1px solid rgba(147, 197, 253, 0.70) !important; color: #0A2540 !important;">
                     <span id="previewTipBadgeIcon">💡</span>
-                    <span id="previewTipCategory">Dica do Piggy</span>
+                    <span id="previewTipCategory" style="color: #0A2540 !important; font-weight: 900 !important;">Dica do Piggy</span>
                   </span>
-                  <span id="previewTipIndex" class="text-[9px] font-black text-sky-100 bg-white/15 border border-white/20 px-2 py-0.2 rounded-md">1/10</span>
+                  <span id="previewTipIndex" class="text-[9px] font-black px-2 py-0.5 rounded-md" style="background: rgba(255, 255, 255, 0.95) !important; border: 1px solid rgba(191, 219, 254, 0.80) !important; color: #0A2540 !important;">1/10</span>
                 </div>
-                <p id="previewTipText" class="text-xs sm:text-[13px] font-medium text-white leading-snug drop-shadow-xs">
+                <p id="previewTipText" class="text-xs sm:text-[13px] font-bold leading-snug" style="color: #0A2540 !important; font-weight: 700 !important;">
                   "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
                 </p>
-                <div id="previewTipDots" class="flex items-center justify-center gap-1.5 mt-2">
-                  <span class="w-3 h-1.5 rounded-full bg-sky-300 shadow-xs shadow-sky-400/50"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
-                </div>
+                <div id="previewTipDots" class="hidden" style="display: none !important;"></div>
               </div>
-              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-white hover:text-sky-200 border border-white/25 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Próxima dica">
-                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              <button type="button" onclick="stepPiggyTip(1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: rgba(255, 255, 255, 0.92) !important; color: #0A2540 !important; border: 1px solid rgba(191, 219, 254, 0.85) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Próximo destaque">
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#0A2540]"></i>
               </button>
             </div>
 
