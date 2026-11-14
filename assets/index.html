@@ -6836,6 +6836,17 @@ html, body {
         </button>
       </div>
 
+      <!-- Selo de Consentimento Fiscal LGPD -->
+      <div id="bannerInvoiceConsentBadge" class="mt-2.5 p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 flex items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-base flex-shrink-0">🔒</span>
+          <span class="text-[11px] font-bold text-emerald-900 truncate">Leitura fiscal e OCR autorizados (LGPD Art. 7º, I)</span>
+        </div>
+        <button type="button" onclick="checkOrRequestInvoiceConsent(true)" class="text-[10px] font-black text-emerald-700 underline cursor-pointer flex-shrink-0">
+          Ver Autorização
+        </button>
+      </div>
+
       <div class="mt-4 space-y-3.5 text-xs">
         
         <!-- Área de Captura e Processamento de Cupom Fiscal -->
@@ -12997,6 +13008,22 @@ html, body {
     // 22. MODAL & LEITURA DE NOTA FISCAL
     // ==========================================
     function openInvoiceScanModal() {
+      if (typeof window.hasInvoiceConsent === 'function' && !window.hasInvoiceConsent()) {
+        window.checkOrRequestInvoiceConsent().then((allowed) => {
+          if (allowed) {
+            _doOpenInvoiceScanModal();
+          } else {
+            if (typeof showToastUndo === 'function') {
+              showToastUndo('Leitura de notas fiscais requer autorização de tratamento.', false);
+            }
+          }
+        });
+        return;
+      }
+      _doOpenInvoiceScanModal();
+    }
+
+    function _doOpenInvoiceScanModal() {
       document.getElementById('invoiceExtractedDate').value = getLocalDateString();
       const storeInput = document.getElementById('invoiceExtractedStore');
       const totalInput = document.getElementById('invoiceExtractedTotal');
@@ -43111,6 +43138,22 @@ window.pendingShoppingInvoiceData = null;
 window.lastInvoiceTargetScreen = null;
 
 window.startInvoiceQrScanFromHub = function() {
+  if (typeof window.hasInvoiceConsent === 'function' && !window.hasInvoiceConsent()) {
+    window.checkOrRequestInvoiceConsent().then((allowed) => {
+      if (allowed) {
+        window._doStartInvoiceQrScanFromHub();
+      } else {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('Leitura de notas fiscais requer autorização de tratamento.', false);
+        }
+      }
+    });
+    return;
+  }
+  window._doStartInvoiceQrScanFromHub();
+};
+
+window._doStartInvoiceQrScanFromHub = function() {
   if (typeof closeActionHubModal === 'function') closeActionHubModal();
   if (typeof switchScreen === 'function') switchScreen('transacoes');
   window.lastInvoiceTargetScreen = 'transacoes';
@@ -44317,6 +44360,20 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+      <!-- BANNER DE CONFORMIDADE LGPD: CONSENTIMENTO DO RESPONSÁVEL LEGAL (ART. 14) -->
+      <div id="bannerKidsParentalConsent" class="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-purple-50/90 border border-blue-200/80 shadow-2xs flex items-center justify-between gap-3 text-xs mb-1">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="text-xl flex-shrink-0">🛡️</span>
+          <div class="min-w-0 leading-tight">
+            <strong class="text-xs font-black text-slate-800 block truncate">Consentimento do Responsável Legal Ativo</strong>
+            <span class="text-[10px] text-slate-600 block truncate">Proteção integral de dados de menores conforme LGPD (Art. 14, §1º)</span>
+          </div>
+        </div>
+        <button type="button" onclick="checkOrRequestKidsConsent(true)" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-blue-700 font-extrabold text-[10px] border border-blue-200 shadow-2xs flex-shrink-0 cursor-pointer transition-all active:scale-95" title="Ver Termo de Consentimento do Responsável">
+          Ver Termo
+        </button>
+      </div>
+
       <!-- Barra Superior Interna: Carrossel de Filhos + Botão Cadastrar Filho(a) -->
       <div class="flex items-center justify-between gap-2">
         <div id="kidsSelectorPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 flex-1"></div>
@@ -46110,13 +46167,59 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       document.getElementById('arcadeGameOverOverlay').classList.remove('hidden');
     }
 
+    window.checkOrRequestKidsConsent = function(forceShow) {
+      if (window.CPSec && typeof window.CPSec.requireConsent === 'function') {
+        return window.CPSec.requireConsent('kids', forceShow);
+      }
+      return Promise.resolve(true);
+    };
+
+    window.checkOrRequestInvoiceConsent = function(forceShow) {
+      if (window.CPSec && typeof window.CPSec.requireConsent === 'function') {
+        return window.CPSec.requireConsent('invoices', forceShow);
+      }
+      return Promise.resolve(true);
+    };
+
+    window.hasKidsConsent = function() {
+      if (window.CPSec && typeof window.CPSec.getConsent === 'function') {
+        const c = window.CPSec.getConsent();
+        return !!(c && c.kids);
+      }
+      return false;
+    };
+
+    window.hasInvoiceConsent = function() {
+      if (window.CPSec && typeof window.CPSec.getConsent === 'function') {
+        const c = window.CPSec.getConsent();
+        return !!(c && c.invoices);
+      }
+      return false;
+    };
+
     window.openKidsAreaModal = function() {
+      if (!window.hasKidsConsent()) {
+        window.checkOrRequestKidsConsent().then((allowed) => {
+          if (allowed) {
+            window._doOpenKidsAreaModal();
+          } else {
+            if (typeof showToastUndo === 'function') {
+              showToastUndo('Acesso à seção Crianças requer consentimento do responsável legal.', false);
+            }
+          }
+        });
+        return;
+      }
+      window._doOpenKidsAreaModal();
+    };
+
+    window._doOpenKidsAreaModal = function() {
       const m = document.getElementById('modalKidsArea');
       if (m) {
         if (m.parentElement !== document.body) document.body.appendChild(m);
         m.classList.remove('hidden');
         m.style.display = 'flex';
-        window.renderKidsAreaUI();
+        if (typeof window.renderKidsAreaUI === 'function') window.renderKidsAreaUI();
         if (window.lucide) lucide.createIcons();
       }
     };
@@ -49013,7 +49116,7 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     audit('consent_update', { keys: Object.keys(patch).join(',') });
     try {
       const ver = String((c && c.version) || LEGAL_CONFIG.version || '2026.11');
-      ['terms', 'privacy', 'kids', 'health', 'ai'].forEach(function(k) {
+      ['terms', 'privacy', 'kids', 'invoices', 'health', 'ai'].forEach(function(k) {
         if (Object.prototype.hasOwnProperty.call(patch, k)) {
           const g = !!patch[k];
           if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
@@ -49044,25 +49147,77 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     } catch (e4) {}
   }
   const JIT = {
-    kids: { title: 'Dados de crianças e adolescentes', text: 'Para cadastrar filhos (nome, idade, atividades) precisamos do consentimento específico de um dos pais ou responsável legal (LGPD art. 14). Os dados ficam no seu aparelho e, se a sincronização estiver ativa, na nuvem. Nunca usamos para publicidade. Você pode revogar quando quiser na Central de Privacidade.', btn: 'Sou pai/responsável e autorizo' },
-    health: { title: 'Dados de saúde', text: 'Medicamentos, horários e receitas são dados pessoais sensíveis (LGPD art. 11). Usamos apenas para lembretes e organização, com seu consentimento específico. Você pode revogar quando quiser na Central de Privacidade.', btn: 'Autorizo o uso dos dados de saúde' },
-    ai: { title: 'Recursos de Inteligência Artificial', text: 'Este recurso envia o conteúdo que você escolher (texto, descrição de gasto, nota fiscal) ao Google Gemini, usando a chave que você cadastrou. É opcional; os resultados podem conter erros e são rotulados como gerados por IA. Você pode revogar na Central de Privacidade.', btn: 'Permitir uso de IA' }
+    kids: {
+      icon: '🛡️',
+      badge: 'LGPD Art. 14, §1º',
+      title: 'Consentimento do Responsável Legal',
+      subtitle: 'Proteção e Privacidade dos Menores de Idade',
+      text: 'Para acessar o Game Kids, cadastrar missões, metas de economia e mesadas de filhos menores de idade, a legislação brasileira exige o consentimento explícito e em destaque de pelo menos um dos pais ou responsável legal (LGPD art. 14).<br><br>• Os dados cadastrados permanecem sob seu estrito controle no aparelho e sincronização segura.<br>• Nunca utilizamos nem compartilhamos dados de menores para publicidade.<br>• Você pode consultar ou revogar esta autorização a qualquer momento na Central de Privacidade.',
+      btn: 'Sou pai/responsável e autorizo'
+    },
+    invoices: {
+      icon: '🧾',
+      badge: 'LGPD Art. 7º, I',
+      title: 'Leitura e Tratamento de Notas Fiscais',
+      subtitle: 'Processamento Local de Comprovantes & Cupons',
+      text: 'Para ler e extrair itens de notas fiscais (via leitura de QR-Code NFC-e ou foto do cupom com OCR Google ML Kit diretamente no seu celular), precisamos do seu consentimento para o tratamento dos dados da compra (LGPD art. 7º, I).<br><br>• Os dados fiscais (itens, valores, estabelecimento) são usados unicamente para alimentar seu extrato de despesas e lista de compras.<br>• Nenhuma informação fiscal é comercializada ou compartilhada com anunciantes.<br>• Você pode revogar esta permissão a qualquer momento na Central de Privacidade.',
+      btn: 'Autorizo a Leitura de Notas Fiscais'
+    },
+    health: {
+      icon: '💊',
+      badge: 'LGPD Art. 11',
+      title: 'Tratamento de Dados de Saúde',
+      subtitle: 'Medicamentos, Horários e Cuidados',
+      text: 'Medicamentos, horários e prescrições são dados pessoais sensíveis (LGPD art. 11). Usamos essas informações exclusivamente para gerar seus lembretes e organização da rotina familiar, sob seu consentimento específico.<br><br>• Dados mantidos com sigilo e segurança.<br>• Você pode revogar quando quiser na Central de Privacidade.',
+      btn: 'Autorizo o uso dos dados de saúde'
+    },
+    ai: {
+      icon: '✨',
+      badge: 'Transparência de IA',
+      title: 'Recursos de Inteligência Artificial',
+      subtitle: 'Processamento com Google Gemini',
+      text: 'Este recurso envia o conteúdo que você escolher (texto, descrição de gasto, nota fiscal) ao Google Gemini, usando a chave cadastrada. É opcional; os resultados podem conter erros e são rotulados como gerados por IA.<br><br>• Você pode revogar na Central de Privacidade.',
+      btn: 'Permitir uso de IA'
+    }
   };
-  function requireConsent(type) {
+  function requireConsent(type, forceShow) {
     return new Promise((resolve) => {
       const c = getConsent();
-      if (c && c[type]) { resolve(true); return; }
+      if (!forceShow && c && c[type]) { resolve(true); return; }
       const j = JIT[type];
+      if (!j) { resolve(true); return; }
+
       const d = openModal('cpJitConsent',
-        '<h3>' + esc(j.title) + '</h3><p>' + esc(j.text) + '</p>' +
-        '<p class="cp-note">Leia a <button class="cp-link" style="color:#2563eb" data-a="privacy">Política de Privacidade</button>.</p>' +
-        '<div class="cp-row"><button class="cp-btn" data-a="no">Agora não</button><button class="cp-btn cp-primary" data-a="yes">' + esc(j.btn) + '</button></div>');
-      d.style.zIndex = '4700';
+        '<div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.18);">' +
+          '<div style="font-size:26px;line-height:1;padding:10px;background:rgba(255,255,255,0.12);border-radius:16px;border:1px solid rgba(255,255,255,0.25);">' + (j.icon || '🛡️') + '</div>' +
+          '<div>' +
+            '<span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(96,165,250,0.25);color:#93c5fd;border:1px solid rgba(147,197,253,0.35);text-transform:uppercase;">' + esc(j.badge || 'LGPD') + '</span>' +
+            '<h3 style="font-size:16px;font-weight:900;color:#fff;margin:4px 0 0 0;line-height:1.25;">' + esc(j.title) + '</h3>' +
+            (j.subtitle ? '<p style="font-size:11px;color:#94a3b8;margin:2px 0 0 0;">' + esc(j.subtitle) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:12px;line-height:1.6;color:#cbd5e1;margin-bottom:16px;">' + j.text + '</div>' +
+        '<div style="padding:10px 12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:14px;margin-bottom:16px;font-size:11px;color:#94a3b8;display:flex;align-items:center;justify-content:space-between;">' +
+          '<span>Transparência total sob a LGPD:</span>' +
+          '<button type="button" class="cp-link" style="color:#60a5fa;font-weight:800;text-decoration:underline;" data-a="privacy">Ler Política de Privacidade</button>' +
+        '</div>' +
+        '<div class="cp-row" style="display:flex;gap:10px;justify-content:flex-end;">' +
+          '<button type="button" class="cp-btn" style="background:rgba(255,255,255,0.12);color:#cbd5e1;border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:10px 18px;font-weight:700;" data-a="no">Agora não</button>' +
+          '<button type="button" class="cp-btn cp-primary" style="background:linear-gradient(135deg, #2563eb, #4f46e5);color:#fff;border:0;border-radius:14px;padding:10px 22px;font-weight:900;box-shadow:0 4px 14px rgba(37,99,235,0.4);" data-a="yes">' + esc(j.btn) + '</button>' +
+        '</div>');
+
+      d.style.zIndex = '200000';
       d.addEventListener('click', (e) => {
         const a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
         if (a === 'privacy') openDoc('privacy');
         if (a === 'no') { closeModal('cpJitConsent'); resolve(false); }
-        if (a === 'yes') { const p = {}; p[type] = new Date().toISOString(); recordConsent(p); closeModal('cpJitConsent'); resolve(true); }
+        if (a === 'yes') {
+          const p = {};
+          p[type] = new Date().toISOString();
+          recordConsent(p);
+          closeModal('cpJitConsent');
+          resolve(true);
+        }
       });
     });
   }
@@ -49342,7 +49497,7 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       '<p class="cp-note">Conta: ' + esc(u.email || '-') + ' • Assinatura: ' + esc(subTxt) + '</p>' +
       '<h4>Documentos</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="doc" data-k="terms">📄 Termos de Uso</button><button class="cp-btn cp-ghost" data-a="doc" data-k="privacy">🔒 Política de Privacidade</button><button class="cp-btn cp-ghost" data-a="doc" data-k="ai">🤖 Uso de IA</button><button class="cp-btn cp-ghost" data-a="doc" data-k="licenses">📚 Licenças de código aberto</button></div>' +
       '<h4>Meus dados</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="export">📥 Exportar meus dados (JSON)</button><button class="cp-btn cp-ghost" data-a="audit">🧾 Ver registros de segurança</button></div>' +
-      '<h4>Consentimentos</h4>' + chip('Termos e Privacidade', 'terms') + chip('Dados de crianças', 'kids') + chip('Dados de saúde', 'health') + chip('Inteligência Artificial', 'ai') +
+      '<h4>Consentimentos</h4>' + chip('Termos e Privacidade', 'terms') + chip('Dados de crianças (Responsável)', 'kids') + chip('Leitura de Notas Fiscais', 'invoices') + chip('Dados de saúde', 'health') + chip('Inteligência Artificial', 'ai') +
       '<h4>Assinatura e cobrança</h4><div class="cp-row" style="margin-top:4px"><button class="cp-btn cp-ghost" data-a="cancelsub">🚫 Cancelar assinatura</button><button class="cp-btn cp-ghost" data-a="refund">↩️ Solicitar reembolso (7 dias)</button></div>' +
       '<h4>Cópias automáticas locais</h4>' + bkHtml +
       '<h4>Contato do encarregado (LGPD)</h4><p>' + esc(LEGAL_CONFIG.encarregado) + ' — ' + esc(LEGAL_CONFIG.encarregadoEmail) + '</p>' +
@@ -49413,6 +49568,8 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       lw.__cpAudit = true; window.logoutUser = lw;
     }
     wrapOpener('openKidsAreaModal', 'kids');
+    wrapOpener('startInvoiceQrScanFromHub', 'invoices');
+    wrapOpener('openInvoiceScanModal', 'invoices');
     wrapOpener('openHealthMedsModal', 'health');
     wrapFetchForAI();
     // Monitoramento básico de erros (sem dados pessoais)
