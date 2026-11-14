@@ -5682,6 +5682,11 @@ html, body {
                 <div id="barParcelasProgresso" class="h-full bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full transition-all duration-500" style="width: 65%"></div>
               </div>
             </div>
+
+            <!-- Lista de Compras Parceladas Ativas diretamente no Card do Dashboard -->
+            <div id="installmentsCardsSummary" class="space-y-2.5 mt-3.5 pt-3 border-t border-slate-100">
+              <p class="py-2.5 text-center text-xs text-slate-400">Nenhuma compra parcelada ativa.</p>
+            </div>
           </div>
 
           <!-- CAIXA DE LANÇAMENTOS FUTUROS (CONTAS A VENCER) -->
@@ -10552,7 +10557,11 @@ html, body {
 
     function getActiveInstallments() {
       // Identifica todas as compras parceladas a partir das transações cadastradas
-      const parcs = transactions.filter(t => {
+      const txs = (Array.isArray(window.transactions) && window.transactions.length > 0)
+        ? window.transactions
+        : ((typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : []);
+      const parcs = txs.filter(t => {
+        if (!t) return false;
         if (t.parcelado && (t.total_parcelas || 1) > 1) return true;
         const match = (t.descricao || '').match(/\((\d+)\/(\d+)\)/);
         return !!match;
@@ -10735,23 +10744,29 @@ html, body {
       if (!cont) return;
 
       if (activeList.length === 0) {
-        cont.innerHTML = '<p class="text-slate-400 text-xs">Nenhuma compra parcelada ativa encontrada no momento.</p>';
+        cont.innerHTML = '<p class="text-slate-400 text-xs text-center py-2.5">Nenhuma compra parcelada ativa no momento.</p>';
         return;
       }
 
+      const esc = (v) => (typeof escapeHtml === 'function' ? escapeHtml(String(v ?? '')) : String(v ?? ''));
+
       cont.innerHTML = activeList.map(p => {
+        const isPrivacy = (typeof isPrivacyGlobal !== 'undefined' && isPrivacyGlobal) || (localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true');
+        const valorParcelaStr = isPrivacy ? 'R$ •••••' : formatBRL(p.valor_parcela);
+        const totalFaltaStr = isPrivacy ? 'R$ •••••' : formatBRL(p.total_falta_pagar);
+
         const statusBadge = p.faltam_parcelas === 0
-          ? '<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Última Parcela! 🎉</span>'
-          : `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-300">${p.parcela_atual}/${p.total_parcelas}x (${p.percent_pago}%)</span>`;
+          ? '<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 whitespace-nowrap">Última Parcela! 🎉</span>'
+          : `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 whitespace-nowrap">${p.parcela_atual}/${p.total_parcelas}x • ${p.percent_pago}%</span>`;
 
         return `
-          <div class="app-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-850 shadow-xs flex flex-col justify-between space-y-2 hover:border-indigo-400 transition-all">
-            <!-- LINHA 1: Local / Estabelecimento em destaque com Badge de Parcela -->
-            <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100 dark:border-slate-750">
+          <div class="p-3 rounded-2xl border border-slate-100 bg-slate-50/70 shadow-2xs space-y-2 hover:border-purple-300 transition-all">
+            <!-- Linha 1: Nome da compra e Badge -->
+            <div class="flex items-center justify-between gap-2 min-w-0">
               <div class="flex items-center gap-1.5 min-w-0">
-                <span class="text-base flex-shrink-0">🏪</span>
-                <span class="font-black text-xs sm:text-sm text-slate-900 dark:text-white truncate" title="${escapeHtml(p.descricaoClean)}">
-                  ${escapeHtml(p.descricaoClean)}
+                <span class="text-sm flex-shrink-0">🛍️</span>
+                <span class="font-bold text-xs sm:text-sm text-slate-800 truncate" title="${esc(p.descricaoClean)}">
+                  ${esc(p.descricaoClean)}
                 </span>
               </div>
               <div class="flex-shrink-0">
@@ -10759,28 +10774,29 @@ html, body {
               </div>
             </div>
 
-            <!-- Barra de Progresso Visual da Parcela -->
-            <div class="w-full bg-slate-100 dark:bg-slate-750 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: ${p.percent_pago}%;"></div>
+            <!-- Barra de Progresso Visual Individual -->
+            <div class="w-full bg-slate-200/70 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-gradient-to-r from-purple-600 to-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: ${p.percent_pago}%;"></div>
             </div>
 
-            <!-- LINHA 2: Informações Restantes (Cartão, Responsável, Valor da Parcela e Saldo Restante) -->
-            <div class="flex items-center justify-between text-[11px] sm:text-xs pt-0.5 text-slate-500 dark:text-slate-400 flex-wrap gap-y-1">
-              <div class="flex items-center gap-1.5 font-medium">
-                <span>💳 ${escapeHtml(p.cartao_nome)}</span>
-                <span class="text-slate-300 dark:text-slate-600">•</span>
-                <span>👤 ${escapeHtml(p.responsavel)}</span>
+            <!-- Linha 2: Cartão, Responsável, Valor da Parcela e Restante -->
+            <div class="flex items-center justify-between text-[11px] text-slate-500 gap-2">
+              <div class="flex items-center gap-1.5 font-medium truncate min-w-0">
+                <span class="truncate">💳 ${esc(p.cartao_nome)}</span>
+                <span class="text-slate-300">•</span>
+                <span class="truncate">👤 ${esc(p.responsavel || 'Comum')}</span>
               </div>
-              <div class="flex items-center gap-2 font-bold ml-auto">
-                <span class="text-slate-800 dark:text-slate-200">Parcela: <strong>${formatBRL(p.valor_parcela)}</strong></span>
-                <span class="text-indigo-600 dark:text-indigo-300">
-                  ${p.faltam_parcelas > 0 ? `Faltam ${p.faltam_parcelas}x (${formatBRL(p.total_falta_pagar)})` : 'Quitando agora'}
+              <div class="text-right flex-shrink-0 font-bold whitespace-nowrap">
+                <span class="text-slate-900">${valorParcelaStr}</span>
+                <span class="text-[10px] text-purple-700 ml-1">
+                  ${p.faltam_parcelas > 0 ? `(Faltam ${p.faltam_parcelas}x)` : '(Quitando)'}
                 </span>
               </div>
             </div>
           </div>
         `;
       }).join('');
+      if (window.lucide) lucide.createIcons();
     }
 
     function openInstallmentsDetailModal() {
@@ -42111,6 +42127,7 @@ window.openHealthMedsModal = function() {
     refreshBalanceMascot(txs);
     refreshHomeCategoryBreakdown(txs);
     refreshHomeRecentTransactions(txs);
+    if (typeof renderInstallments === 'function') renderInstallments();
     if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI();
     if (typeof window.applyUserDashboardModulesVisibility === 'function') window.applyUserDashboardModulesVisibility();
 
@@ -42198,6 +42215,9 @@ window.openHealthMedsModal = function() {
     refreshHomeRecentTransactions(txs);
     if (typeof refreshHomeFutureBills === 'function') {
       refreshHomeFutureBills(txs);
+    }
+    if (typeof renderInstallments === 'function') {
+      renderInstallments();
     }
   }, { once: true });
   window.addEventListener('resize', () => {
