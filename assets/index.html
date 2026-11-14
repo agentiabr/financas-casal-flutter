@@ -3428,11 +3428,7 @@ html, body {
       height: 100vh !important;
       display: flex !important;
       flex-direction: column !important;
-      background-color: var(--liquid-bg-main) !important;
-      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
-      background-repeat: no-repeat !important;
-      background-size: cover !important;
+      background-color: #071933 !important;
       overflow: hidden !important;
     }
     #modalFamilyChat.hidden {
@@ -18083,39 +18079,45 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const lastTimeText = (lastMsg && lastMsg.time) ? lastMsg.time : 'Agora';
 
       listEl.innerHTML = members.map((m, idx) => {
+        const isGroup = m.key === 'todos';
+        const safeKey = String(m.key || '').replace(/'/g, "\\'");
+        const safeName = String(m.name || '').replace(/'/g, "\\'");
+        const safeAvatar = String(m.avatar || '👤').replace(/'/g, "\\'");
+        const safeRole = String(m.role || 'Membro').replace(/'/g, "\\'");
+
         return `
           <div onclick="window.openChatWithMember('${safeKey}', '${safeName}', '${safeAvatar}', '${safeRole}')"
-               class="bg-white/92 dark:bg-slate-900/92 backdrop-blur-md hover:bg-white dark:hover:bg-slate-900 active:scale-[0.99] transition-all rounded-3xl p-4.5 sm:p-5 border border-white/80 dark:border-slate-700/80 shadow-md flex items-center gap-4 cursor-pointer group min-h-[96px]">
+               class="bg-white hover:bg-slate-50 active:scale-[0.99] transition-all rounded-3xl p-4 sm:p-4.5 border border-slate-200/80 shadow-sm flex items-center gap-3.5 cursor-pointer group">
             <!-- Avatar com Indicador Online -->
             <div class="relative flex-shrink-0">
-              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl ${isGroup ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 text-white shadow-blue-500/25' : 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-emerald-500/25'} flex items-center justify-center text-2xl sm:text-3xl shadow-md">
+              <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl ${isGroup ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 text-white shadow-blue-500/25' : 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-emerald-500/25'} flex items-center justify-center text-2xl shadow-sm">
                 ${m.avatar || '👤'}
               </div>
-              <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs" title="Online agora"></span>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs" title="Online agora"></span>
             </div>
 
             <!-- Nome, Papel, Mensagem Recente com Altura Confortável -->
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <div class="flex items-center justify-between gap-2 mb-1.5">
+              <div class="flex items-center justify-between gap-2 mb-1">
                 <div class="flex items-center gap-2 min-w-0">
-                  <h4 class="text-base sm:text-lg font-black text-slate-900 dark:text-white truncate tracking-tight">${escapeHtml(m.name)}</h4>
-                  <span class="px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-800 dark:text-blue-300 border border-blue-400/25 text-[10px] sm:text-[11px] font-extrabold whitespace-nowrap">${escapeHtml(m.role)}</span>
+                  <h4 class="text-sm sm:text-base font-black text-slate-900 truncate tracking-tight">${escapeHtml(m.name)}</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-extrabold whitespace-nowrap">${escapeHtml(m.role)}</span>
                 </div>
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">${escapeHtml(lastTimeText)}</span>
+                <span class="text-[11px] font-bold text-slate-400 flex-shrink-0">${escapeHtml(lastTimeText)}</span>
               </div>
 
               <div class="flex items-center justify-between gap-2">
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-1 flex-1 leading-snug font-medium">
+                <p class="text-xs text-slate-500 line-clamp-1 flex-1 leading-snug font-medium">
                   ${escapeHtml(lastPreviewText)}
                 </p>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   ${itemCount > 0 ? `
-                    <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/30 text-[11px] font-black flex items-center gap-1.5 shadow-2xs">
-                      <span>🛒</span><span>${itemCount} itens</span>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black flex items-center gap-1 shadow-2xs">
+                      <span>🛒</span><span>${itemCount}</span>
                     </span>
                   ` : ''}
-                  <span class="w-7 h-7 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 flex items-center justify-center group-hover:translate-x-1 transition-transform flex-shrink-0">
-                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                  <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:translate-x-1 transition-transform flex-shrink-0">
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                   </span>
                 </div>
               </div>
@@ -26144,28 +26146,26 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
     </div>
 
-    <!-- 2. CORPO INTEGRADO COM DEGRADÊ DO DASHBOARD -->
-    <div class="flex-1 bg-transparent overflow-hidden flex flex-col">
+    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 (PADRÃO OFICIAL DO APP) -->
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
 
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
       <!-- ============================================================== -->
-      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-4 pt-3 pb-8 space-y-4 bg-transparent">
-        <div class="bg-white/92 dark:bg-slate-900/92 backdrop-blur-md rounded-3xl p-5.5 min-h-[120px] border border-white/80 dark:border-slate-700/80 shadow-md flex flex-col justify-center gap-3">
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3.5 min-w-0">
-              <div class="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
-                💬
-              </div>
-              <div class="min-w-0">
-                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-snug">Toque em um membro abaixo para iniciar a conversa ou sincronizar a Lista de Compras.</p>
-              </div>
+      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-4 pt-3 pb-8 space-y-3">
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
+              💬
             </div>
-            <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 text-[11px] font-black border border-emerald-400/30 whitespace-nowrap self-start shadow-2xs">
-              ● Online
-            </span>
+            <div class="min-w-0">
+              <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight">Conversas da Família</h3>
+              <p class="text-xs text-slate-500 mt-0.5 leading-snug">Toque em um membro abaixo para iniciar a conversa ou sincronizar compras.</p>
+            </div>
           </div>
+          <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-black whitespace-nowrap self-start shadow-2xs">
+            ● Online
+          </span>
         </div>
 
         <!-- Lista de Membros Estilo WhatsApp (Renderizada Dinamicamente) -->
@@ -26174,9 +26174,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
 
         <!-- Atalho para gerenciar/adicionar membros da família -->
-        <div class="pt-2">
-          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3.5 px-4 rounded-2xl bg-white/80 hover:bg-white/95 dark:bg-slate-900/80 dark:hover:bg-slate-900/95 backdrop-blur-md border border-dashed border-white/60 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-98 cursor-pointer">
-            <i data-lucide="user-plus" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+        <div class="pt-1">
+          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3.5 px-4 rounded-3xl bg-white hover:bg-slate-50 border border-dashed border-slate-300 text-slate-700 font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-98 cursor-pointer">
+            <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i>
             <span>Adicionar ou Gerenciar Membros da Família</span>
           </button>
         </div>
