@@ -5689,7 +5689,7 @@ html, body {
             </div>
           </div>
 
-          <!-- CAIXA DE LANÇAMENTOS FUTUROS (CONTAS A VENCER) -->
+          <!-- CAIXA DE LANÇAMENTOS FUTUROS (CONTAS A VENCER EM 5 DIAS - VISUALIZAÇÃO) -->
           <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-2">
@@ -5698,35 +5698,35 @@ html, body {
                 </div>
                 <div>
                   <h3 class="font-black text-sm text-slate-900 leading-tight">Lançamentos Futuros</h3>
-                  <p class="text-[10px] text-slate-500 font-medium">Contas e compromissos a vencer • Sem alarme</p>
+                  <p class="text-[10px] text-slate-500 font-medium">Contas que vencem em até 5 dias</p>
                 </div>
               </div>
               <div class="flex items-center gap-1.5">
                 <button type="button" onclick="toggleFuturePrivacy()" id="btnFuturePrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white bg-transparent transition-all cursor-pointer mr-0.5" title="Ocultar ou mostrar valores dos lançamentos futuros">
                   <i data-lucide="eye" id="iconFuturePrivacy" class="w-4 h-4 text-slate-500"></i>
                 </button>
-                <button type="button" onclick="openBillsReminderModal()" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer ml-1" title="Gerenciar todas as contas">
-                  Ver todas &gt;
+                <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer ml-1" title="Ver todas as transações">
+                  Ver todos &gt;
                 </button>
               </div>
             </div>
 
             <div class="space-y-2.5" id="dashboardFutureBillsList">
-              <p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento futuro pendente.</p>
+              <p class="py-3 text-center text-xs text-slate-500">Nenhuma conta a vencer nos próximos 5 dias.</p>
             </div>
           </div>
 
-          <!-- CAIXA DE LANÇAMENTOS RECENTES -->
+          <!-- CAIXA DE LANÇAMENTOS RECENTES (ÚLTIMOS 10 DIAS) -->
           <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-black text-sm text-slate-900">Lançamentos Recentes</h3>
-              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
-                Ver extrato completo &gt;
-              </button>
+              <div>
+                <h3 class="font-black text-sm text-slate-900 leading-tight">Lançamentos Recentes</h3>
+                <p class="text-[10px] text-slate-500 font-medium">Últimos 10 dias</p>
+              </div>
             </div>
 
             <div class="space-y-2.5" id="dashboardRecentTransactionsList">
-              <p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>
+              <p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento nos últimos 10 dias.</p>
             </div>
           </div>
 
@@ -11210,7 +11210,21 @@ html, body {
         return;
       }
 
-      const sorted = [...txs].sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 5);
+      const now = new Date();
+      const tenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 10, 0, 0, 0);
+      const tenDaysAgoStr = `${tenDaysAgo.getFullYear()}-${String(tenDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(tenDaysAgo.getDate()).padStart(2, '0')}`;
+
+      const allSorted = [...txs].sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+      let sorted = allSorted.filter(t => t && t.data && t.data >= tenDaysAgoStr);
+      if (!sorted.length && allSorted.length > 0 && allSorted[0].data) {
+        const parts = allSorted[0].data.split('-');
+        if (parts.length === 3) {
+          const topDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          const rel10 = new Date(topDate.getFullYear(), topDate.getMonth(), topDate.getDate() - 10);
+          const rel10Str = `${rel10.getFullYear()}-${String(rel10.getMonth() + 1).padStart(2, '0')}-${String(rel10.getDate()).padStart(2, '0')}`;
+          sorted = allSorted.filter(t => t && t.data && t.data >= rel10Str);
+        }
+      }
 
       const getCatIcon = (cat, tipo) => {
         if (tipo === 'Receita') return { icon: '<i data-lucide="arrow-down-left" class="w-4 h-4 text-emerald-600"></i>', bg: 'bg-emerald-100/90 text-emerald-600' };
@@ -11337,20 +11351,54 @@ html, body {
 
     const isHidden = localStorage.getItem("ctrlpig_future_privacy_hidden") === "true";
     const bills = (typeof getRegisteredRecurringBills === 'function') ? getRegisteredRecurringBills() : [];
-    const today = new Date().getDate();
-    const todayDate = new Date();
-    const todayStr = todayDate.toISOString().split('T')[0];
+    
+    const now = new Date();
+    const todayYear = now.getFullYear();
+    const todayMonth = now.getMonth();
+    const todayDay = now.getDate();
+    const todayMidnight = new Date(todayYear, todayMonth, todayDay);
+    const todayStr = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
+
+    function calcDaysUntil(dueDay, specificDateStr) {
+      if (specificDateStr) {
+        const parts = specificDateStr.split('-');
+        if (parts.length === 3) {
+          const target = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          return Math.round((target - todayMidnight) / (1000 * 60 * 60 * 24));
+        }
+      }
+      if (dueDay) {
+        let target = new Date(todayYear, todayMonth, dueDay);
+        if (target < todayMidnight) {
+          target = new Date(todayYear, todayMonth + 1, dueDay);
+        }
+        return Math.round((target - todayMidnight) / (1000 * 60 * 60 * 24));
+      }
+      return null;
+    }
+
+    function formatDueLabel(daysUntil, dayOfMonth, specificDateStr) {
+      let dateText = `Dia ${dayOfMonth}`;
+      if (specificDateStr) {
+        const p = specificDateStr.split('-');
+        if (p.length === 3) dateText = `${p[2]}/${p[1]}`;
+      }
+      if (daysUntil === 0) return `Vence hoje (${dateText})`;
+      if (daysUntil === 1) return `Vence amanhã (${dateText})`;
+      return `Vence em ${daysUntil} dias (${dateText})`;
+    }
 
     // Remove o badge de contagem superior se existir no DOM
     const badgeCountEl = document.getElementById('badgeFutureBillsCount');
     if (badgeCountEl) badgeCountEl.remove();
 
-    // 1. Processa as contas recorrentes cadastradas
-    const items = bills.map(b => {
+    const rawItems = [];
+
+    // 1. Processa contas recorrentes
+    bills.forEach(b => {
       const isPaid = (typeof isBillPaidInCurrentCycle === 'function') ? isBillPaidInCurrentCycle(b.id) : false;
       const dueDay = b.diaVencimento || 1;
-      const diff = dueDay - today;
-      const vencimentoFormatado = `Dia ${dueDay}`;
+      const daysUntil = calcDaysUntil(dueDay, null);
 
       const c = ((b.categoria || '') + ' ' + (b.nome || '')).toLowerCase();
       let icon = '<i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>';
@@ -11364,20 +11412,20 @@ html, body {
       else if (c.includes('pet')) { icon = '<i data-lucide="paw-print" class="w-4 h-4 text-emerald-600"></i>'; bg = 'bg-emerald-100 text-emerald-700'; }
       else if (c.includes('carro') || c.includes('veículo')) { icon = '<i data-lucide="car" class="w-4 h-4 text-slate-600"></i>'; bg = 'bg-slate-100 text-slate-700'; }
 
-      return {
+      rawItems.push({
         type: 'bill',
         id: b.id,
         nome: b.nome,
         categoria: b.categoria || 'Fixa',
         dia: dueDay,
-        vencimentoFormatado: vencimentoFormatado,
+        daysUntil: daysUntil,
+        dueLabel: formatDueLabel(daysUntil, dueDay, null),
         responsavel: b.responsavel || 'Ambos',
         valor: b.valorMedio || 0,
         isPaid: isPaid,
-        order: isPaid ? 100 : (diff < 0 ? 10 : diff),
         icon: icon,
         bg: bg
-      };
+      });
     });
 
     // 2. Inclui transações com vencimento ou agendadas
@@ -11387,97 +11435,75 @@ html, body {
 
     allTxs.forEach(t => {
       if (!t) return;
-      const isFutureDate = t.data && t.data > todayStr;
-      const isFutureVenc = t.vencimento && t.vencimento > todayStr;
+      const isFutureDate = t.data && t.data >= todayStr;
+      const isFutureVenc = t.vencimento && t.vencimento >= todayStr;
       const isPendenteFixa = (t.tipo === 'Despesa Fixa' || t.categoria === 'Agendado' || t.vencimento) && (t.status === 'Pendente' || t.status === 'Agendado');
       
       if (isFutureDate || isFutureVenc || isPendenteFixa) {
-        if (items.some(x => x.nome.toLowerCase() === (t.descricao || '').toLowerCase())) return;
+        if (rawItems.some(x => x.nome.toLowerCase() === (t.descricao || '').toLowerCase())) return;
 
         const isPagoTx = (t.status === 'Pago' || t.status === 'Recebido');
         const effectiveDate = t.vencimento || t.data || todayStr;
         const parts = effectiveDate.split('-');
-        const diaTx = parseInt(parts[2]) || today;
-        const vencimentoFormatado = parts.length === 3 ? `${parts[2]}/${parts[1]}` : `Dia ${diaTx}`;
-        const diffDays = Math.ceil((new Date(effectiveDate + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / (1000 * 60 * 60 * 24));
+        const diaTx = parseInt(parts[2], 10) || todayDay;
+        const daysUntil = calcDaysUntil(null, effectiveDate);
 
-        items.push({
+        rawItems.push({
           type: 'tx',
           id: t.id,
           nome: t.descricao || 'Lançamento Futuro',
           categoria: t.categoria || 'Agendado',
           dia: diaTx,
-          vencimentoFormatado: vencimentoFormatado,
+          daysUntil: daysUntil,
+          dueLabel: formatDueLabel(daysUntil, diaTx, effectiveDate),
           responsavel: t.responsavel || t.pago_por || 'Geral',
           valor: parseFloat(t.valor) || 0,
           isPaid: isPagoTx,
-          order: isPagoTx ? 100 : (diffDays < 0 ? 10 : diffDays),
           icon: isPagoTx ? '<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>' : '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
           bg: isPagoTx ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'
         });
       }
     });
 
-    if (!items || items.length === 0) {
-      container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento futuro pendente no ciclo.</p>';
+    // Filtro estrito: Contas pendentes que vencem nos próximos 5 dias (0 a 5 dias a partir de hoje)
+    const items5Days = rawItems.filter(item => {
+      if (item.isPaid) return false;
+      return item.daysUntil !== null && item.daysUntil >= 0 && item.daysUntil <= 5;
+    });
+
+    if (!items5Days || items5Days.length === 0) {
+      container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500 font-medium">Nenhuma conta a vencer nos próximos 5 dias. 🎉</p>';
       return;
     }
 
-    // Ordenação: Pendentes primeiro (pela proximidade do vencimento), Pagos ao final
-    items.sort((a, b) => {
-      if (a.isPaid !== b.isPaid) return a.isPaid ? 1 : -1;
-      if (a.order !== b.order) return a.order - b.order;
-      return (a.dia || 0) - (b.dia || 0);
-    });
+    // Ordenação: Da conta mais próxima de vencer até a mais distante (0 a 5 dias)
+    items5Days.sort((a, b) => a.daysUntil - b.daysUntil);
 
-    container.innerHTML = items.map(item => {
+    // Renderização puramente visual (sem botões de editar e sem botões de pagar)
+    container.innerHTML = items5Days.map(item => {
       const valFormatted = formatBRL(item.valor);
       const displayVal = isHidden ? 'R$ •••••' : valFormatted;
-      const clickAction = item.type === 'bill' ? `openRegisterBillModal('${item.id}')` : `openEditTxModal(${item.id})`;
-
-      const actionBtn = !item.isPaid ? `
-        <button type="button"
-          onclick="event.stopPropagation(); handleToggleFutureItemPaid('${item.type}', '${item.id}', true);"
-          class="px-3 py-1 text-[11px] font-black rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
-          style="background-color: #F59E0B !important; background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%) !important; color: #451A03 !important; border: 1px solid #D97706 !important; font-weight: 900 !important; box-shadow: 0 1px 3px rgba(245, 158, 11, 0.35) !important;"
-          title="Clique para marcar como pago">
-          <span>Pagar</span>
-        </button>
-      ` : `
-        <button type="button"
-          onclick="event.stopPropagation(); handleToggleFutureItemPaid('${item.type}', '${item.id}', false);"
-          class="px-3 py-1 text-[11px] font-black rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
-          style="background-color: #10B981 !important; background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; border: 1px solid #047857 !important; font-weight: 900 !important; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.35) !important;"
-          title="Pago! Toque para reabrir como pendente">
-          <span style="font-size: 11px;">✓</span>
-          <span>Pago</span>
-        </button>
-      `;
 
       return `
-        <div class="flex items-center justify-between py-2.5 px-2 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-blue-500/5 transition-colors cursor-pointer rounded-xl" onclick="${clickAction}">
+        <div class="flex items-center justify-between py-2.5 px-2 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-slate-50/60 transition-colors rounded-xl">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-9 h-9 rounded-full ${item.bg} flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs">
               ${item.icon}
             </div>
             <div class="min-w-0">
-              <span class="text-xs font-bold text-slate-900 block leading-tight truncate ${item.isPaid ? 'line-through text-slate-400' : ''}">
+              <span class="text-xs font-bold text-slate-900 block leading-tight truncate">
                 ${escapeHtml(item.nome)}
               </span>
               <span class="text-[10px] text-slate-500 block truncate mt-0.5 font-medium">
-                Vencimento: <strong class="text-slate-700 font-semibold">${item.vencimentoFormatado}</strong> • ${escapeHtml(item.responsavel)}
+                ${item.dueLabel} • ${escapeHtml(item.responsavel)}
               </span>
             </div>
           </div>
           
-          <div class="flex items-center gap-2 flex-shrink-0 ml-2">
-            <span class="text-xs font-black ${item.isPaid ? 'text-slate-400 line-through' : 'text-slate-900'}">
+          <div class="flex items-center flex-shrink-0 ml-2">
+            <span class="text-xs font-black text-slate-900">
               ${displayVal}
             </span>
-            ${actionBtn}
-            <button type="button" onclick="event.stopPropagation(); ${clickAction};" class="p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer flex items-center justify-center flex-shrink-0" title="Editar este lançamento">
-              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-            </button>
           </div>
         </div>
       `;
@@ -41963,9 +41989,26 @@ window.openHealthMedsModal = function() {
       }
       return false;
     });
-    const latest = [...cleanTxs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0)).slice(0, 5);
+    const now = new Date();
+    const tenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 10, 0, 0, 0);
+    const tenDaysAgoStr = `${tenDaysAgo.getFullYear()}-${String(tenDaysAgo.getMonth() + 1).padStart(2, '0')}-${String(tenDaysAgo.getDate()).padStart(2, '0')}`;
+
+    const sorted = [...cleanTxs].sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+    let latest = sorted.filter(t => t && t.data && t.data >= tenDaysAgoStr);
+
+    // Fallback caso seja ciclo passado ou dados de demonstração: filtra os 10 dias da transação mais recente do ciclo
+    if (!latest.length && sorted.length > 0 && sorted[0].data) {
+      const parts = sorted[0].data.split('-');
+      if (parts.length === 3) {
+        const topDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        const rel10 = new Date(topDate.getFullYear(), topDate.getMonth(), topDate.getDate() - 10);
+        const rel10Str = `${rel10.getFullYear()}-${String(rel10.getMonth() + 1).padStart(2, '0')}-${String(rel10.getDate()).padStart(2, '0')}`;
+        latest = sorted.filter(t => t && t.data && t.data >= rel10Str);
+      }
+    }
+
     if (!latest.length) {
-      list.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento neste ciclo.</p>';
+      list.innerHTML = '<p class="py-3 text-center text-xs text-slate-500 font-medium">Nenhum lançamento nos últimos 10 dias.</p>';
       return;
     }
     list.replaceChildren(...latest.map(t => {
