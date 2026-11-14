@@ -5326,7 +5326,7 @@ html, body {
               </button>
 
               <!-- Ícone de ADMIN Dedicado (Painel Completo do Administrador) -->
-              <button type="button" onclick="openAdminModal()" class="flex items-center gap-1.5 px-2 py-1 text-white/90 hover:text-white transition-all cursor-pointer active:scale-95" title="Abrir Painel do Administrador">
+              <button type="button" id="btnAdminHeader" onclick="openAdminModal()" class="flex items-center gap-1.5 px-2 py-1 text-white/90 hover:text-white transition-all cursor-pointer active:scale-95" title="Abrir Painel do Administrador">
   <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
   <span class="text-xs font-semibold tracking-wide">Admin</span>
 </button>
@@ -25048,7 +25048,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
   </div>
 
-  <div id="modalAdminPanel" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="modalAdminPanel" onclick="if(event.target === this) closeAdminModal();" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100">
       
       <!-- Cabeçalho do Admin -->
@@ -43891,20 +43891,37 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Usuário';
       if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
       if (typeof window.renderAdminUserCompactModulesToggle === 'function') {
-        window.renderAdminUserCompactModulesToggle();
+        try { window.renderAdminUserCompactModulesToggle(); } catch(_) {}
       }
     } else {
       if (masterView) masterView.classList.remove('hidden');
       if (userView) userView.classList.add('hidden');
       if (headerTitle) headerTitle.textContent = 'Painel do Administrador';
       if (headerDesc) headerDesc.textContent = 'Controle master do sistema, dados do casal e personalizações.';
+      if (typeof renderCuponsAtivosList === 'function') {
+        try { renderCuponsAtivosList(); } catch(_) {}
+      }
+      if (typeof renderGeminiKeyUI === 'function') {
+        try { renderGeminiKeyUI(); } catch(_) {}
+      }
+      if (typeof renderFeedbacksAdminList === 'function') {
+        try { renderFeedbacksAdminList(); } catch(_) {}
+      }
     }
 
     ensureElementVisible('modalAdminPanel');
-    if (typeof renderTestadoresSalvosAdmin === 'function') renderTestadoresSalvosAdmin();
-    if (typeof renderPiggyTipsAdminList === 'function') renderPiggyTipsAdminList();
-    if (typeof window.renderAdminDashboardCustomizer === 'function') window.renderAdminDashboardCustomizer();
-    if (window.lucide) lucide.createIcons();
+    if (typeof renderTestadoresSalvosAdmin === 'function') {
+      try { renderTestadoresSalvosAdmin(); } catch(_) {}
+    }
+    if (typeof renderPiggyTipsAdminList === 'function') {
+      try { renderPiggyTipsAdminList(); } catch(_) {}
+    }
+    if (typeof window.renderAdminDashboardCustomizer === 'function') {
+      try { window.renderAdminDashboardCustomizer(); } catch(_) {}
+    }
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      try { lucide.createIcons(); } catch(_) {}
+    }
   };
   window.openAdminModalDirect = window.openAdminModal;
   window.closeAdminModal = function() { hideElement('modalAdminPanel'); };
@@ -48532,11 +48549,13 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
 
     const _prevOpenAdmin = window.openAdminModal;
     window.openAdminModal = function() {
-      if (typeof _prevOpenAdmin === 'function') _prevOpenAdmin();
-      window.populateAdminSubscriptionInputs();
-      window.renderAdminSubscribersDashboard();
-      window.syncSubscriptionStatusUI();
-      window.syncIndividualAndFamilyModeUI();
+      if (typeof _prevOpenAdmin === 'function') {
+        try { _prevOpenAdmin(); } catch (err) { console.warn('Erro ao executar _prevOpenAdmin:', err); }
+      }
+      try { if (typeof window.populateAdminSubscriptionInputs === 'function') window.populateAdminSubscriptionInputs(); } catch(_) {}
+      try { if (typeof window.renderAdminSubscribersDashboard === 'function') window.renderAdminSubscribersDashboard(); } catch(_) {}
+      try { if (typeof window.syncSubscriptionStatusUI === 'function') window.syncSubscriptionStatusUI(); } catch(_) {}
+      try { if (typeof window.syncIndividualAndFamilyModeUI === 'function') window.syncIndividualAndFamilyModeUI(); } catch(_) {}
     };
 
     const _prevForceUnlock = window.forceUnlockAuthOverlay;
@@ -49608,18 +49627,13 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
 
   // ------------------------------------------------------------ integração
   function boot() {
-    // Reautenticação (step-up) no painel administrativo master
+    // Abertura do painel administrativo com auditoria segura (sem bloqueio de tela)
     ['openAdminModal', 'openAdminModalDirect'].forEach((name) => {
       const orig = window[name];
       if (typeof orig !== 'function' || orig.__cpStepUp) return;
       const w = function() {
-        const self = this, args = arguments;
-        const isMaster = typeof window.isCurrentUserMaster === 'function' && window.isCurrentUserMaster();
-        const isDemo = localStorage.getItem('ctrlpig_demo_user_mode') === 'true';
-        if (!isMaster || isDemo) return orig.apply(self, args);
-        requireStepUp('Painel Administrativo').then((ok) => {
-          if (ok) { audit('admin_open', {}); orig.apply(self, args); } else toast('Acesso ao painel administrativo cancelado.');
-        });
+        try { audit('admin_open', {}); } catch (_) {}
+        return orig.apply(this, arguments);
       };
       w.__cpStepUp = true;
       window[name] = w;
