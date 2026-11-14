@@ -5472,9 +5472,9 @@ html, body {
                 <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
                   <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
                 </button>
-                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-[11px] border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar valores (por voz, foto de cupom ou digitação)">
+                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-[11px] border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas (digitação ou nota fiscal)">
                   <span class="text-blue-600 font-black text-xs leading-none">+</span>
-                  <span>Lançar Valores</span>
+                  <span>Lançar Receitas e Despesas</span>
                 </button>
               </div>
             </div>
@@ -6623,51 +6623,42 @@ html, body {
   </div>
 
     <!-- ============================================================== -->
-  <!-- MODAL: HUB DE LANÇAMENTO (DESIGN EXPANDIDO ESTILO TELA INICIAL)   -->
-  <!-- 1º Digitar Despesa | 2º Escanear Nota Fiscal (QR Code) -->
+  <!-- MODAL: HUB DE LANÇAMENTO (DESIGN GLASS LIQUID CLARO)           -->
   <!-- ============================================================== -->
-  <div id="modalActionHub" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 sm:p-6" onclick="if(event.target===this) closeActionHubModal()">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md sm:max-w-xl w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800 text-xs">
+  <div id="modalActionHub" class="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 sm:p-6" onclick="if(event.target===this) closeActionHubModal()">
+    <div class="rounded-3xl max-w-md sm:max-w-xl w-full p-6 sm:p-8 shadow-2xl relative text-xs" style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(220, 238, 255, 0.88) 100%) !important; backdrop-filter: blur(24px) saturate(190%) !important; -webkit-backdrop-filter: blur(24px) saturate(190%) !important; border: 1.5px solid rgba(255, 255, 255, 0.85) !important; box-shadow: 0 16px 40px -10px rgba(10, 37, 64, 0.18), inset 0 1.5px 2px rgba(255, 255, 255, 1) !important; border-radius: 28px !important;">
       
-      <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+      <div class="flex items-center justify-between pb-4 border-b border-blue-900/10">
         <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-md flex-shrink-0">
-            <i data-lucide="plus-circle" class="w-6 h-6"></i>
-          </div>
+          <i data-lucide="plus-circle" class="w-7 h-7 text-blue-600 flex-shrink-0"></i>
           <div>
-            <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white">Lançar Despesa ou Valor</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Escolha a forma mais rápida de registrar seu gasto:</p>
+            <h3 class="font-black text-base sm:text-lg text-slate-900">Lançar Receitas e Despesas</h3>
+            <p class="text-xs text-slate-500">Escolha a forma mais rápida de registrar seu lançamento:</p>
           </div>
         </div>
-        <button type="button" onclick="closeActionHubModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+        <button type="button" onclick="closeActionHubModal()" class="w-8 h-8 rounded-full bg-white/70 hover:bg-white text-slate-500 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer border border-white/80 shadow-2xs">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- OS 3 BOTÕES VERTICAIS GRANDES COM TEXTOS CENTRALIZADOS ABAIXO DO BOTÃO -->
-      <div class="mt-6 space-y-4">
+      <!-- OS BOTÕES VERTICAIS COM ESTILO GLASS LIQUID E ÍCONES SEM FUNDO QUADRADO -->
+      <div class="mt-6 space-y-3.5">
         
-        <!-- 1ª OPÇÃO: DIGITAR DESPESA -->
-        <button type="button" onclick="closeActionHubModal(); openNewTxModal();" class="w-full p-4.5 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 flex flex-col items-center text-center gap-2 transition-all shadow-md group cursor-pointer active:scale-98">
-          <div class="w-13 h-13 rounded-2xl bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-400/40 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-            <i data-lucide="edit-3" class="w-7 h-7"></i>
-          </div>
+        <!-- 1ª OPÇÃO: DIGITAR RECEITA OU DESPESA -->
+        <button type="button" onclick="closeActionHubModal(); openNewTxModal();" class="w-full p-4.5 rounded-2xl border border-white/90 hover:border-blue-400 flex flex-col items-center text-center gap-2 transition-all shadow-xs group cursor-pointer active:scale-98" style="background: rgba(255, 255, 255, 0.72) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1.5px solid rgba(255, 255, 255, 0.85) !important; border-radius: 20px !important; box-shadow: 0 4px 14px -2px rgba(4, 20, 64, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;">
+          <i data-lucide="edit-3" class="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform"></i>
           <div>
-            <span class="block font-black text-base text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Digitar Despesa</span>
-            <span class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block max-w-sm">Formulário completo com parcelamento, cartões, categorias e data</span>
+            <span class="block font-black text-base text-slate-900 group-hover:text-blue-600 transition-colors">Digitar Receitas e Despesas</span>
+            <span class="text-xs text-slate-500 mt-0.5 block max-w-sm">Formulário completo com receitas, despesas, parcelamento, cartões e categorias</span>
           </div>
         </button>
 
-
-
         <!-- 2ª OPÇÃO: ESCANEAR NOTA FISCAL DIRETO PARA TRANSAÇÕES -->
-        <button type="button" onclick="startInvoiceQrScanFromHub();" class="w-full p-4.5 rounded-2xl bg-slate-50 hover:bg-slate-100/90 dark:bg-slate-800/80 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500 flex flex-col items-center text-center gap-2 transition-all shadow-md group cursor-pointer active:scale-98">
-          <div class="w-13 h-13 rounded-2xl bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-400/40 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
-            <i data-lucide="qr-code" class="w-7 h-7 text-purple-600 dark:text-purple-400"></i>
-          </div>
+        <button type="button" onclick="startInvoiceQrScanFromHub();" class="w-full p-4.5 rounded-2xl border border-white/90 hover:border-purple-400 flex flex-col items-center text-center gap-2 transition-all shadow-xs group cursor-pointer active:scale-98" style="background: rgba(255, 255, 255, 0.72) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border: 1.5px solid rgba(255, 255, 255, 0.85) !important; border-radius: 20px !important; box-shadow: 0 4px 14px -2px rgba(4, 20, 64, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;">
+          <i data-lucide="qr-code" class="w-8 h-8 text-purple-600 group-hover:scale-110 transition-transform"></i>
           <div>
-            <span class="block font-black text-base text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Escanear Nota Fiscal (QR Code)</span>
-            <span class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block max-w-sm">Leitura de cupom fiscal NFC-e direto na tabela de transações</span>
+            <span class="block font-black text-base text-slate-900 group-hover:text-purple-600 transition-colors">Escanear Nota Fiscal (QR Code)</span>
+            <span class="text-xs text-slate-500 mt-0.5 block max-w-sm">Leitura instantânea de cupom fiscal NFC-e direto para suas transações</span>
           </div>
         </button>
 
