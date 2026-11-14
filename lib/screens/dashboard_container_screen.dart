@@ -151,6 +151,9 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           if (typeof window.onAppPausedToBackground === 'function') {
             window.onAppPausedToBackground();
           }
+          if (typeof window.lockAppSessionNow === 'function') {
+            window.lockAppSessionNow();
+          }
         """);
       }
     } else if (state == AppLifecycleState.resumed) {
@@ -187,7 +190,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.160+238';
+  static const String _kCurrentAppVersion = '2.1.161+239';
 
   Future<void> _requestPostLoginPermissions() async {
     // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
@@ -783,6 +786,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
       } else if (action == 'open_license_dialog') {
         _showLifetimeActivationDialog();
       } else if (action == 'exit_app') {
+        _controller.runJavaScript("""
+          document.documentElement.classList.add('require-auth');
+          if (document.body) document.body.classList.add('require-auth');
+          const authEl = document.getElementById('authOverlayContainer');
+          if (authEl) {
+            authEl.classList.remove('hidden');
+            authEl.style.removeProperty('display');
+          }
+        """);
         SystemNavigator.pop();
       }
     } catch (e) {
@@ -1541,6 +1553,14 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
           return;
         }
 
+        _controller.runJavaScript("""
+          if (typeof window.exitApp === 'function') {
+            window.exitApp();
+          } else {
+            document.documentElement.classList.add('require-auth');
+            if (document.body) document.body.classList.add('require-auth');
+          }
+        """);
         SystemNavigator.pop();
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(

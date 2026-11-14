@@ -4611,10 +4611,11 @@ html, body {
     /* ========================================================================= */
     /* LEGAL DOCS & SECURITY MODALS - LIQUID GLASS DARK THEME (ZERO FOUC)        */
     /* ========================================================================= */
-    .cp-modal {
+    .cp-modal,
+    html.require-auth .cp-modal {
       position: fixed !important;
       inset: 0 !important;
-      z-index: 9999 !important;
+      z-index: 200000 !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4956,7 +4957,7 @@ html, body {
       const d = document.createElement('div');
       d.id = id;
       d.className = 'cp-modal';
-      d.style.zIndex = '9999';
+      d.style.zIndex = '200000';
       d.innerHTML = '<div class="cp-card' + (wide ? ' cp-wide' : '') + '">' + html + '</div>';
       document.body.appendChild(d);
       return d;
@@ -4974,7 +4975,7 @@ html, body {
         '<div class="cp-head"><h3>📜 ' + esc(d.title) + '</h3><button type="button" class="cp-x" data-a="x" aria-label="Fechar">✕</button></div>' +
         '<div class="cp-doc-body" style="max-height:64vh;overflow-y:auto;padding-right:6px;line-height:1.6;">' + d.html() + '</div>' +
         '<div class="cp-row" style="margin-top:16px;"><button type="button" class="cp-btn cp-primary" data-a="x">Fechar</button></div>', true);
-      m.style.zIndex = '9999';
+      m.style.zIndex = '200000';
       m.addEventListener('click', (e) => {
         if (e.target === m || (e.target && e.target.getAttribute && e.target.getAttribute('data-a') === 'x')) {
           closeModal('cpDocViewer');
@@ -33008,6 +33009,18 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 
   window.onAppPausedToBackground = function() {
     localStorage.setItem('ctrlpig_last_paused_timestamp', Date.now().toString());
+    const isLoggedOut = localStorage.getItem('financas_auth_logged_out') === 'true';
+    const bioActive = localStorage.getItem('financas_biometrics_enabled') === 'true';
+    const isLocked = localStorage.getItem('financas_session_locked') === 'true';
+    if (isLoggedOut || bioActive || isLocked) {
+      document.documentElement.classList.add('require-auth');
+      if (document.body) document.body.classList.add('require-auth');
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) {
+        authEl.classList.remove('hidden');
+        authEl.style.removeProperty('display');
+      }
+    }
   };
 
   window.onAppResumedFromBackground = function(diffSeconds) {
@@ -39725,6 +39738,14 @@ window.openHealthMedsModal = function() {
       localStorage.setItem('financas_session_locked', 'true');
       sessionStorage.removeItem('pigctrl_session_authenticated');
       sessionStorage.clear();
+      document.documentElement.classList.add('require-auth');
+      if (document.body) document.body.classList.add('require-auth');
+      const authEl = document.getElementById('authOverlayContainer');
+      if (authEl) {
+        if (authEl.parentElement !== document.body) document.body.appendChild(authEl);
+        authEl.classList.remove('hidden');
+        authEl.style.removeProperty('display');
+      }
     } catch(_) {}
     if (window.FlutterBridge && typeof window.FlutterBridge.postMessage === 'function') {
       try {
@@ -48680,7 +48701,7 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
   function openModal(id, html, wide) {
     const old = $(id); if (old) old.remove();
     const d = document.createElement('div');
-    d.id = id; d.className = 'cp-modal'; d.style.zIndex = '4600';
+    d.id = id; d.className = 'cp-modal'; d.style.zIndex = '200000';
     d.innerHTML = '<div class="cp-card' + (wide ? ' cp-wide' : '') + '">' + html + '</div>';
     document.body.appendChild(d);
     return d;
@@ -48853,7 +48874,7 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       '<div class="cp-head"><h3>📜 ' + esc(d.title) + '</h3><button type="button" class="cp-x" data-a="x" aria-label="Fechar">✕</button></div>' +
       '<div class="cp-doc-body" style="max-height:64vh;overflow-y:auto;padding-right:6px;line-height:1.6;">' + d.html() + '</div>' +
       '<div class="cp-row" style="margin-top:16px;"><button type="button" class="cp-btn cp-primary" data-a="x">Fechar</button></div>', true);
-    m.style.zIndex = '9999';
+    m.style.zIndex = '200000';
     m.addEventListener('click', (e) => {
       if (e.target === m || (e.target && e.target.getAttribute && e.target.getAttribute('data-a') === 'x')) {
         closeModal('cpDocViewer');
