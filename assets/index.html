@@ -4368,14 +4368,14 @@ html, body {
       border-radius: 20px !important;
     }
 
-    /* Caixa de 10 Destaques / Dica do Piggy no Card Saldo Atual: Liquid Glass Claro com Fontes Azul Escura */
+    /* Caixa de 10 Destaques / Dica do Piggy no Card Saldo Atual: Liquid Glass Cristalino Puro com Fontes Azul Escura */
     #piggyTipsBox,
     #heroCardBanner #piggyTipsBox {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.68) 100%) !important;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.92) 100%) !important;
       backdrop-filter: blur(20px) saturate(180%) !important;
       -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;
+      border: 1.5px solid #FFFFFF !important;
+      box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.10), 0 2px 6px -1px rgba(10, 37, 64, 0.04), inset 0 1.5px 2px rgba(255, 255, 255, 1) !important;
       border-radius: 20px !important;
     }
     #piggyTipsBox #previewTipText,
@@ -4383,38 +4383,57 @@ html, body {
       color: #0A2540 !important;
       font-weight: 700 !important;
     }
+    #piggyTipsBox #previewTipBadgePill,
+    #heroCardBanner #piggyTipsBox #previewTipBadgePill {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%) !important;
+      border: 1px solid rgba(245, 158, 11, 0.40) !important;
+      color: #92400E !important;
+    }
     #piggyTipsBox #previewTipCategory,
     #heroCardBanner #piggyTipsBox #previewTipCategory {
-      color: #0A2540 !important;
+      color: #92400E !important;
       font-weight: 900 !important;
     }
     #piggyTipsBox #previewTipIndex,
     #heroCardBanner #piggyTipsBox #previewTipIndex {
+      background: #FFFFFF !important;
+      border: 1px solid rgba(203, 213, 225, 0.8) !important;
       color: #0A2540 !important;
       font-weight: 900 !important;
     }
     #piggyTipsBox button,
     #heroCardBanner #piggyTipsBox button {
-      background: rgba(255, 255, 255, 0.92) !important;
+      background: #FFFFFF !important;
       color: #0A2540 !important;
-      border: 1px solid rgba(191, 219, 254, 0.85) !important;
+      border: 1px solid rgba(226, 232, 240, 0.9) !important;
       box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;
     }
     #piggyTipsBox button:hover,
     #heroCardBanner #piggyTipsBox button:hover {
-      background: #eff6ff !important;
-      color: #1d4ed8 !important;
+      background: #F8FAFC !important;
+      color: #0A2540 !important;
     }
     #piggyTipsBox #previewTipDots,
     #heroCardBanner #piggyTipsBox #previewTipDots {
       display: none !important;
     }
 
-    /* Indicadores: Dias, Comprometido e Parcelados */
+    /* Indicadores: Dias, Comprometido e Parcelados (Sem Fundo, com Separador Vertical) */
+    #heroIndicatorsBar {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    #heroIndicatorsBar > div {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
     #heroCardBanner .bg-slate-50 {
-      background: rgba(248, 250, 252, 0.85) !important;
-      border: 1px solid rgba(226, 232, 240, 0.8) !important;
-      border-radius: 18px !important;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
     }
 
     /* 3. ACESSO RÁPIDO LIQUID GLASS (GRID DE 4 ÍCONES FLAT) */
@@ -5454,42 +5473,44 @@ html, body {
               </span>
             </div>
 
-            <!-- Balão de Dica do Piggy (Design System: Liquid Glass Claro com Fontes Azul Escura para Alto Contraste) -->
-            <div id="piggyTipsBox" class="mt-4 p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 select-none" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.68) 100%) !important; backdrop-filter: blur(20px) saturate(180%) !important; -webkit-backdrop-filter: blur(20px) saturate(180%) !important; border: 1.5px solid rgba(255, 255, 255, 0.95) !important; box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;">
-              <button type="button" onclick="stepPiggyTip(-1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: rgba(255, 255, 255, 0.92) !important; color: #0A2540 !important; border: 1px solid rgba(191, 219, 254, 0.85) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Destaque anterior">
+            <!-- Balão de Dica do Piggy (Design System: Liquid Glass Cristalino Puro com Fontes Azul Escura e Badge Dourado) -->
+            <div id="piggyTipsBox" class="mt-4 p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 select-none" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.92) 100%) !important; backdrop-filter: blur(20px) saturate(180%) !important; -webkit-backdrop-filter: blur(20px) saturate(180%) !important; border: 1.5px solid #FFFFFF !important; box-shadow: 0 8px 24px -4px rgba(10, 37, 64, 0.10), 0 2px 6px -1px rgba(10, 37, 64, 0.04), inset 0 1.5px 2px rgba(255, 255, 255, 1) !important;">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: #FFFFFF !important; color: #0A2540 !important; border: 1px solid rgba(226, 232, 240, 0.9) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Destaque anterior">
                 <i data-lucide="chevron-left" class="w-4 h-4 text-[#0A2540]"></i>
               </button>
               <div class="flex-1 text-center min-w-0 px-1">
                 <div class="flex items-center justify-center gap-1.5 mb-1.5">
-                  <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1" style="background: rgba(219, 234, 254, 0.90) !important; border: 1px solid rgba(147, 197, 253, 0.70) !important; color: #0A2540 !important;">
+                  <span id="previewTipBadgePill" class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%) !important; border: 1px solid rgba(245, 158, 11, 0.40) !important; color: #92400E !important;">
                     <span id="previewTipBadgeIcon">💡</span>
-                    <span id="previewTipCategory" style="color: #0A2540 !important; font-weight: 900 !important;">Dica do Piggy</span>
+                    <span id="previewTipCategory" style="color: #92400E !important; font-weight: 900 !important;">Dica do Piggy</span>
                   </span>
-                  <span id="previewTipIndex" class="text-[9px] font-black px-2 py-0.5 rounded-md" style="background: rgba(255, 255, 255, 0.95) !important; border: 1px solid rgba(191, 219, 254, 0.80) !important; color: #0A2540 !important;">1/10</span>
+                  <span id="previewTipIndex" class="text-[9px] font-black px-2 py-0.5 rounded-md" style="background: #FFFFFF !important; border: 1px solid rgba(203, 213, 225, 0.8) !important; color: #0A2540 !important;">1/10</span>
                 </div>
                 <p id="previewTipText" class="text-xs sm:text-[13px] font-bold leading-snug" style="color: #0A2540 !important; font-weight: 700 !important;">
                   "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
                 </p>
                 <div id="previewTipDots" class="hidden" style="display: none !important;"></div>
               </div>
-              <button type="button" onclick="stepPiggyTip(1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: rgba(255, 255, 255, 0.92) !important; color: #0A2540 !important; border: 1px solid rgba(191, 219, 254, 0.85) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Próximo destaque">
+              <button type="button" onclick="stepPiggyTip(1)" class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer active:scale-90 transition-all" style="background: #FFFFFF !important; color: #0A2540 !important; border: 1px solid rgba(226, 232, 240, 0.9) !important; box-shadow: 0 2px 6px rgba(10, 37, 64, 0.08) !important;" title="Próximo destaque">
                 <i data-lucide="chevron-right" class="w-4 h-4 text-[#0A2540]"></i>
               </button>
             </div>
 
-            <!-- Mini cards de Resumo: Dias, Comprometido e Parcelados -->
-            <div class="grid grid-cols-3 gap-2 mt-3.5 text-center">
-              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
-                <span class="text-[10px] font-bold text-slate-500 uppercase block">Dias Restantes</span>
-                <span id="valDiasRestantes" class="text-xs font-black text-slate-800">9 dias</span>
+            <!-- Indicadores: Dias, Comprometido e Parcelados (Sem fundo individual, com linha vertical separadora) -->
+            <div id="heroIndicatorsBar" class="flex items-center justify-between mt-3.5 py-1 text-center">
+              <div class="flex-1 py-1 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Dias Restantes</span>
+                <span id="valDiasRestantes" class="text-xs sm:text-[13px] font-black text-slate-800">9 dias</span>
               </div>
-              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
-                <span class="text-[10px] font-bold text-slate-500 uppercase block">Comprometido</span>
-                <span id="valComprometido" class="text-xs font-black text-amber-600">78%</span>
+              <div class="w-px h-7 bg-slate-300/80 self-center flex-shrink-0"></div>
+              <div class="flex-1 py-1 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Comprometido</span>
+                <span id="valComprometido" class="text-xs sm:text-[13px] font-black text-amber-600">78%</span>
               </div>
-              <div class="bg-slate-50 border border-slate-100 rounded-2xl py-2 px-1">
-                <span class="text-[10px] font-bold text-slate-500 uppercase block">Parcelados</span>
-                <span id="valParcelados" class="text-xs font-black text-blue-600">0 ativas</span>
+              <div class="w-px h-7 bg-slate-300/80 self-center flex-shrink-0"></div>
+              <div class="flex-1 py-1 px-1">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Parcelados</span>
+                <span id="valParcelados" class="text-xs sm:text-[13px] font-black text-blue-600">0 ativas</span>
               </div>
             </div>
 
