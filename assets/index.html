@@ -5672,9 +5672,6 @@ html, body {
                 <button type="button" onclick="toggleFuturePrivacy()" id="btnFuturePrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white bg-transparent transition-all cursor-pointer mr-0.5" title="Ocultar ou mostrar valores dos lançamentos futuros">
                   <i data-lucide="eye" id="iconFuturePrivacy" class="w-4 h-4 text-slate-500"></i>
                 </button>
-                <span id="badgeFutureBillsCount" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                  0 a vencer
-                </span>
                 <button type="button" onclick="openBillsReminderModal()" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer ml-1" title="Gerenciar todas as contas">
                   Ver todas &gt;
                 </button>
@@ -11225,259 +11222,230 @@ html, body {
   };
 
       // Funções Globais de Controle de Quitação de Contas Recorrentes (Lançamentos Futuros)
-  window.markRecurringBillAsPaid = function(billId, isPaid) {
+  window.handleToggleFutureItemPaid = function(type, id, markAsPaid) {
     try {
-      const cycleName = (typeof currentCycle !== 'undefined' && currentCycle) ? currentCycle : 'ciclo';
-      const cycleKey = `${cycleName}_${billId}`;
-      const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
-      const altCycleKey = `${activeCycleKey}_${billId}`;
-      const statusMap = typeof getBillsPaidStatusMap === 'function' ? getBillsPaidStatusMap() : JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
-      if (isPaid) {
-        statusMap[cycleKey] = true;
-        statusMap[altCycleKey] = true;
-        if (typeof showToastUndo === 'function') {
-          showToastUndo('✓ Conta marcada como paga neste ciclo!', false);
+      if (type === 'bill') {
+        const cycleName = (typeof currentCycle !== 'undefined' && currentCycle) ? currentCycle : 'ciclo';
+        const cycleKey = `${cycleName}_${id}`;
+        const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+        const altCycleKey = `${activeCycleKey}_${id}`;
+        const statusMap = typeof getBillsPaidStatusMap === 'function' ? getBillsPaidStatusMap() : JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
+        if (markAsPaid) {
+          statusMap[cycleKey] = true;
+          statusMap[altCycleKey] = true;
+          statusMap[String(id)] = true;
+          if (typeof showToastUndo === 'function') {
+            showToastUndo('✓ Conta marcada como Paga!', false);
+          }
+        } else {
+          delete statusMap[cycleKey];
+          delete statusMap[altCycleKey];
+          delete statusMap[String(id)];
+          if (typeof showToastUndo === 'function') {
+            showToastUndo('Conta reaberta como Pendente!', false);
+          }
         }
+        if (typeof saveBillsPaidStatusMap === 'function') {
+          saveBillsPaidStatusMap(statusMap);
+        } else {
+          localStorage.setItem('financas_status_contas_pagas', JSON.stringify(statusMap));
+        }
+        if (typeof renderBillsReminderList === 'function') renderBillsReminderList();
+        if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
       } else {
-        delete statusMap[cycleKey];
-        delete statusMap[altCycleKey];
-        if (typeof showToastUndo === 'function') {
-          showToastUndo('Conta reaberta como pendente!', false);
+        let tx = null;
+        if (Array.isArray(window.transactions)) {
+          tx = window.transactions.find(t => String(t.id) === String(id));
+        }
+        if (!tx && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+          tx = transactions.find(t => String(t.id) === String(id));
+        }
+        if (tx) {
+          tx.status = markAsPaid ? 'Pago' : 'Pendente';
+          if (typeof saveData === 'function') saveData();
+          if (typeof saveTransactionsToLocalStorage === 'function') saveTransactionsToLocalStorage();
+          if (typeof syncTransactionToFlutter === 'function') syncTransactionToFlutter(tx, 'update');
+          if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList();
+          if (typeof showToastUndo === 'function') {
+            showToastUndo(markAsPaid ? '✓ Lançamento marcado como Pago!' : 'Lançamento reaberto como Pendente!', false);
+          }
         }
       }
-      if (typeof saveBillsPaidStatusMap === 'function') {
-        saveBillsPaidStatusMap(statusMap);
-      } else {
-        localStorage.setItem('financas_status_contas_pagas', JSON.stringify(statusMap));
-      }
-      if (typeof refreshHomeFutureBills === 'function') {
-        refreshHomeFutureBills();
-      }
-      if (typeof renderBillsReminderList === 'function') {
-        renderBillsReminderList();
-      }
-      if (typeof updateBillsReminderCard === 'function') {
-        updateBillsReminderCard();
-      }
+      if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills();
+      if (typeof updateDashboard === 'function') updateDashboard();
+      if (typeof updateMetrics === 'function') updateMetrics();
     } catch (e) {
-      console.error('Erro ao atualizar status de conta paga:', e);
+      console.error('Erro ao alternar status do lançamento futuro:', e);
     }
+  };
+
+  window.markRecurringBillAsPaid = function(billId, isPaid) {
+    window.handleToggleFutureItemPaid('bill', billId, isPaid);
   };
 
   window.toggleReopenRecurringBill = function(billId) {
-    window.markRecurringBillAsPaid(billId, false);
+    window.handleToggleFutureItemPaid('bill', billId, false);
   };
 
-
   function refreshHomeFutureBills(activeTxs) {
-      const container = document.getElementById('dashboardFutureBillsList');
-      if (!container) return;
+    const container = document.getElementById('dashboardFutureBillsList');
+    if (!container) return;
 
-      const isHidden = localStorage.getItem("ctrlpig_future_privacy_hidden") === "true";
-      const bills = (typeof getRegisteredRecurringBills === 'function') ? getRegisteredRecurringBills() : [];
-      const today = new Date().getDate();
-      const todayDate = new Date();
-      const todayStr = todayDate.toISOString().split('T')[0];
+    const isHidden = localStorage.getItem("ctrlpig_future_privacy_hidden") === "true";
+    const bills = (typeof getRegisteredRecurringBills === 'function') ? getRegisteredRecurringBills() : [];
+    const today = new Date().getDate();
+    const todayDate = new Date();
+    const todayStr = todayDate.toISOString().split('T')[0];
 
-      // 1. Processa as contas recorrentes cadastradas
-      const items = bills.map(b => {
-        const isPaid = (typeof isBillPaidInCurrentCycle === 'function') ? isBillPaidInCurrentCycle(b.id) : false;
-        const diff = (b.diaVencimento || 1) - today;
-        
-        let order = 4;
-        let badge = '';
-        let borderClass = 'border-slate-100 bg-slate-50';
+    // Remove o badge de contagem superior se existir no DOM
+    const badgeCountEl = document.getElementById('badgeFutureBillsCount');
+    if (badgeCountEl) badgeCountEl.remove();
 
-        if (isPaid) {
-          order = 100;
-          badge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">✓ Paga</span>`;
-          borderClass = 'border-slate-100 bg-slate-50/70 opacity-75';
-        } else if (diff === 0) {
-          order = 1;
-          badge = `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700 flex items-center gap-1">⚠️ VENCE HOJE</span>`;
-          borderClass = 'border-amber-300/80 bg-amber-50/50 dark:bg-amber-950/20';
-        } else if (diff === 1) {
-          order = 2;
-          badge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200">⏳ Vence amanhã</span>`;
-          borderClass = 'border-amber-200/60 bg-amber-50/30';
-        } else if (diff > 1 && diff <= 5) {
-          order = 3;
-          badge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-200">⏳ Em ${diff} dias</span>`;
-          borderClass = 'border-sky-100 bg-sky-50/20';
-        } else if (diff > 5) {
-          order = 4;
-          badge = `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200">📅 Dia ${b.diaVencimento}</span>`;
-          borderClass = 'border-slate-100 bg-slate-50';
-        } else {
-          order = 5;
-          badge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200">❗ Venceu dia ${b.diaVencimento}</span>`;
-          borderClass = 'border-rose-200/80 bg-rose-50/30';
-        }
+    // 1. Processa as contas recorrentes cadastradas
+    const items = bills.map(b => {
+      const isPaid = (typeof isBillPaidInCurrentCycle === 'function') ? isBillPaidInCurrentCycle(b.id) : false;
+      const dueDay = b.diaVencimento || 1;
+      const diff = dueDay - today;
+      const vencimentoFormatado = `Dia ${dueDay}`;
 
-        const c = ((b.categoria || '') + ' ' + (b.nome || '')).toLowerCase();
-        let icon = '<i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>';
-        let bg = 'bg-amber-100 text-amber-700';
-        if (c.includes('cartão') || c.includes('nubank') || c.includes('fatura')) { icon = '<i data-lucide="credit-card" class="w-4 h-4 text-purple-600"></i>'; bg = 'bg-purple-100 text-purple-700'; }
-        else if (c.includes('aluguel') || c.includes('condom') || c.includes('moradia')) { icon = '<i data-lucide="home" class="w-4 h-4 text-blue-600"></i>'; bg = 'bg-blue-100 text-blue-700'; }
-        else if (c.includes('luz') || c.includes('energia') || c.includes('enel')) { icon = '<i data-lucide="zap" class="w-4 h-4 text-amber-600"></i>'; bg = 'bg-amber-100 text-amber-700'; }
-        else if (c.includes('água') || c.includes('agua') || c.includes('saneamento')) { icon = '<i data-lucide="droplet" class="w-4 h-4 text-sky-600"></i>'; bg = 'bg-sky-100 text-sky-700'; }
-        else if (c.includes('internet') || c.includes('fibra') || c.includes('telecom')) { icon = '<i data-lucide="wifi" class="w-4 h-4 text-indigo-600"></i>'; bg = 'bg-indigo-100 text-indigo-700'; }
-        else if (c.includes('saúde') || c.includes('saude') || c.includes('plano')) { icon = '<i data-lucide="heart-pulse" class="w-4 h-4 text-rose-600"></i>'; bg = 'bg-rose-100 text-rose-700'; }
-        else if (c.includes('pet')) { icon = '<i data-lucide="paw-print" class="w-4 h-4 text-emerald-600"></i>'; bg = 'bg-emerald-100 text-emerald-700'; }
-        else if (c.includes('carro') || c.includes('veículo')) { icon = '<i data-lucide="car" class="w-4 h-4 text-slate-600"></i>'; bg = 'bg-slate-100 text-slate-700'; }
+      const c = ((b.categoria || '') + ' ' + (b.nome || '')).toLowerCase();
+      let icon = '<i data-lucide="calendar" class="w-4 h-4 text-amber-600"></i>';
+      let bg = 'bg-amber-100 text-amber-700';
+      if (c.includes('cartão') || c.includes('nubank') || c.includes('fatura')) { icon = '<i data-lucide="credit-card" class="w-4 h-4 text-purple-600"></i>'; bg = 'bg-purple-100 text-purple-700'; }
+      else if (c.includes('aluguel') || c.includes('condom') || c.includes('moradia')) { icon = '<i data-lucide="home" class="w-4 h-4 text-blue-600"></i>'; bg = 'bg-blue-100 text-blue-700'; }
+      else if (c.includes('luz') || c.includes('energia') || c.includes('enel')) { icon = '<i data-lucide="zap" class="w-4 h-4 text-amber-600"></i>'; bg = 'bg-amber-100 text-amber-700'; }
+      else if (c.includes('água') || c.includes('agua') || c.includes('saneamento')) { icon = '<i data-lucide="droplet" class="w-4 h-4 text-sky-600"></i>'; bg = 'bg-sky-100 text-sky-700'; }
+      else if (c.includes('internet') || c.includes('fibra') || c.includes('telecom')) { icon = '<i data-lucide="wifi" class="w-4 h-4 text-indigo-600"></i>'; bg = 'bg-indigo-100 text-indigo-700'; }
+      else if (c.includes('saúde') || c.includes('saude') || c.includes('plano')) { icon = '<i data-lucide="heart-pulse" class="w-4 h-4 text-rose-600"></i>'; bg = 'bg-rose-100 text-rose-700'; }
+      else if (c.includes('pet')) { icon = '<i data-lucide="paw-print" class="w-4 h-4 text-emerald-600"></i>'; bg = 'bg-emerald-100 text-emerald-700'; }
+      else if (c.includes('carro') || c.includes('veículo')) { icon = '<i data-lucide="car" class="w-4 h-4 text-slate-600"></i>'; bg = 'bg-slate-100 text-slate-700'; }
 
-        return {
-          type: 'bill',
-          id: b.id,
-          nome: b.nome,
-          categoria: b.categoria || 'Fixa',
-          dia: b.diaVencimento,
-          responsavel: b.responsavel || 'Ambos',
-          valor: b.valorMedio || 0,
-          isPaid: isPaid,
-          order: order,
-          diff: diff,
-          badge: badge,
-          borderClass: borderClass,
-          icon: icon,
-          bg: bg
-        };
-      });
+      return {
+        type: 'bill',
+        id: b.id,
+        nome: b.nome,
+        categoria: b.categoria || 'Fixa',
+        dia: dueDay,
+        vencimentoFormatado: vencimentoFormatado,
+        responsavel: b.responsavel || 'Ambos',
+        valor: b.valorMedio || 0,
+        isPaid: isPaid,
+        order: isPaid ? 100 : (diff < 0 ? 10 : diff),
+        icon: icon,
+        bg: bg
+      };
+    });
 
-      // 2. Inclui também transações futuras agendadas no ciclo atual
-      const activeCycleTag = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey])
-        ? window.appCyclesData[window.currentActiveCycleKey].tag
-        : currentCycle;
-      const txs = (Array.isArray(activeTxs))
-        ? activeTxs.filter(t => isTxInCycle(t, activeCycleTag))
-        : ((Array.isArray(transactions) && transactions.length > 0) ? transactions.filter(t => isTxInCycle(t, activeCycleTag)) : []);
+    // 2. Inclui transações com vencimento ou agendadas
+    const allTxs = (Array.isArray(activeTxs) && activeTxs.length > 0)
+      ? activeTxs
+      : ((Array.isArray(window.transactions) && window.transactions.length > 0) ? window.transactions : ((typeof transactions !== 'undefined' && Array.isArray(transactions)) ? transactions : []));
 
-      txs.forEach(t => {
-        if (t && t.data && t.data > todayStr) {
-          const parts = t.data.split('-');
-          const diaTx = parseInt(parts[2]) || today;
-          const diffDays = Math.max(1, Math.ceil((new Date(t.data + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / (1000 * 60 * 60 * 24)));
-          const isPagoTx = (t.status === 'Pago' || t.status === 'Recebido');
-          items.push({
-            type: 'tx',
-            id: t.id,
-            nome: t.descricao || 'Lançamento Futuro',
-            categoria: t.categoria || 'Agendado',
-            dia: diaTx,
-            responsavel: t.pago_por || 'Geral',
-            valor: parseFloat(t.valor) || 0,
-            isPaid: isPagoTx,
-            order: isPagoTx ? 100 : (diffDays === 1 ? 2 : (diffDays <= 5 ? 3 : 4)),
-            diff: diffDays,
-            badge: isPagoTx
-              ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ Pago</span>`
-              : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">⏳ Agendado (${parts[2]}/${parts[1]})</span>`,
-            borderClass: isPagoTx ? 'border-slate-100 bg-slate-50/70 opacity-75' : 'border-purple-100 bg-purple-50/20',
-            icon: isPagoTx ? '<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>' : '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
-            bg: isPagoTx ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'
-          });
-        }
-      });
+    allTxs.forEach(t => {
+      if (!t) return;
+      const isFutureDate = t.data && t.data > todayStr;
+      const isFutureVenc = t.vencimento && t.vencimento > todayStr;
+      const isPendenteFixa = (t.tipo === 'Despesa Fixa' || t.categoria === 'Agendado' || t.vencimento) && (t.status === 'Pendente' || t.status === 'Agendado');
+      
+      if (isFutureDate || isFutureVenc || isPendenteFixa) {
+        if (items.some(x => x.nome.toLowerCase() === (t.descricao || '').toLowerCase())) return;
 
-      // Atualiza o badge superior
-      const pendingCount = items.filter(x => !x.isPaid).length;
-      const badgeCountEl = document.getElementById('badgeFutureBillsCount');
-      if (badgeCountEl) {
-        if (pendingCount === 0 && items.length > 0) {
-          badgeCountEl.textContent = 'Todas pagas ✓';
-          badgeCountEl.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
-        } else if (pendingCount > 0) {
-          badgeCountEl.textContent = `${pendingCount} a vencer`;
-          badgeCountEl.className = 'text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200';
-        } else {
-          badgeCountEl.textContent = '0 contas';
-          badgeCountEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200';
-        }
+        const isPagoTx = (t.status === 'Pago' || t.status === 'Recebido');
+        const effectiveDate = t.vencimento || t.data || todayStr;
+        const parts = effectiveDate.split('-');
+        const diaTx = parseInt(parts[2]) || today;
+        const vencimentoFormatado = parts.length === 3 ? `${parts[2]}/${parts[1]}` : `Dia ${diaTx}`;
+        const diffDays = Math.ceil((new Date(effectiveDate + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / (1000 * 60 * 60 * 24));
+
+        items.push({
+          type: 'tx',
+          id: t.id,
+          nome: t.descricao || 'Lançamento Futuro',
+          categoria: t.categoria || 'Agendado',
+          dia: diaTx,
+          vencimentoFormatado: vencimentoFormatado,
+          responsavel: t.responsavel || t.pago_por || 'Geral',
+          valor: parseFloat(t.valor) || 0,
+          isPaid: isPagoTx,
+          order: isPagoTx ? 100 : (diffDays < 0 ? 10 : diffDays),
+          icon: isPagoTx ? '<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>' : '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
+          bg: isPagoTx ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'
+        });
       }
+    });
 
-      if (!items || items.length === 0) {
-        container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento ou conta cadastrada a vencer.</p>';
-        return;
-      }
-
-      items.sort((a, b) => {
-        if (a.order !== b.order) return a.order - b.order;
-        if (a.diff >= 0 && b.diff >= 0) return a.diff - b.diff;
-        return (a.dia || 0) - (b.dia || 0);
-      });
-
-      container.innerHTML = items.map(item => {
-        const valFormatted = formatBRL(item.valor);
-        const displayVal = isHidden ? 'R$ •••••' : valFormatted;
-        const subInfo = `Dia ${item.dia} • ${escapeHtml(item.responsavel)}`;
-
-        let actionBtn = '';
-        if (item.type === 'bill') {
-          if (!item.isPaid) {
-            actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); if (typeof markRecurringBillAsPaid === 'function') markRecurringBillAsPaid('${item.id}', true); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills();" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Clique para marcar como pago">
-                <span>Pagar</span>
-              </button>
-            `;
-          } else {
-            actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); if (typeof toggleReopenRecurringBill === 'function') toggleReopenRecurringBill('${item.id}'); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills();" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Pago! Toque para reabrir como pendente">
-                <span>✓</span>
-                <span>Pago</span>
-              </button>
-            `;
-          }
-        } else {
-          const isPagoTx = !!item.isPaid;
-          actionBtn = isPagoTx ? `
-            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${item.id}); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills(); } else { openEditTxModal(${item.id}); }" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Pago! Toque para reabrir como pendente">
-              <span>✓</span>
-              <span>Pago</span>
-            </button>
-          ` : `
-            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${item.id}); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills(); } else { openEditTxModal(${item.id}); }" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Clique para marcar como pago">
-              <span>Pagar</span>
-            </button>
-          `;
-        }
-
-        const clickAction = item.type === 'bill' ? 'openBillsReminderModal()' : `openEditTxModal(${item.id})`;
-
-        return `
-          <div class="flex items-center justify-between py-2.5 px-1 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-blue-500/5 transition-colors cursor-pointer" onclick="${clickAction}">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-9 h-9 rounded-full ${item.bg} flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs">
-                ${item.icon}
-              </div>
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-xs font-bold text-slate-900 block leading-tight truncate ${item.isPaid ? 'line-through text-slate-400' : ''}">
-                    ${escapeHtml(item.nome)}
-                  </span>
-                  ${item.badge}
-                </div>
-                <span class="text-[10px] text-slate-500 block truncate mt-0.5">
-                  ${subInfo} • ${escapeHtml(item.categoria)}
-                </span>
-              </div>
-            </div>
-            
-            <div class="flex items-center gap-2 flex-shrink-0 ml-2">
-              <span class="text-xs font-black ${item.isPaid ? 'text-slate-400 line-through' : 'text-slate-800'}">
-                ${displayVal}
-              </span>
-              ${actionBtn}
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
-            </div>
-          </div>
-        `;
-      }).join('');
-      if (window.lucide && typeof lucide.createIcons === 'function') {
-        try { lucide.createIcons({ root: container }); } catch (e) {}
-      }
+    if (!items || items.length === 0) {
+      container.innerHTML = '<p class="py-3 text-center text-xs text-slate-500">Nenhum lançamento futuro pendente no ciclo.</p>';
+      return;
     }
 
-    function renderFamilyMembersSpending(activeTxs) {
+    // Ordenação: Pendentes primeiro (pela proximidade do vencimento), Pagos ao final
+    items.sort((a, b) => {
+      if (a.isPaid !== b.isPaid) return a.isPaid ? 1 : -1;
+      if (a.order !== b.order) return a.order - b.order;
+      return (a.dia || 0) - (b.dia || 0);
+    });
+
+    container.innerHTML = items.map(item => {
+      const valFormatted = formatBRL(item.valor);
+      const displayVal = isHidden ? 'R$ •••••' : valFormatted;
+      const clickAction = item.type === 'bill' ? `openRegisterBillModal('${item.id}')` : `openEditTxModal(${item.id})`;
+
+      const actionBtn = !item.isPaid ? `
+        <button type="button"
+          onclick="event.stopPropagation(); handleToggleFutureItemPaid('${item.type}', '${item.id}', true);"
+          class="px-3 py-1 text-[11px] font-black rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
+          style="background-color: #F59E0B !important; background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%) !important; color: #451A03 !important; border: 1px solid #D97706 !important; font-weight: 900 !important; box-shadow: 0 1px 3px rgba(245, 158, 11, 0.35) !important;"
+          title="Clique para marcar como pago">
+          <span>Pagar</span>
+        </button>
+      ` : `
+        <button type="button"
+          onclick="event.stopPropagation(); handleToggleFutureItemPaid('${item.type}', '${item.id}', false);"
+          class="px-3 py-1 text-[11px] font-black rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
+          style="background-color: #10B981 !important; background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; border: 1px solid #047857 !important; font-weight: 900 !important; box-shadow: 0 1px 3px rgba(16, 185, 129, 0.35) !important;"
+          title="Pago! Toque para reabrir como pendente">
+          <span style="font-size: 11px;">✓</span>
+          <span>Pago</span>
+        </button>
+      `;
+
+      return `
+        <div class="flex items-center justify-between py-2.5 px-2 border-b border-blue-900/10 dark:border-white/10 last:border-b-0 hover:bg-blue-500/5 transition-colors cursor-pointer rounded-xl" onclick="${clickAction}">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-full ${item.bg} flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-2xs">
+              ${item.icon}
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs font-bold text-slate-900 block leading-tight truncate ${item.isPaid ? 'line-through text-slate-400' : ''}">
+                ${escapeHtml(item.nome)}
+              </span>
+              <span class="text-[10px] text-slate-500 block truncate mt-0.5 font-medium">
+                Vencimento: <strong class="text-slate-700 font-semibold">${item.vencimentoFormatado}</strong> • ${escapeHtml(item.responsavel)}
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+            <span class="text-xs font-black ${item.isPaid ? 'text-slate-400 line-through' : 'text-slate-900'}">
+              ${displayVal}
+            </span>
+            ${actionBtn}
+            <button type="button" onclick="event.stopPropagation(); ${clickAction};" class="p-1 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer flex items-center justify-center flex-shrink-0" title="Editar este lançamento">
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      try { lucide.createIcons({ root: container }); } catch (e) {}
+    }
+  }
+  window.refreshHomeFutureBills = refreshHomeFutureBills;
+
+  function renderFamilyMembersSpending(activeTxs) {
       const container = document.getElementById('dashboardFamilyMembersSpendingList');
       if (!container) return;
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
@@ -20968,7 +20936,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (modal) modal.classList.add('hidden');
     }
 
-    function openRegisterBillModal(billId = null) {
+    window.openRegisterBillModal = function openRegisterBillModal(billId = null) {
+    const openRegisterBillModal = window.openRegisterBillModal;
       const modal = document.getElementById('modalRegisterBill');
       if (!modal) return;
 
