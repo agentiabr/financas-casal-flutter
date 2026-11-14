@@ -284,26 +284,38 @@
   /* Cabeçalho Aurora das Telas Internas */
   .page-header-back,
   .full-screen-page > .page-header-back,
-  .full-screen-page > div:first-child:has(button[onclick*="close"]) {
+  .full-screen-page > header,
+  .full-screen-page > div:first-child {
     background-color: #071933 !important;
     color: #FFFFFF !important;
-    padding: 0.85rem 1.25rem !important;
-    padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+    padding: 0.75rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
     display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
+    flex: 0 0 auto !important;
+    flex-grow: 0 !important;
     flex-shrink: 0 !important;
+    height: auto !important;
+    max-height: 68px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
   }
 
   /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
   .full-screen-page > div.bg-\[\#DFEAF7\],
   .full-screen-page > div[class*="bg-[#DFEAF7]"],
-  .full-screen-page > div:not(.page-header-back):not([class*="bg-[#071933]"]):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+  .full-screen-page > .full-screen-inner,
+  .full-screen-page > div:nth-child(2),
+  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
     flex: 1 1 0% !important;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
     border-top-left-radius: 32px !important;
@@ -311,6 +323,7 @@
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
@@ -3507,27 +3520,41 @@ html, body {
 
   /* Cabeçalho das páginas inteiras: Topo Aurora com setinha e título brancos */
   .page-header-back,
-  .full-screen-page .page-header-back {
+  .full-screen-page > .page-header-back,
+  .full-screen-page > header,
+  .full-screen-page > div:first-child {
     background-color: #071933 !important;
     color: #FFFFFF !important;
-    padding: 0.85rem 1.25rem !important;
-    padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+    padding: 0.75rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
     display: flex !important;
+    flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
+    flex: 0 0 auto !important;
+    flex-grow: 0 !important;
     flex-shrink: 0 !important;
+    height: auto !important;
+    max-height: 68px !important;
+    min-height: 0 !important;
+    margin: 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
   }
 
   /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
   .full-screen-page > .full-screen-inner,
   .full-screen-page > div[class*="max-w-"],
   .full-screen-page > div[class*="rounded-"],
-  .full-screen-page > div:not(.page-header-back):not([class*="bg-[#071933]"]):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+  .full-screen-page > div.bg-\[\#DFEAF7\],
+  .full-screen-page > div[class*="bg-[#DFEAF7]"],
+  .full-screen-page > div:nth-child(2),
+  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
     flex: 1 1 0% !important;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
     border-top-left-radius: 32px !important;
@@ -3535,6 +3562,7 @@ html, body {
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
@@ -5393,29 +5421,29 @@ html, body {
               </span>
             </div>
 
-            <!-- Balão de Dica do Piggy (Design System: Luminous Sapphire Degradee com Alta Legibilidade) -->
-            <div class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-[#0c2e68] via-[#0f3e8c] to-[#0a2656] border border-sky-400/35 shadow-md flex items-center justify-between gap-2.5 select-none text-white">
-              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-sky-200 hover:text-white border border-white/20 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Dica anterior">
+            <!-- Balão de Dica do Piggy (Design System: Luminous Frosted Sapphire com Alta Legibilidade) -->
+            <div class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-[#0d2a5e]/90 via-[#133d82]/90 to-[#0e2f69]/90 border border-sky-300/35 shadow-md flex items-center justify-between gap-2.5 select-none text-white backdrop-blur-md">
+              <button type="button" onclick="stepPiggyTip(-1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-white hover:text-sky-200 border border-white/25 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Dica anterior">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
               </button>
               <div class="flex-1 text-center min-w-0 px-1">
-                <div class="flex items-center justify-center gap-1.5 mb-1">
-                  <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-100/90 px-2 py-0.5 rounded-full border border-blue-200 flex items-center gap-1">
+                <div class="flex items-center justify-center gap-1.5 mb-1.5">
+                  <span class="text-[10px] font-black uppercase tracking-wider text-sky-200 bg-sky-400/20 px-2.5 py-0.5 rounded-full border border-sky-300/30 flex items-center gap-1">
                     <span id="previewTipBadgeIcon">💡</span>
                     <span id="previewTipCategory">Dica do Piggy</span>
                   </span>
-                  <span id="previewTipIndex" class="text-[9px] font-black text-blue-700 bg-white/80 border border-blue-200/80 px-1.5 py-0.2 rounded-md">1/10</span>
+                  <span id="previewTipIndex" class="text-[9px] font-black text-sky-100 bg-white/15 border border-white/20 px-2 py-0.2 rounded-md">1/10</span>
                 </div>
-                <p id="previewTipText" class="text-xs font-semibold text-slate-800 leading-snug">
+                <p id="previewTipText" class="text-xs sm:text-[13px] font-medium text-white leading-snug drop-shadow-xs">
                   "Você economizou 15% em mercado essa semana! Parabéns pela disciplina."
                 </p>
-                <div id="previewTipDots" class="flex items-center justify-center gap-1 mt-1.5">
-                  <span class="w-2.5 h-1 rounded-full bg-sky-400"></span>
-                  <span class="w-1.5 h-1 rounded-full bg-sky-400/40"></span>
-                  <span class="w-1.5 h-1 rounded-full bg-sky-400/40"></span>
+                <div id="previewTipDots" class="flex items-center justify-center gap-1.5 mt-2">
+                  <span class="w-3 h-1.5 rounded-full bg-sky-300 shadow-xs shadow-sky-400/50"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-white/25"></span>
                 </div>
               </div>
-              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-sky-200 hover:text-white border border-white/20 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Próxima dica">
+              <button type="button" onclick="stepPiggyTip(1)" class="w-7 h-7 rounded-xl bg-white/15 hover:bg-white/25 active:scale-90 text-white hover:text-sky-200 border border-white/25 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all" title="Próxima dica">
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
               </button>
             </div>
@@ -6131,7 +6159,7 @@ html, body {
   <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO AZUL AURORA OFICIAL DO DASHBOARD) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -7296,7 +7324,7 @@ html, body {
   <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -11061,6 +11089,7 @@ html, body {
         try { lucide.createIcons({ root: container }); } catch (e) {}
       }
     }
+    window.refreshHomeFutureBills = refreshHomeFutureBills;
 
     
   // Olhinho próprio exclusivo para Lançamentos Futuros
@@ -11209,6 +11238,7 @@ html, body {
           const parts = t.data.split('-');
           const diaTx = parseInt(parts[2]) || today;
           const diffDays = Math.max(1, Math.ceil((new Date(t.data + 'T12:00:00') - new Date(todayStr + 'T12:00:00')) / (1000 * 60 * 60 * 24)));
+          const isPagoTx = (t.status === 'Pago' || t.status === 'Recebido');
           items.push({
             type: 'tx',
             id: t.id,
@@ -11217,13 +11247,15 @@ html, body {
             dia: diaTx,
             responsavel: t.pago_por || 'Geral',
             valor: parseFloat(t.valor) || 0,
-            isPaid: false,
-            order: diffDays === 1 ? 2 : (diffDays <= 5 ? 3 : 4),
+            isPaid: isPagoTx,
+            order: isPagoTx ? 100 : (diffDays === 1 ? 2 : (diffDays <= 5 ? 3 : 4)),
             diff: diffDays,
-            badge: `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">⏳ Agendado (${parts[2]}/${parts[1]})</span>`,
-            borderClass: 'border-purple-100 bg-purple-50/20',
-            icon: '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
-            bg: 'bg-purple-100 text-purple-700'
+            badge: isPagoTx
+              ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">✓ Pago</span>`
+              : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">⏳ Agendado (${parts[2]}/${parts[1]})</span>`,
+            borderClass: isPagoTx ? 'border-slate-100 bg-slate-50/70 opacity-75' : 'border-purple-100 bg-purple-50/20',
+            icon: isPagoTx ? '<i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>' : '<i data-lucide="clock" class="w-4 h-4 text-purple-600"></i>',
+            bg: isPagoTx ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'
           });
         }
       });
@@ -11264,22 +11296,27 @@ html, body {
         if (item.type === 'bill') {
           if (!item.isPaid) {
             actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); markRecurringBillAsPaid('${item.id}', true);" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
+              <button type="button" onclick="event.stopPropagation(); if (typeof markRecurringBillAsPaid === 'function') markRecurringBillAsPaid('${item.id}', true); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills();" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Clique para marcar como pago">
                 <span>Pagar</span>
               </button>
             `;
           } else {
             actionBtn = `
-              <button type="button" onclick="event.stopPropagation(); toggleReopenRecurringBill('${item.id}');" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Toque para reabrir">
+              <button type="button" onclick="event.stopPropagation(); if (typeof toggleReopenRecurringBill === 'function') toggleReopenRecurringBill('${item.id}'); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills();" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Pago! Toque para reabrir como pendente">
                 <span>✓</span>
                 <span>Pago</span>
               </button>
             `;
           }
         } else {
-          actionBtn = `
-            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${item.id}); refreshHomeFutureBills(); } else { openEditTxModal(${item.id}); }" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
+          const isPagoTx = !!item.isPaid;
+          actionBtn = isPagoTx ? `
+            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${item.id}); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills(); } else { openEditTxModal(${item.id}); }" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Pago! Toque para reabrir como pendente">
               <span>✓</span>
+              <span>Pago</span>
+            </button>
+          ` : `
+            <button type="button" onclick="event.stopPropagation(); if (typeof toggleQuitarFixa === 'function') { toggleQuitarFixa(${item.id}); if (typeof refreshHomeFutureBills === 'function') refreshHomeFutureBills(); } else { openEditTxModal(${item.id}); }" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-black text-[11px] rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Clique para marcar como pago">
               <span>Pagar</span>
             </button>
           `;
@@ -20705,10 +20742,15 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       } catch(e) {}
     }
 
+    window.isBillPaidInCurrentCycle = function(billId) {
+      const cycleKey = `${(typeof currentCycle !== 'undefined' && currentCycle) ? currentCycle : 'ciclo'}_${billId}`;
+      const activeCycleKey = window.currentActiveCycleKey || localStorage.getItem('ctrlpig_active_cycle') || 'out_2026';
+      const altCycleKey = `${activeCycleKey}_${billId}`;
+      const statusMap = typeof getBillsPaidStatusMap === 'function' ? getBillsPaidStatusMap() : JSON.parse(localStorage.getItem('financas_status_contas_pagas') || '{}');
+      return !!(statusMap[cycleKey] || statusMap[altCycleKey] || statusMap[String(billId)]);
+    };
     function isBillPaidInCurrentCycle(billId) {
-      const cycleKey = `${currentCycle || 'ciclo'}_${billId}`;
-      const statusMap = getBillsPaidStatusMap();
-      return !!statusMap[cycleKey];
+      return window.isBillPaidInCurrentCycle(billId);
     }
 
     function nextMentorTip() {
@@ -24628,9 +24670,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
   </nav>
 
-  <!-- BOTÃO FLUTUANTE ESTILO WHATSAPP (VERDE, LADO DIREITO INFERIOR) -->
-  <div id="floatingFamilyChatButton" class="fixed bottom-20 right-4 z-40 select-none animate-in fade-in duration-300">
-    <button type="button" onclick="openFamilyChatModal()" class="w-[60px] h-[60px] rounded-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white flex items-center justify-center shadow-2xl shadow-emerald-500/40 border-2 border-white dark:border-slate-800 transition-all cursor-pointer relative" style="width: 60px; height: 60px; min-width: 60px; min-height: 60px;" title="Abrir Chat da Família">
+  <!-- BOTÃO FLUTUANTE ESTILO WHATSAPP (FINTECH EMERALD GLASS, LADO DIREITO INFERIOR) -->
+  <div id="floatingFamilyChatButton" class="fixed bottom-24 right-4 z-40 select-none animate-in fade-in duration-300" style="z-index: 999 !important; bottom: calc(max(env(safe-area-inset-bottom, 0px), 16px) + 68px) !important;">
+    <button type="button" onclick="openFamilyChatModal()" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-95 text-white flex items-center justify-center shadow-2xl shadow-emerald-600/40 border border-white/60 transition-all cursor-pointer relative" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;" title="Abrir Chat da Família">
       <i data-lucide="message-circle" class="w-7 h-7 stroke-[2.3]"></i>
       <span id="chatFloatingBadge" class="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm hidden animate-pulse">!</span>
     </button>
@@ -26714,7 +26756,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
   
   <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-  <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+  <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
     <div class="flex items-center gap-2.5">
       <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
         <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -27024,7 +27066,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -28363,7 +28405,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -28469,7 +28511,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -33121,7 +33163,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 <div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -39769,7 +39811,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: SELETOR DE CICLOS MENSAIS COM OPÇÃO '+ NOVO CICLO' (ITEM 1)        -->
   <!-- ========================================================================= -->
   <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeSelectCycleModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -39890,7 +39932,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: QUESTIONÁRIO DE PERFIL FINANCEIRO DO USUÁRIO & FAMÍLIA (ITEM 5)     -->
   <!-- ========================================================================= -->
   <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -40095,7 +40137,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
   <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[3600] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -43972,7 +44014,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
   <!-- ========================================================================= -->
   <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -44115,7 +44157,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
   <!-- ========================================================================= -->
   <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -44704,13 +44746,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       // Exibe mensagem informativa caso ainda não existam dados comparativos suficientes (mínimo 2 estabelecimentos)
       const distinctStores = new Set(hist.map(h => (h.estabelecimento || '').trim()).filter(Boolean));
-      if (distinctStores.size < 2 && !isMaster) {
+      if (distinctStores.size < 2) {
         body.innerHTML = `
           <div class="bg-white rounded-3xl p-7 text-center shadow-sm border border-slate-200/80 space-y-3 my-auto">
             <span class="text-4xl block">📊</span>
             <h3 class="font-black text-base text-slate-900">Comparativo de Supermercados</h3>
             <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto font-medium">
-              O comparativo estará disponível assim que houver produtos cadastrados em pelo menos 2 estabelecimentos distintos para comparação de preços.
+              O comparativo de preços estará disponível quando houver dados cadastrados de estabelecimentos distintos.
             </p>
             <div class="pt-2">
               <button type="button" onclick="closeComparativoMercadosModal()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-2xl shadow-sm transition-all cursor-pointer">

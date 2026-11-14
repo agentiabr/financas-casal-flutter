@@ -123,32 +123,45 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
         return;
       }
 
-      // Pequena pausa para garantir liberacao de sessoes anteriores de camera no hardware
-      await Future.delayed(const Duration(milliseconds: 250));
+      await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
 
-      int retries = 3;
-      while (retries > 0 && mounted) {
-        try {
-          if (!_scannerController.value.isRunning) {
-            await _scannerController.start();
-          }
-          break;
-        } catch (e) {
-          retries--;
-          debugPrint('Tentando inicializar camera do MobileScanner... ()');
-          if (retries > 0) {
-            await Future.delayed(const Duration(milliseconds: 350));
-          }
-        }
-      }
+      try {
+        await _scannerController.stop();
+      } catch (_) {}
+
+      try {
+        await _scannerController.dispose();
+      } catch (_) {}
+
+      _scannerController = MobileScannerController(
+        detectionSpeed: DetectionSpeed.noDuplicates,
+        facing: CameraFacing.back,
+        torchEnabled: false,
+        formats: const [
+          BarcodeFormat.qrCode,
+          BarcodeFormat.code128,
+          BarcodeFormat.code39,
+          BarcodeFormat.ean13,
+          BarcodeFormat.ean8,
+          BarcodeFormat.itf,
+          BarcodeFormat.upcA,
+          BarcodeFormat.upcE,
+        ],
+      );
+
       if (mounted) {
         setState(() {
           _isProcessing = false;
         });
       }
+
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (mounted && !_scannerController.value.isRunning) {
+        await _scannerController.start();
+      }
     } catch (e) {
-      debugPrint('Aviso ao inicializar camera do MobileScanner: ');
+      debugPrint('Aviso ao inicializar camera do MobileScanner: $e');
     }
   }
 
@@ -863,13 +876,27 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
-                        onPressed: _initCamera,
+                        onPressed: () async {
+                          await _initCamera();
+                        },
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Iniciar Camera Novamente', style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: const Text('Reiniciar Câmera', style: TextStyle(fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        onPressed: _pickQrFromCamera,
+                        icon: const Icon(Icons.camera_alt),
+                        label: const Text('Fotografar Cupom com Câmera', style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0284C7),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                       ),
