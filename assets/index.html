@@ -117,7 +117,8 @@
     html.require-auth #main-content,
     html.require-auth #app-navbar-container,
     html.require-auth nav,
-    html.require-auth #btnFloatingFamilyChat {
+    html.require-auth #btnFloatingFamilyChat,
+    html.require-auth #floatingFamilyChatButton {
       display: none !important;
     }
     html.require-auth, html.require-auth body {
@@ -6076,9 +6077,7 @@ html, body {
     <!-- ============================================================ -->
     <!-- DOCK INFERIOR FIXO COM 5 BOTÕES: Início / Transações / (+) / Mercado / Minha Rotina -->
     <!-- ============================================================ -->
-    <button type="button" onclick="openFamilyChatModal()" id="btnFloatingFamilyChat" class="fixed bottom-20 right-4 z-40 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all border-2 border-white dark:border-slate-800 cursor-pointer" title="Abrir Chat Familiar">
-        <i data-lucide="message-circle" class="w-5 h-5"></i>
-      </button>
+    <!-- Botão de chat flutuante consolidado em #floatingFamilyChatButton -->
       <nav class="bottom-nav">
       <div class="bottom-nav-grid">
         
@@ -24758,11 +24757,22 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
   </nav>
 
-  <!-- BOTÃO FLUTUANTE ESTILO WHATSAPP (FINTECH EMERALD GLASS, LADO DIREITO INFERIOR) -->
+  <!-- BOTÃO FLUTUANTE CHAT DA FAMÍLIA (LIQUID GLASS BUBBLE - BALÃOZINHO CRISTALINO SEM CAIXA VERDE) -->
   <div id="floatingFamilyChatButton" class="fixed bottom-24 right-4 z-40 select-none animate-in fade-in duration-300" style="z-index: 999 !important; bottom: calc(max(env(safe-area-inset-bottom, 0px), 16px) + 68px) !important;">
-    <button type="button" onclick="openFamilyChatModal()" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-95 text-white flex items-center justify-center shadow-2xl shadow-emerald-600/40 border border-white/60 transition-all cursor-pointer relative" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;" title="Abrir Chat da Família">
-      <i data-lucide="message-circle" class="w-7 h-7 stroke-[2.3]"></i>
-      <span id="chatFloatingBadge" class="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 text-white font-black text-[10px] flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm hidden animate-pulse">!</span>
+    <button type="button" id="btnFloatingFamilyChat" onclick="openFamilyChatModal()" class="group relative rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-90 hover:scale-105" style="width: 62px; height: 62px; min-width: 62px; min-height: 62px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(215, 235, 255, 0.68) 50%, rgba(165, 210, 255, 0.48) 100%); backdrop-filter: blur(24px) saturate(200%); -webkit-backdrop-filter: blur(24px) saturate(200%); border: 1.5px solid rgba(255, 255, 255, 0.90); box-shadow: 0 10px 28px -4px rgba(6, 26, 74, 0.35), 0 4px 10px 0 rgba(6, 26, 74, 0.18), inset 0 2px 4px 0 rgba(255, 255, 255, 0.95), inset 0 -2px 4px 0 rgba(70, 140, 255, 0.35);" title="Abrir Chat da Família">
+      
+      <!-- Reflexo Liquid Glass Superior -->
+      <span class="absolute top-1 left-2.5 right-2.5 h-4 rounded-full bg-gradient-to-b from-white/70 to-transparent pointer-events-none opacity-80"></span>
+      
+      <!-- Ícone Balãozinho Ampliado no Centro -->
+      <div class="relative flex items-center justify-center text-blue-600 transition-transform group-hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 drop-shadow-[0_2px_6px_rgba(37,99,235,0.35)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+        </svg>
+      </div>
+
+      <!-- Badge de Mensagens Não Lidas -->
+      <span id="chatFloatingBadge" class="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-black text-[10px] flex items-center justify-center border-2 border-white shadow-md hidden animate-pulse">!</span>
     </button>
   </div>
 
