@@ -4467,16 +4467,20 @@ html, body {
       background-size: cover !important;
     }
 
-    /* Modais de Lançamentos Futuros & Contas a Pagar: Liquid Glass Sapphire (Sem Fundo Preto) */
+    /* Modais de Lançamentos Futuros, Contas a Pagar & Novo Lançamento: Liquid Glass Sapphire (Sem Fundo Preto) */
     #modalBillsReminder,
-    #modalRegisterBill {
+    #modalRegisterBill,
+    #modalNewTx,
+    #modalEditTx {
       background-color: rgba(6, 26, 74, 0.65) !important;
       backdrop-filter: blur(20px) !important;
       -webkit-backdrop-filter: blur(20px) !important;
     }
 
     #modalBillsReminder > div,
-    #modalRegisterBill > div {
+    #modalRegisterBill > div,
+    #modalNewTx > div,
+    #modalEditTx > div {
       background: var(--liquid-card-bg) !important;
       backdrop-filter: blur(24px) saturate(190%) !important;
       -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
@@ -6993,146 +6997,170 @@ html, body {
     </div>
   </div>
 
-  <div id="modalNewTx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white/95 dark:bg-slate-900/95 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/60 dark:border-slate-700/60 text-slate-800 dark:text-slate-100 backdrop-blur-2xl">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-700/80">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-md">
-            <i data-lucide="plus" class="w-5 h-5 text-white stroke-[2.8]"></i>
+  <!-- ========================================== -->
+  <!-- MODAL: NOVO LANÇAMENTO (DESIGN LIQUID GLASS) -->
+  <!-- ========================================== -->
+  <div id="modalNewTx" class="fixed inset-0 bg-[#061e56]/60 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-5" onclick="if(event.target===this) closeNewTxModal()">
+    <div class="bg-white/90 text-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-white/80 text-xs flex flex-col">
+      
+      <!-- Cabeçalho Liquid Glass -->
+      <div class="flex items-center justify-between pb-3.5 border-b border-slate-200/70 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center font-bold text-lg shadow-md border border-white/50">
+            <i data-lucide="plus-circle" class="w-5 h-5 text-white stroke-[2.4]"></i>
           </div>
           <div>
-            <h3 class="font-black text-base text-slate-900 dark:text-white tracking-tight leading-tight">Novo Lançamento</h3>
-            <span class="text-[10px] text-slate-500 dark:text-slate-400">Receitas, despesas diárias e compromissos</span>
+            <div class="flex items-center gap-2">
+              <h3 class="font-black text-base text-slate-900 tracking-tight leading-tight">Novo Lançamento</h3>
+              <span class="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 font-bold rounded-full">Lançamento</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Receitas, despesas diárias e compromissos</p>
           </div>
         </div>
-        <button type="button" onclick="closeNewTxModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 flex items-center justify-center text-slate-600 dark:text-slate-200 transition-all cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
+        
+        <button type="button" onclick="closeNewTxModal()" class="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all shadow-xs border border-slate-200/80 cursor-pointer active:scale-95" title="Fechar">
+          <i data-lucide="x" class="w-5 h-5 stroke-[2.2]"></i>
         </button>
       </div>
 
-      <!-- BOTÃO DESTACADO: CADASTRAR VENCIMENTO DE CONTA / RECORRENTE -->
-      <div class="mt-3 p-3 rounded-2xl bg-gradient-to-r from-amber-50 via-blue-50 to-indigo-50 dark:from-amber-950/40 dark:via-blue-950/40 dark:to-indigo-950/40 border border-amber-300/80 dark:border-amber-700/50 flex items-center justify-between gap-2 cursor-pointer hover:border-amber-400 transition-all active:scale-98 shadow-sm" onclick="closeNewTxModal(); openBillsReminderModal();" title="Toque para cadastrar uma conta com vencimento mensal">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <span class="text-xl flex-shrink-0">📅</span>
-          <div class="min-w-0 leading-tight">
-            <strong class="text-xs font-black text-amber-800 dark:text-amber-300 block truncate">Cadastrar Vencimento de Conta</strong>
-            <span class="text-[10px] text-slate-600 dark:text-slate-300 block truncate">Agendar boleto ou conta fixa que vence todo mês</span>
-          </div>
-        </div>
-        <button type="button" class="px-2.5 py-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] flex-shrink-0 shadow-xs">
-          + Agendar
-        </button>
-      </div>
+      <form onsubmit="handleSaveNewTx(event)" class="space-y-3 mt-3.5 text-xs">
+        <!-- Campo oculto da data do lançamento: gerado automaticamente no dia que foi lançado -->
+        <input type="hidden" id="newTxData" value="">
 
-
-
-        <form onsubmit="handleSaveNewTx(event)" class="space-y-3 mt-3 text-xs">
+        <!-- Tipo de Lançamento -->
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Tipo de Lançamento</label>
+          <label class="block font-bold text-slate-700 mb-1.5">Tipo de Lançamento</label>
           <div class="grid grid-cols-3 gap-2">
-            <label class="flex items-center justify-center gap-1 p-2 rounded-none border border-slate-300 cursor-pointer hover:bg-emerald-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-600 has-[:checked]:text-emerald-800">
+            <label class="flex items-center justify-center gap-1.5 p-2 rounded-2xl border border-white/80 bg-white/70 shadow-2xs cursor-pointer hover:bg-emerald-50 has-[:checked]:bg-emerald-500 has-[:checked]:text-white has-[:checked]:border-emerald-600 transition-all">
               <input type="radio" name="newTxTipo" value="Receita" onchange="updateTxTipoExplanation('new')" class="hidden">
               <span class="font-bold">🟢 Receita</span>
             </label>
-            <label class="flex items-center justify-center gap-1 p-2 rounded-none border border-slate-300 cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-600 has-[:checked]:text-blue-800">
+            <label class="flex items-center justify-center gap-1.5 p-2 rounded-2xl border border-white/80 bg-white/70 shadow-2xs cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-600 has-[:checked]:text-white has-[:checked]:border-blue-700 transition-all">
               <input type="radio" name="newTxTipo" value="Despesa Fixa" onchange="updateTxTipoExplanation('new')" class="hidden">
               <span class="font-bold">🔵 Fixa</span>
             </label>
-            <label class="flex items-center justify-center gap-1 p-2 rounded-none border border-slate-300 cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-50 has-[:checked]:border-amber-600 has-[:checked]:text-amber-800">
+            <label class="flex items-center justify-center gap-1.5 p-2 rounded-2xl border border-white/80 bg-white/70 shadow-2xs cursor-pointer hover:bg-amber-50 has-[:checked]:bg-amber-500 has-[:checked]:text-white has-[:checked]:border-amber-600 transition-all">
               <input type="radio" name="newTxTipo" value="Despesa Variável" checked onchange="updateTxTipoExplanation('new')" class="hidden">
               <span class="font-bold">🟠 Variável</span>
             </label>
           </div>
           <!-- Explicação Clara do Tipo de Lançamento -->
-          <div id="newTxTipoExplanation" class="mt-2 p-2.5 rounded-none bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-[11px] leading-relaxed transition-all">
-            <span class="font-bold text-amber-700 dark:text-amber-300 block">🟠 Despesa Variável:</span>
-            <span class="text-slate-600 dark:text-slate-300">Gastos flexíveis do dia a dia cujo valor muda a cada mês (ex: supermercado, farmácia, restaurantes, lazer, presentes).</span>
+          <div id="newTxTipoExplanation" class="mt-2 p-2.5 rounded-2xl bg-white/70 border border-white/90 text-[11px] leading-relaxed shadow-2xs transition-all">
+            <span class="font-bold text-amber-700 block">🟠 Despesa Variável:</span>
+            <span class="text-slate-600">Gastos flexíveis do dia a dia cujo valor muda a cada mês (ex: supermercado, farmácia, restaurantes, lazer, presentes).</span>
           </div>
         </div>
 
+        <!-- Descrição / Estabelecimento -->
         <div>
-          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Estabelecimento</label>
-          <input type="text" id="newTxDescricao" required oninput="checkPreviousExpenseHint(this.value, 'newTx')" placeholder="Ex.: Restaurante Vila Palazzo, IPTU, Seguro Carro..." class="w-full px-3 py-2 rounded-none border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none text-slate-900 dark:text-slate-100">
+          <label class="block font-bold text-slate-700 mb-1">Descrição / Estabelecimento</label>
+          <input type="text" id="newTxDescricao" required oninput="checkPreviousExpenseHint(this.value, 'newTx')" placeholder="Ex.: Supermercado Muffato, IPTU, Riachuelo..." class="w-full px-3.5 py-2.5 rounded-2xl border border-white/90 bg-white/80 shadow-2xs focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-medium placeholder:text-slate-400">
           <div id="newTxPreviousHint" class="hidden mt-1.5"></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Valor (R$)</label>
-            <input type="text" inputmode="numeric" id="newTxValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-slate-800 dark:text-slate-100">
+        <!-- Valor (R$) -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Valor (R$)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-slate-400 text-sm">R$</span>
+            <input type="text" inputmode="numeric" id="newTxValor" required placeholder="0,00" class="w-full pl-10 pr-3.5 py-2.5 rounded-2xl border border-white/90 bg-white/80 shadow-2xs focus:ring-2 focus:ring-blue-500 focus:outline-none font-black text-base text-slate-900">
           </div>
-          <div>
-              <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5 text-xs">Data do Lançamento</label>
-              <!-- Atalhos de 1 Toque -->
-              <div class="w-full">
-                <input type="date" id="newTxData" required class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-1 focus:ring-blue-500">
-              </div>
-            </div>
         </div>
 
+        <!-- DATA DO VENCIMENTO NO MESMO CARD COM ATALHOS RÁPIDOS -->
+        <div class="p-3.5 rounded-2xl bg-white/75 border border-white/90 shadow-2xs space-y-2.5 backdrop-blur-md">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📅</span>
+              <div>
+                <label class="block font-black text-slate-800 text-xs">Data do Vencimento</label>
+                <span class="text-[10px] text-slate-500">Quando esta conta vence ou deve ser paga</span>
+              </div>
+            </div>
+            <label class="inline-flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="newTxSaveAsBillReminder" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+              <span class="text-[11px] font-bold text-slate-700">Agendar Lembrete</span>
+            </label>
+          </div>
+
+          <div class="relative">
+            <input type="date" id="newTxVencimentoDate" class="w-full px-3 py-2 rounded-xl border border-slate-200/90 bg-white/90 text-slate-800 text-xs font-bold shadow-2xs focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Preenchimento rápido de vencimento:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="setQuickVencimento('today')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/70 text-[10px] font-black transition-all active:scale-95 cursor-pointer">⚡ Hoje</button>
+              <button type="button" onclick="setQuickVencimento('tomorrow')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">Amanhã</button>
+              <button type="button" onclick="setQuickVencimento('+5')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">+5 dias</button>
+              <button type="button" onclick="setQuickVencimento('+10')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">+10 dias</button>
+              <button type="button" onclick="setQuickVencimento('day10')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/70 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">Dia 10</button>
+              <button type="button" onclick="setQuickVencimento('day15')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/70 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">Dia 15</button>
+              <button type="button" onclick="setQuickVencimento('day20')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/70 text-[10px] font-bold transition-all active:scale-95 cursor-pointer">Dia 20</button>
+              <button type="button" onclick="setQuickVencimento('endOfMonth')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/70 text-[10px] font-black transition-all active:scale-95 cursor-pointer">🏁 Fim do Mês</button>
+            </div>
+          </div>
+          
+          <p class="text-[10px] text-slate-500 font-medium leading-tight">
+            💡 Lançamento registrado automaticamente na data de hoje. Se "Agendar Lembrete" estiver marcado, o compromisso também constará em <strong>Lançamentos Futuros</strong>.
+          </p>
+        </div>
+
+        <!-- Categoria & Responsável -->
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
+            <label class="block font-bold text-slate-700 mb-1">Categoria</label>
             <input type="hidden" id="newTxCategoria" value="Alimentação">
-            <button type="button" onclick="openSoberTilePicker('categoria', 'newTxCategoria', 'Selecionar Categoria')" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
+            <button type="button" onclick="openSoberTilePicker('categoria', 'newTxCategoria', 'Selecionar Categoria')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
               <span id="btnPickerText_newTxCategoria">🛒 Alimentação</span>
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Responsável</label>
+            <label class="block font-bold text-slate-700 mb-1">Responsável</label>
             <input type="hidden" id="newTxResponsavel" value="Comum">
-            <button type="button" onclick="openSoberTilePicker('responsavel', 'newTxResponsavel', 'Quem pagou?')" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
+            <button type="button" onclick="openSoberTilePicker('responsavel', 'newTxResponsavel', 'Quem pagou?')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
               <span id="btnPickerText_newTxResponsavel">👫 Comum (Casal)</span>
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
           </div>
         </div>
 
+        <!-- Forma de Pagamento & Cartão -->
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Forma de Pagamento</label>
+            <label class="block font-bold text-slate-700 mb-1">Forma de Pagamento</label>
             <input type="hidden" id="newTxPagamento" value="Cartão de Crédito">
-            <button type="button" onclick="openSoberTilePicker('pagamento', 'newTxPagamento', 'Forma de Pagamento')" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
+            <button type="button" onclick="openSoberTilePicker('pagamento', 'newTxPagamento', 'Forma de Pagamento')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
               <span id="btnPickerText_newTxPagamento">💳 Cartão de Crédito</span>
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
           </div>
           <div id="newTxCartaoContainer">
             <label class="block font-bold text-slate-700 mb-1">Cartão (Opcional)</label>
-            <select id="newTxCartao" onchange="onTxCardChanged(this.value, 'newTxCustomCardBox')" class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+            <select id="newTxCartao" onchange="onTxCardChanged(this.value, 'newTxCustomCardBox')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-semibold shadow-2xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
               <option value="">Nenhum cartão específico</option>
             </select>
             <div id="newTxCustomCardBox" class="hidden mt-1.5">
-              <input type="text" id="newTxCustomCardName" placeholder="Digite o nome do outro cartão..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 text-xs rounded-none focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <input type="text" id="newTxCustomCardName" placeholder="Digite o nome do outro cartão..." class="w-full px-3 py-2 bg-white/80 border border-white/90 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
           </div>
         </div>
 
-        
-        <!-- OPÇÃO DE CADASTRAR EM VENCIMENTOS DE CONTAS A PAGAR -->
-        <div class="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 mt-2 flex items-center justify-between gap-2">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="newTxSaveAsBillReminder" class="text-amber-600 rounded">
-            <span class="font-bold text-amber-900 dark:text-amber-200 text-xs">📅 Cadastrar alerta de vencimento (Contas a Pagar)</span>
-          </label>
-          <button type="button" onclick="closeNewTxModal(); openBillsReminderModal();" class="text-[10px] font-extrabold text-amber-700 dark:text-amber-300 underline cursor-pointer flex-shrink-0">Ver Vencimentos</button>
-        </div>
-
         <!-- CAMPO DE PARCELAMENTO NO MODAL DE LANÇAMENTO -->
-        <div class="p-3 bg-slate-50 border border-slate-200 mt-2">
+        <div class="p-3.5 bg-white/75 border border-white/90 rounded-2xl shadow-2xs">
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="newTxCheckParcelado" onchange="toggleNewTxParcelas(this.checked)" class="text-blue-600">
-              <span class="font-bold text-slate-700 text-xs">📦 Compra Parcelada no Cartão?</span>
+              <input type="checkbox" id="newTxCheckParcelado" onchange="toggleNewTxParcelas(this.checked)" class="text-blue-600 rounded">
+              <span class="font-bold text-slate-800 text-xs">📦 Compra Parcelada no Cartão?</span>
             </label>
-            <span class="text-[10px] text-slate-400">Opcional</span>
+            <span class="text-[10px] text-slate-400 font-medium">Opcional</span>
           </div>
 
-          <div id="newTxBoxParcelas" class="hidden grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
+          <div id="newTxBoxParcelas" class="hidden grid grid-cols-2 gap-2 mt-2.5 pt-2.5 border-t border-slate-200/70">
             <div>
               <label class="block font-semibold text-slate-600 text-[11px] mb-1">Total de Parcelas</label>
-              <select id="newTxTotalParcelas" onchange="calcNewTxParcelaValor()" class="w-full px-2 py-1.5 border border-slate-300 text-xs rounded-none bg-white">
+              <select id="newTxTotalParcelas" onchange="calcNewTxParcelaValor()" class="w-full px-2.5 py-1.5 border border-slate-200/90 text-xs rounded-xl bg-white/90 text-slate-800 font-semibold shadow-2xs">
                 <option value="2">2x</option>
                 <option value="3">3x</option>
                 <option value="4">4x</option>
@@ -7145,11 +7173,11 @@ html, body {
                 <option value="24">24x</option>
               </select>
             
-              <div class="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700">
-                <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Início das Parcelas (Para parcelamentos já iniciados antes):
+              <div class="mt-2.5 pt-2 border-t border-slate-200/70">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                  Início das Parcelas:
                 </label>
-                <select id="newTxInicioParcelas" class="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white font-semibold">
+                <select id="newTxInicioParcelas" class="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-200/90 bg-white/90 text-slate-800 font-semibold shadow-2xs">
                   <option value="0">Primeira parcela (1x) vence neste ciclo atual</option>
                   <option value="-1">Começou no mês passado (esta já é a parcela 2x)</option>
                   <option value="-2">Começou há 2 meses (esta já é a parcela 3x)</option>
@@ -7157,31 +7185,34 @@ html, body {
                   <option value="-4">Começou há 4 meses (esta já é a parcela 5x)</option>
                 </select>
                 <p class="text-[10px] text-slate-500 mt-0.5">Permite lançar compras parceladas que você esqueceu de cadastrar nos meses anteriores.</p>
-              </div></div>
+              </div>
+            </div>
             <div>
               <label class="block font-semibold text-slate-600 text-[11px] mb-1">Valor de Cada Parcela</label>
-              <input type="text" id="newTxValorParcelaDisplay" readonly class="w-full px-2 py-1.5 bg-slate-100 border border-slate-300 text-xs font-bold text-slate-700 rounded-none">
+              <input type="text" id="newTxValorParcelaDisplay" readonly class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200/90 text-xs font-bold text-slate-700 rounded-xl">
             </div>
           </div>
         </div>
 
-        <div class="p-3 bg-slate-50 rounded-none border border-slate-300">
-          <label class="block font-bold text-slate-700 mb-1">Origem do Comprovante</label>
-          <div class="grid grid-cols-2 gap-2 mt-1">
-            <label class="flex items-center gap-1.5 p-1.5 bg-white rounded-none border border-slate-300 cursor-pointer has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+        <!-- Origem do Comprovante -->
+        <div class="p-3 bg-white/75 rounded-2xl border border-white/90 shadow-2xs">
+          <label class="block font-bold text-slate-700 mb-1.5 text-xs">Origem do Comprovante</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-1.5 p-2 bg-white/90 rounded-xl border border-slate-200/80 cursor-pointer has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 transition-all shadow-2xs">
               <input type="radio" name="newTxOrigem" value="com_nota" checked class="text-blue-600">
               <span class="text-[11px] font-medium text-slate-700">🧾 Com Nota Fiscal</span>
             </label>
-            <label class="flex items-center gap-1.5 p-1.5 bg-white rounded-none border border-slate-300 cursor-pointer has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50">
+            <label class="flex items-center gap-1.5 p-2 bg-white/90 rounded-xl border border-slate-200/80 cursor-pointer has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50 transition-all shadow-2xs">
               <input type="radio" name="newTxOrigem" value="extrato_banco" class="text-amber-600">
               <span class="text-[11px] font-medium text-slate-700">🏦 Sem Nota (Extrato)</span>
             </label>
           </div>
         </div>
 
-        <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeNewTxModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-none border border-slate-300">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-none shadow-sm">Salvar Lançamento</button>
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeNewTxModal()" class="px-4 py-2.5 bg-white/80 hover:bg-white text-slate-600 font-bold rounded-2xl border border-slate-200/80 shadow-2xs active:scale-95 transition-all cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:brightness-110 text-white font-black rounded-2xl shadow-md active:scale-95 transition-all cursor-pointer">Salvar Lançamento</button>
         </div>
       </form>
     </div>
@@ -9901,21 +9932,80 @@ html, body {
       }
     };
 
-    function openNewTxModal() {
-      document.getElementById('newTxDescricao').value = '';
-      document.getElementById('newTxValor').value = '';
-      document.getElementById('newTxData').value = getLocalDateString();
-      document.getElementById('newTxCategoria').value = 'Alimentação';
-      document.getElementById('newTxResponsavel').value = 'Comum';
-      document.getElementById('newTxPagamento').value = 'Cartão de Crédito';
-      document.getElementById('newTxCartao').value = '';
-      syncTileDisplayValues();
+    window.setQuickVencimento = function(type) {
+      const now = new Date();
+      let targetDate = new Date();
+      if (type === 'today') {
+        targetDate = now;
+      } else if (type === 'tomorrow') {
+        targetDate.setDate(now.getDate() + 1);
+      } else if (type === '+5') {
+        targetDate.setDate(now.getDate() + 5);
+      } else if (type === '+10') {
+        targetDate.setDate(now.getDate() + 10);
+      } else if (type === 'day10') {
+        targetDate.setDate(10);
+        if (targetDate < now) targetDate.setMonth(now.getMonth() + 1);
+      } else if (type === 'day15') {
+        targetDate.setDate(15);
+        if (targetDate < now) targetDate.setMonth(now.getMonth() + 1);
+      } else if (type === 'day20') {
+        targetDate.setDate(20);
+        if (targetDate < now) targetDate.setMonth(now.getMonth() + 1);
+      } else if (type === 'endOfMonth') {
+        targetDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      }
+      const y = targetDate.getFullYear();
+      const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+      const d = String(targetDate.getDate()).padStart(2, '0');
+      const input = document.getElementById('newTxVencimentoDate');
+      if (input) {
+        input.value = `${y}-${m}-${d}`;
+      }
+      const chk = document.getElementById('newTxSaveAsBillReminder');
+      if (chk) chk.checked = true;
+    };
+
+    window.resetNewTxFormValues = function() {
+      const desc = document.getElementById('newTxDescricao');
+      if (desc) desc.value = '';
+      const val = document.getElementById('newTxValor');
+      if (val) val.value = '';
+      const dt = document.getElementById('newTxData');
+      const todayStr = (typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0];
+      if (dt) dt.value = todayStr;
+      const venc = document.getElementById('newTxVencimentoDate');
+      if (venc) venc.value = todayStr;
+      const chkBill = document.getElementById('newTxSaveAsBillReminder');
+      if (chkBill) chkBill.checked = false;
+      const chkParc = document.getElementById('newTxCheckParcelado');
+      if (chkParc) {
+        chkParc.checked = false;
+        if (typeof toggleNewTxParcelas === 'function') toggleNewTxParcelas(false);
+      }
+      const cat = document.getElementById('newTxCategoria');
+      if (cat) cat.value = 'Alimentação';
+      const resp = document.getElementById('newTxResponsavel');
+      if (resp) resp.value = 'Comum';
+      const pag = document.getElementById('newTxPagamento');
+      if (pag) pag.value = 'Cartão de Crédito';
+      const car = document.getElementById('newTxCartao');
+      if (car) car.value = '';
+      if (typeof syncTileDisplayValues === 'function') syncTileDisplayValues();
       const hint = document.getElementById('newTxPreviousHint');
       if (hint) { hint.classList.add('hidden'); hint.innerHTML = ''; }
       const defaultVar = document.querySelector('input[name="newTxTipo"][value="Despesa Variável"]');
       if (defaultVar) defaultVar.checked = true;
-      window.updateTxTipoExplanation('new');
-      document.getElementById('modalNewTx').classList.remove('hidden');
+      if (typeof window.updateTxTipoExplanation === 'function') window.updateTxTipoExplanation('new');
+    };
+
+    function openNewTxModal() {
+      resetNewTxFormValues();
+      const m = document.getElementById('modalNewTx');
+      if (m) {
+        m.classList.remove('hidden');
+        m.style.display = 'flex';
+      }
       if (window.lucide) lucide.createIcons();
     }
 
@@ -29199,29 +29289,42 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       }
     };
 
-    // Ao salvar Novo Lançamento com o checkbox "Cadastrar alerta de vencimento" marcado, salva em Contas a Pagar
+    // Ao salvar Novo Lançamento com o checkbox "Agendar Lembrete" marcado, salva em Contas a Pagar / Lançamentos Futuros
     const _origHandleSaveNewTx = typeof handleSaveNewTx === 'function' ? handleSaveNewTx : null;
     window.handleSaveNewTx = function(e) {
       const saveAsBill = document.getElementById('newTxSaveAsBillReminder')?.checked;
       const desc = document.getElementById('newTxDescricao')?.value?.trim();
       const val = typeof getCurrencyValueFromMask === 'function' ? getCurrencyValueFromMask(document.getElementById('newTxValor')) : 0;
-      const dt = document.getElementById('newTxData')?.value || '';
+      const vencDate = document.getElementById('newTxVencimentoDate')?.value || '';
+      const dt = document.getElementById('newTxData')?.value || ((typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0]);
       const cat = document.getElementById('newTxCategoria')?.value || 'Moradia';
+      const resp = document.getElementById('newTxResponsavel')?.value || 'Ambos';
 
-      if (saveAsBill && desc && val > 0 && typeof getBillsReminders === 'function' && typeof saveBillsReminders === 'function') {
-        const dayParts = dt.split('-');
-        const dueDay = dayParts.length === 3 ? parseInt(dayParts[2], 10) : new Date().getDate();
-        const bills = getBillsReminders();
-        bills.push({
-          id: 'bill_' + Date.now(),
-          nome: desc,
-          valor: val,
-          diaVencimento: dueDay || 10,
-          categoria: cat,
-          recorrente: true,
-          pagoCicloAtual: false
-        });
-        saveBillsReminders(bills);
+      if (saveAsBill && desc && val > 0) {
+        let dueDay = 10;
+        if (vencDate) {
+          const parts = vencDate.split('-');
+          if (parts.length === 3) dueDay = parseInt(parts[2], 10);
+        } else if (dt) {
+          const parts = dt.split('-');
+          if (parts.length === 3) dueDay = parseInt(parts[2], 10);
+        }
+
+        if (typeof getRegisteredRecurringBills === 'function' && typeof saveRegisteredRecurringBills === 'function') {
+          let bills = getRegisteredRecurringBills();
+          bills.push({
+            id: 'bill_' + Date.now(),
+            nome: desc,
+            categoria: cat,
+            diaVencimento: dueDay || 10,
+            valorMedio: val,
+            responsavel: resp,
+            alertaDias: 3
+          });
+          saveRegisteredRecurringBills(bills);
+          if (typeof renderBillsReminderList === 'function') renderBillsReminderList();
+          if (typeof updateBillsReminderCard === 'function') updateBillsReminderCard();
+        }
         if (typeof updateQuickHubUI === 'function') updateQuickHubUI();
       }
 
@@ -39596,6 +39699,7 @@ window.openHealthMedsModal = function() {
   // 5. NOVA TRANSAÇÃO E EDIÇÃO
   window.openNewTxModal = function() {
     window.ensureModalsOnBody();
+    if (typeof resetNewTxFormValues === 'function') resetNewTxFormValues();
     const m = document.getElementById('modalNewTx');
     if (m) {
       if (m.parentElement !== document.body) document.body.appendChild(m);
@@ -43643,7 +43747,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   window.closeSelectCycleModal = function() { hideElement('modalSelectCycle'); };
 
   window.openNewTxModal = function() {
+    if (typeof resetNewTxFormValues === 'function') resetNewTxFormValues();
     ensureElementVisible('modalNewTx');
+    const m = document.getElementById('modalNewTx');
+    if (m) {
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+    }
+    if (window.lucide) lucide.createIcons();
   };
   window.openAddTransactionModal = window.openNewTxModal;
   window.openTransactionModal = window.openNewTxModal;
