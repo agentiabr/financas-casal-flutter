@@ -41,11 +41,8 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   final NfceFetcher _fetcher = NfceFetcher();
 
   bool _isProcessing = false;
-  String _statusMessage = 'Aponte a câmera para o QR Code ou Código de Barras da NFC-e';
+  String _statusMessage = 'Aponte a câmera para o QR Code da NFC-e';
   bool _isTorchOn = false;
-  double _currentZoom = 1.0;
-  bool _showFriendlyHint = false;
-  Timer? _friendlyHintTimer;
   String? _lastScannedValue;
 
   // Variáveis para a Solução A: Navegador Integrado Inteligente com Auto-Captura
@@ -60,7 +57,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   void initState() {
     super.initState();
     _scannerController = MobileScannerController(
-      autoStart: false,
+      autoStart: true,
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
       torchEnabled: false,
@@ -89,7 +86,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
 
-    // Garante inicializacao robusta apos montagem completa do frame
+    // Garante inicialização robusta após montagem completa do frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initCamera();
     });
@@ -98,15 +95,6 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
     if (widget.initialUrl != null && widget.initialUrl!.trim().isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _handleBarcodeValue(widget.initialUrl!.trim());
-      });
-    } else {
-      // Dica amigavel apos 8 segundos caso o usuario tenha dificuldade com iluminacao
-      _friendlyHintTimer = Timer(const Duration(seconds: 8), () {
-        if (mounted && !_isProcessing) {
-          setState(() {
-            _showFriendlyHint = true;
-          });
-        }
       });
     }
   }
@@ -117,51 +105,26 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
       if (!status.isGranted) {
         if (mounted) {
           setState(() {
-            _statusMessage = 'Permissao de camera necessaria para ler a nota fiscal.';
+            _statusMessage = 'Permissão de câmera necessária para ler o QR Code.';
           });
         }
         return;
       }
 
-      await Future.delayed(const Duration(milliseconds: 200));
       if (!mounted) return;
 
-      try {
-        await _scannerController.stop();
-      } catch (_) {}
-
-      try {
-        await _scannerController.dispose();
-      } catch (_) {}
-
-      _scannerController = MobileScannerController(
-        detectionSpeed: DetectionSpeed.noDuplicates,
-        facing: CameraFacing.back,
-        torchEnabled: false,
-        formats: const [
-          BarcodeFormat.qrCode,
-          BarcodeFormat.code128,
-          BarcodeFormat.code39,
-          BarcodeFormat.ean13,
-          BarcodeFormat.ean8,
-          BarcodeFormat.itf,
-          BarcodeFormat.upcA,
-          BarcodeFormat.upcE,
-        ],
-      );
+      if (!_scannerController.value.isRunning) {
+        await _scannerController.start();
+      }
 
       if (mounted) {
         setState(() {
           _isProcessing = false;
+          _statusMessage = 'Aponte a câmera para o QR Code da NFC-e';
         });
       }
-
-      await Future.delayed(const Duration(milliseconds: 250));
-      if (mounted && !_scannerController.value.isRunning) {
-        await _scannerController.start();
-      }
     } catch (e) {
-      debugPrint('Aviso ao inicializar camera do MobileScanner: $e');
+      debugPrint('Aviso ao inicializar câmera do MobileScanner: $e');
     }
   }
 
@@ -277,7 +240,6 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
   @override
   void dispose() {
     _browserExtractionTimer?.cancel();
-    _friendlyHintTimer?.cancel();
     _animController.dispose();
     try {
       _scannerController.dispose();
@@ -587,54 +549,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
     } catch (_) {}
   }
 
-  Future<void> _setZoom(double zoom) async {
-    try {
-      await _scannerController.setZoomScale(zoom);
-      if (mounted) {
-        setState(() {
-          _currentZoom = zoom;
-        });
-      }
-    } catch (e) {
-      debugPrint('Aviso ao alterar zoom: $e');
-    }
-  }
 
-  Widget _buildZoomButton(double zoom, String label) {
-    final isSelected = (_currentZoom - zoom).abs() < 0.1;
-    return GestureDetector(
-      onTap: () => _setZoom(zoom),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF10B981) : Colors.black.withOpacity(0.65),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF10B981) : Colors.white38,
-            width: 1.2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.4),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ]
-              : null,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white70,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
 
   void _showProductBarcodeInfoDialog(String ean) {
     setState(() {
@@ -677,22 +592,6 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      _openManualKeyDialog();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF38BDF8),
-                      side: const BorderSide(color: Color(0xFF38BDF8)),
-                      padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: const Text('Digitar Chave', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(ctx).pop(),
                     style: ElevatedButton.styleFrom(
@@ -701,7 +600,7 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                       padding: const EdgeInsets.symmetric(vertical: 13),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Entendi, Ler Nota', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text('Voltar ao Scanner', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -888,24 +787,6 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        onPressed: _pickQrFromCamera,
-                        icon: const Icon(Icons.camera_alt),
-                        label: const Text('Fotografar Cupom com Câmera', style: TextStyle(fontWeight: FontWeight.bold)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0284C7),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: _openManualKeyDialog,
-                        icon: const Icon(Icons.edit_note, color: Colors.white70, size: 18),
-                        label: const Text('Digitar Chave Manualmente', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                      ),
                     ],
                   ),
                 ),
@@ -1047,47 +928,39 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                       tooltip: 'Alternar Câmera',
                       onPressed: _switchCamera,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt, color: Color(0xFF10B981)),
-                      tooltip: 'Fotografar Cupom',
-                      onPressed: _pickQrFromCamera,
-                    ),
+
                   ],
                 ),
               ),
             ),
           ),
 
-          // 5. Barra Inferior do Scanner (Zoom, Ações Rápidas, Instruções e Dicas)
+          // 5. Barra Inferior do Scanner: Apenas Instrução Nítida
           SafeArea(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: Column(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.80),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white24, width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Seletor de Zoom Rápido para Cupom Térmico
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildZoomButton(1.0, '1x'),
-                          const SizedBox(width: 8),
-                          _buildZoomButton(2.0, '2x'),
-                          const SizedBox(width: 8),
-                          _buildZoomButton(3.0, '3x'),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Mensagem de Status
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.75),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.white12),
-                        ),
+                      const Icon(Icons.qr_code_scanner, color: Color(0xFF10B981), size: 18),
+                      const SizedBox(width: 8),
+                      Flexible(
                         child: Text(
                           _statusMessage,
                           textAlign: TextAlign.center,
@@ -1098,85 +971,12 @@ class _NfceScannerScreenState extends State<NfceScannerScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
-
-                      // Botões de Ação: Fotografar, Galeria e Digitar Chave
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: _pickQrFromCamera,
-                            icon: const Icon(Icons.camera_alt, size: 15),
-                            label: const Text('Fotografar', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF10B981),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 2,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton.icon(
-                            onPressed: _pickQrFromGallery,
-                            icon: const Icon(Icons.image, size: 15),
-                            label: const Text('Galeria', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white24,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 0,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton.icon(
-                            onPressed: _openManualKeyDialog,
-                            icon: const Icon(Icons.keyboard, size: 15),
-                            label: const Text('Digitar Chave', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1E293B),
-                              foregroundColor: const Color(0xFF38BDF8),
-                              side: const BorderSide(color: Color(0xFF38BDF8), width: 0.8),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              elevation: 0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (_showFriendlyHint && !_isProcessing) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0F172A).withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFF38BDF8).withOpacity(0.4)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.lightbulb_outline, color: Color(0xFF38BDF8), size: 20),
-                              const SizedBox(width: 8),
-                              const Expanded(
-                                child: Text(
-                                  'Dica: Use os botões de zoom 2x/3x ou a lanterna para melhor foco do código.',
-                                  style: TextStyle(color: Colors.white70, fontSize: 11),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(null),
-                                child: const Text('Cancelar', style: TextStyle(color: Color(0xFFF87171), fontSize: 11)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
               ),
             ),
+          ),
 
           // 6. Overlay de Carregamento durante Consulta à SEFAZ (Translúcido sobre a câmera)
           if (_isProcessing)
