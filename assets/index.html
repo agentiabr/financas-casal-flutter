@@ -3483,6 +3483,20 @@ html, body {
       border-radius: 0 !important;
       box-shadow: none !important;
     }
+    #modalShoppingListHistory {
+      background-color: var(--liquid-bg-main) !important;
+      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
+      overflow: hidden !important;
+    }
+    #modalShoppingListHistory > div:nth-child(2),
+    #modalShoppingListHistory > div[class*="overflow-y-auto"] {
+      background-color: transparent !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
     #modalFamilyChat #chatInputFooter {
       flex-shrink: 0 !important;
       border-radius: 0 !important;
@@ -6160,7 +6174,7 @@ html, body {
   </div>
 
   <!-- 1. MODAL: HISTÓRICO & COMPARADOR DA LISTA DE COMPRAS (V4.9.4) -->
-  <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+  <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO AZUL AURORA OFICIAL DO DASHBOARD) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
@@ -6186,40 +6200,40 @@ html, body {
       </div>
     </div>
 
-    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3 shadow-2xl">
+    <!-- 2. CORPO INTEGRADO COM DEGRADÊ DO DASHBOARD E RESPIRO HARMONIOSO -->
+    <div class="flex-1 bg-transparent overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3.5">
       
-      <!-- CAIXA EXPLICATIVA: O QUE VOCÊ PODE FAZER NA SEÇÃO -->
-      <div id="shoppingListIntroBanner" class="bg-white dark:bg-slate-850 rounded-3xl p-3.5 sm:p-4 shadow-sm border border-blue-200/80 dark:border-slate-750 flex items-start gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
-          💡
+      <!-- CAIXA EXPLICATIVA: RECURSOS DA LISTA DE COMPRAS -->
+      <div id="shoppingListIntroBanner" class="bg-white/92 dark:bg-slate-900/92 backdrop-blur-md rounded-3xl p-4.5 sm:p-5 border border-white/80 dark:border-slate-700/80 shadow-md flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-2xl flex-shrink-0 shadow-md">
+          🛒
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-1 mb-1.5">
-            <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-              Nessa seção você pode:
-            </span>
-            <button type="button" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] font-black text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/80 px-2.5 py-1 rounded-xl border border-blue-200 dark:border-blue-800 flex items-center gap-1 transition-all cursor-pointer shadow-2xs active:scale-95">
-              <i data-lucide="message-circle" class="w-3 h-3"></i>
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
+              O que você pode fazer nesta seção:
+            </h3>
+            <button type="button" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-xs font-black text-white bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-xl border border-blue-400/30 flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
               <span>Abrir Chat</span>
             </button>
           </div>
-          <ul class="space-y-1 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-medium">
-            <li class="flex items-start gap-1.5">
-              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
-              <span>Criar a sua lista de compras</span>
+          <ul class="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-medium">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
+              <span><strong>Montar sua lista de compras</strong> com quantidades e preços estimados em tempo real.</span>
             </li>
-            <li class="flex items-start gap-1.5">
-              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
-              <span>Enviar a lista para chat do membro que vai fazer as compras</span>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
+              <span><strong>Enviar para o chat da família</strong>, avisando quem for ao mercado para marcar os itens no carrinho.</span>
             </li>
-            <li class="flex items-start gap-1.5">
-              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
-              <span>Visualizar o Histórico de suas compras</span>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
+              <span><strong>Acompanhar o histórico</strong> detalhado de todas as compras realizadas pelo casal.</span>
             </li>
-            <li class="flex items-start gap-1.5">
-              <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
-              <span>Comparativo com compras anteriores</span>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
+              <span><strong>Comparar preços</strong> entre supermercados para identificar onde vale mais a pena economizar.</span>
             </li>
           </ul>
         </div>
@@ -38012,7 +38026,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
           header: "Lista de Compras Inteligente",
           badge: "🛒 Dica do Piggy Compras",
           badgeColor: "bg-sky-500/20 text-sky-300 border-sky-400/40",
-          text: "“Nessa seção você pode criar sua lista de compras, enviar para o chat do membro que vai comprar, ver o histórico e comparar com compras anteriores!”",
+          text: "“Aqui você monta sua lista de compras, compartilha em tempo real no chat da família, acompanha seu histórico e compara preços entre mercados para economizar!”",
           img: MASCOTES_OFICIAIS_B64.compras
         };
       }
