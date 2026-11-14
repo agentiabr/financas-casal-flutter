@@ -3427,7 +3427,11 @@ html, body {
       height: 100vh !important;
       display: flex !important;
       flex-direction: column !important;
-      background-color: #071933 !important;
+      background-color: var(--liquid-bg-main) !important;
+      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
       overflow: hidden !important;
     }
     #modalFamilyChat.hidden {
@@ -3445,9 +3449,7 @@ html, body {
       border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
     #modalFamilyChat #chatRecipientBar {
-      flex-shrink: 0 !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
+      display: none !important;
     }
     #modalFamilyChat #chatMembersDirectoryView {
       flex: 1 1 0% !important;
@@ -12556,8 +12558,8 @@ html, body {
         return me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
       }
       const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
-      if (din.length > 0 && din[0].nome) return din[0].nome;
-      return 'Família';
+      if (din.length > 0 && din[0].nome && !/parceir/i.test(din[0].nome)) return din[0].nome;
+      return me.toLowerCase().includes('marcia') ? 'Rodrigo' : 'Márcia';
     }
 
     function sendShoppingListToFamilyChat() {
@@ -17790,52 +17792,37 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
       const members = [];
 
-      if (isMaster) {
-        if (isMarcia) {
-          members.push({ key: 'rodrigo', name: 'Rodrigo', avatar: '👨', role: 'Parceiro • Titular' });
-        } else {
-          members.push({ key: 'marcia', name: 'Márcia', avatar: '👩', role: 'Parceira • Esposa' });
-        }
-        din.forEach(m => {
-          const n = (m.nome || '').trim();
-          if (n && !/^(rodrigo|m[aá]rcia)$/i.test(n)) {
-            members.push({
-              key: m.id || n.toLowerCase(),
-              name: n,
-              avatar: m.avatar || '👤',
-              role: m.parentesco || 'Membro da Família'
-            });
-          }
-        });
-      } else {
-        din.forEach(m => {
-          const n = (m.nome || '').trim();
-          if (n) {
-            members.push({
-              key: m.id || n.toLowerCase(),
-              name: n,
-              avatar: m.avatar || '👤',
-              role: m.parentesco || 'Membro da Família'
-            });
-          }
-        });
-        if (members.length === 0) {
-          const partnerName = (typeof getDynamicPartnerDisplayName === 'function') ? getDynamicPartnerDisplayName() : 'Parceiro(a)';
-          const cleanPartner = (partnerName && partnerName !== 'Família') ? partnerName : 'Parceiro(a) da Família';
+      // Membro Principal Fictício (Nome de pessoa real sem redundância de "Parceiro da Família")
+      const partnerName = isMarcia ? 'Rodrigo' : 'Márcia';
+      const partnerAvatar = isMarcia ? '👨' : '👩';
+      const partnerRole = isMarcia ? 'Parceiro' : 'Parceira';
+
+      members.push({
+        key: partnerName.toLowerCase(),
+        name: partnerName,
+        avatar: partnerAvatar,
+        role: partnerRole
+      });
+
+      // Outros membros dinâmicos cadastrados pelo usuário (se houver)
+      din.forEach(m => {
+        const n = (m.nome || '').trim();
+        if (n && !new RegExp(`^(${partnerName}|rodrigo|m[aá]rcia|parceir.*)$`, 'i').test(n)) {
           members.push({
-            key: 'parceiro',
-            name: cleanPartner,
-            avatar: '💑',
-            role: 'Parceiro(a) • Família'
+            key: m.id || n.toLowerCase(),
+            name: n,
+            avatar: m.avatar || '👤',
+            role: m.parentesco || 'Família'
           });
         }
-      }
+      });
 
+      // Grupo da Família
       members.push({
         key: 'todos',
         name: 'Família (Todos)',
         avatar: '👨‍👩‍👧‍👦',
-        role: 'Grupo da Família & Lista de Compras'
+        role: 'Grupo & Lista de Compras'
       });
 
       return members;
@@ -17858,44 +17845,38 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const lastTimeText = (lastMsg && lastMsg.time) ? lastMsg.time : 'Agora';
 
       listEl.innerHTML = members.map((m, idx) => {
-        const safeKey = String(m.key || '').replace(/'/g, "\\'");
-        const safeName = String(m.name || '').replace(/'/g, "\\'");
-        const safeAvatar = String(m.avatar || '👤').replace(/'/g, "\\'");
-        const safeRole = String(m.role || '').replace(/'/g, "\\'");
-        const isGroup = m.key === 'todos';
-
         return `
           <div onclick="window.openChatWithMember('${safeKey}', '${safeName}', '${safeAvatar}', '${safeRole}')"
-               class="bg-white dark:bg-slate-900 hover:bg-blue-50/60 dark:hover:bg-slate-800/90 active:scale-[0.99] transition-all rounded-2xl p-3.5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5 cursor-pointer group">
-            <!-- Avatar Circular Estilo WhatsApp com Indicador Online -->
+               class="bg-white/92 dark:bg-slate-900/92 backdrop-blur-md hover:bg-white dark:hover:bg-slate-900 active:scale-[0.99] transition-all rounded-3xl p-4.5 sm:p-5 border border-white/80 dark:border-slate-700/80 shadow-md flex items-center gap-4 cursor-pointer group min-h-[96px]">
+            <!-- Avatar com Indicador Online -->
             <div class="relative flex-shrink-0">
-              <div class="w-13 h-13 rounded-full ${isGroup ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white' : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white'} flex items-center justify-center text-2xl shadow-sm">
+              <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl ${isGroup ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 text-white shadow-blue-500/25' : 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-emerald-500/25'} flex items-center justify-center text-2xl sm:text-3xl shadow-md">
                 ${m.avatar || '👤'}
               </div>
-              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" title="Online"></span>
+              <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs" title="Online agora"></span>
             </div>
 
-            <!-- Nome, Papel, Última Mensagem e Badges -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-2 mb-0.5">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <h4 class="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">${escapeHtml(m.name)}</h4>
-                  <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold whitespace-nowrap">${escapeHtml(m.role)}</span>
+            <!-- Nome, Papel, Mensagem Recente com Altura Confortável -->
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <h4 class="text-base sm:text-lg font-black text-slate-900 dark:text-white truncate tracking-tight">${escapeHtml(m.name)}</h4>
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-800 dark:text-blue-300 border border-blue-400/25 text-[10px] sm:text-[11px] font-extrabold whitespace-nowrap">${escapeHtml(m.role)}</span>
                 </div>
-                <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">${escapeHtml(lastTimeText)}</span>
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">${escapeHtml(lastTimeText)}</span>
               </div>
 
-              <div class="flex items-center justify-between gap-2 mt-1">
-                <p class="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-1 flex-1 leading-snug font-medium">
                   ${escapeHtml(lastPreviewText)}
                 </p>
-                <div class="flex items-center gap-1.5 flex-shrink-0">
+                <div class="flex items-center gap-2 flex-shrink-0">
                   ${itemCount > 0 ? `
-                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
-                      <span>🛒</span><span>${itemCount}</span>
+                    <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-400/30 text-[11px] font-black flex items-center gap-1.5 shadow-2xs">
+                      <span>🛒</span><span>${itemCount} itens</span>
                     </span>
                   ` : ''}
-                  <span class="w-6 h-6 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <span class="w-7 h-7 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 flex items-center justify-center group-hover:translate-x-1 transition-transform flex-shrink-0">
                     <i data-lucide="chevron-right" class="w-4 h-4"></i>
                   </span>
                 </div>
@@ -17944,7 +17925,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         titleEl.innerHTML = `<span>${window.currentChatMember.avatar}</span><span>${escapeHtml(window.currentChatMember.name)}</span>`;
       }
       if (subEl) {
-        subEl.textContent = `${window.currentChatMember.role} • online`;
+        subEl.textContent = `${window.currentChatMember.role} • Online agora`;
       }
 
       const badgeAv = document.getElementById('chatActiveMemberAvatarBadge');
@@ -25909,32 +25890,29 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <button type="button" onclick="openSectionLampInsight('chat');" class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-200 hover:text-white border border-sky-400/30 flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Dica do Mascote">
           <span>💡</span>
         </button>
-        <!-- 3. Botão 3 Pontinhos (Mais Opções da Conversa) -->
-        <button type="button" onclick="openChatMoreOptionsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Mais opções da conversa">
-          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-        </button>
+
       </div>
     </div>
 
-    <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS (PADRÃO MUNDO PET) -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
+    <!-- 2. CORPO INTEGRADO COM DEGRADÊ DO DASHBOARD -->
+    <div class="flex-1 bg-transparent overflow-hidden flex flex-col">
 
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
       <!-- ============================================================== -->
-      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto p-4 space-y-3.5 bg-[#DFEAF7] dark:bg-slate-950">
-        <div class="bg-white/95 dark:bg-slate-900 rounded-3xl p-5 min-h-[112px] border border-slate-200/90 dark:border-slate-700/80 shadow-sm flex flex-col justify-center gap-3">
+      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-4 pt-3 pb-8 space-y-4 bg-transparent">
+        <div class="bg-white/92 dark:bg-slate-900/92 backdrop-blur-md rounded-3xl p-5.5 min-h-[120px] border border-white/80 dark:border-slate-700/80 shadow-md flex flex-col justify-center gap-3">
           <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
                 💬
               </div>
               <div class="min-w-0">
-                <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
-                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-snug">Toque em um membro abaixo para iniciar a conversa ou compartilhar itens da Lista de Compras.</p>
+                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">Conversas da Família</h3>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-snug">Toque em um membro abaixo para iniciar a conversa ou sincronizar a Lista de Compras.</p>
               </div>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold border border-emerald-200 dark:border-emerald-800 whitespace-nowrap self-start">
+            <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 text-[11px] font-black border border-emerald-400/30 whitespace-nowrap self-start shadow-2xs">
               ● Online
             </span>
           </div>
@@ -25947,7 +25925,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
         <!-- Atalho para gerenciar/adicionar membros da família -->
         <div class="pt-2">
-          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3 px-4 rounded-2xl bg-white/80 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-98 cursor-pointer">
+          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3.5 px-4 rounded-2xl bg-white/80 hover:bg-white/95 dark:bg-slate-900/80 dark:hover:bg-slate-900/95 backdrop-blur-md border border-dashed border-white/60 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-98 cursor-pointer">
             <i data-lucide="user-plus" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
             <span>Adicionar ou Gerenciar Membros da Família</span>
           </button>
@@ -25959,8 +25937,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- ============================================================== -->
       <div id="chatActiveConversationView" class="hidden flex-1 flex flex-col overflow-hidden">
 
-        <!-- Barra Compacta do Membro Selecionado + Botão Voltar para Lista de Membros -->
-        <div id="chatRecipientBar" class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 flex-shrink-0 select-none">
+        <!-- Barra do Membro Selecionado (Oculta para evitar redundância com o cabeçalho oficial) -->
+        <div id="chatRecipientBar" class="hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2 flex items-center justify-between gap-2 flex-shrink-0 select-none">
           <div class="flex items-center gap-2 min-w-0" id="chatRecipientSelector">
             <span id="chatActiveMemberAvatarBadge" class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 text-base flex items-center justify-center flex-shrink-0">👩</span>
             <div class="min-w-0">
