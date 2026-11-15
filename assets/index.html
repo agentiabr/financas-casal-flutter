@@ -4431,11 +4431,18 @@ html, body {
       min-width: 1px !important;
       max-width: 1px !important;
       height: 28px !important;
-      background: rgba(148, 163, 184, 0.65) !important;
+      background: #E2E8F0 !important;
       align-self: center !important;
       flex-shrink: 0 !important;
       display: block !important;
       opacity: 1 !important;
+    }
+    #heroIndicatorsBar #valDiasRestantes,
+    #heroIndicatorsBar #valComprometido,
+    #heroIndicatorsBar #valParcelados {
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.02em !important;
     }
     #heroCardBanner .bg-slate-50 {
       background: transparent !important;
@@ -5351,7 +5358,7 @@ html, body {
               <h1 id="heroGreetingTitle" class="text-2xl font-black text-[#FFDE21] tracking-tight leading-tight drop-shadow-[0_2px_10px_rgba(255, 222, 33,0.35)]" style="color: #FFDE21 !important; text-shadow: 0 2px 10px rgba(255, 222, 33, 0.35) !important;">Olá, Família!</h1>
               
               <!-- Subtítulo Configurável via Admin com limite de caracteres para nunca quebrar o layout -->
-              <p id="heroGreetingSubtitle" class="text-xs text-blue-200 mt-1 leading-snug max-w-[220px]">Tudo certo por aqui. Seu saldo está saudável.</p>
+              <p id="heroGreetingSubtitle" class="text-xs text-blue-200 mt-1 leading-snug max-w-[220px]">Tudo certo por aqui! Finanças sob controle.</p>
               
               <!-- Pílula do Ciclo Vigente -->
               <div class="relative inline-block mt-3">
@@ -5474,16 +5481,16 @@ html, body {
                 <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
                   <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
                 </button>
-                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-[11px] border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas (digitação ou nota fiscal)">
+                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold text-xs border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas">
                   <span class="text-blue-600 font-black text-xs leading-none">+</span>
-                  <span>Lançar Receitas e Despesas</span>
+                  <span>Lançar</span>
                 </button>
               </div>
             </div>
 
             <div class="mt-1">
               <span id="heroSaldoBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span>↑ 12%</span> em relação ao mês anterior
+                <span>↑ Saldo Positivo</span> no ciclo vigente
               </span>
             </div>
 
@@ -5510,21 +5517,21 @@ html, body {
               </button>
             </div>
 
-            <!-- Indicadores: Dias, Comprometido e Parcelados (Sem fundo individual, com linha vertical separadora visível) -->
+            <!-- Indicadores: Dias, Comprometido e Parcelados (Sem fundo individual, com linha vertical separadora clara e fontes ampliadas) -->
             <div id="heroIndicatorsBar" class="flex items-center justify-between mt-3.5 py-1 text-center">
               <div class="flex-1 py-1 px-1 hero-indicator-col">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Dias Restantes</span>
-                <span id="valDiasRestantes" class="text-xs sm:text-[13px] font-black text-slate-800">9 dias</span>
+                <span id="valDiasRestantes" class="text-sm sm:text-base font-black text-slate-800 tracking-tight">9 dias</span>
               </div>
-              <div class="hero-indicator-divider w-px h-7 self-center flex-shrink-0" style="background: rgba(148, 163, 184, 0.65) !important; width: 1px !important; height: 28px !important; display: block !important;"></div>
+              <div class="hero-indicator-divider w-px h-7 self-center flex-shrink-0" style="background: #E2E8F0 !important; width: 1px !important; height: 28px !important; display: block !important;"></div>
               <div class="flex-1 py-1 px-1 hero-indicator-col">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Comprometido</span>
-                <span id="valComprometido" class="text-xs sm:text-[13px] font-black text-amber-600">78%</span>
+                <span id="valComprometido" class="text-sm sm:text-base font-black text-amber-600 tracking-tight">78%</span>
               </div>
-              <div class="hero-indicator-divider w-px h-7 self-center flex-shrink-0" style="background: rgba(148, 163, 184, 0.65) !important; width: 1px !important; height: 28px !important; display: block !important;"></div>
+              <div class="hero-indicator-divider w-px h-7 self-center flex-shrink-0" style="background: #E2E8F0 !important; width: 1px !important; height: 28px !important; display: block !important;"></div>
               <div class="flex-1 py-1 px-1 hero-indicator-col">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Parcelados</span>
-                <span id="valParcelados" class="text-xs sm:text-[13px] font-black text-blue-600">0 ativas</span>
+                <span id="valParcelados" class="text-sm sm:text-base font-black text-blue-600 tracking-tight">0 ativas</span>
               </div>
             </div>
 
@@ -11018,7 +11025,7 @@ html, body {
           elHeroBadge.innerHTML = '<span>•••••</span>';
         } else if (saldoLivre >= 0) {
           elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
-          elHeroBadge.innerHTML = '<span>↑ Saldo Saudável</span> no ciclo vigente';
+          elHeroBadge.innerHTML = '<span>↑ Saldo Positivo</span> no ciclo vigente';
         } else {
           elHeroBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
           elHeroBadge.innerHTML = '<span>⚠️ Atenção aos Gastos</span>';
@@ -11048,7 +11055,7 @@ html, body {
       const despesasEl = document.getElementById('metricDespesasVal') || document.getElementById('metricDespesasFixasVal');
       if (despesasEl && typeof formatBRL === 'function') despesasEl.textContent = formatBRL(totalGastos, 'despesa');
       const heroCompText = document.getElementById('heroMiniComprometimentoText');
-      if (heroCompText) heroCompText.textContent = (saldoLivre >= 0) ? 'Saldo livre e saudável no ciclo' : 'Atenção: Saldo comprometido';
+      if (heroCompText) heroCompText.textContent = (saldoLivre >= 0) ? 'Saldo livre no ciclo' : 'Atenção: Saldo comprometido';
 
       // Regra Dinâmica: Alerta Vermelho Desativado / Removido (mantém tema azul uniforme)
       document.body.classList.remove('theme-negative-alert');
@@ -39498,9 +39505,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const elTitle = document.getElementById('heroGreetingTitle');
       const elSubtitle = document.getElementById('heroGreetingSubtitle');
       
-      const customSub = localStorage.getItem('financas_custom_subtitle');
+      let customSub = localStorage.getItem('financas_custom_subtitle');
+      if (customSub && (customSub.includes('saldo está saudável') || customSub.includes('saldo saudavel'))) {
+        localStorage.removeItem('financas_custom_subtitle');
+        customSub = null;
+      }
       if (customSub && elSubtitle) {
         elSubtitle.textContent = customSub.trim().slice(0, 50);
+      } else if (elSubtitle) {
+        elSubtitle.textContent = 'Tudo certo por aqui! Finanças sob controle.';
       }
 
       const isSingle = localStorage.getItem('financas_modo_solteiro') === 'true';
@@ -39531,7 +39544,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   };
 
   window.openAdminCustomTextModal = function() {
-    const current = localStorage.getItem('financas_custom_subtitle') || 'Tudo certo por aqui. Seu saldo está saudável este mês.';
+    const current = localStorage.getItem('financas_custom_subtitle') || 'Tudo certo por aqui! Finanças sob controle.';
     const newText = prompt('Editar Subtítulo do Cabeçalho (Limite máximo: 50 caracteres para não quebrar o layout):', current);
     if (newText !== null) {
       const trimmed = newText.trim().slice(0, 50);
