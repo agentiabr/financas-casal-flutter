@@ -45096,10 +45096,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       <!-- NAVEGAÇÃO SEGMENTADA POR ABAS DO ESPAÇO KIDS -->
       <div class="grid grid-cols-4 gap-1 p-1 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 shadow-xs text-center select-none">
-        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
-          <span class="text-sm">🎮</span><span class="truncate">Cidade do Piggy</span>
-        </button>
-        <button type="button" id="tabBtnKids_missoes" onclick="switchKidsAreaTab('missoes')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+        <button type="button" id="tabBtnKids_missoes" onclick="switchKidsAreaTab('missoes')" class="py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
           <span class="text-sm">🏅</span><span class="truncate">Missões Pais</span>
         </button>
         <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
@@ -45108,12 +45105,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
           <span class="text-sm">🎓</span><span class="truncate">Despesas</span>
         </button>
+        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
+          <span class="text-sm">🎮</span><span class="truncate">Games (Breve)</span>
+        </button>
       </div>
 
       <!-- ======================================================== -->
       <!-- ABA 1: CIDADE DO PIGGY & GAME FINANCEIRO EVOLUTIVO       -->
       <!-- ======================================================== -->
-      <div id="kidsViewSection_game" class="space-y-3.5">
+      <div id="kidsViewSection_game" class="hidden space-y-3.5">
         <!-- Card 1: Perfil do Jogador & Status Gamificado -->
         <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-pink-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg border border-pink-400/40 relative overflow-hidden space-y-3">
           <div class="flex items-center justify-between gap-2">
@@ -45177,76 +45177,59 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </div>
 
         
-        <!-- Banner Chamada Rápida: JOGAR ARCADE CORRIDA DAS MOEDAS (60 FPS) -->
-        <div class="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-700 text-white shadow-lg flex items-center justify-between gap-3 border border-pink-400/40 animate-in fade-in">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-11 h-11 rounded-2xl bg-white/20 text-2xl flex items-center justify-center animate-bounce flex-shrink-0 shadow-sm">🕹️</div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5">
-                <h4 class="font-black text-xs sm:text-sm text-white truncate">Piggy Catch: Corrida das Moedas</h4>
-                <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider flex-shrink-0">Arcade 60 FPS</span>
-              </div>
-              <p class="text-[10px] text-pink-100 truncate mt-0.5">Mova o Piggy com o dedo, colete moedas e desvie dos boletos em tempo real!</p>
-            </div>
+        <!-- Card Reformulação dos Mini-Games do Piggy -->
+        <div class="bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 text-white rounded-3xl p-6 border-2 border-pink-400/50 shadow-xl space-y-4 text-center">
+          <div class="w-16 h-16 mx-auto rounded-3xl bg-pink-500/30 border border-pink-300 flex items-center justify-center text-4xl shadow-lg">
+            🎮
           </div>
-          <button type="button" onclick="openKidArcadeGame(1)" class="px-4 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black text-xs shadow-xl transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0 animate-pulse">
-            <span>▶️ JOGAR AGORA</span>
-          </button>
-        </div>
-
-        <!-- Card 2: A Cidade do Piggy (Tycoon / Construção Infinito) -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>🏡</span> <span>A Cidade do Piggy (Construção &amp; Renda)</span>
-              </h3>
-              <p class="text-[11px] text-slate-500 dark:text-slate-400">Evolua suas construções e colha moedas todos os dias!</p>
-            </div>
-            <button type="button" onclick="harvestKidCityDailyCoins()" id="btnHarvestCityCoins" class="px-3 py-1.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs shadow-sm transition-all flex items-center gap-1 cursor-pointer">
-              <span>🌾</span><span>Colher Diário</span>
-            </button>
-          </div>
-
-          <!-- Grade de Construções da Cidade -->
-          <div id="kidCityBuildingsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <!-- Renderizado dinamicamente via renderKidCityBuildingsUI() -->
-          </div>
-        </div>
-
-        <!-- Card 3: Trilha de Fases (Mapa de Mundos e Desafios Adaptativos) -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
-            <div>
-              <h3 class="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                <span>🗺️</span> <span id="kidGameWorldTitle">Mundo: Exploradores da Feirinha</span>
-              </h3>
-              <p id="kidGameWorldSub" class="text-[11px] text-slate-500 dark:text-slate-400">Desafios práticos de compras, troco e economia consciente</p>
-            </div>
-            <span id="kidGameWorldProgressBadge" class="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-black text-[10px]">Fase 2 de 5</span>
-          </div>
-
-          <!-- Trilha Visual de Fases Conectadas -->
-          <div id="kidGameStagesTrackContainer" class="space-y-2.5 pt-1">
-            <!-- Renderizado dinamicamente via renderKidStagesTrackUI() -->
-          </div>
-        </div>
-        <!-- Card 4: Loja de Expansões de Fases & Novos Mundos (Continuidade Infinita) -->
-        <div class="bg-gradient-to-br from-purple-900/90 via-slate-900 to-indigo-950 text-white rounded-3xl p-4 border border-purple-400/40 shadow-sm space-y-3">
-          <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
-            <div>
-              <h3 class="font-black text-sm text-white flex items-center gap-1.5">
-                <span>📦</span> <span>Expansões de Fases &amp; Novos Mundos</span>
-              </h3>
-              <p class="text-[11px] text-purple-200">Adquira novos mundos e desafios contínuos sem nunca perder suas moedas e estrelas!</p>
-            </div>
-            <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-500/30 border border-purple-400 text-purple-200">
-              Novas Fases
+          <div>
+            <span class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-300/40 text-[10px] font-black uppercase tracking-wider">
+              ✨ Em Reformulação Total
             </span>
+            <h3 class="text-base sm:text-lg font-black text-white mt-2">
+              4 Novos Mini-Games Educativos do Piggy!
+            </h3>
+            <p class="text-xs text-purple-200 max-w-md mx-auto mt-1 leading-relaxed">
+              Os jogos antigos foram desativados para dar lugar a uma nova experiência visual incrível com o Piggy, inspirada em grandes sucessos dos games casuais e focada em aprendizado financeiro real!
+            </p>
           </div>
 
-          <div id="kidExpansionPacksContainer" class="space-y-2.5 pt-0.5">
-            <!-- Renderizado dinamicamente via renderKidExpansionPacksUI() -->
+          <!-- Preview dos 4 Novos Games -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2">
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+              <span class="text-2xl">🧩</span>
+              <div>
+                <strong class="text-xs font-black text-amber-300 block">1. Piggy Slide 15</strong>
+                <span class="text-[10px] text-slate-300">Deslize blocos e ordene moedas no cofre</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+              <span class="text-2xl">🧪</span>
+              <div>
+                <strong class="text-xs font-black text-emerald-300 block">2. Piggy Bubble Sort</strong>
+                <span class="text-[10px] text-slate-300">Separe os 3 cofrinhos: Poupar, Gastar e Doar</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+              <span class="text-2xl">🎲</span>
+              <div>
+                <strong class="text-xs font-black text-cyan-300 block">3. Ludo Piggy Mesada</strong>
+                <span class="text-[10px] text-slate-300">Trilha de tabuleiro 3D em família</span>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+              <span class="text-2xl">🍎</span>
+              <div>
+                <strong class="text-xs font-black text-pink-300 block">4. Mercearia do Piggy</strong>
+                <span class="text-[10px] text-slate-300">Desafio matemático do troco no caixa</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="button" onclick="switchKidsAreaTab('missoes')" class="px-5 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs rounded-2xl shadow-md transition-all cursor-pointer active:scale-95">
+              Ver Missões dos Pais
+            </button>
           </div>
         </div>
       </div>
@@ -45254,7 +45237,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       <!-- ======================================================== -->
       <!-- ABA 2: MISSÕES DOS PAIS (TAREFAS DO MUNDO REAL)          -->
       <!-- ======================================================== -->
-      <div id="kidsViewSection_missoes" class="hidden space-y-3.5">
+      <div id="kidsViewSection_missoes" class="space-y-3.5">
         <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-4 shadow-sm space-y-2 border border-blue-400/30">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-sm flex items-center gap-1.5">
@@ -45963,7 +45946,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     // =========================================================================
     // 6. MOTOR DO GAME KIDS & A CIDADE DO PIGGY (TYCOON & EDUCAÇÃO FINANCEIRA)
     // =========================================================================
-    window.activeKidsTab = 'game';
+    window.activeKidsTab = 'missoes';
 
     window.switchKidsAreaTab = function(tabName) {
       window.activeKidsTab = tabName;
@@ -46213,6 +46196,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     window.currentActiveChallengeData = null;
 
     window.openKidGameChallenge = function(stageId) {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('🎮 Os jogos antigos foram retirados e 4 novos mini-games estão sendo preparados!', false);
+      }
+      return;
       const list = window.getKidsList();
       const active = list.find(k => k.id === window.activeKidId) || list[0];
       if (!active) return;
@@ -46492,6 +46479,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     window.openKidArcadeGame = function(stageId) {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('🎮 Os jogos antigos foram retirados e 4 novos mini-games estão sendo preparados!', false);
+      }
+      return;
       const list = window.getKidsList();
       const active = list.find(k => k.id === window.activeKidId) || list[0];
       if (!active) return;
