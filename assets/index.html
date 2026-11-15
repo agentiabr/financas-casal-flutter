@@ -6419,9 +6419,9 @@ html, body {
             </span>
           </div>
 
-          <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer border border-blue-400/40">
-            <i data-lucide="bell-ring" class="w-4 h-4 text-white"></i>
-            <span id="btnSendShoppingListLabel" class="text-white">💬 Enviar a lista de compras para o chat da família</span>
+          <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer border border-blue-400/40" title="Compartilhar lista de compras">
+            <i data-lucide="share-2" class="w-4 h-4 text-white"></i>
+            <span id="btnSendShoppingListLabel" class="text-white">Compartilhar lista de compras</span>
           </button>
 
           <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer">
@@ -12886,7 +12886,7 @@ html, body {
       }
       if (!btnLabel) return;
       const partner = getDynamicPartnerDisplayName();
-      btnLabel.textContent = `💬 Enviar Lista e Notificar ${partner}`;
+      btnLabel.textContent = 'Compartilhar lista de compras';
     }
 
     function openShoppingListModal() { setTimeout(updateSendListButtonLabel, 100);
