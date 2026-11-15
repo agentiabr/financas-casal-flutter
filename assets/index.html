@@ -4202,6 +4202,8 @@ html, body {
     #modalEditMedication,
     #modalMedTakeConfirmation,
     #modalHealthExpenseQuick,
+    #modalEducacaoExpenseQuick,
+    #modalVeiculosExpenseQuick,
     #modalAddExerciseForm,
     #modalAddPetVaccine,
     #modalAddEditPet,
@@ -24815,6 +24817,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     window.closeAnyActiveModal = function() {
       const modalIds = [
         'modalTilePicker',
+        'modalEducacaoExpenseQuick',
+        'modalVeiculosExpenseQuick',
         'modalVeiculosHub',
         'modalEducacaoHub',
         'modalAddNewContinuousMed',
@@ -28239,6 +28243,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function openNewTxModalWithCat(categoria) {
+      if (categoria === 'Educação') {
+        if (typeof openEducacaoExpenseQuickModal === 'function') {
+          openEducacaoExpenseQuickModal();
+          return;
+        }
+      } else if (categoria === 'Veículo' || categoria === 'Transporte') {
+        if (typeof openVeiculosExpenseQuickModal === 'function') {
+          openVeiculosExpenseQuickModal();
+          return;
+        }
+      } else if (categoria === 'Pet') {
+        if (typeof openPetExpenseQuickModal === 'function') {
+          openPetExpenseQuickModal();
+          return;
+        }
+      } else if (categoria === 'Saúde') {
+        if (typeof openHealthExpenseQuickModal === 'function') {
+          openHealthExpenseQuickModal();
+          return;
+        }
+      }
       openNewTxModal();
       const catEl = document.getElementById('newTxCategoria');
       if (catEl) {
@@ -28681,7 +28706,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <div class="text-xl sm:text-2xl font-black text-blue-600 font-mono mt-0.5" id="veiculosCicloTotal">R$ 0,00</div>
           <p class="text-[10px] text-slate-500 mt-1" id="veiculosCicloCount">0 lançamentos registrados</p>
         </div>
-        <button type="button" onclick="openNewTxModalWithCat('Veículo')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
+        <button type="button" onclick="openVeiculosExpenseQuickModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Lançar Despesa de Transporte</span>
         </button>
@@ -28787,7 +28812,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <div class="text-xl sm:text-2xl font-black text-indigo-600 font-mono mt-0.5" id="educacaoCicloTotal">R$ 0,00</div>
           <p class="text-[10px] text-slate-500 mt-1" id="educacaoCicloCount">0 lançamentos registrados</p>
         </div>
-        <button type="button" onclick="openNewTxModalWithCat('Educação')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer">
+        <button type="button" onclick="openEducacaoExpenseQuickModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer" title="Lançar Despesa de Educação">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>+ Lançar Despesa de Educação</span>
         </button>
@@ -39702,7 +39727,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         'modalAddNewContinuousMed', 'modalEditMedication', 'modalMedTakeConfirmation',
         'modalAddEditPet', 'modalAddPetVaccine', 'modalAddEditPetCare', 'modalPetQrCode',
         'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel', 'modalAddUser', 'modalAddUser',
-        'modalManageCards', 'modalVeiculosHub', 'modalEducacaoHub', 'modalSelectCycle',
+        'modalManageCards', 'modalVeiculosHub', 'modalEducacaoHub', 'modalEducacaoExpenseQuick', 'modalVeiculosExpenseQuick', 'modalPetExpenseQuick', 'modalHealthExpenseQuick', 'modalSelectCycle',
         'modalComparativoMercados', 'modalNewTx', 'modalEditTx', 'modalTrash',
         'modalCreatePiggy', 'modalPiggyDepositSpecific', 'modalPiggyWithdrawSpecific'
       ];
@@ -42794,7 +42819,258 @@ window.openHealthMedsModal = function() {
   };
 
   // -------------------------------------------------------------------------
-  // GASTOS DE SAÚDE
+  // -------------------------------------------------------------------------
+  // GASTOS DE EDUCAÇÃO RÁPIDOS & ESPECÍFICOS (MENSALIDADE, CURSOS, MATERIAL)
+  // -------------------------------------------------------------------------
+  window.openEducacaoExpenseQuickModal = function() {
+    if (typeof window.ensureModalsOnBody === 'function') window.ensureModalsOnBody();
+    const modal = document.getElementById('modalEducacaoExpenseQuick');
+    if (!modal) return;
+    if (modal.parentElement !== document.body) document.body.appendChild(modal);
+
+    const descInput = document.getElementById('quickEduDescricao');
+    if (descInput) descInput.value = '';
+
+    const valorInput = document.getElementById('quickEduValor');
+    if (valorInput) valorInput.value = '';
+
+    const dataInput = document.getElementById('quickEduData');
+    if (dataInput) dataInput.value = (typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0];
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closeEducacaoExpenseQuickModal = function() {
+    const modal = document.getElementById('modalEducacaoExpenseQuick');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  };
+
+  window.handleSaveEducacaoExpenseQuick = function(event) {
+    if (event) event.preventDefault();
+    const subcategoria = document.getElementById('quickEduSubcategoria')?.value || 'Mensalidade Escolar / Faculdade';
+    const rawDesc = document.getElementById('quickEduDescricao')?.value.trim();
+    const valorInput = document.getElementById('quickEduValor');
+    const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
+    const data = document.getElementById('quickEduData')?.value || ((typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0]);
+    const responsavel = document.getElementById('quickEduResponsavel')?.value || 'Rodrigo';
+    const forma_pagamento = document.getElementById('quickEduPagamento')?.value || 'Pix';
+
+    if (!rawDesc || valor <= 0) {
+      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Preencha a descrição e um valor válido.', false);
+      return;
+    }
+
+    let cartao_nome = null;
+    if (forma_pagamento === 'Cartão de Crédito') {
+      if (responsavel === 'Márcia') cartao_nome = 'XP Márcia';
+      else if (responsavel === 'Comum') cartao_nome = 'Itaú Click';
+      else cartao_nome = 'Nubank Rodrigo';
+    }
+
+    const curCyc = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]?.tag)
+      ? window.appCyclesData[window.currentActiveCycleKey].tag
+      : (typeof currentCycle !== 'undefined' ? currentCycle : 'out_2026');
+
+    const maxId = (typeof transactions !== 'undefined' && transactions && transactions.length > 0) ? Math.max(...transactions.map(t => t.id || 0)) + 1 : Date.now();
+    const newTx = {
+      id: maxId,
+      data,
+      ciclo: curCyc,
+      tipo: 'Despesa Variável',
+      categoria: 'Educação',
+      subcategoria: subcategoria,
+      descricao: rawDesc,
+      valor: valor,
+      responsavel,
+      forma_pagamento,
+      cartao_nome,
+      origem_comprovante: 'manual',
+      status: 'Pago',
+      pago: true,
+      parcelado: false,
+      total_parcelas: 1,
+      parcela_atual: 1
+    };
+
+    if (Array.isArray(window.transactions)) window.transactions.unshift(newTx);
+    if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions !== window.transactions) {
+      transactions.unshift(newTx);
+    }
+    const curKey = window.currentActiveCycleKey;
+    if (window.appCyclesData && curKey && window.appCyclesData[curKey] && Array.isArray(window.appCyclesData[curKey].transactions)) {
+      window.appCyclesData[curKey].transactions.unshift(newTx);
+      try { localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(window.appCyclesData)); } catch(_) {}
+    }
+
+    if (typeof saveTransactionsToStorage === 'function') saveTransactionsToStorage();
+    if (typeof saveData === 'function') saveData();
+    if (typeof syncTransactionToFlutter === 'function') syncTransactionToFlutter(newTx, 'insert');
+    if (typeof updateMetrics === 'function') updateMetrics();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof renderEducacaoHubData === 'function') renderEducacaoHubData();
+    if (typeof renderApprovedTransactionsList === 'function') renderApprovedTransactionsList();
+
+    closeEducacaoExpenseQuickModal();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Gasto de Educação no valor de R$ ${valor.toFixed(2).replace('.', ',')} lançado! 🎓`, false);
+    }
+  };
+
+  // -------------------------------------------------------------------------
+  // GASTOS DE TRANSPORTE & MANUTENÇÃO RÁPIDOS & ESPECÍFICOS (COMBUSTÍVEL, OFICINA)
+  // -------------------------------------------------------------------------
+  window.openVeiculosExpenseQuickModal = function() {
+    if (typeof window.ensureModalsOnBody === 'function') window.ensureModalsOnBody();
+    const modal = document.getElementById('modalVeiculosExpenseQuick');
+    if (!modal) return;
+    if (modal.parentElement !== document.body) document.body.appendChild(modal);
+
+    let vehicles = [];
+    try { vehicles = JSON.parse(localStorage.getItem('ctrlpig_custom_vehicles') || '[]'); } catch(_) {}
+    
+    const selectorContainer = document.getElementById('quickVehicleSelectorList');
+    const targetInput = document.getElementById('quickVehicleSelectedName');
+    
+    if (selectorContainer) {
+      let activeVeh = vehicles.length > 0 ? vehicles[0].nome : 'Carro / Geral';
+      if (targetInput) targetInput.value = activeVeh;
+
+      const renderPills = () => {
+        let pillsHtml = vehicles.map(v => {
+          const isSel = (v.nome === activeVeh);
+          const cls = isSel
+            ? 'bg-blue-600 text-white font-black shadow-xs ring-2 ring-blue-400'
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 border border-slate-200 dark:border-slate-700 font-bold';
+          return `
+            <button type="button" onclick="setQuickVehicleTarget('${escapeHtml(v.nome)}')" class="px-3 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${cls}">
+              <span>${v.tipo === 'Moto' ? '🛵' : '🚗'}</span>
+              <span>${escapeHtml(v.nome)}</span>
+            </button>
+          `;
+        }).join('');
+
+        pillsHtml += `
+          <button type="button" onclick="setQuickVehicleTarget('Transporte Público / Uber')" class="px-3 py-1.5 rounded-2xl text-xs transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${activeVeh === 'Transporte Público / Uber' ? 'bg-blue-600 text-white font-black shadow-xs ring-2 ring-blue-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-bold'}">
+            <span>🚕</span>
+            <span>Uber / Público</span>
+          </button>
+        `;
+        selectorContainer.innerHTML = pillsHtml;
+      };
+
+      window.setQuickVehicleTarget = function(name) {
+        activeVeh = name;
+        if (targetInput) targetInput.value = name;
+        renderPills();
+      };
+
+      renderPills();
+    }
+
+    const descInput = document.getElementById('quickVehicleDescricao');
+    if (descInput) descInput.value = '';
+
+    const valorInput = document.getElementById('quickVehicleValor');
+    if (valorInput) valorInput.value = '';
+
+    const dataInput = document.getElementById('quickVehicleData');
+    if (dataInput) dataInput.value = (typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0];
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closeVeiculosExpenseQuickModal = function() {
+    const modal = document.getElementById('modalVeiculosExpenseQuick');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+    }
+  };
+
+  window.handleSaveVeiculosExpenseQuick = function(event) {
+    if (event) event.preventDefault();
+    const vehName = document.getElementById('quickVehicleSelectedName')?.value || 'Veículo';
+    const subcategoria = document.getElementById('quickVehicleSubcategoria')?.value || 'Combustível';
+    const rawDesc = document.getElementById('quickVehicleDescricao')?.value.trim();
+    const valorInput = document.getElementById('quickVehicleValor');
+    const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
+    const data = document.getElementById('quickVehicleData')?.value || ((typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0]);
+    const responsavel = document.getElementById('quickVehicleResponsavel')?.value || 'Rodrigo';
+    const forma_pagamento = document.getElementById('quickVehiclePagamento')?.value || 'Cartão de Crédito';
+
+    if (!rawDesc || valor <= 0) {
+      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Preencha a descrição e um valor válido.', false);
+      return;
+    }
+
+    let cartao_nome = null;
+    if (forma_pagamento === 'Cartão de Crédito') {
+      if (responsavel === 'Márcia') cartao_nome = 'XP Márcia';
+      else if (responsavel === 'Comum') cartao_nome = 'Itaú Click';
+      else cartao_nome = 'Nubank Rodrigo';
+    }
+
+    const curCyc = (window.appCyclesData && window.currentActiveCycleKey && window.appCyclesData[window.currentActiveCycleKey]?.tag)
+      ? window.appCyclesData[window.currentActiveCycleKey].tag
+      : (typeof currentCycle !== 'undefined' ? currentCycle : 'out_2026');
+
+    const descFinal = (vehName && vehName !== 'Veículo' && !rawDesc.toLowerCase().includes(vehName.toLowerCase()))
+      ? `${rawDesc} (${vehName})`
+      : rawDesc;
+
+    const maxId = (typeof transactions !== 'undefined' && transactions && transactions.length > 0) ? Math.max(...transactions.map(t => t.id || 0)) + 1 : Date.now();
+    const newTx = {
+      id: maxId,
+      data,
+      ciclo: curCyc,
+      tipo: 'Despesa Variável',
+      categoria: 'Veículo',
+      subcategoria: subcategoria,
+      descricao: descFinal,
+      valor: valor,
+      responsavel,
+      forma_pagamento,
+      cartao_nome,
+      origem_comprovante: 'manual',
+      status: 'Pago',
+      pago: true,
+      parcelado: false,
+      total_parcelas: 1,
+      parcela_atual: 1
+    };
+
+    if (Array.isArray(window.transactions)) window.transactions.unshift(newTx);
+    if (typeof transactions !== 'undefined' && Array.isArray(transactions) && transactions !== window.transactions) {
+      transactions.unshift(newTx);
+    }
+    const curKey = window.currentActiveCycleKey;
+    if (window.appCyclesData && curKey && window.appCyclesData[curKey] && Array.isArray(window.appCyclesData[curKey].transactions)) {
+      window.appCyclesData[curKey].transactions.unshift(newTx);
+      try { localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(window.appCyclesData)); } catch(_) {}
+    }
+
+    if (typeof saveTransactionsToStorage === 'function') saveTransactionsToStorage();
+    if (typeof saveData === 'function') saveData();
+    if (typeof syncTransactionToFlutter === 'function') syncTransactionToFlutter(newTx, 'insert');
+    if (typeof updateMetrics === 'function') updateMetrics();
+    if (typeof updateDashboard === 'function') updateDashboard();
+    if (typeof renderVeiculosHubData === 'function') renderVeiculosHubData();
+    if (typeof renderApprovedTransactionsList === 'function') renderApprovedTransactionsList();
+
+    closeVeiculosExpenseQuickModal();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Gasto de Transporte no valor de R$ ${valor.toFixed(2).replace('.', ',')} lançado! 🚗`, false);
+    }
+  };
+
+    // GASTOS DE SAÚDE
   // -------------------------------------------------------------------------
   window.openHealthExpenseQuickModal = function() {
     const modal = document.getElementById('modalHealthExpenseQuick');
@@ -43065,6 +43341,203 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: LANÇAR GASTO RÁPIDO DE SAÚDE (FARMÁCIA / CONSULTAS, SEM POLUIÇÃO)  -->
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- MODAL: LANÇAR GASTO RÁPIDO DE EDUCAÇÃO (MENSALIDADE, CURSOS, MATERIAL)     -->
+  <!-- ========================================================================= -->
+  <div id="modalEducacaoExpenseQuick" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1100] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-indigo-300/40 dark:border-indigo-700/40 text-xs flex flex-col space-y-4">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-xl font-bold shadow-xs">
+            🎓
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Lançar Despesa de Educação</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Mensalidades, cursos, material escolar, livros e formação</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeEducacaoExpenseQuickModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário Rápido e Focado -->
+      <form onsubmit="handleSaveEducacaoExpenseQuick(event)" class="space-y-3.5">
+        <!-- 1. Tipo de Gasto Educação -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Tipo de Gasto em Educação</label>
+          <select id="quickEduSubcategoria" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="Mensalidade Escolar / Faculdade">🏫 Mensalidade Escolar / Faculdade</option>
+            <option value="Cursos Online & Certificações">💻 Cursos Online & Certificações</option>
+            <option value="Livros & Material Didático">📚 Livros, Apostilas & Material</option>
+            <option value="Uniforme & Acessórios Escolares">🎒 Uniforme, Mochila & Acessórios</option>
+            <option value="Transporte Escolar">🚌 Transporte Escolar / Van</option>
+            <option value="Idiomas & Aulas Particulares">🗣️ Idiomas & Aulas Particulares</option>
+            <option value="Atividades Extracurriculares">⚽ Extracurricular & Esportes</option>
+            <option value="Matrícula & Taxas Escolares">📝 Matrícula & Taxas</option>
+            <option value="Outros Gastos Educacionais">🎓 Outros Gastos de Educação</option>
+          </select>
+        </div>
+
+        <!-- 2. Descrição / Instituição -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Instituição / Curso</label>
+          <input type="text" id="quickEduDescricao" required placeholder="Ex.: Colégio Anglo, Curso de Inglês, Udemy, Livraria..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        </div>
+
+        <!-- 3. Valor e Data -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
+            <input type="text" inputmode="numeric" id="quickEduValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
+            <input type="date" id="quickEduData" required class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- 4. Aluno / Responsável e Pagamento -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Aluno / Responsável</label>
+            <select id="quickEduResponsavel" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+              <option value="Comum">👥 Comum (Família / Filhos)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Forma de Pagamento</label>
+            <select id="quickEduPagamento" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="Pix">⚡ Pix</option>
+              <option value="Boleto">📄 Boleto Bancário</option>
+              <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+              <option value="Débito">🏧 Débito</option>
+              <option value="Dinheiro">💵 Dinheiro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="closeEducacaoExpenseQuickModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold transition-all cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+            <span>✓ Salvar Gasto Educação</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: LANÇAR GASTO RÁPIDO DE TRANSPORTE & MANUTENÇÃO (COMBUSTÍVEL, OFICINA) -->
+  <!-- ========================================================================= -->
+  <div id="modalVeiculosExpenseQuick" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1100] hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-blue-300/40 dark:border-blue-700/40 text-xs flex flex-col space-y-4">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-300 flex items-center justify-center text-xl font-bold shadow-xs">
+            🚗
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Lançar Despesa de Transporte &amp; Manutenção</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Combustível, seguro, IPVA, manutenção, oficina e revisão</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeVeiculosExpenseQuickModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Formulário Rápido e Focado -->
+      <form onsubmit="handleSaveVeiculosExpenseQuick(event)" class="space-y-3.5">
+        <!-- 1. Veículo / Transporte Alvo -->
+        <div id="quickVehicleTargetWrapper">
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1.5 text-[11px]">Veículo / Meio de Transporte</label>
+          <div id="quickVehicleSelectorList" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+            <!-- Injetado dinamicamente com os veículos cadastrados ou opções padrão -->
+          </div>
+          <input type="hidden" id="quickVehicleSelectedName" value="">
+        </div>
+
+        <!-- 2. Tipo de Gasto em Transporte -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Tipo de Gasto</label>
+          <select id="quickVehicleSubcategoria" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="Combustível">⛽ Combustível (Gasolina / Etanol / GNV / Diesel)</option>
+            <option value="Manutenção & Troca de Óleo">🔧 Manutenção Preventiva & Troca de Óleo</option>
+            <option value="Oficina & Mecânico">🧰 Mecânico, Peças & Reparos</option>
+            <option value="IPVA & Licenciamento">📄 IPVA, Licenciamento & DPVAT</option>
+            <option value="Seguro Veicular">🛡️ Seguro Veicular</option>
+            <option value="Estacionamento & Pedágio">🅿️ Estacionamento & Pedágio (Sem Parar)</option>
+            <option value="Transporte por Aplicativo">🚕 Uber / 99 / Táxi</option>
+            <option value="Transporte Público">🚌 Transporte Público (Metrô / Ônibus)</option>
+            <option value="Lavagem & Estética">🧼 Lava-Rápido & Estética Automotiva</option>
+            <option value="Outros Gastos de Transporte">🚗 Outros Gastos de Transporte</option>
+          </select>
+        </div>
+
+        <!-- 3. Descrição / Estabelecimento -->
+        <div>
+          <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Posto / Oficina</label>
+          <input type="text" id="quickVehicleDescricao" required placeholder="Ex.: Posto Shell (Gasolina), Troca de Óleo, Sem Parar, Uber..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- 4. Valor e Data -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
+            <input type="text" inputmode="numeric" id="quickVehicleValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
+            <input type="date" id="quickVehicleData" required class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- 5. Responsável e Pagamento -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Motorista / Responsável</label>
+            <select id="quickVehicleResponsavel" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="Rodrigo">👨 Rodrigo</option>
+              <option value="Márcia">👩 Márcia</option>
+              <option value="Comum">👥 Comum (Família)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Forma de Pagamento</label>
+            <select id="quickVehiclePagamento" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
+              <option value="Pix">⚡ Pix</option>
+              <option value="Débito">🏧 Débito</option>
+              <option value="Dinheiro">💵 Dinheiro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="closeVeiculosExpenseQuickModal()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold transition-all cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black shadow-md transition-all cursor-pointer flex items-center gap-1.5">
+            <span>✓ Salvar Gasto Transporte</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
   <div id="modalHealthExpenseQuick" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1100] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl max-w-md w-full p-5 shadow-2xl relative border border-sky-300/40 dark:border-sky-700/40 text-xs flex flex-col space-y-4">
       
