@@ -15871,7 +15871,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
           btnAdmin.title = 'Painel Administrativo Master: Gestão Global e Configurações';
         } else {
           btnAdmin.innerHTML = `<i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i> <span>Painel</span>`;
-          btnAdmin.title = 'Painel do Usuário: Família, Notificações & Personalizar';
+          btnAdmin.title = 'Painel do Usuário: Família, Notificações & Configurações';
         }
         if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
       }
@@ -16553,7 +16553,7 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
         if (masterView) masterView.classList.add('hidden');
         if (userView) userView.classList.remove('hidden');
         if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Membro da Família';
-        if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
+        if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e configurações do dashboard.';
         const demoBanner = document.getElementById('adminUserDemoBanner');
         if (demoBanner) {
           if (isDemo) demoBanner.classList.remove('hidden');
@@ -25092,28 +25092,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
       <!-- 1. PAINEL MASTER (EXCLUSIVO RODRIGO) -->
         
-        <!-- SEÇÃO: PERSONALIZAÇÃO DO CABEÇALHO (SUBTÍTULO & MODO SOLTEIRO) -->
-        <div class="p-3.5 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800/90 dark:to-slate-850 rounded-2xl border border-indigo-200/80 dark:border-indigo-900/60 shadow-xs">
-          <div class="flex items-center justify-between mb-1.5">
-            <h4 class="font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
-              <span>✏️</span><span>Personalizar Saudação e Subtítulo</span>
-            </h4>
-            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-600 text-white">Layout</span>
-          </div>
-          <p class="text-[11px] text-slate-600 dark:text-slate-300 mb-2.5 leading-relaxed">
-            Configure o subtítulo com limite de até 50 caracteres (para não quebrar o layout) e alterne entre o modo Família e Solteiro (ex: Olá, Rodrigo!).
-          </p>
-          <div class="space-y-2">
-            <div class="flex gap-2">
-              <input type="text" id="adminInputSubtitle" maxlength="50" placeholder="Subtítulo (máx 50 caracteres)" class="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500">
-              <button type="button" onclick="window.saveAdminCustomSubtitle()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">Salvar</button>
-            </div>
-            <div class="flex items-center justify-between pt-1">
-              <span class="text-xs text-slate-700 dark:text-slate-300 font-bold">Modo Solteiro / Individual:</span>
-              <button type="button" onclick="window.toggleUserProfileType()" id="adminBtnToggleSingle" class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-600 text-xs font-bold transition-all cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">Alternar Perfil</button>
-            </div>
-          </div>
-        </div>
+
       <div id="adminMasterView" class="mt-4 space-y-3.5">
         
 <!-- SEÇÃO: MODO DEMONSTRAÇÃO REMOVIDA -->
@@ -36419,7 +36398,7 @@ window.updateDemoBannerUI = function() {
     if (adminBtn) {
         if (!isMaster || isDemo) {
             adminBtn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5 text-amber-300"></i><span>Painel</span>';
-            adminBtn.title = 'Painel do Usuário: Membros da Família, Notificações & Personalizar Dashboard';
+            adminBtn.title = 'Painel do Usuário: Membros da Família, Notificações & Configurações';
         } else {
             adminBtn.innerHTML = '<i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-300"></i><span>Admin</span>';
             adminBtn.title = 'Painel Administrativo Master: Sugestões, Cupons VIP & Configurações';
@@ -44520,7 +44499,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (masterView) masterView.classList.add('hidden');
       if (userView) userView.classList.remove('hidden');
       if (headerTitle) headerTitle.textContent = isDemo ? 'Painel do Usuário (Demonstração)' : 'Painel do Usuário';
-      if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e personalização do dashboard.';
+      if (headerDesc) headerDesc.textContent = 'Gestão da família, notificações e configurações do dashboard.';
       if (typeof window.renderAdminUserCompactModulesToggle === 'function') {
         try { window.renderAdminUserCompactModulesToggle(); } catch(_) {}
       }
