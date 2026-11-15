@@ -7414,9 +7414,15 @@ html, body {
           </div>
         </div>
 
-        <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeEditTxModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-none border border-slate-300">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-none shadow-sm">Salvar Alterações</button>
+        <div class="pt-2 flex items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-800">
+          <button type="button" onclick="deleteCurrentEditTx()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 font-bold rounded-xl border border-rose-200 dark:border-rose-800 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all" title="Excluir este lançamento">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Excluir</span>
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeEditTxModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl border border-slate-300">Cancelar</button>
+            <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm">Salvar Alterações</button>
+          </div>
         </div>
       </form>
     </div>
@@ -8026,9 +8032,13 @@ html, body {
       inputElement.setAttribute('type', 'text');
       inputElement.setAttribute('inputmode', 'numeric');
       
+      inputElement.addEventListener('focus', function() {
+        setTimeout(() => { try { this.select(); } catch(_) {} }, 50);
+      });
+      
       inputElement.addEventListener('input', function(e) {
         let raw = inputElement.value.replace(/\D/g, '');
-        if (!raw) {
+        if (!raw || parseInt(raw, 10) === 0) {
           inputElement.value = '';
           return;
         }
@@ -8101,7 +8111,7 @@ html, body {
     }
 
     function initAllCurrencyMasks() {
-      ['newTxValor', 'editTxValor', 'invoiceExtractedTotal', 'canIBuyValor', 'inputBankCheckVal', 'inputFoodBudgetCap'].forEach(id => {
+      ['newTxValor', 'editTxValor', 'invoiceExtractedTotal', 'canIBuyValor', 'inputBankCheckVal', 'inputFoodBudgetCap', 'quickVehicleValor', 'quickEduValor', 'quickPetValor', 'quickHealthValor'].forEach(id => {
         const el = document.getElementById(id);
         if (el) setupCurrencyMask(el);
       });
@@ -10167,6 +10177,14 @@ html, body {
       if (hint) { hint.classList.add('hidden'); hint.innerHTML = ''; }
       document.getElementById('modalEditTx').classList.add('hidden');
     }
+
+    window.deleteCurrentEditTx = function() {
+      const idEl = document.getElementById('editTxId');
+      if (!idEl || !idEl.value) return;
+      const id = parseInt(idEl.value, 10);
+      if (typeof closeEditTxModal === 'function') closeEditTxModal();
+      if (typeof deleteTx === 'function') deleteTx(id);
+    };
 
     function handleSaveEditTx(e) {
       e.preventDefault();
@@ -42807,7 +42825,13 @@ window.openHealthMedsModal = function() {
     if (!modal) return;
     if (modal.parentElement !== document.body) document.body.appendChild(modal);
 
+    const valEl = document.getElementById('quickEduValor');
+    if (valEl) {
+      valEl.value = '';
+      if (typeof setupCurrencyMask === 'function') setupCurrencyMask(valEl);
+    }
     const descInput = document.getElementById('quickEduDescricao');
+    if (descInput) descInput.value = '';
     if (descInput) descInput.value = '';
 
     const valorInput = document.getElementById('quickEduValor');
@@ -42827,20 +42851,28 @@ window.openHealthMedsModal = function() {
       modal.classList.add('hidden');
       modal.style.display = 'none';
     }
+    const valEl = document.getElementById('quickEduValor');
+    if (valEl) valEl.value = '';
+    const descEl = document.getElementById('quickEduDescricao');
+    if (descEl) descEl.value = '';
   };
 
   window.handleSaveEducacaoExpenseQuick = function(event) {
     if (event) event.preventDefault();
     const subcategoria = document.getElementById('quickEduSubcategoria')?.value || 'Mensalidade Escolar / Faculdade';
-    const rawDesc = document.getElementById('quickEduDescricao')?.value.trim();
+    let rawDesc = document.getElementById('quickEduDescricao')?.value.trim();
     const valorInput = document.getElementById('quickEduValor');
     const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
     const data = document.getElementById('quickEduData')?.value || ((typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0]);
     const responsavel = document.getElementById('quickEduResponsavel')?.value || 'Rodrigo';
     const forma_pagamento = document.getElementById('quickEduPagamento')?.value || 'Pix';
 
-    if (!rawDesc || valor <= 0) {
-      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Preencha a descrição e um valor válido.', false);
+    if (!rawDesc) {
+      rawDesc = subcategoria || 'Educação';
+    }
+
+    if (valor <= 0) {
+      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Digite um valor válido para a despesa de educação.', false);
       return;
     }
 
@@ -42909,6 +42941,14 @@ window.openHealthMedsModal = function() {
     if (!modal) return;
     if (modal.parentElement !== document.body) document.body.appendChild(modal);
 
+    const valEl = document.getElementById('quickVehicleValor');
+    if (valEl) {
+      valEl.value = '';
+      if (typeof setupCurrencyMask === 'function') setupCurrencyMask(valEl);
+    }
+    const descEl = document.getElementById('quickVehicleDescricao');
+    if (descEl) descEl.value = '';
+
     let vehicles = [];
     try { vehicles = JSON.parse(localStorage.getItem('ctrlpig_custom_vehicles') || '[]'); } catch(_) {}
     
@@ -42971,21 +43011,29 @@ window.openHealthMedsModal = function() {
       modal.classList.add('hidden');
       modal.style.display = 'none';
     }
+    const valEl = document.getElementById('quickVehicleValor');
+    if (valEl) valEl.value = '';
+    const descEl = document.getElementById('quickVehicleDescricao');
+    if (descEl) descEl.value = '';
   };
 
   window.handleSaveVeiculosExpenseQuick = function(event) {
     if (event) event.preventDefault();
     const vehName = document.getElementById('quickVehicleSelectedName')?.value || 'Veículo';
     const subcategoria = document.getElementById('quickVehicleSubcategoria')?.value || 'Combustível';
-    const rawDesc = document.getElementById('quickVehicleDescricao')?.value.trim();
+    let rawDesc = document.getElementById('quickVehicleDescricao')?.value.trim();
     const valorInput = document.getElementById('quickVehicleValor');
     const valor = (typeof getCurrencyValueFromMask === 'function') ? getCurrencyValueFromMask(valorInput) : parseFloat(valorInput?.value.replace(',', '.') || '0');
     const data = document.getElementById('quickVehicleData')?.value || ((typeof getLocalDateString === 'function') ? getLocalDateString() : new Date().toISOString().split('T')[0]);
     const responsavel = document.getElementById('quickVehicleResponsavel')?.value || 'Rodrigo';
     const forma_pagamento = document.getElementById('quickVehiclePagamento')?.value || 'Cartão de Crédito';
 
-    if (!rawDesc || valor <= 0) {
-      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Preencha a descrição e um valor válido.', false);
+    if (!rawDesc) {
+      rawDesc = subcategoria || 'Transporte';
+    }
+
+    if (valor <= 0) {
+      if (typeof showToastUndo === 'function') showToastUndo('⚠️ Digite um valor válido para a despesa de transporte.', false);
       return;
     }
 
@@ -43363,14 +43411,14 @@ window.openHealthMedsModal = function() {
         <!-- 2. Descrição / Instituição -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Instituição / Curso</label>
-          <input type="text" id="quickEduDescricao" required placeholder="Ex.: Colégio Anglo, Curso de Inglês, Udemy, Livraria..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="text" id="quickEduDescricao" placeholder="Ex.: Colégio Anglo, Curso de Inglês, Udemy, Livraria..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
         </div>
 
         <!-- 3. Valor e Data -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
-            <input type="text" inputmode="numeric" id="quickEduValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <input type="text" inputmode="numeric" id="quickEduValor" required placeholder="0,00" onfocus="this.select()" oninput="if(typeof setupCurrencyMask === 'function') setupCurrencyMask(this);" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
@@ -43467,14 +43515,14 @@ window.openHealthMedsModal = function() {
         <!-- 3. Descrição / Estabelecimento -->
         <div>
           <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Descrição / Posto / Oficina</label>
-          <input type="text" id="quickVehicleDescricao" required placeholder="Ex.: Posto Shell (Gasolina), Troca de Óleo, Sem Parar, Uber..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <input type="text" id="quickVehicleDescricao" placeholder="Ex.: Posto Shell (Gasolina), Troca de Óleo, Sem Parar, Uber..." class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <!-- 4. Valor e Data -->
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Valor (R$)</label>
-            <input type="text" inputmode="numeric" id="quickVehicleValor" required placeholder="0,00" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <input type="text" inputmode="numeric" id="quickVehicleValor" required placeholder="0,00" onfocus="this.select()" oninput="if(typeof setupCurrencyMask === 'function') setupCurrencyMask(this);" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-black focus:ring-2 focus:ring-blue-500 focus:outline-none">
           </div>
           <div>
             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Data</label>
@@ -44720,9 +44768,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+            <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
               <span class="font-mono text-xs ${valColor}">${valFormatted}</span>
               ${btnQuitar}
+              <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/40 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento fixo">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
               <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-white/40"></i>
             </div>
           </div>
