@@ -41128,14 +41128,18 @@ window.openHealthMedsModal = function() {
 
   // Redirecionamento Garantido para a Página Inicial do Dashboard
   window.navigateToDashboardHome = function() {
-    // 1. Fecha modais de ciclos e seletores
+    // 1. Fecha modais de ciclos e seletores imediatamente
+    ['modalSelectCycle', 'modalCreateNewCycle', 'modalNewCycle', 'modalRenameCycle'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.style.setProperty('display', 'none', 'important');
+        el.style.zIndex = '';
+      }
+    });
     if (typeof window.closeCreateNewCycleModal === 'function') window.closeCreateNewCycleModal();
     if (typeof window.closeSelectCycleModal === 'function') window.closeSelectCycleModal();
     if (typeof window.closeNewCycleModal === 'function') window.closeNewCycleModal();
-    const cycleModal = document.getElementById('modalSelectCycle');
-    if (cycleModal) { cycleModal.classList.add('hidden'); cycleModal.style.display = 'none'; }
-    const createCycleModal = document.getElementById('modalCreateNewCycle');
-    if (createCycleModal) { createCycleModal.classList.add('hidden'); createCycleModal.style.display = 'none'; }
 
     // 2. Alterna telas para o Dashboard inicial
     if (typeof switchScreen === 'function') switchScreen('dashboard');
@@ -41145,23 +41149,23 @@ window.openHealthMedsModal = function() {
     const nav = document.querySelector('nav.bottom-nav');
     if (nav) {
       nav.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-      const homeTab = document.getElementById('navTab_dashboard') || nav.querySelector('.bottom-nav-item');
+      const homeTab = document.getElementById('navTab_dashboard') || document.getElementById('btnNav_inicio') || nav.querySelector('.bottom-nav-item');
       if (homeTab) homeTab.classList.add('active');
     }
 
-    // 4. Rola suavemente para o topo da página do Dashboard
+    // 4. Rola imediatamente para o topo da página do Dashboard
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (document.documentElement) document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-      if (document.body) document.body.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (document.documentElement) document.documentElement.scrollTo({ top: 0, behavior: 'instant' });
+      if (document.body) document.body.scrollTo({ top: 0, behavior: 'instant' });
       const appCont = document.getElementById('approvedAppContainer');
-      if (appCont) appCont.scrollTo({ top: 0, behavior: 'smooth' });
+      if (appCont) appCont.scrollTo({ top: 0, behavior: 'instant' });
     } catch (_) {}
   };
 
   // 1. Alternância de Ciclo e Recálculo Global Imediato
   window.setActiveCycle = function(cycleKey) {
-    if (!window.appCyclesData[cycleKey]) return;
+    if (!window.appCyclesData || !window.appCyclesData[cycleKey]) return;
     window.currentActiveCycleKey = cycleKey;
     localStorage.setItem('ctrlpig_active_cycle', cycleKey);
     
@@ -41171,37 +41175,43 @@ window.openHealthMedsModal = function() {
     transactions = Array.isArray(cycle.transactions) ? cycle.transactions : [];
     window.transactions = transactions;
 
-    if (typeof window.syncGlobalCycleState === 'function') {
-      window.syncGlobalCycleState(cycle.tag, transactions);
-    }
+    try {
+      if (typeof window.syncGlobalCycleState === 'function') {
+        window.syncGlobalCycleState(cycle.tag, transactions);
+      }
+    } catch (_) {}
 
     // Atualiza título (Ex: Novembro 2026) e subtítulo (Ex: 05/Nov a 04/Dez) no cabeçalho
-    const heroTitle = document.getElementById('heroCycleTitle');
-    const heroTag = document.getElementById('heroCycleTag');
-    if (heroTitle) heroTitle.textContent = cycle.name || 'Outubro 2026';
-    if (heroTag) heroTag.textContent = window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag);
+    try {
+      const heroTitle = document.getElementById('heroCycleTitle');
+      const heroTag = document.getElementById('heroCycleTag');
+      if (heroTitle) heroTitle.textContent = cycle.name || 'Outubro 2026';
+      if (heroTag && typeof window.formatCycleShortSubtitle === 'function') {
+        heroTag.textContent = window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag);
+      }
+    } catch (_) {}
 
     // Atualiza IMEDIATAMENTE o Card de Saldo Atual, Receitas, Despesas, Dias Restantes, Comprometido e Parcelados
-    if (typeof updateDashboard === 'function') updateDashboard();
-    if (typeof window.syncApprovedDesignWithAppData === 'function') {
-      window.syncApprovedDesignWithAppData();
-    }
-    if (typeof renderTransactionsTable === 'function') renderTransactionsTable();
-    if (typeof window.renderApprovedTransactionsList === 'function') {
-      window.renderApprovedTransactionsList();
-    }
-    if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget();
-    if (typeof renderInstallments === 'function') renderInstallments();
-    if (typeof renderCyclesList === 'function') renderCyclesList();
+    try { if (typeof updateDashboard === 'function') updateDashboard(); } catch (_) {}
+    try { if (typeof window.syncApprovedDesignWithAppData === 'function') window.syncApprovedDesignWithAppData(); } catch (_) {}
+    try { if (typeof renderTransactionsTable === 'function') renderTransactionsTable(); } catch (_) {}
+    try { if (typeof window.renderApprovedTransactionsList === 'function') window.renderApprovedTransactionsList(); } catch (_) {}
+    try { if (typeof updateFoodBudgetWidget === 'function') updateFoodBudgetWidget(); } catch (_) {}
+    try { if (typeof renderInstallments === 'function') renderInstallments(); } catch (_) {}
+    try { if (typeof renderCyclesList === 'function') renderCyclesList(); } catch (_) {}
 
-    // Fecha modal e navega imediatamente para o Dashboard inicial
-    window.closeSelectCycleModal();
+    // Fecha modais e navega diretamente para a tela inicial do Dashboard
+    if (typeof window.closeSelectCycleModal === 'function') window.closeSelectCycleModal();
+    if (typeof window.closeCreateNewCycleModal === 'function') window.closeCreateNewCycleModal();
     if (typeof window.navigateToDashboardHome === 'function') {
       window.navigateToDashboardHome();
     }
-    if (typeof showToastUndo === 'function') {
-      showToastUndo(`📅 Ciclo ativo: ${cycle.name} (${window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag)})`, false);
-    }
+    try {
+      if (typeof showToastUndo === 'function') {
+        const sub = (typeof window.formatCycleShortSubtitle === 'function') ? window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag) : (cycle.subtitle || cycle.tag);
+        showToastUndo(`📅 Ciclo ativo: ${cycle.name} (${sub})`, false);
+      }
+    } catch (_) {}
   };
 
   window.toggleCyclesTrashSection = function(forceShow) {
@@ -41386,7 +41396,8 @@ window.openHealthMedsModal = function() {
     const m = document.getElementById('modalSelectCycle');
     if (m) {
       m.classList.add('hidden');
-      m.style.display = 'none';
+      m.style.setProperty('display', 'none', 'important');
+      m.style.zIndex = '';
     }
   };
 
@@ -41397,7 +41408,8 @@ window.openHealthMedsModal = function() {
     if (m) {
       if (m.parentElement !== document.body) document.body.appendChild(m);
       m.classList.remove('hidden');
-      m.style.display = 'flex';
+      m.style.setProperty('display', 'flex', 'important');
+      m.style.zIndex = '1000000';
       // Sugere automaticamente o próximo mês sequencial ainda não criado
       const startEl = document.getElementById('inputStandardCycleStartDate');
       const endEl = document.getElementById('inputStandardCycleEndDate');
@@ -41425,18 +41437,38 @@ window.openHealthMedsModal = function() {
     const m = document.getElementById('modalCreateNewCycle');
     if (m) {
       m.classList.add('hidden');
-      m.style.display = 'none';
+      m.style.setProperty('display', 'none', 'important');
+      m.style.zIndex = '';
     }
   };
   window.handleSaveNewCycle = function(e) {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    
+    // Fecha e oculta IMEDIATAMENTE ambos os modais (Criação e Seleção de Ciclos)
+    const mCreate = document.getElementById('modalCreateNewCycle');
+    if (mCreate) {
+      mCreate.classList.add('hidden');
+      mCreate.style.setProperty('display', 'none', 'important');
+      mCreate.style.zIndex = '';
+    }
+    const mSelect = document.getElementById('modalSelectCycle');
+    if (mSelect) {
+      mSelect.classList.add('hidden');
+      mSelect.style.setProperty('display', 'none', 'important');
+      mSelect.style.zIndex = '';
+    }
+    if (typeof window.closeCreateNewCycleModal === 'function') window.closeCreateNewCycleModal();
+    if (typeof window.closeSelectCycleModal === 'function') window.closeSelectCycleModal();
+
     const startEl = document.getElementById('inputStandardCycleStartDate');
     const endEl = document.getElementById('inputStandardCycleEndDate');
     const copyFixas = document.getElementById('checkNewCycleCopyFixas')?.checked !== false;
 
     const startIso = startEl ? startEl.value : '2026-11-05';
     const endIso = endEl ? endEl.value : '2026-12-04';
-    const info = window.computeStandardCycleFromDates(startIso, endIso);
+    const info = (typeof window.computeStandardCycleFromDates === 'function')
+      ? window.computeStandardCycleFromDates(startIso, endIso)
+      : { key: 'nov_2026', name: 'Novembro 2026', subtitle: '05/Nov a 04/Dez', tag: '05/Nov a 04/Dez' };
 
     // Busca o ciclo anterior como referência (ciclo ativo ou Outubro 2026 'out_2026')
     const prevCycle = (window.appCyclesData && window.appCyclesData[window.currentActiveCycleKey])
@@ -41448,7 +41480,11 @@ window.openHealthMedsModal = function() {
 
     let newTxs = [];
     if (copyFixas && typeof window.buildRecurringTransactionsForCycle === 'function') {
-      newTxs = window.buildRecurringTransactionsForCycle(prevTxs, prevCycle, info);
+      try {
+        newTxs = window.buildRecurringTransactionsForCycle(prevTxs, prevCycle, info);
+      } catch (errRec) {
+        console.warn('Erro ao construir transações recorrentes:', errRec);
+      }
     }
 
     const totalRec = newTxs.filter(t => t.tipo === 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
@@ -41456,6 +41492,7 @@ window.openHealthMedsModal = function() {
     const totalExtras = Math.max(0, totalRec - totalSalario);
     const totalDesp = newTxs.filter(t => t.tipo !== 'Receita').reduce((s, t) => s + (Number(t.valor) || 0), 0);
 
+    if (!window.appCyclesData) window.appCyclesData = {};
     window.appCyclesData[info.key] = {
       key: info.key,
       name: info.name,
@@ -41476,8 +41513,14 @@ window.openHealthMedsModal = function() {
       localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(savedCustom));
     } catch (err) {}
 
-    window.closeCreateNewCycleModal();
-    window.setActiveCycle(info.key);
+    // Ativa o novo ciclo e recálculos com segurança
+    try {
+      window.setActiveCycle(info.key);
+    } catch (errAct) {
+      console.warn('Erro ao definir ciclo ativo:', errAct);
+    }
+
+    // Retorna DIRETAMENTE para a página inicial do Dashboard
     if (typeof window.navigateToDashboardHome === 'function') {
       window.navigateToDashboardHome();
     }
@@ -44534,7 +44577,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     ensureElementVisible('modalSelectCycle');
     if (typeof renderCyclesList === 'function') renderCyclesList();
   };
-  window.closeSelectCycleModal = function() { hideElement('modalSelectCycle'); };
+  window.closeSelectCycleModal = function() {
+    hideElement('modalSelectCycle');
+    const m = document.getElementById('modalSelectCycle');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.setProperty('display', 'none', 'important');
+      m.style.zIndex = '';
+    }
+  };
 
   window.openNewTxModal = function() {
     if (typeof resetNewTxFormValues === 'function') resetNewTxFormValues();
