@@ -9358,6 +9358,9 @@ html, body {
       localStorage.setItem('financas_active_cycle', newName);
 
       closeNewCycleModal();
+      if (typeof window.navigateToDashboardHome === 'function') {
+        window.navigateToDashboardHome();
+      }
       populateCycleSelector();
       updateDashboard();
       showToastUndo(`Novo ciclo "${newName}" criado!`, false);
@@ -16883,6 +16886,9 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (typeof renderInstallments === 'function') renderInstallments();
       if (typeof renderCyclesList === 'function') renderCyclesList();
       closeNewCycleModal();
+      if (typeof window.navigateToDashboardHome === 'function') {
+        window.navigateToDashboardHome();
+      }
       showToastUndo(`Novo ciclo "${newCycleName}" iniciado com sucesso! 🎉`, false);
     }
 
@@ -40980,6 +40986,39 @@ window.openHealthMedsModal = function() {
     if (typeof updateDashboard === 'function') updateDashboard();
   };
 
+  // Redirecionamento Garantido para a Página Inicial do Dashboard
+  window.navigateToDashboardHome = function() {
+    // 1. Fecha modais de ciclos e seletores
+    if (typeof window.closeCreateNewCycleModal === 'function') window.closeCreateNewCycleModal();
+    if (typeof window.closeSelectCycleModal === 'function') window.closeSelectCycleModal();
+    if (typeof window.closeNewCycleModal === 'function') window.closeNewCycleModal();
+    const cycleModal = document.getElementById('modalSelectCycle');
+    if (cycleModal) { cycleModal.classList.add('hidden'); cycleModal.style.display = 'none'; }
+    const createCycleModal = document.getElementById('modalCreateNewCycle');
+    if (createCycleModal) { createCycleModal.classList.add('hidden'); createCycleModal.style.display = 'none'; }
+
+    // 2. Alterna telas para o Dashboard inicial
+    if (typeof switchScreen === 'function') switchScreen('dashboard');
+    if (typeof window.switchMainTab === 'function') window.switchMainTab('inicio');
+
+    // 3. Atualiza estado ativo do rodapé
+    const nav = document.querySelector('nav.bottom-nav');
+    if (nav) {
+      nav.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+      const homeTab = document.getElementById('navTab_dashboard') || nav.querySelector('.bottom-nav-item');
+      if (homeTab) homeTab.classList.add('active');
+    }
+
+    // 4. Rola suavemente para o topo da página do Dashboard
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (document.documentElement) document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      if (document.body) document.body.scrollTo({ top: 0, behavior: 'smooth' });
+      const appCont = document.getElementById('approvedAppContainer');
+      if (appCont) appCont.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (_) {}
+  };
+
   // 1. Alternância de Ciclo e Recálculo Global Imediato
   window.setActiveCycle = function(cycleKey) {
     if (!window.appCyclesData[cycleKey]) return;
@@ -41015,8 +41054,11 @@ window.openHealthMedsModal = function() {
     if (typeof renderInstallments === 'function') renderInstallments();
     if (typeof renderCyclesList === 'function') renderCyclesList();
 
-    // Fecha modal
+    // Fecha modal e navega imediatamente para o Dashboard inicial
     window.closeSelectCycleModal();
+    if (typeof window.navigateToDashboardHome === 'function') {
+      window.navigateToDashboardHome();
+    }
     if (typeof showToastUndo === 'function') {
       showToastUndo(`📅 Ciclo ativo: ${cycle.name} (${window.formatCycleShortSubtitle(cycle.subtitle || cycle.tag)})`, false);
     }
@@ -41296,6 +41338,9 @@ window.openHealthMedsModal = function() {
 
     window.closeCreateNewCycleModal();
     window.setActiveCycle(info.key);
+    if (typeof window.navigateToDashboardHome === 'function') {
+      window.navigateToDashboardHome();
+    }
   };
 
   // 3. Olhinho: Alternância de Ícones Eye / Eye-Off e Ocultação EXCLUSIVA do Card Saldo Atual
