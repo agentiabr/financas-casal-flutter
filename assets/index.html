@@ -6278,33 +6278,34 @@ html, body {
     <div class="flex-1 bg-transparent overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3.5">
       
       <!-- CAIXA EXPLICATIVA: RECURSOS DA LISTA DE COMPRAS -->
-      <!-- BALÃO RESUMIDO COM O PIGGY DE MERCADO (ESTILO HERO MINHAS ROTINAS) -->
-      <div id="shoppingListIntroBanner" class="relative overflow-hidden rounded-3xl p-4 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-md">
-        <div class="absolute -right-8 -top-8 w-36 h-36 bg-sky-400/25 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="absolute -left-6 -bottom-6 w-28 h-28 bg-emerald-400/20 rounded-full blur-xl pointer-events-none"></div>
+      <!-- BALÃO RESUMIDO COM O PIGGY DE MERCADO (ESTILO HERO MINHAS ROTINAS - ALTURA CONFORTÁVEL & ESPAÇOSA) -->
+      <div id="shoppingListIntroBanner" class="relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-lg min-h-[175px] sm:min-h-[195px] flex items-center">
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-sky-400/25 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-8 -bottom-8 w-36 h-36 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex items-center justify-between gap-3">
-          <div class="max-w-[66%] sm:max-w-[70%]">
-            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] uppercase tracking-wider border border-white/30">
+        <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-4 w-full">
+          <!-- Coluna de Texto com Respiro e Largura Adaptativa -->
+          <div class="flex-1 min-w-0 pr-1 flex flex-col justify-center space-y-1.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider border border-white/30 shadow-xs">
                 🛒 Lista Inteligente
               </span>
-              <button type="button" id="shoppingListOpenChatBtn" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] font-black text-white bg-white/20 hover:bg-white/30 px-2.5 py-0.5 rounded-full border border-white/30 flex items-center gap-1 transition-all cursor-pointer active:scale-95">
+              <button type="button" id="shoppingListOpenChatBtn" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] sm:text-[11px] font-black text-white bg-white/20 hover:bg-white/30 px-2.5 py-0.5 rounded-full border border-white/30 flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-xs">
                 <i data-lucide="message-circle" class="w-3 h-3 text-white"></i>
                 <span>Chat</span>
               </button>
             </div>
-            <h3 id="shoppingHeroBannerTitle" class="font-black text-sm sm:text-base text-white leading-tight drop-shadow-xs">
+            <h3 id="shoppingHeroBannerTitle" class="font-black text-base sm:text-lg text-white leading-tight drop-shadow-xs">
               Planeje suas compras e economize no mercado...
             </h3>
-            <p id="shoppingHeroBannerDesc" class="text-xs text-blue-100 mt-1 leading-snug">
+            <p id="shoppingHeroBannerDesc" class="text-xs sm:text-[13px] text-blue-100/90 leading-relaxed">
               Monte sua lista, marque os produtos na gôndola e compare onde cada item sai mais barato.
             </p>
           </div>
 
-          <!-- Mascote Porquinho com Carrinho de Compras (Piggy de Mercado) -->
-          <div class="w-24 sm:w-28 flex-shrink-0 flex items-center justify-center">
-            <img src="images/mascote_compras.png" onerror="this.src='assets/images/mascote_compras.png'" alt="Piggy de Mercado" class="w-full h-auto max-h-[105px] object-contain drop-shadow-2xl hover:scale-105 transition-transform">
+          <!-- Mascote Porquinho com Carrinho de Compras (Piggy de Mercado no Tamanho Ideal Sem Cortes) -->
+          <div class="w-28 sm:w-36 flex-shrink-0 flex items-center justify-center">
+            <img src="images/mascote_compras.png" onerror="this.src='assets/images/mascote_compras.png'" alt="Piggy de Mercado" class="w-full h-auto max-h-[135px] sm:max-h-[150px] object-contain drop-shadow-2xl hover:scale-105 transition-transform select-none">
           </div>
         </div>
       </div>
