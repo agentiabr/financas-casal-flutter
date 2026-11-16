@@ -6290,16 +6290,12 @@ html, body {
               <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider border border-white/30 shadow-xs">
                 🛒 Lista Inteligente
               </span>
-              <button type="button" id="shoppingListOpenChatBtn" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-[10px] sm:text-[11px] font-black text-white bg-white/20 hover:bg-white/30 px-2.5 py-0.5 rounded-full border border-white/30 flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-xs">
-                <i data-lucide="message-circle" class="w-3 h-3 text-white"></i>
-                <span>Chat</span>
-              </button>
             </div>
             <h3 id="shoppingHeroBannerTitle" class="font-black text-base sm:text-lg text-white leading-tight drop-shadow-xs">
-              Planeje suas compras e economize no mercado...
+              Monte sua lista e compartilhe no chat...
             </h3>
             <p id="shoppingHeroBannerDesc" class="text-xs sm:text-[13px] text-blue-100/90 leading-relaxed">
-              Monte sua lista, marque os produtos na gôndola e compare onde cada item sai mais barato.
+              Marque os produtos retirados na gôndola e confira antes do pagamento...
             </p>
           </div>
 
@@ -37249,14 +37245,10 @@ window.syncIndividualAndFamilyModeUI = function() {
     const shoppingItem3 = document.getElementById('shoppingListIntroItem3');
 
     if (shoppingHeroTitle) {
-        shoppingHeroTitle.textContent = isIndiv
-            ? 'Planeje suas compras e economize no mercado...'
-            : 'Compras da família com economia e integração...';
+        shoppingHeroTitle.textContent = 'Monte sua lista e compartilhe no chat...';
     }
     if (shoppingHeroDesc) {
-        shoppingHeroDesc.textContent = isIndiv
-            ? 'Monte sua lista, marque os produtos na gôndola e compare onde cada item sai mais barato.'
-            : 'Monte sua lista compartilhada, marque os produtos na gôndola e envie atualizações no chat.';
+        shoppingHeroDesc.textContent = 'Marque os produtos retirados na gôndola e confira antes do pagamento...';
     }
 
     if (shoppingSub) {
