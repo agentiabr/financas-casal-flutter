@@ -3418,6 +3418,17 @@ html, body {
   /* ========================================================================== */
   
     /* ========================================================================== */
+    /* BLINDAGEM MODO SOLTEIRO: OCULTAÇÃO TOTAL DE ELEMENTOS DE CASAL/CHAT */
+    html.modo-solteiro #floatingFamilyChatButton,
+    body.modo-solteiro #floatingFamilyChatButton,
+    .modo-solteiro #floatingFamilyChatButton {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* ========================================================================== */
     /* CHAT DA FAMÍLIA BLINDADO (ESTILO WHATSAPP NATIVO)                          */
     /* ========================================================================== */
     #modalFamilyChat {
@@ -5602,8 +5613,8 @@ html, body {
               <span class="text-[11px] font-bold text-blue-600 cursor-pointer" onclick="switchScreen('familia')">Ver todos &gt;</span>
             </div>
 
-            <div class="grid grid-cols-4 gap-2 text-center select-none">
-              <div onclick="switchScreen('chat')" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
+            <div class="grid grid-cols-4 gap-2 text-center select-none" id="dashboardQuickAccessGrid">
+              <div id="quickAccessSlot1" onclick="switchScreen('chat')" class="bg-white/70 p-2.5 rounded-2xl border border-white/60 shadow-xs flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-all active:scale-95">
                 <i data-lucide="message-circle" class="w-6 h-6 text-blue-600 mb-1"></i>
                 <span class="text-[11px] font-bold text-slate-800">Chat</span>
               </div>
@@ -6304,13 +6315,23 @@ html, body {
 
       <!-- CARD 1: ABAS PRINCIPAIS -->
       <div class="bg-white rounded-3xl p-3 shadow-sm border border-slate-200/80">
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-600"></i>
-            <span>Histórico de Preços</span>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <button type="button" onclick="switchShoppingModalTab('builder')" id="tabBtnShoppingBuilder" class="flex-1 py-2.5 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-blue-500/50">
+            <i data-lucide="list-checks" class="w-3.5 h-3.5 text-white"></i>
+            <span>Minha Lista</span>
           </button>
 
-          <button type="button" onclick="openComparativoMercadosModal()" class="flex-1 py-2.5 px-3 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 border border-emerald-300/50 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md shadow-emerald-500/25 active:scale-95" title="Ver ranking comparativo entre mercados">
+          <button type="button" onclick="switchShoppingModalTab('gondola')" id="tabBtnShoppingGondola" class="hidden flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>Fazer Compras</span>
+          </button>
+
+          <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-600"></i>
+            <span>Histórico</span>
+          </button>
+
+          <button type="button" onclick="openComparativoMercadosModal()" class="flex-1 py-2.5 px-2.5 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 border border-emerald-300/50 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md shadow-emerald-500/25 active:scale-95" title="Ver ranking comparativo entre mercados">
             <i data-lucide="scale" class="w-4 h-4 text-white stroke-[2.5]"></i>
             <span>Comparativo</span>
           </button>
@@ -6400,6 +6421,13 @@ html, body {
         <!-- CARD 5: AÇÕES DA LISTA DE COMPRAS -->
         <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
 
+          <!-- Botão Exclusivo para Solteiro: Ir Fazer Compras Direto na Gôndola -->
+          <button type="button" onclick="startSingleShoppingGondola()" id="btnStartSingleShopping" class="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 active:scale-98 transition-all cursor-pointer border border-emerald-400/40">
+            <i data-lucide="shopping-cart" class="w-4.5 h-4.5 text-white"></i>
+            <span id="btnStartSingleShoppingLabel">🛒 Fazer Compras (0 itens)</span>
+          </button>
+
+          <!-- Botão para Casal / Família: Compartilhar no Chat -->
           <button type="button" onclick="sendShoppingListToFamilyChat()" id="btnSendShoppingListDynamic" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer border border-blue-400/40" title="Compartilhar lista de compras">
             <i data-lucide="share-2" class="w-4 h-4 text-white"></i>
             <span id="btnSendShoppingListLabel" class="text-white">Compartilhar lista de compras</span>
@@ -6478,6 +6506,58 @@ html, body {
           </div>
         </div>
 
+      </div>
+
+      <!-- CONTAINER 1.5: MODO GÔNDOLA / FAZER COMPRAS (SOMENTE OS ITENS SELECIONADOS PELO SOLTEIRO) -->
+      <div id="shoppingListGondolaContainer" class="hidden space-y-3.5">
+        <!-- Banner de Carrinho & Progresso em Tempo Real -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-4 shadow-md border border-emerald-400/40 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl flex-shrink-0">
+                🛒
+              </div>
+              <div>
+                <h3 class="font-black text-sm text-white leading-tight">No Carrinho de Compras</h3>
+                <p id="singleGondolaItemsCountSub" class="text-[10px] text-emerald-100 font-medium">0 itens pegos na gôndola</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-emerald-200 uppercase font-bold block">Total no Carrinho</span>
+              <span id="singleGondolaCartTotalDisplay" class="font-mono font-black text-lg text-white">R$ 0,00</span>
+            </div>
+          </div>
+          <!-- Barra de Progresso de Itens Pegos -->
+          <div class="w-full bg-black/20 rounded-full h-2 overflow-hidden">
+            <div id="singleGondolaProgressBar" class="bg-white h-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Lista de Itens Selecionados na Gôndola -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-2.5">
+          <div class="flex items-center justify-between px-1 mb-1">
+            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Itens Selecionados para Comprar</span>
+            <button type="button" onclick="switchShoppingModalTab('builder')" class="text-xs font-black text-blue-600 hover:underline cursor-pointer flex items-center gap-1">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>Editar Lista</span>
+            </button>
+          </div>
+          <div id="singleGondolaProductsFeed" class="space-y-2.5">
+            <!-- Renderizado dinamicamente por renderSingleShoppingGondola() -->
+          </div>
+        </div>
+
+        <!-- Ações do Modo Fazer Compras -->
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-2.5">
+          <button type="button" onclick="openFinishShoppingModal()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98 transition-all border border-emerald-400/40">
+            <i data-lucide="check-circle-2" class="w-4.5 h-4.5 text-white"></i>
+            <span>✅ Finalizar Compra &amp; Salvar Histórico</span>
+          </button>
+          <button type="button" onclick="switchShoppingModalTab('builder')" class="w-full py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+            <span>‹ Voltar para Minha Lista</span>
+          </button>
+        </div>
       </div>
 
       <!-- CONTAINER 2: COMPARADOR DE PREÇOS POR LOJA (HISTÓRICO) -->
@@ -12480,28 +12560,210 @@ html, body {
     function switchShoppingModalTab(tab) {
       activeShoppingModalTab = tab;
       const btnB = document.getElementById('tabBtnShoppingBuilder');
+      const btnG = document.getElementById('tabBtnShoppingGondola');
       const btnC = document.getElementById('tabBtnShoppingComparator');
       const boxB = document.getElementById('shoppingListBuilderContainer');
+      const boxG = document.getElementById('shoppingListGondolaContainer');
       const boxC = document.getElementById('shoppingListComparatorContainer');
 
-      const activeCls = 'flex-1 py-2.5 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer border border-blue-500/50';
-      const inactiveCls = 'flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer';
+      const activeBlue = 'flex-1 py-2.5 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-blue-500/50';
+      const activeGreen = 'flex-1 py-2.5 rounded-2xl text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-emerald-500/50';
+      const inactiveCls = 'flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer';
 
-      if (tab === 'builder') {
-        if (btnB) btnB.className = activeCls;
-        if (btnC) btnC.className = inactiveCls;
-        if (boxB) boxB.classList.remove('hidden');
-        if (boxC) boxC.classList.add('hidden');
-        renderShoppingListBuilder();
-      } else {
-        if (btnB) btnB.className = inactiveCls;
-        if (btnC) btnC.className = activeCls;
-        if (boxB) boxB.classList.add('hidden');
+      if (btnB) btnB.className = inactiveCls;
+      if (btnG) btnG.className = inactiveCls;
+      if (btnC) btnC.className = inactiveCls;
+
+      if (boxB) boxB.classList.add('hidden');
+      if (boxG) boxG.classList.add('hidden');
+      if (boxC) boxC.classList.add('hidden');
+
+      if (tab === 'gondola') {
+        if (btnG) btnG.className = activeGreen;
+        if (boxG) boxG.classList.remove('hidden');
+        renderSingleShoppingGondola();
+      } else if (tab === 'comparator') {
+        if (btnC) btnC.className = activeBlue;
         if (boxC) boxC.classList.remove('hidden');
         renderPriceHistoryTable();
+      } else {
+        if (btnB) btnB.className = activeBlue;
+        if (boxB) boxB.classList.remove('hidden');
+        renderShoppingListBuilder();
       }
       if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     }
+
+
+    // =========================================================================
+    // MODO FAZER COMPRAS (GÔNDOLA / MERCADO) EXCLUSIVO PARA O SOLTEIRO
+    // =========================================================================
+    window.startSingleShoppingGondola = function() {
+      const selected = typeof builderSelectedItems !== 'undefined'
+        ? Object.entries(builderSelectedItems).filter(([k, v]) => v && v.selected)
+        : [];
+      if (selected.length === 0) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('⚠️ Marque no círculo os produtos que você quer comprar!', false);
+        } else {
+          alert('Marque pelo menos um item na lista para ir às compras.');
+        }
+        return;
+      }
+      const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
+      const activeItems = selected.map(([name, data], idx) => {
+        const stats = typeof getProductPriceStats === 'function' ? getProductPriceStats(name) : null;
+        return {
+          id: 'item_single_' + Date.now() + '_' + idx,
+          nome: name,
+          qtdDesejada: data.qtd || 1,
+          unidade: data.unidade || 'un',
+          marca: '',
+          lojaId: (data.lojaNome || 'supermercado').toLowerCase().replace(/\s+/g, '_'),
+          lojaNome: data.lojaNome || (stats ? stats.cheapestStore : 'Supermercado'),
+          menorPreco: stats ? stats.cheapestPrice : (data.menorPreco || 0),
+          lojaMenorPreco: stats ? stats.cheapestStore : '',
+          ultimoPreco: stats ? stats.latestPrice : (data.ultimoPreco || 0),
+          lojaUltimoPreco: stats ? stats.latestStore : '',
+          status: 'pendente',
+          qtdComprada: 0,
+          precoUnitario: (data && typeof data.preco === 'number' && data.preco > 0) ? data.preco : (stats ? stats.latestPrice || 0 : 0),
+          pedidoPor: myName
+        };
+      });
+
+      saveActiveShoppingItems(activeItems);
+      switchShoppingModalTab('gondola');
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🛒 Modo Fazer Compras iniciado com ${activeItems.length} itens!`, false);
+      }
+    };
+
+    window.renderSingleShoppingGondola = function() {
+      const feed = document.getElementById('singleGondolaProductsFeed');
+      if (!feed) return;
+      const items = getActiveShoppingItems();
+
+      if (!items || items.length === 0) {
+        feed.innerHTML = `
+          <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-6 text-center border border-slate-200">
+            <span class="text-3xl block mb-2">🛒</span>
+            <h4 class="text-xs font-black text-slate-800 dark:text-white mb-1">Nenhum produto selecionado para compras</h4>
+            <p class="text-[11px] text-slate-500 mb-3">Toque abaixo para voltar à lista e marcar os itens que você quer comprar.</p>
+            <button type="button" onclick="switchShoppingModalTab('builder')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer">
+              ‹ Voltar para Minha Lista
+            </button>
+          </div>
+        `;
+        window.updateSingleGondolaSummary();
+        return;
+      }
+
+      feed.innerHTML = items.map(it => {
+        const isDone = it.status === 'no_carrinho' || it.status === 'comprado';
+        const isOut = it.status === 'nao_tinha' || it.status === 'falta';
+        const itemQtd = parseInt(it.qtdComprada || it.qtdDesejada || 1, 10);
+        const curPrice = parseFloat(it.precoUnitario) || 0;
+        const refPrice = parseFloat(it.menorPreco || it.ultimoPreco || 0);
+        const itemSubtotal = (curPrice > 0 ? curPrice : refPrice) * itemQtd;
+
+        return `
+          <div class="p-3 rounded-2xl border transition-all ${isDone ? 'bg-emerald-50/70 border-emerald-300' : (isOut ? 'bg-rose-50/60 border-rose-200 opacity-80' : 'bg-slate-50 border-slate-200')} shadow-2xs space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0 cursor-pointer select-none flex-1" onclick="window.toggleSingleItemCart('${it.id}')">
+                <button type="button" onclick="event.stopPropagation(); window.toggleSingleItemCart('${it.id}')" class="w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer flex-shrink-0 active:scale-90 ${isDone ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xs' : 'border-slate-300 hover:border-emerald-500 bg-white'}" title="${isDone ? 'Desmarcar compra' : 'Marcar como pego na gôndola'}">
+                  ${isDone ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : ''}
+                </button>
+                <div class="min-w-0 flex-1">
+                  <span class="text-xs sm:text-sm font-bold text-slate-800 truncate block ${isDone ? 'line-through text-slate-400' : ''}">
+                    ${escapeHtml(it.nome)}
+                  </span>
+                  <div class="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5">
+                    <span>Melhor: <strong>${escapeHtml(it.lojaNome || 'Livre')}</strong></span>
+                    ${refPrice > 0 ? `<span>• Ref: <strong>R$ ${refPrice.toFixed(2).replace('.', ',')}</strong></span>` : ''}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <span class="font-mono font-black text-xs text-slate-900 whitespace-nowrap">
+                  R$ ${itemSubtotal.toFixed(2).replace('.', ',')}
+                </span>
+                <button type="button" onclick="window.removeSingleShoppingItem('${it.id}')" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer flex-shrink-0" title="Excluir item da lista">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- LINHA 2: Stepper de Quantidade + Campo de Preço Unitário + Botão Não Tem -->
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200 text-xs w-full">
+              <div class="inline-flex items-center rounded-lg border border-slate-200 bg-slate-100 px-1 py-0.5 text-xs shadow-2xs flex-shrink-0 whitespace-nowrap">
+                <button type="button" onclick="window.stepSingleItemQtd('${it.id}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 hover:bg-slate-200 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
+                <span class="px-1.5 font-bold font-mono text-[11px] text-slate-800 whitespace-nowrap">${itemQtd} ${it.unidade || 'un'}</span>
+                <button type="button" onclick="window.stepSingleItemQtd('${it.id}', 1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 hover:bg-slate-200 active:scale-95 font-bold leading-none cursor-pointer" title="Aumentar">+</button>
+              </div>
+
+              <div class="flex items-center gap-1 bg-white border border-slate-300 rounded-lg px-2 py-1 shadow-2xs flex-1 max-w-[120px] min-w-[80px]">
+                <span class="text-[10px] text-slate-400 font-bold">R$</span>
+                <input type="text" inputmode="numeric" value="${curPrice > 0 ? curPrice.toFixed(2).replace('.', ',') : ''}" placeholder="0,00" oninput="window.handleSinglePriceInput('${it.id}', this)" class="w-full text-xs font-mono font-bold bg-transparent text-slate-900 outline-none">
+              </div>
+
+              <button type="button" onclick="window.toggleSingleItemMissing('${it.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 flex-shrink-0 ${isOut ? 'bg-rose-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-rose-50 hover:text-rose-600 border border-slate-200'}" title="${isOut ? 'Desmarcar falta' : 'Marcar que não tem no mercado'}">
+                <span class="${isOut ? 'text-white font-black' : 'text-rose-500 font-black'}">✕</span>
+                <span>Não tem</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      window.updateSingleGondolaSummary();
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    };
+
+    window.toggleSingleItemCart = function(id) {
+      if (typeof toggleItemInCart === 'function') toggleItemInCart(id);
+      window.renderSingleShoppingGondola();
+    };
+
+    window.stepSingleItemQtd = function(id, delta) {
+      if (typeof stepItemQuantity === 'function') stepItemQuantity(id, delta);
+      window.renderSingleShoppingGondola();
+    };
+
+    window.handleSinglePriceInput = function(id, inputEl) {
+      if (typeof handleChatPriceInput === 'function') handleChatPriceInput(id, inputEl);
+      window.updateSingleGondolaSummary();
+    };
+
+    window.toggleSingleItemMissing = function(id) {
+      if (typeof toggleItemMissing === 'function') toggleItemMissing(id);
+      window.renderSingleShoppingGondola();
+    };
+
+    window.removeSingleShoppingItem = function(id) {
+      if (typeof removeShoppingItemToTrash === 'function') removeShoppingItemToTrash(id);
+      window.renderSingleShoppingGondola();
+    };
+
+    window.updateSingleGondolaSummary = function() {
+      const summary = typeof calculateCartTotal === 'function' ? calculateCartTotal() : { total: 0, inCart: 0, count: 0 };
+      const totalDisplay = document.getElementById('singleGondolaCartTotalDisplay');
+      const countSub = document.getElementById('singleGondolaItemsCountSub');
+      const progBar = document.getElementById('singleGondolaProgressBar');
+
+      if (totalDisplay) totalDisplay.textContent = formatBRL(summary.total, 'gastos');
+      const items = getActiveShoppingItems();
+      const totalItems = items.length;
+      const inCartItems = items.filter(it => it.status === 'no_carrinho' || it.status === 'comprado').length;
+      if (countSub) {
+        countSub.textContent = `${inCartItems} de ${totalItems} itens pegos na gôndola`;
+      }
+      if (progBar) {
+        const pct = totalItems > 0 ? Math.round((inCartItems / totalItems) * 100) : 0;
+        progBar.style.width = `${pct}%`;
+      }
+    };
 
     // Normalização semântica para comparação de produtos e unidades (elimina acentos, padroniza 1L vs 1 litro, etc.)
     function normalizeProductName(name) {
@@ -12919,6 +13181,10 @@ html, body {
 
       if (countEl) countEl.textContent = selected.length;
       if (textEl) textEl.textContent = `${selected.length} itens selecionados`;
+      const btnStartSingle = document.getElementById('btnStartSingleShoppingLabel');
+      if (btnStartSingle) {
+        btnStartSingle.textContent = `🛒 Fazer Compras (${selected.length} ${selected.length === 1 ? 'item' : 'itens'})`;
+      }
 
       if (breakdownEl) {
         if (selected.length === 0) {
@@ -36754,6 +37020,58 @@ window.syncIndividualAndFamilyModeUI = function() {
     const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
     const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
 
+    // 0. Toggle de classe .modo-solteiro no HTML/BODY para blindagem CSS
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.classList.toggle('modo-solteiro', isIndiv);
+      if (document.body) document.body.classList.toggle('modo-solteiro', isIndiv);
+    }
+
+    // 0.1 Atualiza slot 1 do Acesso Rápido no Dashboard (Cartões no modo Solteiro, Chat no modo Casal/Família)
+    const quickSlot1 = document.getElementById('quickAccessSlot1');
+    if (quickSlot1) {
+      if (isIndiv) {
+        quickSlot1.setAttribute('onclick', "if (typeof openManageCardsModal === 'function') openManageCardsModal();");
+        quickSlot1.innerHTML = `
+          <i data-lucide="credit-card" class="w-6 h-6 text-indigo-600 mb-1"></i>
+          <span class="text-[11px] font-bold text-slate-800">Cartões</span>
+        `;
+      } else {
+        quickSlot1.setAttribute('onclick', "switchScreen('chat')");
+        quickSlot1.innerHTML = `
+          <i data-lucide="message-circle" class="w-6 h-6 text-blue-600 mb-1"></i>
+          <span class="text-[11px] font-bold text-slate-800">Chat</span>
+        `;
+      }
+    }
+
+    // 0.2 Atualiza Abas e Botões da Lista de Compras (Fazer Compras para Solteiro, Compartilhar para Casal)
+    const btnStartSingle = document.getElementById('btnStartSingleShopping');
+    const btnSendFam = document.getElementById('btnSendShoppingListDynamic');
+    const tabGondola = document.getElementById('tabBtnShoppingGondola');
+
+    if (btnStartSingle && btnSendFam) {
+      if (isIndiv) {
+        btnStartSingle.classList.remove('hidden');
+        btnStartSingle.style.display = '';
+        btnSendFam.classList.add('hidden');
+        btnSendFam.style.display = 'none';
+      } else {
+        btnStartSingle.classList.add('hidden');
+        btnStartSingle.style.display = 'none';
+        btnSendFam.classList.remove('hidden');
+        btnSendFam.style.display = '';
+      }
+    }
+    if (tabGondola) {
+      if (isIndiv) {
+        tabGondola.classList.remove('hidden');
+        tabGondola.style.display = '';
+      } else {
+        tabGondola.classList.add('hidden');
+        tabGondola.style.display = 'none';
+      }
+    }
+
     // 1. Atualiza botões no Painel do Usuário (adminUserCompactView)
     const btnFam = document.getElementById('btnUserPlanMode_familia');
     const btnInd = document.getElementById('btnUserPlanMode_individual');
@@ -50798,6 +51116,8 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
     wrapOpener('openKidsAreaModal', 'kids');
     wrapOpener('startInvoiceQrScanFromHub', 'invoices');
     wrapOpener('openInvoiceScanModal', 'invoices');
+    wrapOpener('openInvoiceQrScanner', 'invoices');
+    wrapOpener('triggerScanQrWithNativeCamera', 'invoices');
     wrapOpener('openHealthMedsModal', 'health');
     wrapFetchForAI();
     // Monitoramento básico de erros (sem dados pessoais)
