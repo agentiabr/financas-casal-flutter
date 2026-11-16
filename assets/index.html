@@ -6092,15 +6092,15 @@ html, body {
                   </div>
                 </div>
 
-                <!-- 9. Garantias de Produtos -->
+                <!-- 9. Garantias & Manutenções -->
                 <div onclick="openProductWarrantiesModal()" class="h-full min-h-0 bg-white/80 rounded-2xl p-2.5 shadow-2xs border border-white/70 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all active:scale-95">
                   <div class="flex items-center justify-between">
                     <i data-lucide="shield-check" class="w-6 h-6 text-teal-600"></i>
                     <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
                   </div>
                   <div class="min-w-0">
-                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias</h4>
-                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Prazos de produtos</p>
+                    <h4 class="font-extrabold text-xs text-slate-900 leading-tight truncate">Garantias &amp; Manutenção</h4>
+                    <p class="text-[10px] text-slate-500 font-medium truncate leading-tight">Prazos e aquecedor</p>
                   </div>
                 </div>
 
@@ -45776,29 +45776,34 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </button>
         <div>
           <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
-            <span>🛡️</span><span>Garantias de Produtos</span>
+            <span>🛡️</span><span>Garantias &amp; Manutenções</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Controle o tempo restante de garantia, fabricante, loja e garantia estendida</p>
+          <p class="text-[11px] text-blue-200">Garantias de produtos e lembretes de revisões (aquecedor a gás, ar, etc.)</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
-        <button type="button" onclick="openSectionLampInsight('garantias')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Garantias de Produtos">
+        <button type="button" onclick="openSectionLampInsight('garantias')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Garantias & Manutenções">
           <span>💡</span>
         </button>
       </div>
     </div>
 
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
-      <div class="flex items-center justify-between">
-        <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias Vigentes</span>
-        <button type="button" onclick="toggleAddWarrantyForm()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-sm cursor-pointer active:scale-95">
-          + Cadastrar Produto
-        </button>
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="toggleAddWarrantyForm(true, 'manutencao')" class="px-2.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95 flex items-center gap-1">
+            <span>🔧</span> <span>+ Manutenção</span>
+          </button>
+          <button type="button" onclick="toggleAddWarrantyForm(true, 'garantia')" class="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-sm cursor-pointer active:scale-95 flex items-center gap-1">
+            <span>🛡️</span> <span>+ Garantia</span>
+          </button>
+        </div>
       </div>
-      <!-- Resumo de Garantias -->
+      <!-- Resumo de Garantias & Manutenções -->
       <div class="grid grid-cols-3 gap-2">
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block">Ativas</span>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Em Dia / Ativas</span>
           <strong id="warrantyStatActive" class="text-base font-black text-emerald-600">0</strong>
         </div>
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
@@ -45806,62 +45811,87 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           <strong id="warrantyStatExpiring" class="text-base font-black text-amber-600">0</strong>
         </div>
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block">Estendidas</span>
-          <strong id="warrantyStatExtended" class="text-base font-black text-blue-600">0</strong>
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Manutenções / Ext.</span>
+          <strong id="warrantyStatExtended" class="text-base font-black text-purple-600">0</strong>
         </div>
       </div>
 
-      <!-- Formulário de Cadastro de Garantia -->
+      <!-- Formulário de Cadastro de Garantia ou Manutenção -->
       <div id="boxAddWarrantyForm" class="hidden bg-white rounded-3xl p-4 border border-amber-300 shadow-md space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
           <h4 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
-            <span>🛡️</span> <span id="warrantyFormTitle">Cadastrar Garantia de Produto</span>
+            <span id="warrantyFormIcon">🛡️</span> <span id="warrantyFormTitle">Cadastrar Garantia ou Manutenção</span>
           </h4>
           <button type="button" onclick="toggleAddWarrantyForm(false)" class="text-slate-400 hover:text-slate-700 font-bold text-xs cursor-pointer">Fechar</button>
         </div>
+
+        <!-- Seletor do Tipo de Registro: Garantia vs Manutenção Preventiva -->
+        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200 text-center select-none">
+          <button type="button" id="btnTypeGarantia" onclick="switchWarrantyFormType('garantia')" class="py-2 px-2 rounded-xl font-black text-xs transition-all bg-amber-500 text-slate-950 shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+            <span>🛡️</span> <span>Garantia de Produto</span>
+          </button>
+          <button type="button" id="btnTypeManutencao" onclick="switchWarrantyFormType('manutencao')" class="py-2 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white/60 cursor-pointer flex items-center justify-center gap-1.5">
+            <span>🔧</span> <span>Manutenção Preventiva</span>
+          </button>
+        </div>
+
+        <!-- Sugestões Rápidas: Manutenções da Casa & Eletrodomésticos -->
+        <div id="boxQuickMaintenancePresets" class="hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+          <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
+          <button type="button" onclick="quickFillMaintenancePreset('🔥 Aquecedor a Gás (Revisão Preventiva)', 'Assistência Técnica de Gás', 12, 'Limpeza anual de bicos, queima azul e segurança de monóxido de carbono')" class="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-black text-[11px] whitespace-nowrap cursor-pointer shadow-2xs">🔥 Aquecedor a Gás</button>
+          <button type="button" onclick="quickFillMaintenancePreset('❄️ Ar Condicionado (Higienização & Filtro)', 'Refrigeração / Técnico', 6, 'Limpeza semestral de filtros e serpentina')" class="px-2.5 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">❄️ Ar Condicionado</button>
+          <button type="button" onclick="quickFillMaintenancePreset('💧 Filtro de Água / Purificador (Troca de Refil)', 'Loja do Refil / Fabricante', 6, 'Troca do elemento filtrante para retenção de cloro')" class="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">💧 Filtro de Água</button>
+          <button type="button" onclick="quickFillMaintenancePreset('🚗 Revisão do Veículo / Troca de Óleo', 'Oficina de Confiança', 6, 'Revisão preventiva semestral ou a cada 10.000km')" class="px-2.5 py-1 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-[11px] whitespace-nowrap cursor-pointer">🚗 Revisão do Carro</button>
+          <button type="button" onclick="quickFillMaintenancePreset('🐜 Dedetização Residencial', 'Controle de Pragas', 12, 'Renovação anual do laudo de dedetização')" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🐜 Dedetização</button>
+        </div>
+
         <form onsubmit="handleSaveProductWarranty(event)" class="space-y-2.5">
           <input type="hidden" id="inputWarrantyId" value="">
+          <input type="hidden" id="inputWarrantyItemType" value="garantia">
+          
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Produto / Modelo *</label>
-              <input type="text" id="inputWarrantyProduct" required placeholder="Ex: Smart TV 55 Samsung, Geladeira Brastemp..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
+              <label id="labelWarrantyProduct" class="block font-bold text-slate-700 mb-1">Produto / Equipamento *</label>
+              <input type="text" id="inputWarrantyProduct" required placeholder="Ex: 🔥 Aquecedor a Gás Rinnai, Smart TV..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Loja onde comprou *</label>
-              <input type="text" id="inputWarrantyStore" required placeholder="Ex: Fast Shop, Amazon, Magazine Luiza..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-900">
+              <label id="labelWarrantyStore" class="block font-bold text-slate-700 mb-1">Loja ou Assistência Técnica *</label>
+              <input type="text" id="inputWarrantyStore" required placeholder="Ex: Assistência Autorizada, Fast Shop..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-900">
             </div>
           </div>
 
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Data da Compra *</label>
+              <label id="labelWarrantyDate" class="block font-bold text-slate-700 mb-1">Data da Compra / Última Revisão *</label>
               <input type="date" id="inputWarrantyDate" required class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Valor Pago (R$)</label>
-              <input type="number" step="0.01" id="inputWarrantyValue" placeholder="2500.00" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-mono font-bold text-slate-900">
+              <label class="block font-bold text-slate-700 mb-1">Valor / Custo (R$)</label>
+              <input type="number" step="0.01" id="inputWarrantyValue" placeholder="280.00" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-mono font-bold text-slate-900">
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Nº Nota Fiscal</label>
-              <input type="text" id="inputWarrantyNf" placeholder="Ex: NF 045892" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+              <label class="block font-bold text-slate-700 mb-1">Nº NF / Ordem Serviço</label>
+              <input type="text" id="inputWarrantyNf" placeholder="Ex: OS-045892 ou NF" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Origem da Garantia *</label>
+              <label id="labelWarrantyOrigin" class="block font-bold text-slate-700 mb-1">Origem / Responsável *</label>
               <select id="inputWarrantyOrigin" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
                 <option value="Fabricante">🏭 Garantia do Fabricante</option>
                 <option value="Loja">🏬 Garantia da Loja</option>
                 <option value="Fabricante + Loja">🛡️ Fabricante + Loja</option>
+                <option value="Assistência Técnica">🔧 Manutenção Preventiva Especializada</option>
+                <option value="Técnico Particular">👷 Técnico de Confiança</option>
               </select>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Prazo Base (Meses) *</label>
+              <label id="labelWarrantyBaseMonths" class="block font-bold text-slate-700 mb-1">Prazo / Periodicidade *</label>
               <select id="inputWarrantyBaseMonths" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-900">
-                <option value="3">3 meses (90 dias legal)</option>
-                <option value="6">6 meses</option>
-                <option value="12" selected>12 meses (1 ano)</option>
+                <option value="3">3 meses</option>
+                <option value="6">6 meses (Semestral - Filtros/Ar)</option>
+                <option value="12" selected>12 meses (Anual - Aquecedor/Carro)</option>
                 <option value="24">24 meses (2 anos)</option>
                 <option value="36">36 meses (3 anos)</option>
                 <option value="60">60 meses (5 anos)</option>
@@ -45869,7 +45899,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             </div>
           </div>
 
-          <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
+          <div id="boxWarrantyExtendedSection" class="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
             <div class="flex items-center justify-between">
               <div>
                 <span class="font-black text-slate-900 block">Possui Garantia Estendida?</span>
@@ -45891,14 +45921,19 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               </div>
               <div>
                 <label class="block font-bold text-slate-700 mb-1">Seguradora / Observação</label>
-                <input type="text" id="inputWarrantyNotes" placeholder="Ex: Zurich Seguros, cobertura total" class="w-full px-2.5 py-1.5 rounded-xl border border-blue-300 bg-white text-slate-900">
+                <input type="text" id="inputWarrantyExtendedNotes" placeholder="Ex: Zurich Seguros, cobertura total" class="w-full px-2.5 py-1.5 rounded-xl border border-blue-300 bg-white text-slate-900">
               </div>
             </div>
           </div>
 
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Observações / Detalhes do Serviço</label>
+            <input type="text" id="inputWarrantyNotes" placeholder="Ex: Contato do técnico, itens trocados, recomendações..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-slate-900">
+          </div>
+
           <div class="flex items-center justify-end gap-2 pt-1">
             <button type="button" onclick="toggleAddWarrantyForm(false)" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold cursor-pointer">Cancelar</button>
-            <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-sm cursor-pointer">✓ Salvar Garantia</button>
+            <button type="submit" id="btnSubmitWarrantyForm" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-sm cursor-pointer">✓ Salvar Registro</button>
           </div>
         </form>
       </div>
@@ -46701,10 +46736,25 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
     };
 
-    // 4. Módulo Garantias de Produtos (modalProductWarranties)
+    // 4. Módulo Garantias & Manutenções (modalProductWarranties)
     const STARTER_WARRANTIES = [
       {
+        id: 'manut_exemplo_aquecedor',
+        itemType: 'manutencao',
+        product: '🔥 Aquecedor a Gás (Revisão Preventiva Anual)',
+        store: 'Assistência Especializada Rinnai / GN',
+        purchaseDate: '2026-05-15',
+        value: 280.00,
+        nf: 'OS-88210',
+        origin: 'Assistência Técnica',
+        baseMonths: 12,
+        hasExtended: false,
+        extendedMonths: 0,
+        notes: 'Limpeza anual de queimadores, regulagem de chama azul e teste de monóxido de carbono'
+      },
+      {
         id: 'war_exemplo_1',
+        itemType: 'garantia',
         product: 'Smart TV 55" 4K (Exemplo)',
         store: 'Magazine Exemplo',
         purchaseDate: '2026-04-15',
@@ -46724,7 +46774,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         const raw = localStorage.getItem(key);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
       } catch (e) {}
       return JSON.parse(JSON.stringify(STARTER_WARRANTIES));
@@ -46757,7 +46807,81 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
     };
 
-    window.toggleAddWarrantyForm = function(forceShow) {
+    window.switchWarrantyFormType = function(type) {
+      const isMaint = type === 'manutencao';
+      const btnG = document.getElementById('btnTypeGarantia');
+      const btnM = document.getElementById('btnTypeManutencao');
+      const formIcon = document.getElementById('warrantyFormIcon');
+      const formTitle = document.getElementById('warrantyFormTitle');
+      const labelProduct = document.getElementById('labelWarrantyProduct');
+      const labelStore = document.getElementById('labelWarrantyStore');
+      const labelDate = document.getElementById('labelWarrantyDate');
+      const labelOrigin = document.getElementById('labelWarrantyOrigin');
+      const labelMonths = document.getElementById('labelWarrantyBaseMonths');
+      const boxExt = document.getElementById('boxWarrantyExtendedSection');
+      const boxPresets = document.getElementById('boxQuickMaintenancePresets');
+      const hiddenType = document.getElementById('inputWarrantyItemType');
+      const btnSubmit = document.getElementById('btnSubmitWarrantyForm');
+      const originSel = document.getElementById('inputWarrantyOrigin');
+
+      if (hiddenType) hiddenType.value = isMaint ? 'manutencao' : 'garantia';
+
+      if (btnG && btnM) {
+        if (isMaint) {
+          btnM.className = 'py-2 px-2 rounded-xl font-black text-xs transition-all bg-purple-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5';
+          btnG.className = 'py-2 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white/60 cursor-pointer flex items-center justify-center gap-1.5';
+        } else {
+          btnG.className = 'py-2 px-2 rounded-xl font-black text-xs transition-all bg-amber-500 text-slate-950 shadow-xs cursor-pointer flex items-center justify-center gap-1.5';
+          btnM.className = 'py-2 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white/60 cursor-pointer flex items-center justify-center gap-1.5';
+        }
+      }
+
+      if (formIcon) formIcon.textContent = isMaint ? '🔧' : '🛡️';
+      if (formTitle) formTitle.textContent = isMaint ? 'Cadastrar Manutenção Preventiva' : 'Cadastrar Garantia de Produto';
+      if (labelProduct) labelProduct.textContent = isMaint ? 'Equipamento / Instalação *' : 'Produto / Modelo *';
+      if (labelStore) labelStore.textContent = isMaint ? 'Prestador de Serviço / Empresa *' : 'Loja onde comprou *';
+      if (labelDate) labelDate.textContent = isMaint ? 'Data da Última Manutenção *' : 'Data da Compra *';
+      if (labelOrigin) labelOrigin.textContent = isMaint ? 'Tipo de Prestador / Assistência *' : 'Origem da Garantia *';
+      if (labelMonths) labelMonths.textContent = isMaint ? 'Periodicidade da Revisão *' : 'Prazo de Garantia *';
+      if (boxExt) boxExt.classList.toggle('hidden', isMaint);
+      if (boxPresets) boxPresets.classList.toggle('hidden', !isMaint);
+      if (btnSubmit) {
+        btnSubmit.textContent = isMaint ? '✓ Salvar Manutenção' : '✓ Salvar Garantia';
+        btnSubmit.className = isMaint ? 'px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black shadow-sm cursor-pointer' : 'px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-sm cursor-pointer';
+      }
+      if (originSel && isMaint) {
+        originSel.value = 'Assistência Técnica';
+      } else if (originSel && !isMaint) {
+        originSel.value = 'Fabricante';
+      }
+    };
+
+    window.quickFillMaintenancePreset = function(name, store, months, notes) {
+      window.switchWarrantyFormType('manutencao');
+      const prodInp = document.getElementById('inputWarrantyProduct');
+      const storeInp = document.getElementById('inputWarrantyStore');
+      const monthsSel = document.getElementById('inputWarrantyBaseMonths');
+      const notesInp = document.getElementById('inputWarrantyNotes');
+      if (prodInp) prodInp.value = name;
+      if (storeInp) storeInp.value = store;
+      if (monthsSel) monthsSel.value = String(months);
+      if (notesInp) notesInp.value = notes;
+      prodInp?.focus();
+    };
+
+    window.renewMaintenanceItem = function(id) {
+      const list = window.getProductWarranties();
+      const item = list.find(w => w.id === id);
+      if (!item) return;
+      const todayStr = new Date().toISOString().split('T')[0];
+      item.purchaseDate = todayStr;
+      window.saveProductWarranties(list);
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🔧 Revisão de "${item.product}" renovada para hoje! Próxima data calculada.`, false);
+      }
+    };
+
+    window.toggleAddWarrantyForm = function(forceShow, preferredType) {
       const box = document.getElementById('boxAddWarrantyForm');
       if (!box) return;
       const show = typeof forceShow === 'boolean' ? forceShow : box.classList.contains('hidden');
@@ -46765,26 +46889,29 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (show) {
         const dtInput = document.getElementById('inputWarrantyDate');
         if (dtInput && !dtInput.value) dtInput.value = new Date().toISOString().split('T')[0];
+        window.switchWarrantyFormType(preferredType || 'garantia');
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     };
 
     window.handleSaveProductWarranty = function(e) {
       if (e) e.preventDefault();
       const id = document.getElementById('inputWarrantyId')?.value || ('war_' + Date.now());
+      const itemType = document.getElementById('inputWarrantyItemType')?.value || 'garantia';
       const product = (document.getElementById('inputWarrantyProduct')?.value || '').trim();
       const store = (document.getElementById('inputWarrantyStore')?.value || '').trim();
       const purchaseDate = document.getElementById('inputWarrantyDate')?.value || new Date().toISOString().split('T')[0];
       const value = parseFloat(document.getElementById('inputWarrantyValue')?.value) || 0;
       const nf = (document.getElementById('inputWarrantyNf')?.value || '').trim();
-      const origin = document.getElementById('inputWarrantyOrigin')?.value || 'Fabricante';
+      const origin = document.getElementById('inputWarrantyOrigin')?.value || (itemType === 'manutencao' ? 'Assistência Técnica' : 'Fabricante');
       const baseMonths = parseInt(document.getElementById('inputWarrantyBaseMonths')?.value, 10) || 12;
-      const hasExtended = document.getElementById('inputWarrantyHasExtended')?.value === 'sim';
+      const hasExtended = itemType === 'garantia' ? (document.getElementById('inputWarrantyHasExtended')?.value === 'sim') : false;
       const extendedMonths = hasExtended ? (parseInt(document.getElementById('inputWarrantyExtendedMonths')?.value, 10) || 12) : 0;
       const notes = (document.getElementById('inputWarrantyNotes')?.value || '').trim();
 
       if (!product) return;
       const list = window.getProductWarranties().filter(w => w.id !== id);
-      list.unshift({ id, product, store, purchaseDate, value, nf, origin, baseMonths, hasExtended, extendedMonths, notes });
+      list.unshift({ id, itemType, product, store, purchaseDate, value, nf, origin, baseMonths, hasExtended, extendedMonths, notes });
       window.saveProductWarranties(list);
       document.getElementById('inputWarrantyId').value = '';
       document.getElementById('inputWarrantyProduct').value = '';
@@ -46793,13 +46920,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       document.getElementById('inputWarrantyNf').value = '';
       document.getElementById('inputWarrantyNotes').value = '';
       window.toggleAddWarrantyForm(false);
-      if (typeof showToastUndo === 'function') showToastUndo(`🛡️ Garantia de "${product}" salva com sucesso!`, false);
+      const msg = itemType === 'manutencao' ? `🔧 Manutenção de "${product}" salva com sucesso!` : `🛡️ Garantia de "${product}" salva com sucesso!`;
+      if (typeof showToastUndo === 'function') showToastUndo(msg, false);
     };
 
     window.deleteProductWarranty = function(id) {
       const list = window.getProductWarranties().filter(w => w.id !== id);
       window.saveProductWarranties(list);
-      if (typeof showToastUndo === 'function') showToastUndo('Garantia removida.', false);
+      if (typeof showToastUndo === 'function') showToastUndo('Registro removido.', false);
     };
 
     window.renderProductWarrantiesList = function() {
@@ -46810,14 +46938,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       let activeCount = 0;
       let expiringCount = 0;
-      let extendedCount = 0;
+      let extendedOrMaintCount = 0;
 
       if (list.length === 0) {
-        container.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-slate-500 border border-slate-200">Nenhum produto cadastrado. Toque em <b>"+ Produto"</b> no topo para controlar suas garantias!</div>`;
+        container.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-slate-500 border border-slate-200">Nenhum item cadastrado. Toque em <b>"+ Manutenção"</b> ou <b>"+ Garantia"</b> no topo para controlar prazos e revisões da casa!</div>`;
       } else {
         container.innerHTML = list.map(w => {
+          const isMaint = w.itemType === 'manutencao' || (w.product || '').toLowerCase().includes('aquecedor') || (w.product || '').toLowerCase().includes('manuten');
           const totalMonths = (parseInt(w.baseMonths, 10) || 12) + (w.hasExtended ? (parseInt(w.extendedMonths, 10) || 0) : 0);
-          if (w.hasExtended) extendedCount++;
+          if (w.hasExtended || isMaint) extendedOrMaintCount++;
 
           const start = new Date((w.purchaseDate || '2026-01-01') + 'T12:00:00');
           const end = new Date(start);
@@ -46828,64 +46957,90 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           const pctRemaining = Math.max(0, Math.min(100, Math.round((daysLeft / totalDays) * 100)));
 
           let statusBadge = '';
-          let barColor = 'bg-emerald-500';
+          let barColor = isMaint ? 'bg-purple-600' : 'bg-emerald-500';
           if (daysLeft < 0) {
-            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-black text-[10px]">Vencida há ${Math.abs(daysLeft)}d</span>`;
-            barColor = 'bg-slate-400';
+            statusBadge = isMaint 
+              ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-black text-[10px] animate-pulse">🚨 Revisão atrasada há ${Math.abs(daysLeft)}d</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-600 font-black text-[10px]">Vencida há ${Math.abs(daysLeft)}d</span>`;
+            barColor = isMaint ? 'bg-rose-500' : 'bg-slate-400';
           } else if (daysLeft <= 30) {
             activeCount++;
             expiringCount++;
-            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] animate-pulse">⚠️ Vence em ${daysLeft} dias</span>`;
+            statusBadge = isMaint
+              ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-black text-[10px] animate-pulse">⚠️ Revisão em ${daysLeft} dias</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] animate-pulse">⚠️ Vence em ${daysLeft} dias</span>`;
             barColor = 'bg-amber-500';
           } else {
             activeCount++;
             const monthsLeft = Math.floor(daysLeft / 30);
             const remDays = daysLeft % 30;
             const timeLabel = monthsLeft > 0 ? `${monthsLeft}m e ${remDays}d restantes` : `${daysLeft} dias restantes`;
-            statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px]">✓ ${timeLabel}</span>`;
+            statusBadge = isMaint
+              ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px]">✓ Em dia (revisão em ${timeLabel})</span>`
+              : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px]">✓ ${timeLabel}</span>`;
           }
 
           const endStr = `${String(end.getDate()).padStart(2, '0')}/${String(end.getMonth() + 1).padStart(2, '0')}/${end.getFullYear()}`;
           const startStr = window.formatDateBR ? window.formatDateBR(w.purchaseDate) : w.purchaseDate;
 
+          const typeBadge = isMaint 
+            ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 border border-purple-200 font-black text-[10px]">🔧 Manutenção Preventiva</span>`
+            : `<span class="px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-extrabold text-[10px]">🛡️ ${escapeHtml(w.origin || 'Fabricante')}</span>`;
+
+          const extendedBadge = (!isMaint && w.hasExtended) 
+            ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 border border-purple-200 font-extrabold text-[10px]">✨ Estendida (+${w.extendedMonths}m)</span>`
+            : '';
+
           return `
-            <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-2.5">
+            <div class="bg-white rounded-3xl p-4 border ${isMaint ? 'border-purple-200/90' : 'border-slate-200/80'} shadow-xs space-y-2.5">
               <div class="flex items-start justify-between gap-2">
                 <div>
                   <div class="flex items-center gap-1.5 flex-wrap mb-1">
-                    <span class="px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-extrabold text-[10px]">🛡️ ${escapeHtml(w.origin || 'Fabricante')}</span>
-                    ${w.hasExtended ? `<span class="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 border border-purple-200 font-extrabold text-[10px]">✨ Estendida (+${w.extendedMonths}m)</span>` : `<span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-semibold text-[10px]">Sem Garantia Estendida</span>`}
+                    ${typeBadge}
+                    ${extendedBadge}
                     ${statusBadge}
                   </div>
-                  <h4 class="font-black text-sm text-slate-900">${escapeHtml(w.product)}</h4>
-                  <p class="text-[11px] text-slate-500">🏬 Loja: <strong>${escapeHtml(w.store || 'Não informada')}</strong> ${w.nf ? `• 🧾 ${escapeHtml(w.nf)}` : ''} ${w.value ? `• 💰 ${formatBRL(w.value)}` : ''}</p>
+                  <h4 class="font-black text-sm text-slate-900 leading-tight">${escapeHtml(w.product)}</h4>
+                  <p class="text-[11px] text-slate-500 mt-0.5">${isMaint ? 'Prestador / Assistência' : 'Adquirido em'}: <strong>${escapeHtml(w.store)}</strong> • ${isMaint ? 'Última: ' : 'Compra: '}${startStr}</p>
                 </div>
-                <button type="button" onclick="deleteProductWarranty('${w.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer" title="Excluir garantia">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
+                <div class="flex items-center gap-1 flex-shrink-0">
+                  ${isMaint ? `
+                    <button type="button" onclick="renewMaintenanceItem('${w.id}')" class="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-black text-[10px] border border-purple-200 flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs" title="Atualizar data da última manutenção para hoje">
+                      <span>🔄</span> <span>Registrar Revisão</span>
+                    </button>
+                  ` : ''}
+                  <button type="button" onclick="deleteProductWarranty('${w.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer" title="Remover Registro">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
               </div>
 
+              <!-- Barra de Progresso do Prazo / Ciclo de Manutenção -->
               <div class="space-y-1">
-                <div class="flex items-center justify-between text-[11px] font-bold text-slate-600">
-                  <span>📅 Compra: ${startStr}</span>
-                  <span>⏳ Válida até: <strong class="text-slate-900">${endStr}</strong> (${totalMonths} meses)</span>
+                <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
+                  <span>${isMaint ? 'Última Revisão: ' : 'Início: '}${startStr}</span>
+                  <span class="font-mono text-slate-700">${isMaint ? 'Próxima Revisão: ' : 'Término: '}<strong>${endStr}</strong> (${totalMonths}m)</span>
                 </div>
                 <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div class="h-full ${barColor} rounded-full transition-all" style="width: ${pctRemaining}%"></div>
+                  <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${pctRemaining}%"></div>
                 </div>
               </div>
-              ${w.notes ? `<p class="text-[11px] text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-100">📝 ${escapeHtml(w.notes)}</p>` : ''}
+
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600 flex-wrap gap-2">
+                <div class="flex items-center gap-3">
+                  ${w.value ? `<span>${isMaint ? 'Custo: ' : 'Valor: '}<strong class="text-slate-900 font-mono">${formatBRL(w.value)}</strong></span>` : ''}
+                  ${w.nf ? `<span>${isMaint ? 'OS/NF: ' : 'NF: '}<strong class="text-slate-700">${escapeHtml(w.nf)}</strong></span>` : ''}
+                </div>
+                ${w.notes ? `<span class="text-[10px] text-slate-500 italic">💬 ${escapeHtml(w.notes)}</span>` : ''}
+              </div>
             </div>
           `;
         }).join('');
       }
 
-      const elAct = document.getElementById('warrantyStatActive');
-      const elExp = document.getElementById('warrantyStatExpiring');
-      const elExt = document.getElementById('warrantyStatExtended');
-      if (elAct) elAct.textContent = String(activeCount);
-      if (elExp) elExp.textContent = String(expiringCount);
-      if (elExt) elExt.textContent = String(extendedCount);
+      document.getElementById('warrantyStatActive').textContent = String(activeCount);
+      document.getElementById('warrantyStatExpiring').textContent = String(expiringCount);
+      document.getElementById('warrantyStatExtended').textContent = String(extendedOrMaintCount);
       if (window.lucide) lucide.createIcons();
     };
 
@@ -48675,10 +48830,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         ]
       },
       garantias: {
-        title: '🛡️ Insights de Garantias de Produtos',
+        title: '🛡️ Insights de Garantias & Manutenções',
         tips: [
-          '💡 <strong>Nunca Perca um Prazo de Reparo:</strong> Antes de pagar assistência técnica para TV, geladeira ou celular, confira aqui se a garantia do fabricante ou estendida ainda está ativa!',
-          '💡 <strong>Garantia Legal + Contratual:</strong> No Brasil, bens duráveis contam com 90 dias de garantia legal além da garantia contratual do fabricante e da apólice estendida.'
+          '💡 <strong>Manutenção Preventiva do Aquecedor a Gás:</strong> Recomenda-se revisão anual do aquecedor a gás para limpeza de queimadores, regulagem da chama azul e verificação de duto de exaustão, prevenindo vazamentos perigosos de monóxido de carbono e garantindo economia de gás.',
+          '💡 <strong>Nunca Perca um Prazo de Reparo:</strong> Antes de pagar assistência técnica para TV, geladeira ou eletrodomésticos, confira aqui se a garantia de fábrica ou estendida ainda está vigente!',
+          '💡 <strong>Revisões Periódicas da Casa:</strong> Troca de refil de purificadores de água (a cada 6 meses) e higienização de ar-condicionado evitam problemas de saúde respiratória e gastos imprevistos com consertos.'
         ]
       },
       criancas: {
