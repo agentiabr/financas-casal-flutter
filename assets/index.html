@@ -5659,7 +5659,7 @@ html, body {
           </div>
 
           <!-- CAIXA: GASTOS POR MEMBRO DA FAMÍLIA (DINÂMICO) -->
-          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+          <div id="dashboardFamilyMembersSpendingCard" class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5">
                 <span>👥</span><span>Gastos por Membro da Família</span>
@@ -5957,7 +5957,7 @@ html, body {
                   <h3 class="font-black text-base text-white leading-tight drop-shadow-xs">
                     Neste espaço você consegue organizar a sua vida...
                   </h3>
-                  <p class="text-xs text-blue-100 mt-1 leading-snug">
+                  <p id="familyHeroBannerDesc" class="text-xs text-blue-100 mt-1 leading-snug">
                     Rotina, saúde, pets, mercado, formação e cuidados compartilhados em módulos inteligentes integrados.
                   </p>
                 </div>
@@ -5974,7 +5974,7 @@ html, body {
           <div class="flex-1 min-h-0 bg-transparent relative z-10 flex flex-col overflow-y-auto px-4 pt-3 pb-12 mt-2.5">
             
             <div class="flex items-center justify-between mb-2 flex-shrink-0 px-1">
-              <span class="text-xs font-black uppercase tracking-wider text-white drop-shadow-xs flex items-center gap-1.5">
+              <span id="familyModulesHeaderTitle" class="text-xs font-black uppercase tracking-wider text-white drop-shadow-xs flex items-center gap-1.5">
                 <span>⚡</span><span>Módulos da Família</span>
               </span>
               <span class="text-[10px] font-black text-sky-200 bg-sky-500/20 border border-sky-400/30 px-2.5 py-0.5 rounded-full">10 disponíveis</span>
@@ -6119,13 +6119,13 @@ html, body {
       <!-- ============================================================ -->
       <section id="screen_chat" class="w-full flex-1 hidden flex flex-col items-center justify-center p-6 text-center">
         <div class="p-6 rounded-3xl bg-white dark:bg-slate-850 shadow-sm border border-slate-200/80 max-w-sm flex flex-col items-center">
-          <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400 flex items-center justify-center text-2xl mb-3">
+          <div id="screenChatIconBox" class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400 flex items-center justify-center text-2xl mb-3">
             💬
           </div>
-          <h3 class="font-extrabold text-base text-slate-900 dark:text-white mb-1">Chat da Família</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Converse com seu parceiro(a) e organize a lista de compras em tempo real.</p>
-          <button type="button" onclick="openFamilyChatModal()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 border border-blue-400/40">
-            <span class="text-white">Abrir Chat Dinâmico</span>
+          <h3 id="screenChatTitle" class="font-extrabold text-base text-slate-900 dark:text-white mb-1">Chat da Família</h3>
+          <p id="screenChatSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mb-4">Converse com seu parceiro(a) e organize a lista de compras em tempo real.</p>
+          <button id="screenChatMainActionBtn" type="button" onclick="openFamilyChatModal()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 border border-blue-400/40">
+            <span id="screenChatMainActionLabel" class="text-white">Abrir Chat Dinâmico</span>
             <i data-lucide="arrow-right" class="w-4 h-4 text-white"></i>
           </button>
         </div>
@@ -6249,7 +6249,7 @@ html, body {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🛒</span><span>Lista de Compras</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Comparador de preços e compras em família</p>
+          <p id="shoppingListHeaderSubtitle" class="text-[11px] text-blue-200">Comparador de preços e compras em família</p>
         </div>
       </div>
       
@@ -6276,7 +6276,7 @@ html, body {
             <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
               O que você pode fazer nesta seção:
             </h3>
-            <button type="button" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-3.5 py-1.5 rounded-xl border border-blue-500/50 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95 flex-shrink-0">
+            <button type="button" id="shoppingListOpenChatBtn" onclick="openFamilyChatModal(); switchChatTab('compras');" class="text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-3.5 py-1.5 rounded-xl border border-blue-500/50 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95 flex-shrink-0">
               <i data-lucide="message-circle" class="w-3.5 h-3.5 text-white"></i>
               <span class="text-white">Abrir Chat</span>
             </button>
@@ -6288,11 +6288,11 @@ html, body {
             </li>
             <li class="flex items-start gap-2">
               <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
-              <span><strong>Enviar a lista de compras para o chat da família</strong>, avisando quem for ao mercado para marcar os itens no carrinho.</span>
+              <span id="shoppingListIntroItem2"><strong>Enviar a lista de compras para o chat da família</strong>, avisando quem for ao mercado para marcar os itens no carrinho.</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
-              <span><strong>Acompanhar o histórico</strong> detalhado de todas as compras realizadas pelo casal.</span>
+              <span id="shoppingListIntroItem3"><strong>Acompanhar o histórico</strong> detalhado de todas as compras realizadas pelo casal.</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-blue-600 dark:text-blue-400 font-black text-base leading-none mt-0.5">•</span>
@@ -7144,8 +7144,8 @@ html, body {
         </div>
 
         <!-- Categoria & Responsável -->
-        <div class="grid grid-cols-2 gap-2">
-          <div>
+        <div class="grid grid-cols-2 gap-2" id="newTxCatRespRow">
+          <div id="newTxCategoriaCol">
             <label class="block font-bold text-slate-700 mb-1">Categoria</label>
             <input type="hidden" id="newTxCategoria" value="Alimentação">
             <button type="button" onclick="openSoberTilePicker('categoria', 'newTxCategoria', 'Selecionar Categoria')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
@@ -7153,7 +7153,7 @@ html, body {
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
             </button>
           </div>
-          <div>
+          <div id="newTxResponsavelCol">
             <label class="block font-bold text-slate-700 mb-1">Responsável</label>
             <input type="hidden" id="newTxResponsavel" value="Comum">
             <button type="button" onclick="openSoberTilePicker('responsavel', 'newTxResponsavel', 'Quem pagou?')" class="w-full px-3 py-2.5 rounded-2xl border border-white/90 bg-white/80 text-slate-900 text-xs font-bold flex items-center justify-between shadow-2xs hover:border-blue-400 cursor-pointer">
@@ -7332,8 +7332,8 @@ html, body {
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
+        <div class="grid grid-cols-2 gap-2" id="editTxCatRespRow">
+          <div id="editTxCategoriaCol">
             <label class="block font-bold text-slate-700 mb-1">Categoria</label>
             <select id="editTxCategoria" class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
             <option value="">Selecione...</option>
@@ -7350,7 +7350,7 @@ html, body {
               <option value="Outros">Outros</option>
             </select>
           </div>
-          <div>
+          <div id="editTxResponsavelCol">
             <label class="block font-bold text-slate-700 mb-1">Responsável</label>
             <select id="editTxResponsavel" class="w-full px-3 py-2 rounded-none border border-slate-300 focus:ring-1 focus:ring-blue-500 focus:outline-none">
               <option value="Comum">Comum (Casal)</option>
@@ -10033,10 +10033,12 @@ html, body {
         chkParc.checked = false;
         if (typeof toggleNewTxParcelas === 'function') toggleNewTxParcelas(false);
       }
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode();
+      const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
       const cat = document.getElementById('newTxCategoria');
       if (cat) cat.value = 'Alimentação';
       const resp = document.getElementById('newTxResponsavel');
-      if (resp) resp.value = 'Comum';
+      if (resp) resp.value = isIndiv ? myName : 'Comum';
       const pag = document.getElementById('newTxPagamento');
       if (pag) pag.value = 'Cartão de Crédito';
       const car = document.getElementById('newTxCartao');
@@ -10051,6 +10053,9 @@ html, body {
 
     function openNewTxModal() {
       resetNewTxFormValues();
+      if (typeof window.syncIndividualAndFamilyModeUI === 'function') {
+        window.syncIndividualAndFamilyModeUI();
+      }
       const m = document.getElementById('modalNewTx');
       if (m) {
         m.classList.remove('hidden');
@@ -10124,6 +10129,9 @@ html, body {
     function openEditTxModal(id) {
       const tx = transactions.find(t => t.id === id);
       if (!tx) return;
+      if (typeof window.syncIndividualAndFamilyModeUI === 'function') {
+        window.syncIndividualAndFamilyModeUI();
+      }
 
       document.getElementById('editTxId').value = tx.id;
       document.getElementById('editTxDescricao').value = tx.descricao || '';
@@ -11739,6 +11747,18 @@ html, body {
   window.refreshHomeFutureBills = refreshHomeFutureBills;
 
   function renderFamilyMembersSpending(activeTxs) {
+      const cardSpending = document.getElementById('dashboardFamilyMembersSpendingCard');
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode();
+      if (isIndiv) {
+          if (cardSpending) {
+              cardSpending.classList.add('hidden');
+              cardSpending.style.display = 'none';
+          }
+          return;
+      } else if (cardSpending) {
+          cardSpending.classList.remove('hidden');
+          cardSpending.style.display = '';
+      }
       const container = document.getElementById('dashboardFamilyMembersSpendingList');
       if (!container) return;
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
@@ -27177,7 +27197,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
       <div class="flex items-center justify-between mb-3 px-1">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-black uppercase tracking-wider text-slate-500">Pets da Família</span>
+          <span id="petListHeaderLabel" class="text-xs font-black uppercase tracking-wider text-slate-500">Pets da Família</span>
           <span id="petCountBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">3/10 Pets</span>
         </div>
         <div id="petHeaderAddBtnContainer">
@@ -28628,19 +28648,26 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (titleEl) titleEl.textContent = title;
       let options = SOBER_PICKER_OPTIONS[type] || [];
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
-      if (type === 'responsavel' && !isMaster) {
+      if (type === 'responsavel') {
         const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Titular';
-        const dynMembers = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
-        options = [
-          { value: 'Comum', label: 'Comum (Família)', icon: '👫', sub: 'Gasto compartilhado' },
-          { value: myName, label: myName, icon: '👤', sub: 'Conta titular' },
-          ...dynMembers.map(m => ({
-            value: m.nome,
-            label: m.nome,
-            icon: m.avatar || '👤',
-            sub: m.papel || 'Membro da família'
-          }))
-        ];
+        const isIndiv = typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode();
+        if (isIndiv) {
+          options = [
+            { value: myName, label: `Pessoal (${myName})`, icon: '👤', sub: 'Lançamento individual da sua conta' }
+          ];
+        } else if (!isMaster) {
+          const dynMembers = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
+          options = [
+            { value: 'Comum', label: 'Comum (Família)', icon: '👫', sub: 'Gasto compartilhado' },
+            { value: myName, label: myName, icon: '👤', sub: 'Conta titular' },
+            ...dynMembers.map(m => ({
+              value: m.nome,
+              label: m.nome,
+              icon: m.avatar || '👤',
+              sub: m.papel || 'Membro da família'
+            }))
+          ];
+        }
       }
       const currentVal = document.getElementById(targetInputId)?.value || '';
 
@@ -36725,6 +36752,7 @@ window.setUserAccountPlanMode = function(mode) {
 window.syncIndividualAndFamilyModeUI = function() {
     const isIndiv = window.isUserInIndividualMode();
     const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
+    const myName = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome.split(' ')[0] : 'Titular';
 
     // 1. Atualiza botões no Painel do Usuário (adminUserCompactView)
     const btnFam = document.getElementById('btnUserPlanMode_familia');
@@ -36745,15 +36773,34 @@ window.syncIndividualAndFamilyModeUI = function() {
         }
     }
     if (badgePlan) {
-        badgePlan.textContent = isIndiv ? '👤 Plano Individual' : '👨‍👩‍👧‍👦 Plano Casal / Família';
+        badgePlan.textContent = isIndiv ? '👤 Plano Solteiro' : '👨‍👩‍👧‍👦 Plano Casal / Família';
     }
     if (cardMembers) {
-        if (isIndiv) cardMembers.classList.add('hidden');
-        else cardMembers.classList.remove('hidden');
+        if (isIndiv) {
+            cardMembers.classList.add('hidden');
+            cardMembers.style.display = 'none';
+        } else {
+            cardMembers.classList.remove('hidden');
+            cardMembers.style.display = '';
+        }
     }
     if (noticeIndiv) {
-        if (isIndiv) noticeIndiv.classList.remove('hidden');
-        else noticeIndiv.classList.add('hidden');
+        if (isIndiv) {
+            noticeIndiv.classList.remove('hidden');
+            noticeIndiv.style.display = '';
+            noticeIndiv.innerHTML = `
+              <div class="flex items-center gap-2">
+                <span class="text-lg">👤</span>
+                <div>
+                  <h4 class="font-extrabold text-xs text-emerald-900 dark:text-emerald-200">Plano Solteiro Ativo</h4>
+                  <p class="text-[10px] text-emerald-700 dark:text-emerald-300">Modo 100% individual. Recursos de membros, divisão de contas e chat de casal ficam desativados para uma experiência pessoal ágil e focada!</p>
+                </div>
+              </div>
+            `;
+        } else {
+            noticeIndiv.classList.add('hidden');
+            noticeIndiv.style.display = 'none';
+        }
     }
     if (!isIndiv && (countBadge || previewTxt)) {
         const din = typeof getDynamicFamilyMembers === 'function' ? getDynamicFamilyMembers() : [];
@@ -36768,7 +36815,136 @@ window.syncIndividualAndFamilyModeUI = function() {
         }
     }
 
-    // 2. Atualiza atalho de Chat no Acesso Rápido e na Barra Inferior (Dock)
+    // 2. DASHBOARD: Oculta / Exibe Card de Gastos por Membro da Família
+    const cardFamilySpending = document.getElementById('dashboardFamilyMembersSpendingCard');
+    if (cardFamilySpending) {
+        if (isIndiv) {
+            cardFamilySpending.classList.add('hidden');
+            cardFamilySpending.style.display = 'none';
+        } else {
+            cardFamilySpending.classList.remove('hidden');
+            cardFamilySpending.style.display = '';
+        }
+    }
+
+    // 3. DASHBOARD: Saudação e Subtítulo
+    const greetingTitle = document.getElementById('heroGreetingTitle') || document.querySelector('.hero-greeting h1');
+    const greetingSubtitle = document.getElementById('heroGreetingSubtitle');
+    if (greetingTitle) {
+        greetingTitle.textContent = isIndiv ? `Olá, ${myName}!` : 'Olá, Família!';
+    }
+    if (greetingSubtitle && !localStorage.getItem('financas_custom_subtitle')) {
+        greetingSubtitle.textContent = isIndiv ? 'Controle financeiro pessoal e economia inteligente.' : 'Tudo certo por aqui! Finanças sob controle.';
+    }
+
+    // 4. LISTA DE COMPRAS: Subtítulo, botão de chat e textos explicativos
+    const shoppingSub = document.getElementById('shoppingListHeaderSubtitle');
+    const shoppingChatBtn = document.getElementById('shoppingListOpenChatBtn');
+    const shoppingItem2 = document.getElementById('shoppingListIntroItem2');
+    const shoppingItem3 = document.getElementById('shoppingListIntroItem3');
+
+    if (shoppingSub) {
+        shoppingSub.textContent = isIndiv ? 'Comparador de preços e compras inteligentes' : 'Comparador de preços e compras em família';
+    }
+    if (shoppingChatBtn) {
+        if (isIndiv) {
+            shoppingChatBtn.classList.add('hidden');
+            shoppingChatBtn.style.display = 'none';
+        } else {
+            shoppingChatBtn.classList.remove('hidden');
+            shoppingChatBtn.style.display = '';
+        }
+    }
+    if (shoppingItem2) {
+        shoppingItem2.innerHTML = isIndiv
+            ? '<strong>Organizar sua lista de compras</strong> e marcar os itens no carrinho em tempo real.'
+            : '<strong>Enviar a lista de compras para o chat da família</strong>, avisando quem for ao mercado para marcar os itens no carrinho.';
+    }
+    if (shoppingItem3) {
+        shoppingItem3.innerHTML = isIndiv
+            ? '<strong>Acompanhar o histórico</strong> detalhado de todas as compras realizadas por você.'
+            : '<strong>Acompanhar o histórico</strong> detalhado de todas as compras realizadas pelo casal.';
+    }
+
+    // 5. NOVO LANÇAMENTO & EDITAR LANÇAMENTO: Campo Responsável
+    const newTxRespCol = document.getElementById('newTxResponsavelCol');
+    const newTxCatCol = document.getElementById('newTxCategoriaCol');
+    const editTxRespCol = document.getElementById('editTxResponsavelCol');
+    const editTxCatCol = document.getElementById('editTxCategoriaCol');
+
+    if (newTxRespCol && newTxCatCol) {
+        if (isIndiv) {
+            newTxRespCol.classList.add('hidden');
+            newTxRespCol.style.display = 'none';
+            newTxCatCol.className = 'col-span-2';
+            const respInput = document.getElementById('newTxResponsavel');
+            if (respInput) respInput.value = myName;
+            const respBtn = document.getElementById('btnPickerText_newTxResponsavel');
+            if (respBtn) respBtn.innerHTML = `👤 Pessoal (${myName})`;
+        } else {
+            newTxRespCol.classList.remove('hidden');
+            newTxRespCol.style.display = '';
+            newTxCatCol.className = '';
+        }
+    }
+
+    if (editTxRespCol && editTxCatCol) {
+        if (isIndiv) {
+            editTxRespCol.classList.add('hidden');
+            editTxRespCol.style.display = 'none';
+            editTxCatCol.className = 'col-span-2';
+            const editResp = document.getElementById('editTxResponsavel');
+            if (editResp) editResp.value = myName;
+        } else {
+            editTxRespCol.classList.remove('hidden');
+            editTxRespCol.style.display = '';
+            editTxCatCol.className = '';
+        }
+    }
+
+    // 6. SEÇÃO MINHA ROTINA (screen_familia) & MÓDULOS DE VIDA
+    const familyHeroDesc = document.getElementById('familyHeroBannerDesc');
+    const familyModTitle = document.getElementById('familyModulesHeaderTitle');
+    const petLabel = document.getElementById('petListHeaderLabel');
+
+    if (familyHeroDesc) {
+        familyHeroDesc.textContent = isIndiv
+            ? 'Rotina, saúde, pets, mercado, formação e finanças pessoais em módulos inteligentes integrados.'
+            : 'Rotina, saúde, pets, mercado, formação e cuidados compartilhados em módulos inteligentes integrados.';
+    }
+    if (familyModTitle) {
+        familyModTitle.innerHTML = isIndiv
+            ? '<span>⚡</span><span>Meus Módulos de Vida</span>'
+            : '<span>⚡</span><span>Módulos da Família</span>';
+    }
+    if (petLabel) {
+        petLabel.textContent = isIndiv ? 'Meus Pets' : 'Pets da Família';
+    }
+
+    // 7. TELA DE CHAT (screen_chat): Adaptada para lista de compras pessoal no modo Solteiro
+    const screenChatIcon = document.getElementById('screenChatIconBox');
+    const screenChatTitle = document.getElementById('screenChatTitle');
+    const screenChatSub = document.getElementById('screenChatSubtitle');
+    const screenChatBtn = document.getElementById('screenChatMainActionBtn');
+    const screenChatBtnLabel = document.getElementById('screenChatMainActionLabel');
+
+    if (screenChatTitle) {
+        if (isIndiv) {
+            if (screenChatIcon) screenChatIcon.textContent = '🛒';
+            screenChatTitle.textContent = 'Lista de Compras & Histórico';
+            if (screenChatSub) screenChatSub.textContent = 'No plano Solteiro, sua lista de mercado e histórico de compras estão sempre organizados.';
+            if (screenChatBtn) screenChatBtn.setAttribute('onclick', 'openShoppingListModal()');
+            if (screenChatBtnLabel) screenChatBtnLabel.textContent = 'Abrir Lista de Compras';
+        } else {
+            if (screenChatIcon) screenChatIcon.textContent = '💬';
+            screenChatTitle.textContent = 'Chat da Família';
+            if (screenChatSub) screenChatSub.textContent = 'Converse com seu parceiro(a) e organize a lista de compras em tempo real.';
+            if (screenChatBtn) screenChatBtn.setAttribute('onclick', 'openFamilyChatModal()');
+            if (screenChatBtnLabel) screenChatBtnLabel.textContent = 'Abrir Chat Dinâmico';
+        }
+    }
+
+    // 8. ATALHOS NO ACESSO RÁPIDO E DOCK INFERIOR
     const quickChatBtn = document.querySelector('[onclick="switchScreen(\'chat\')"]');
     if (quickChatBtn) {
         if (isIndiv) {
@@ -36810,7 +36986,7 @@ window.syncIndividualAndFamilyModeUI = function() {
         }
     }
 
-    // 3. Atualiza cabeçalho, barra de destinatários e abas dentro do modalFamilyChat
+    // 9. MODAL FAMILY CHAT: Adaptações de Abas e Destinatários
     const modalChat = document.getElementById('modalFamilyChat');
     if (modalChat) {
         const titleEl = modalChat.querySelector('h2');
@@ -48046,7 +48222,29 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const bodyEl = document.getElementById('lampInsightModalBody');
       if (!modal || !titleEl || !bodyEl) return;
 
-      const data = SECTION_LAMP_INSIGHTS[sectionKey] || SECTION_LAMP_INSIGHTS.familia;
+      const isIndiv = typeof window.isUserInIndividualMode === 'function' && window.isUserInIndividualMode();
+      let data = SECTION_LAMP_INSIGHTS[sectionKey] || SECTION_LAMP_INSIGHTS.familia;
+
+      if (isIndiv) {
+        if (sectionKey === 'membros') {
+          data = {
+            title: '👤 Insights de Gestão Pessoal',
+            tips: [
+              '💡 <strong>Plano Solteiro:</strong> 100% focado no seu fluxo individual, sem divisões ou rateios complexos.',
+              '💡 <strong>Upgrade Flexível:</strong> Se começar a morar junto ou quiser compartilhar com cônjuge, migre para o Plano Casal em 1 clique no Painel do Usuário.'
+            ]
+          };
+        } else if (sectionKey === 'chat' || sectionKey === 'chat_familia') {
+          data = {
+            title: '🛒 Insights da Lista de Compras Pessoal',
+            tips: [
+              '💡 <strong>Economia no Mercado:</strong> Marque os itens no carrinho e acompanhe o total estimado antes de chegar ao caixa.',
+              '💡 <strong>Histórico de Preços:</strong> Seus registros abastecem automaticamente o comparador de supermercados da sua região.'
+            ]
+          };
+        }
+      }
+
       titleEl.textContent = data.title;
       bodyEl.innerHTML = data.tips.map(t => `
         <div class="p-3 rounded-2xl bg-amber-50/70 dark:bg-slate-800 border border-amber-200/80 dark:border-slate-700 text-xs leading-relaxed">
