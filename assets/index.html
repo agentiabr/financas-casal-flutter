@@ -45950,33 +45950,25 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </button>
       </div>
 
-      <!-- BALÃO RESUMIDO COM O PIGGY PROFESSOR (ESTILO HERO DA LISTA DE COMPRAS - ALTURA CONFORTÁVEL & ESPAÇOSA) -->
-      <div id="kidsAreaHeroBanner" class="relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-lg min-h-[175px] sm:min-h-[195px] flex items-center">
-        <div class="absolute -right-10 -top-10 w-44 h-44 bg-sky-400/25 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-8 -bottom-8 w-36 h-36 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
+      <!-- BALÃO RESUMIDO COM O PIGGY PROFESSOR (ALTURA GENEROSA, RESPIRO LATERAL PADRONIZADO E SEM BADGES) -->
+      <div id="kidsAreaHeroBanner" class="relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-lg min-h-[195px] sm:min-h-[215px] flex items-center">
+        <div class="absolute -right-10 -top-10 w-48 h-48 bg-sky-400/25 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-8 -bottom-8 w-40 h-40 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-4 w-full">
-          <!-- Coluna de Texto com Respiro e Largura Adaptativa -->
-          <div class="flex-1 min-w-0 pr-1 flex flex-col justify-center space-y-1.5">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider border border-white/30 shadow-xs">
-                🎓 Piggy Professor
-              </span>
-              <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[9px] border border-emerald-400/40">
-                Ganha PiggyCoins
-              </span>
-            </div>
-            <h3 id="kidsHeroBannerTitle" class="font-black text-base sm:text-lg text-white leading-tight drop-shadow-xs">
+        <div class="relative z-10 flex items-center justify-between gap-4 sm:gap-6 w-full">
+          <!-- Coluna de Texto com Respiro Confortável e Altura Ampla (Sem badges conforme solicitado) -->
+          <div class="flex-1 min-w-0 pr-2 sm:pr-4 flex flex-col justify-center space-y-2">
+            <h3 id="kidsHeroBannerTitle" class="font-black text-base sm:text-lg text-white leading-snug drop-shadow-xs">
               Cadastre tarefas reais de casa para seu filho(a)...
             </h3>
-            <p id="kidsHeroBannerDesc" class="text-xs sm:text-[13px] text-blue-100/90 leading-relaxed">
+            <p id="kidsHeroBannerDesc" class="text-xs sm:text-[13px] text-blue-100/95 leading-relaxed">
               Quando ele cumprir, você aprova com 1 toque e ele ganha moedas e XP para evoluir a Cidade do Piggy no game!
             </p>
           </div>
 
-          <!-- Mascote Piggy Professor (3D Sem Cortes) -->
-          <div class="w-28 sm:w-36 flex-shrink-0 flex items-center justify-center">
-            <img src="images/mascote_educacao.png" onerror="this.src='assets/images/mascote_educacao.png'" alt="Piggy Professor" class="w-full h-auto max-h-[135px] sm:max-h-[150px] object-contain drop-shadow-2xl hover:scale-105 transition-transform select-none">
+          <!-- Mascote Piggy Professor (3D Sem Cortes e com Respiro Perfeito) -->
+          <div class="w-24 sm:w-32 flex-shrink-0 flex items-center justify-center">
+            <img src="images/mascote_educacao.png" onerror="this.src='assets/images/mascote_educacao.png'" alt="Piggy Professor" class="w-full h-auto max-h-[145px] sm:max-h-[160px] object-contain drop-shadow-2xl hover:scale-105 transition-transform select-none">
           </div>
         </div>
       </div>
@@ -46031,16 +46023,21 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
       <!-- Card Boletim & Notas Escolares -->
       <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
           <div>
             <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
               <span>📝</span> <span id="kidsActiveGradesTitle">Boletim &amp; Notas Escolares</span>
             </h3>
             <p class="text-[11px] text-slate-500" id="kidsActiveSchoolSub">Acompanhe o desempenho por matéria e bimestre</p>
           </div>
-          <div class="text-right">
-            <span class="text-[10px] font-bold uppercase text-slate-400 block">Média Geral</span>
-            <strong id="kidsOverallAverageBadge" class="text-sm font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">-</strong>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="fillKidExtraActivityQuick('📝 Prova Escolar', '📝 Dia da Prova', '1440')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[10px] border border-rose-200 shadow-2xs flex items-center gap-1 cursor-pointer transition-all active:scale-95" title="Agendar lembrete de prova escolar">
+              <span>🔔</span> <span>+ Lembrete de Prova</span>
+            </button>
+            <div class="text-right">
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Média</span>
+              <strong id="kidsOverallAverageBadge" class="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">-</strong>
+            </div>
           </div>
         </div>
 
@@ -46062,51 +46059,63 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <div id="kidsGradesListContainer" class="space-y-1.5"></div>
       </div>
 
-      <!-- Card Controle de Horários de Atividades Extras & Alarmes (Natação, Xadrez, Inglês, etc.) -->
+      <!-- Card Controle de Horários de Atividades Extras, Provas Escolares & Alarmes -->
       <div id="cardKidsExtraActivities" class="bg-white rounded-3xl p-4 border border-purple-200/90 shadow-xs space-y-3">
         <div class="flex items-center justify-between gap-2">
           <div>
             <h3 class="font-black text-sm text-slate-900 flex items-center gap-1.5">
-              <span>🏊‍♂️</span> <span>Horários de Atividades Extras &amp; Lembretes</span>
+              <span>⏰</span> <span>Horários, Lembretes &amp; Provas Escolares</span>
             </h3>
-            <p class="text-[11px] text-slate-500">Natação, xadrez, idiomas, esportes e música com alarme programável</p>
+            <p class="text-[11px] text-slate-500">Agendamento de provas, reforço, natação, xadrez e cursos com alarme e aviso</p>
           </div>
           <span id="kidsActiveAlarmsCountBadge" class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 font-black text-[10px] whitespace-nowrap">🔔 0 alarmes</span>
         </div>
 
-        <!-- Sugestões Rápidas de Atividades Extras -->
+        <!-- Sugestões Rápidas: Provas Escolares & Atividades Extras -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
-          <button type="button" onclick="fillKidExtraActivityQuick('🏊 Natação')" class="px-2.5 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🏊 Natação</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('♟️ Xadrez')" class="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">♟️ Xadrez</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('🇬🇧 Inglês')" class="px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🇬🇧 Inglês</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('⚽ Futsal / Futebol')" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">⚽ Futsal</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('🥋 Judô / Karatê')" class="px-2.5 py-1 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🥋 Judô</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('🎹 Música / Violão')" class="px-2.5 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🎹 Música</button>
-          <button type="button" onclick="fillKidExtraActivityQuick('📚 Reforço Escolar')" class="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">📚 Reforço</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('📝 Prova Escolar', '📝 Dia da Prova', '1440')" class="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-black text-[11px] whitespace-nowrap cursor-pointer shadow-2xs">📝 Prova Escolar</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('📝 Simulado / Exame', '📝 Dia da Prova', '1440')" class="px-2.5 py-1 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 font-bold text-[11px] whitespace-nowrap cursor-pointer">📝 Simulado</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('📚 Reforço / Estudos', 'Seg a Sex', '30')" class="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">📚 Reforço</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🏊 Natação', 'Ter e Qui', '30')" class="px-2.5 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🏊 Natação</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('♟️ Xadrez', 'Seg e Qua', '15')" class="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">♟️ Xadrez</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🇬🇧 Inglês', 'Ter e Qui', '30')" class="px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🇬🇧 Inglês</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('⚽ Futsal / Futebol', 'Qua e Sex', '30')" class="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">⚽ Futsal</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🥋 Judô / Karatê', 'Ter e Qui', '30')" class="px-2.5 py-1 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🥋 Judô</button>
+          <button type="button" onclick="fillKidExtraActivityQuick('🎹 Música / Violão', 'Todo Sábado', '15')" class="px-2.5 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 font-bold text-[11px] whitespace-nowrap cursor-pointer">🎹 Música</button>
         </div>
 
-        <!-- Formulário para Adicionar Horário de Atividade Extra -->
+        <!-- Formulário para Agendamento de Prova ou Horário de Atividade -->
         <form onsubmit="handleSaveKidExtraActivity(event)" class="grid grid-cols-2 sm:grid-cols-6 gap-2 p-3 rounded-2xl bg-purple-50/60 border border-purple-200/80">
-          <input type="text" id="inputKidActivityName" required placeholder="Atividade (Ex: Natação, Xadrez...)" class="col-span-2 sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900">
-          <select id="inputKidActivityDays" class="px-2 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900">
-            <option value="Seg e Qua">Seg e Qua</option>
-            <option value="Ter e Qui">Ter e Qui</option>
-            <option value="Qua e Sex">Qua e Sex</option>
-            <option value="Seg, Qua e Sex">Seg, Qua e Sex</option>
-            <option value="Seg a Sex">Seg a Sex</option>
-            <option value="Toda Segunda">Toda Segunda</option>
-            <option value="Toda Terça">Toda Terça</option>
-            <option value="Toda Quarta">Toda Quarta</option>
-            <option value="Toda Quinta">Toda Quinta</option>
-            <option value="Toda Sexta">Toda Sexta</option>
-            <option value="Todo Sábado">Todo Sábado</option>
+          <input type="text" id="inputKidActivityName" required placeholder="Prova ou Atividade (Ex: 📝 Prova de Matemática...)" class="col-span-2 sm:col-span-2 px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900">
+          <select id="inputKidActivityDays" class="px-2 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900" title="Dia ou Frequência da Prova/Atividade">
+            <optgroup label="📝 Provas & Avaliações">
+              <option value="📝 Dia da Prova" selected>📝 Dia da Prova</option>
+              <option value="📝 Véspera da Prova">📝 Véspera da Prova</option>
+              <option value="📝 Semana de Provas">📝 Semana de Provas</option>
+              <option value="Data Específica">Data Específica</option>
+            </optgroup>
+            <optgroup label="📅 Atividades Recorrentes">
+              <option value="Seg e Qua">Seg e Qua</option>
+              <option value="Ter e Qui">Ter e Qui</option>
+              <option value="Qua e Sex">Qua e Sex</option>
+              <option value="Seg, Qua e Sex">Seg, Qua e Sex</option>
+              <option value="Seg a Sex">Seg a Sex</option>
+              <option value="Toda Segunda">Toda Segunda</option>
+              <option value="Toda Terça">Toda Terça</option>
+              <option value="Toda Quarta">Toda Quarta</option>
+              <option value="Toda Quinta">Toda Quinta</option>
+              <option value="Toda Sexta">Toda Sexta</option>
+              <option value="Todo Sábado">Todo Sábado</option>
+            </optgroup>
           </select>
-          <input type="time" id="inputKidActivityTime" required value="15:00" class="px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-mono font-black text-slate-900">
+          <input type="time" id="inputKidActivityTime" required value="08:00" class="px-2.5 py-1.5 rounded-xl border border-purple-200 bg-white font-mono font-black text-slate-900" title="Horário da Prova ou Aula">
           <select id="inputKidActivityReminderMins" class="px-2 py-1.5 rounded-xl border border-purple-200 bg-white font-bold text-slate-900" title="Antecedência do alarme">
-            <option value="15">🔔 15 min antes</option>
-            <option value="30">🔔 30 min antes</option>
+            <option value="1440">🔔 1 dia antes (Véspera)</option>
+            <option value="120">🔔 2 horas antes</option>
             <option value="60">🔔 1h antes</option>
+            <option value="30">🔔 30 min antes</option>
+            <option value="15">🔔 15 min antes</option>
             <option value="0">🔔 No horário exato</option>
           </select>
           <button type="submit" class="col-span-2 sm:col-span-1 py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black shadow-xs cursor-pointer active:scale-95">+ Agendar</button>
@@ -47968,20 +47977,29 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       window.saveKidsList(list);
     };
 
-    window.fillKidExtraActivityQuick = function(label) {
+    window.fillKidExtraActivityQuick = function(label, days, remMins) {
       const inp = document.getElementById('inputKidActivityName');
       if (inp) {
         inp.value = label;
         inp.focus();
+        inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      if (days) {
+        const daysSel = document.getElementById('inputKidActivityDays');
+        if (daysSel) daysSel.value = days;
+      }
+      if (remMins !== undefined) {
+        const remSel = document.getElementById('inputKidActivityReminderMins');
+        if (remSel) remSel.value = String(remMins);
       }
     };
 
     window.handleSaveKidExtraActivity = function(e) {
       if (e) e.preventDefault();
       const name = (document.getElementById('inputKidActivityName')?.value || '').trim();
-      const days = document.getElementById('inputKidActivityDays')?.value || 'Ter e Qui';
-      const time = document.getElementById('inputKidActivityTime')?.value || '15:00';
-      const reminderMins = parseInt(document.getElementById('inputKidActivityReminderMins')?.value || '15', 10);
+      const days = document.getElementById('inputKidActivityDays')?.value || '📝 Dia da Prova';
+      const time = document.getElementById('inputKidActivityTime')?.value || '08:00';
+      const reminderMins = parseInt(document.getElementById('inputKidActivityReminderMins')?.value || '1440', 10);
       if (!name || !time) return;
 
       const list = window.getKidsList();
@@ -47999,8 +48017,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       window.saveKidsList(list);
       const nameInp = document.getElementById('inputKidActivityName');
       if (nameInp) nameInp.value = '';
+      const isExam = name.toLowerCase().includes('prova') || name.toLowerCase().includes('simulado') || days.includes('Prova');
+      const toastMsg = isExam 
+        ? `📝 Lembrete de Prova "${name}" (${days} às ${time}) agendado com sucesso!`
+        : `🔔 Atividade "${name}" (${days} às ${time}) agendada com alarme!`;
       if (typeof showToastUndo === 'function') {
-        showToastUndo(`🔔 Atividade "${name}" (${days} às ${time}) agendada com alarme!`, false);
+        showToastUndo(toastMsg, false);
       }
     };
 
@@ -48532,22 +48554,31 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           actsCont.innerHTML = `<div class="p-3 text-center text-slate-400 text-xs">Nenhuma atividade extra (natação, xadrez, inglês...) cadastrada para ${escapeHtml(active.name)}.</div>`;
         } else {
           actsCont.innerHTML = acts.map(a => {
-            const remLabel = Number(a.reminderMins) > 0 ? `${a.reminderMins} min antes` : 'No horário';
+            const isExam = (a.name || '').toLowerCase().includes('prova') || (a.days || '').includes('Prova') || (a.name || '').toLowerCase().includes('simulado') || (a.name || '').toLowerCase().includes('exame');
+            let remLabel = 'No horário';
+            const mins = Number(a.reminderMins);
+            if (mins === 1440) remLabel = '1 dia antes (Véspera)';
+            else if (mins >= 60) remLabel = `${Math.round(mins / 60)}h antes`;
+            else if (mins > 0) remLabel = `${mins} min antes`;
+
+            const cardBg = isExam ? (a.alarmActive ? 'bg-rose-50/70 border-rose-300 shadow-xs' : 'bg-rose-50/30 border-rose-200/60 opacity-75') : (a.alarmActive ? 'bg-purple-50/50 border-purple-200' : 'bg-slate-50 border-slate-200/70 opacity-75');
+            const dayBadgeClass = isExam ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-white border-purple-200 text-purple-800';
+
             return `
-              <div class="p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${a.alarmActive ? 'bg-purple-50/50 border-purple-200' : 'bg-slate-50 border-slate-200/70 opacity-75'}">
+              <div class="p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${cardBg}">
                 <div class="min-w-0">
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <strong class="text-xs font-black text-slate-900">${escapeHtml(a.name)}</strong>
-                    <span class="px-2 py-0.5 rounded-lg bg-white border border-purple-200 text-purple-800 font-extrabold text-[10px]">📅 ${escapeHtml(a.days)}</span>
+                    <strong class="text-xs font-black ${isExam ? 'text-rose-950' : 'text-slate-900'}">${escapeHtml(a.name)}</strong>
+                    <span class="px-2 py-0.5 rounded-lg border font-extrabold text-[10px] ${dayBadgeClass}">📅 ${escapeHtml(a.days)}</span>
                     <span class="px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-800 font-mono font-black text-[10px]">⏰ ${escapeHtml(a.time)}</span>
                   </div>
-                  <span class="text-[10px] text-slate-500 block mt-0.5">🧒 ${escapeHtml(active.name)} • Lembrete: <strong>${remLabel}</strong></span>
+                  <span class="text-[10px] text-slate-500 block mt-0.5">🧒 ${escapeHtml(active.name)} • Lembrete: <strong class="${isExam ? 'text-rose-700' : ''}">${remLabel}</strong></span>
                 </div>
                 <div class="flex items-center gap-1.5 flex-shrink-0">
-                  <button type="button" onclick="toggleKidExtraActivityAlarm('${a.id}')" class="px-2.5 py-1 rounded-xl font-black text-[10px] border transition-all cursor-pointer flex items-center gap-1 ${a.alarmActive ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs' : 'bg-white text-slate-500 border-slate-300 hover:bg-slate-100'}" title="Ativar ou desativar alarme">
+                  <button type="button" onclick="toggleKidExtraActivityAlarm('${a.id}')" class="px-2.5 py-1 rounded-xl font-black text-[10px] border transition-all cursor-pointer flex items-center gap-1 ${a.alarmActive ? (isExam ? 'bg-rose-600 text-white border-rose-600 shadow-2xs' : 'bg-emerald-600 text-white border-emerald-600 shadow-2xs') : 'bg-white text-slate-500 border-slate-300 hover:bg-slate-100'}" title="Ativar ou desativar alarme">
                     <span>${a.alarmActive ? '🔔 Ativo' : '🔕 Off'}</span>
                   </button>
-                  <button type="button" onclick="deleteKidExtraActivity('${a.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer" title="Remover horário">✕</button>
+                  <button type="button" onclick="deleteKidExtraActivity('${a.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer" title="Remover agendamento">✕</button>
                 </div>
               </div>
             `;
