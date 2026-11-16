@@ -5626,27 +5626,33 @@ html, body {
           </div>
 
           <!-- CAIXA DE DESPESAS POR CATEGORIA (DONUT CHART) -->
-          <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+          <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-black text-sm text-slate-900">Despesas por categoria</h3>
-              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="text-base">📊</span>
+                <div>
+                  <h3 class="font-black text-sm text-slate-900 leading-tight">Despesas por Categoria</h3>
+                  <p class="text-[10px] text-slate-400 font-medium">Toque no gráfico ou nas categorias para detalhes</p>
+                </div>
+              </div>
+              <button type="button" onclick="switchScreen('transacoes')" class="text-xs font-black text-blue-600 hover:text-blue-700 bg-blue-50 px-2.5 py-1 rounded-xl hover:underline cursor-pointer transition-colors active:scale-95">
                 Ver tudo &gt;
               </button>
             </div>
 
-            <div class="flex items-center justify-around gap-4">
-              <!-- Donut Chart com Total Central -->
-              <div class="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
-                <canvas id="previewDonutChart" width="144" height="144"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase">Total</span>
-                  <span id="previewDonutTotalVal" class="text-base font-black text-slate-900 leading-tight">R$ 0,00</span>
-                  <span class="text-[9px] text-slate-400">no ciclo</span>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <!-- Donut Chart com Total Central Interativo -->
+              <div class="relative w-40 h-40 flex items-center justify-center flex-shrink-0 cursor-pointer" onclick="if (typeof window.selectDonutCategory === 'function') window.selectDonutCategory(null);" title="Toque no centro para alternar para o total geral">
+                <canvas id="previewDonutChart" width="160" height="160" class="cursor-pointer"></canvas>
+                <div id="donutCenterDisplay" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-2 select-none transition-all">
+                  <span id="donutCenterCategory" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate max-w-[105px]">TOTAL</span>
+                  <span id="previewDonutTotalVal" class="text-sm sm:text-base font-black text-slate-900 leading-tight block my-0.5">R$ 0,00</span>
+                  <span id="donutCenterSub" class="text-[9px] font-semibold text-slate-400 block">no ciclo</span>
                 </div>
               </div>
 
-              <!-- Legenda de Fatias -->
-              <div id="previewDonutLegend" class="space-y-1.5 text-xs w-full max-w-[190px] max-h-44 overflow-y-auto custom-scrollbar pr-1">
+              <!-- Legenda de Fatias com Valores e Percentuais Interativos -->
+              <div id="previewDonutLegend" class="space-y-1 text-xs w-full sm:max-w-[210px] max-h-48 overflow-y-auto custom-scrollbar pr-1">
                 <span class="text-xs text-slate-400 italic">Sem despesas registradas no ciclo.</span>
               </div>
             </div>
@@ -42203,11 +42209,90 @@ window.openHealthMedsModal = function() {
     }
   }
 
+  // Controlador Unificado de Seleção e Exibição do Gráfico Donut de Despesas
+  window.selectDonutCategory = function(index) {
+    const data = window._currentCategoryBreakdown;
+    const catLabelEl = document.getElementById('donutCenterCategory');
+    const valLabelEl = document.getElementById('previewDonutTotalVal');
+    const subLabelEl = document.getElementById('donutCenterSub');
+
+    // Deselecionar ou voltar ao Total Geral
+    if (index === null || index === undefined || !data || !data.items || index < 0 || index >= data.items.length || window._selectedCategoryIndex === index) {
+      window._selectedCategoryIndex = null;
+      const totalFmt = (data && typeof data.totalExpenses === 'number')
+        ? (typeof formatBRL === 'function' ? formatBRL(data.totalExpenses, 'despesa') : 'R$ ' + data.totalExpenses.toFixed(2))
+        : 'R$ 0,00';
+
+      if (catLabelEl) {
+        catLabelEl.textContent = 'TOTAL';
+        catLabelEl.className = 'text-[10px] font-bold text-slate-400 uppercase tracking-wider block truncate max-w-[105px]';
+      }
+      if (valLabelEl) {
+        valLabelEl.textContent = totalFmt;
+        valLabelEl.className = 'text-sm sm:text-base font-black text-slate-900 leading-tight block my-0.5';
+      }
+      if (subLabelEl) {
+        subLabelEl.textContent = 'no ciclo';
+        subLabelEl.className = 'text-[9px] font-semibold text-slate-400 block';
+      }
+
+      // Remove destaque visual das linhas da legenda
+      if (data && data.items) {
+        data.items.forEach((_, i) => {
+          const row = document.getElementById('donutLegendRow_' + i);
+          if (row) {
+            row.className = 'flex items-center justify-between gap-2 p-1.5 rounded-xl cursor-pointer hover:bg-slate-100/80 active:scale-98 transition-all border border-transparent';
+          }
+        });
+      }
+      return;
+    }
+
+    // Seleção de Categoria Específica
+    window._selectedCategoryIndex = index;
+    const item = data.items[index];
+    const catName = item[0];
+    const catVal = item[1];
+    const catColor = data.colors[index % data.colors.length];
+    const totalExp = data.totalExpenses || 1;
+    const pct = ((catVal / totalExp) * 100).toFixed(1);
+    const catFmt = typeof formatBRL === 'function' ? formatBRL(catVal, 'despesa') : ('R$ ' + catVal.toFixed(2));
+
+    if (catLabelEl) {
+      catLabelEl.innerHTML = `<span style="color:${catColor}; font-weight:800;">${escapeHtml(catName)}</span>`;
+      catLabelEl.className = 'text-[10px] font-bold uppercase tracking-wider block truncate max-w-[105px]';
+    }
+    if (valLabelEl) {
+      valLabelEl.textContent = catFmt;
+      valLabelEl.className = 'text-sm sm:text-base font-black text-slate-900 leading-tight block my-0.5';
+    }
+    if (subLabelEl) {
+      subLabelEl.innerHTML = `<span class="text-slate-600 font-bold">${pct}% do total</span>`;
+      subLabelEl.className = 'text-[9px] font-semibold block';
+    }
+
+    // Destaque visual sincronizado na legenda
+    data.items.forEach((_, i) => {
+      const row = document.getElementById('donutLegendRow_' + i);
+      if (row) {
+        if (i === index) {
+          row.className = 'flex items-center justify-between gap-2 p-1.5 rounded-xl cursor-pointer bg-blue-50/90 border border-blue-200/90 shadow-2xs transition-all';
+        } else {
+          row.className = 'flex items-center justify-between gap-2 p-1.5 rounded-xl cursor-pointer hover:bg-slate-100/80 opacity-60 transition-all border border-transparent';
+        }
+      }
+    });
+
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`📊 ${catName}: ${catFmt} (${pct}%)`, false);
+    }
+  };
+
   function drawNativeCategoryDonut(canvas, dataValues, colors) {
     if (!canvas || !canvas.getContext) return;
     const ctx = canvas.getContext('2d');
-    const width = 144;
-    const height = 144;
+    const width = 160;
+    const height = 160;
     const dpr = window.devicePixelRatio || 1;
 
     canvas.width = width * dpr;
@@ -42222,8 +42307,8 @@ window.openHealthMedsModal = function() {
     const total = dataValues.reduce((a, b) => a + (Number(b) || 0), 0);
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = 54;
-    const lineWidth = 20;
+    const radius = 58;
+    const lineWidth = 22;
 
     if (total <= 0) {
       ctx.beginPath();
@@ -42257,7 +42342,7 @@ window.openHealthMedsModal = function() {
 
       if (dataValues.length > 1) {
         ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + 0.03);
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + 0.035);
         ctx.lineWidth = lineWidth + 2;
         ctx.strokeStyle = '#ffffff';
         ctx.stroke();
@@ -42267,35 +42352,24 @@ window.openHealthMedsModal = function() {
     });
     ctx.restore();
 
-    if (!canvas._hasSliceClickListener) {
-      canvas._hasSliceClickListener = true;
-      canvas.style.cursor = 'pointer';
-      canvas.addEventListener('click', function(evt) {
-        const rect = canvas.getBoundingClientRect();
-        const x = evt.clientX - rect.left - (width / 2);
-        const y = evt.clientY - rect.top - (height / 2);
-        const dist = Math.sqrt(x * x + y * y);
-        if (dist >= 30 && dist <= 80 && canvas._slices) {
-          let angle = Math.atan2(y, x);
-          let norm = angle;
-          if (norm < -0.5 * Math.PI) norm += 2 * Math.PI;
-          const slice = canvas._slices.find(s => norm >= s.startAngle && norm <= s.endAngle);
-          if (slice && window._lastCategoryDonutLabels) {
-            const catName = window._lastCategoryDonutLabels[slice.index] || 'Categoria';
-            const catVal = slice.value;
-            const pct = total > 0 ? ((catVal / total) * 100).toFixed(1) : 0;
-            const fmt = typeof formatBRL === 'function' ? formatBRL(catVal, 'despesa') : ('R$ ' + catVal.toFixed(2));
-            const totalLabel = document.getElementById('previewDonutTotalVal');
-            if (totalLabel) {
-              totalLabel.innerHTML = '<span class="text-[10px] text-sky-500 font-bold block truncate leading-none">' + escapeHtml(catName) + '</span><span class="text-sm font-black text-slate-900 leading-tight block">' + fmt + '</span><span class="text-[9px] text-slate-400 block">(' + pct + '%)</span>';
-            }
-            if (typeof showToastUndo === 'function') {
-              showToastUndo('📊 ' + catName + ': ' + fmt + ' (' + pct + '%)', false);
-            }
-          }
+    // Listener unificado de clique no canvas nativo
+    canvas.onclick = function(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const x = evt.clientX - rect.left - (width / 2);
+      const y = evt.clientY - rect.top - (height / 2);
+      const dist = Math.sqrt(x * x + y * y);
+      if (dist >= 28 && dist <= 82 && canvas._slices) {
+        let angle = Math.atan2(y, x);
+        let norm = angle;
+        if (norm < -0.5 * Math.PI) norm += 2 * Math.PI;
+        const slice = canvas._slices.find(s => norm >= s.startAngle && norm <= s.endAngle);
+        if (slice) {
+          window.selectDonutCategory(slice.index);
+          return;
         }
-      });
-    }
+      }
+      window.selectDonutCategory(null);
+    };
   }
 
   function refreshHomeCategoryBreakdown(txs) {
@@ -42312,6 +42386,14 @@ window.openHealthMedsModal = function() {
     const chartCanvas = document.getElementById('previewDonutChart');
     const colors = ['#2563EB', '#F59E0B', '#0EA5E9', '#A855F7', '#10B981', '#F43F5E', '#6366F1', '#14B8A6', '#94A3B8'];
 
+    // Armazena estado global do gráfico para interação instantânea
+    window._currentCategoryBreakdown = {
+      totalExpenses: totalExpenses,
+      items: top,
+      colors: colors
+    };
+    window._selectedCategoryIndex = null;
+
     if (chartCanvas) {
       const labels = top.map(item => item[0]);
       window._lastCategoryDonutLabels = labels;
@@ -42326,10 +42408,10 @@ window.openHealthMedsModal = function() {
         }
         drawNativeCategoryDonut(chartCanvas, [], colors);
       } else {
-        // 1. Sempre renderiza nativamente no canvas (zero dependência de rede, 100% à prova de falhas)
+        // Renderização nativa de altíssima definição no canvas
         drawNativeCategoryDonut(chartCanvas, dataValues, colors);
 
-        // 2. Se o Chart.js estiver disponível, inicializa ou atualiza o gráfico para permitir hover/tooltips interativos
+        // Se Chart.js estiver disponível, configura e sincroniza interação
         if (window.Chart) {
           try {
             let chart = window.homeCategoryChartInstance;
@@ -42352,29 +42434,20 @@ window.openHealthMedsModal = function() {
                     backgroundColor: colors.slice(0, dataValues.length),
                     borderWidth: 2,
                     borderColor: '#ffffff',
-                    hoverOffset: 4
+                    hoverOffset: 6
                   }]
                 },
                 options: {
                   responsive: false,
                   maintainAspectRatio: false,
-                  cutout: '70%',
-                  animation: { duration: 300 },
+                  cutout: '68%',
+                  animation: { duration: 250 },
                   onClick: function(evt, elements) {
                     if (elements && elements.length > 0) {
                       const idx = elements[0].index;
-                      const catName = labels[idx];
-                      const catVal = dataValues[idx];
-                      const pct = totalExpenses > 0 ? ((catVal / totalExpenses) * 100).toFixed(1) : 0;
-                      const fmt = typeof formatBRL === 'function' ? formatBRL(catVal, 'despesa') : ('R$ ' + catVal.toFixed(2));
-                      if (totalLabel) {
-                        totalLabel.innerHTML = '<span class="text-[10px] text-sky-400 font-bold block truncate">' + escapeHtml(catName) + '</span><span class="text-sm font-black text-white">' + fmt + '</span><span class="text-[9px] text-slate-400 block">(' + pct + '%)</span>';
-                      }
-                      if (typeof showToastUndo === 'function') {
-                        showToastUndo('📊 ' + catName + ': ' + fmt + ' (' + pct + '%)', false);
-                      }
+                      window.selectDonutCategory(idx);
                     } else {
-                      if (totalLabel) totalLabel.textContent = typeof formatBRL === 'function' ? formatBRL(totalExpenses, 'despesa') : ('R$ ' + totalExpenses.toFixed(2));
+                      window.selectDonutCategory(null);
                     }
                   },
                   plugins: {
@@ -42400,33 +42473,34 @@ window.openHealthMedsModal = function() {
       }
     }
 
-    const totalLabel = document.getElementById('previewDonutTotalVal') || (document.getElementById('screen_dashboard')?.querySelector('.p-4 .text-base.font-black.text-slate-900'));
-    if (totalLabel) totalLabel.textContent = typeof formatBRL === 'function' ? formatBRL(totalExpenses, 'despesa') : `R$ ${totalExpenses.toFixed(2)}`;
+    // Inicializa valores centrais do Donut no Total Geral do Ciclo
+    window.selectDonutCategory(null);
 
-    const legend = document.getElementById('previewDonutLegend') || (document.getElementById('screen_dashboard')?.querySelector('.flex.items-center.justify-around')?.children[1]);
+    // Legenda Organizada e Interativa com Valores Monetários e Percentuais
+    const legend = document.getElementById('previewDonutLegend');
     if (legend) {
-      legend.className = 'space-y-1.5 text-xs w-full max-w-[190px] max-h-44 overflow-y-auto custom-scrollbar pr-1';
       if (!top.length || totalExpenses <= 0) {
         legend.innerHTML = '<span class="text-xs text-slate-400 italic">Sem despesas registradas no ciclo.</span>';
       } else {
-        legend.replaceChildren(...top.map((item, index) => {
-          const line = document.createElement('div');
-          line.className = 'flex items-center justify-between gap-2';
-          const left = document.createElement('div');
-          left.className = 'flex items-center gap-1.5 min-w-0';
-          const dot = document.createElement('span');
-          dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0';
-          dot.style.backgroundColor = colors[index % colors.length];
-          const label = document.createElement('span');
-          label.className = 'text-slate-700 font-medium text-[11px] truncate';
-          label.textContent = item[0];
-          const value = document.createElement('span');
-          value.className = 'font-bold text-slate-900 text-[11px] whitespace-nowrap';
-          value.textContent = totalExpenses > 0 ? `${Math.round(item[1] / totalExpenses * 100)}%` : '0%';
-          left.append(dot, label);
-          line.append(left, value);
-          return line;
-        }));
+        legend.innerHTML = top.map((item, index) => {
+          const catName = item[0];
+          const catVal = item[1];
+          const catColor = colors[index % colors.length];
+          const pct = totalExpenses > 0 ? ((catVal / totalExpenses) * 100).toFixed(1) : '0';
+          const valFmt = typeof formatBRL === 'function' ? formatBRL(catVal, 'despesa') : ('R$ ' + catVal.toFixed(2));
+          return `
+            <div id="donutLegendRow_${index}" onclick="window.selectDonutCategory(${index})" class="flex items-center justify-between gap-2 p-1.5 rounded-xl cursor-pointer hover:bg-slate-100/80 active:scale-98 transition-all border border-transparent select-none" title="Clique para ver detalhes de ${escapeHtml(catName)}">
+              <div class="flex items-center gap-2 min-w-0 flex-1">
+                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-2xs" style="background-color: ${catColor};"></span>
+                <span class="text-slate-800 font-bold text-[11px] truncate">${escapeHtml(catName)}</span>
+              </div>
+              <div class="text-right flex items-center gap-1.5 flex-shrink-0">
+                <span class="font-black text-slate-900 text-[11px] leading-tight">${valFmt}</span>
+                <span class="text-[9px] text-slate-400 font-semibold bg-slate-100 px-1 py-0.2 rounded">${pct}%</span>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
     }
   }
