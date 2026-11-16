@@ -10164,27 +10164,166 @@ html, body {
     };
 
     function handleSaveEditTx(e) {
-      e.preventDefault();
-      const id = parseInt(document.getElementById('editTxId').value);
-      const tx = transactions.find(t => t.id === id);
-      if (!tx) return;
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      const idEl = document.getElementById('editTxId');
+      if (!idEl || !idEl.value) return;
+      const id = parseInt(idEl.value, 10);
 
-      tx.tipo = document.querySelector('input[name="editTxTipo"]:checked')?.value || tx.tipo;
-      tx.descricao = document.getElementById('editTxDescricao').value.trim();
-      tx.valor = parseUniversalMoney(document.getElementById('editTxValor')?.value) || tx.valor;
-      tx.data = document.getElementById('editTxData').value;
-      tx.categoria = document.getElementById('editTxCategoria').value;
-      tx.responsavel = document.getElementById('editTxResponsavel').value;
-      tx.forma_pagamento = document.getElementById('editTxPagamento').value;
-      tx.cartao_nome = tx.forma_pagamento === 'Cartão de Crédito' ? (document.getElementById('editTxCartao').value || null) : null;
-      tx.origem_comprovante = document.querySelector('input[name="editTxOrigem"]:checked')?.value || 'com_nota';
+      // 1. Localiza a transação em todas as fontes
+      let tx = null;
+      const curKey = window.currentActiveCycleKey;
+      if (window.appCyclesData && curKey && window.appCyclesData[curKey] && Array.isArray(window.appCyclesData[curKey].transactions)) {
+        tx = window.appCyclesData[curKey].transactions.find(t => String(t.id) === String(id));
+      }
+      if (!tx && window.appCyclesData && typeof window.appCyclesData === 'object') {
+        for (const k in window.appCyclesData) {
+          const cyc = window.appCyclesData[k];
+          if (cyc && Array.isArray(cyc.transactions)) {
+            const found = cyc.transactions.find(t => String(t.id) === String(id));
+            if (found) { tx = found; break; }
+          }
+        }
+      }
+      if (!tx && Array.isArray(window.transactions)) {
+        tx = window.transactions.find(t => String(t.id) === String(id));
+      }
+      if (!tx && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        tx = transactions.find(t => String(t.id) === String(id));
+      }
 
-      saveData();
-      syncTransactionToFlutter(tx);
-      closeEditTxModal();
-      updateDashboard();
-      showToastUndo(`Lançamento "${tx.descricao}" atualizado!`, false);
+      if (!tx) {
+        console.warn('Transação não encontrada para salvar edição ID:', id);
+        return;
+      }
+
+      // 2. Extrai novos valores do formulário
+      const newTipo = document.querySelector('input[name="editTxTipo"]:checked')?.value || tx.tipo;
+      const newDesc = (document.getElementById('editTxDescricao')?.value || '').trim() || tx.descricao;
+      const rawVal = document.getElementById('editTxValor')?.value;
+      const newVal = (typeof parseUniversalMoney === 'function' ? parseUniversalMoney(rawVal) : parseFloat(String(rawVal).replace(/\./g, '').replace(',', '.'))) || tx.valor;
+      const newData = document.getElementById('editTxData')?.value || tx.data;
+      const newCat = document.getElementById('editTxCategoria')?.value || tx.categoria || 'Outros';
+      const newResp = document.getElementById('editTxResponsavel')?.value || tx.responsavel || 'Comum';
+      const newPay = document.getElementById('editTxPagamento')?.value || tx.forma_pagamento || 'Cartão de Crédito';
+      const newCard = newPay === 'Cartão de Crédito' ? (document.getElementById('editTxCartao')?.value || null) : null;
+      const newOrigem = document.querySelector('input[name="editTxOrigem"]:checked')?.value || tx.origem_comprovante || 'com_nota';
+
+      // 3. Atualiza o objeto base
+      tx.tipo = newTipo;
+      tx.descricao = newDesc;
+      tx.valor = newVal;
+      tx.data = newData;
+      tx.categoria = newCat;
+      tx.responsavel = newResp;
+      tx.forma_pagamento = newPay;
+      tx.cartao_nome = newCard;
+      tx.origem_comprovante = newOrigem;
+
+      // 4. Sincroniza em todos os ciclos de window.appCyclesData
+      if (window.appCyclesData && typeof window.appCyclesData === 'object') {
+        for (const k in window.appCyclesData) {
+          const cyc = window.appCyclesData[k];
+          if (cyc && Array.isArray(cyc.transactions)) {
+            cyc.transactions.forEach(t => {
+              if (String(t.id) === String(id)) {
+                t.tipo = newTipo;
+                t.descricao = newDesc;
+                t.valor = newVal;
+                t.data = newData;
+                t.categoria = newCat;
+                t.responsavel = newResp;
+                t.forma_pagamento = newPay;
+                t.cartao_nome = newCard;
+                t.origem_comprovante = newOrigem;
+              }
+            });
+          }
+        }
+      }
+
+      // 5. Sincroniza em window.transactions
+      if (Array.isArray(window.transactions)) {
+        window.transactions.forEach(t => {
+          if (String(t.id) === String(id)) {
+            t.tipo = newTipo;
+            t.descricao = newDesc;
+            t.valor = newVal;
+            t.data = newData;
+            t.categoria = newCat;
+            t.responsavel = newResp;
+            t.forma_pagamento = newPay;
+            t.cartao_nome = newCard;
+            t.origem_comprovante = newOrigem;
+          }
+        });
+      }
+
+      // 6. Sincroniza em transactions global
+      if (typeof transactions !== 'undefined' && Array.isArray(transactions)) {
+        transactions.forEach(t => {
+          if (String(t.id) === String(id)) {
+            t.tipo = newTipo;
+            t.descricao = newDesc;
+            t.valor = newVal;
+            t.data = newData;
+            t.categoria = newCat;
+            t.responsavel = newResp;
+            t.forma_pagamento = newPay;
+            t.cartao_nome = newCard;
+            t.origem_comprovante = newOrigem;
+          }
+        });
+      }
+
+      // 7. Persiste no localStorage
+      try {
+        if (window.appCyclesData) {
+          localStorage.setItem('ctrlpig_custom_cycles_v1', JSON.stringify(window.appCyclesData));
+        }
+      } catch (err) {}
+      if (typeof saveData === 'function') {
+        try { saveData(); } catch (_) {}
+      }
+
+      // 8. Sincronização nativa
+      if (typeof syncTransactionToFlutter === 'function') {
+        try { syncTransactionToFlutter(tx, 'update'); } catch (_) {}
+      }
+
+      // 9. Fecha modal de edição
+      if (typeof closeEditTxModal === 'function') closeEditTxModal();
+
+      // 10. Atualiza IMEDIATAMENTE todas as visões (Transações, Dashboard, Tabelas)
+      if (typeof window.renderApprovedTransactionsList === 'function') {
+        try { window.renderApprovedTransactionsList(); } catch (_) {}
+      }
+      if (typeof renderTransactionsTable === 'function') {
+        try { renderTransactionsTable(); } catch (_) {}
+      }
+      if (typeof updateMetrics === 'function') {
+        try { updateMetrics(); } catch (_) {}
+      }
+      if (typeof updateDashboard === 'function') {
+        try { updateDashboard(); } catch (_) {}
+      }
+      if (typeof syncApprovedDesignWithAppData === 'function') {
+        try { syncApprovedDesignWithAppData(); } catch (_) {}
+      }
+      if (typeof renderInstallments === 'function') {
+        try { renderInstallments(); } catch (_) {}
+      }
+      if (typeof updateFoodBudgetWidget === 'function') {
+        try { updateFoodBudgetWidget(); } catch (_) {}
+      }
+      if (window.lucide && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+      }
+
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`Lançamento "${tx.descricao}" atualizado com sucesso!`, false);
+      }
     }
+    window.handleSaveEditTx = handleSaveEditTx;
 
     // ==========================================
     // 15. LIXEIRA REVERSÍVEL & DESFAZER
@@ -39923,12 +40062,26 @@ window.openHealthMedsModal = function() {
     if (m.parentElement !== document.body) document.body.appendChild(m);
 
     let tx = null;
-    if (Array.isArray(window.transactions)) {
+    const curKey = window.currentActiveCycleKey;
+    if (window.appCyclesData && curKey && window.appCyclesData[curKey] && Array.isArray(window.appCyclesData[curKey].transactions)) {
+      tx = window.appCyclesData[curKey].transactions.find(t => String(t.id) === String(id));
+    }
+    if (!tx && window.appCyclesData && typeof window.appCyclesData === 'object') {
+      for (const k in window.appCyclesData) {
+        const cyc = window.appCyclesData[k];
+        if (cyc && Array.isArray(cyc.transactions)) {
+          const found = cyc.transactions.find(t => String(t.id) === String(id));
+          if (found) { tx = found; break; }
+        }
+      }
+    }
+    if (!tx && Array.isArray(window.transactions)) {
       tx = window.transactions.find(t => String(t.id) === String(id));
     }
     if (!tx && typeof transactions !== 'undefined' && Array.isArray(transactions)) {
       tx = transactions.find(t => String(t.id) === String(id));
     }
+
     if (tx) {
       const idField = document.getElementById('editTxId');
       const descField = document.getElementById('editTxDescricao');
@@ -39936,15 +40089,40 @@ window.openHealthMedsModal = function() {
       const catField = document.getElementById('editTxCategoria');
       const respField = document.getElementById('editTxResponsavel');
       const dataField = document.getElementById('editTxData');
+      const payField = document.getElementById('editTxPagamento');
+      const cardField = document.getElementById('editTxCartao');
+
       if (idField) idField.value = tx.id;
       if (descField) descField.value = tx.descricao || '';
-      if (valField) valField.value = tx.valor || '';
+      if (valField) {
+        if (typeof setupCurrencyMask === 'function') setupCurrencyMask(valField);
+        const numVal = parseFloat(tx.valor) || 0;
+        valField.value = numVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
       if (catField) catField.value = tx.categoria || 'Outros';
-      if (respField) respField.value = tx.responsavel || 'Rodrigo';
+      if (respField) respField.value = tx.responsavel || 'Comum';
       if (dataField) dataField.value = tx.data || '';
+      if (payField) {
+        payField.value = tx.forma_pagamento || 'Cartão de Crédito';
+        if (typeof onPaymentMethodChanged === 'function') {
+          onPaymentMethodChanged(payField.value, 'editTxCartaoContainer');
+        }
+      }
+      if (cardField) cardField.value = tx.cartao_nome || '';
+
+      const rbs = document.querySelectorAll('input[name="editTxTipo"]');
+      rbs.forEach(rb => { rb.checked = (rb.value === tx.tipo); });
+
+      const rOrigem = document.querySelectorAll('input[name="editTxOrigem"]');
+      rOrigem.forEach(ro => { ro.checked = (ro.value === (tx.origem_comprovante || 'com_nota')); });
+
+      if (typeof window.updateTxTipoExplanation === 'function') {
+        window.updateTxTipoExplanation('edit');
+      }
     }
     m.classList.remove('hidden');
-    m.style.display = 'flex';
+    m.style.setProperty('display', 'flex', 'important');
+    m.style.zIndex = '999999';
     if (window.lucide) lucide.createIcons();
   };
   window.openEditTransactionModal = window.openEditTxModal;
@@ -44817,19 +44995,19 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         `;
         return `
           <div class="flex items-center justify-between py-2.5 px-1 hover:bg-white/5 transition-colors cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});">
-            <div class="flex items-center gap-3 min-w-0">
+            <div class="flex items-center gap-3 min-w-0 flex-1 mr-2">
               <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
                 ${meta.emoji}
               </div>
-              <div class="min-w-0">
-                <h4 class="font-bold text-xs text-white truncate leading-tight">${escapeHtml(t.descricao || t.categoria || 'Gasto Fixo')}</h4>
+              <div class="min-w-0 flex-1">
+                <h4 class="font-bold text-xs text-white leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Gasto Fixo')}</h4>
                 <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                   <span class="text-[10px] text-blue-200">${escapeHtml(t.categoria || 'Fixa')}</span>
                   ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : ''}
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+            <div class="flex items-center gap-1.5 flex-shrink-0">
               <span class="font-mono text-xs ${valColor}">${valFormatted}</span>
               ${btnQuitar}
               <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/40 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento fixo">
@@ -44864,8 +45042,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
                 <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
                   ${meta.emoji}
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-xs text-slate-900 truncate leading-tight">${t.descricao || t.categoria || 'Transação'}</h4>
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-extrabold text-xs text-slate-900 leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
                   <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                     <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
                     ${fixedPinBadge}
@@ -44942,19 +45120,19 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
           html += `
             <div class="flex items-center justify-between py-2.5 px-1 hover:bg-white/5 transition-colors cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});">
-              <div class="flex items-center gap-3 min-w-0">
+              <div class="flex items-center gap-3 min-w-0 flex-1 mr-2">
                 <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
                   ${meta.emoji}
                 </div>
-                <div class="min-w-0">
-                  <h4 class="font-bold text-xs text-white truncate leading-tight">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-bold text-xs text-white leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
                   <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                     <span class="text-[10px] text-blue-200">${escapeHtml(t.categoria || 'Geral')}</span>
                     ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : ''}
                   </div>
                 </div>
               </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0 ml-2">
+              <div class="flex items-center gap-1.5 flex-shrink-0">
                 <span class="font-mono text-xs ${valColor}">${valFormatted}</span>
                 ${btnQuitar}
                 <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/40 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
