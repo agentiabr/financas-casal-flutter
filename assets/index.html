@@ -6352,8 +6352,8 @@ html, body {
             <span>Histórico</span>
           </button>
 
-          <button type="button" onclick="openComparativoMercadosModal()" class="flex-1 py-2.5 px-2.5 rounded-2xl text-xs font-black text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 border border-emerald-300/50 flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md shadow-emerald-500/25 active:scale-95" title="Ver ranking comparativo entre mercados">
-            <i data-lucide="scale" class="w-4 h-4 text-white stroke-[2.5]"></i>
+          <button type="button" id="tabBtnShoppingMarkets" onclick="switchShoppingModalTab('markets')" class="flex-1 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-1.5 transition-all cursor-pointer" title="Ver ranking comparativo entre mercados">
+            <i data-lucide="scale" class="w-3.5 h-3.5 text-slate-600"></i>
             <span>Comparativo</span>
           </button>
         </div>
@@ -6614,6 +6614,33 @@ html, body {
           <div id="priceHistoryCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
             <!-- Injetado dinamicamente via JS -->
           </div>
+        </div>
+      </div>
+
+      <!-- CONTAINER 3: RANKING E COMPARATIVO DE MERCADOS (ABRE COMO ABA INTERNA, SEM POPUP) -->
+      <div id="shoppingListMarketsContainer" class="hidden space-y-3.5">
+        <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="switchShoppingModalTab('builder')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Voltar à Lista</span>
+              </button>
+              <div>
+                <h3 class="text-sm font-black text-slate-800 flex items-center gap-1.5 leading-tight">
+                  <span>📊</span> <span>Comparativo de Mercados</span>
+                </h3>
+                <p class="text-[10px] text-slate-500 font-medium">Ranking de preços e gastos por supermercado</p>
+              </div>
+            </div>
+            <button type="button" onclick="openSectionLampInsight('comparativo_mercados')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-600 transition-all cursor-pointer" title="Insights sobre Comparativo de Mercados">
+              <span>💡</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="shoppingListMarketsDynamicBody" class="space-y-3.5">
+          <!-- Injetado dinamicamente via renderComparativoMercadosDynamic() -->
         </div>
       </div>
 
@@ -12587,9 +12614,11 @@ html, body {
       const btnB = document.getElementById('tabBtnShoppingBuilder');
       const btnG = document.getElementById('tabBtnShoppingGondola');
       const btnC = document.getElementById('tabBtnShoppingComparator');
+      const btnM = document.getElementById('tabBtnShoppingMarkets');
       const boxB = document.getElementById('shoppingListBuilderContainer');
       const boxG = document.getElementById('shoppingListGondolaContainer');
       const boxC = document.getElementById('shoppingListComparatorContainer');
+      const boxM = document.getElementById('shoppingListMarketsContainer');
 
       const activeBlue = 'flex-1 py-2.5 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-blue-500/50';
       const activeGreen = 'flex-1 py-2.5 rounded-2xl text-xs font-black bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-emerald-500/50';
@@ -12598,10 +12627,12 @@ html, body {
       if (btnB) btnB.className = inactiveCls;
       if (btnG) btnG.className = inactiveCls;
       if (btnC) btnC.className = inactiveCls;
+      if (btnM) btnM.className = inactiveCls;
 
       if (boxB) boxB.classList.add('hidden');
       if (boxG) boxG.classList.add('hidden');
       if (boxC) boxC.classList.add('hidden');
+      if (boxM) boxM.classList.add('hidden');
 
       if (tab === 'gondola') {
         if (btnG) btnG.className = activeGreen;
@@ -12611,6 +12642,12 @@ html, body {
         if (btnC) btnC.className = activeBlue;
         if (boxC) boxC.classList.remove('hidden');
         renderPriceHistoryTable();
+      } else if (tab === 'markets' || tab === 'comparativo') {
+        if (btnM) btnM.className = activeBlue;
+        if (boxM) boxM.classList.remove('hidden');
+        if (typeof window.renderComparativoMercadosDynamic === 'function') {
+          window.renderComparativoMercadosDynamic();
+        }
       } else {
         if (btnB) btnB.className = activeBlue;
         if (boxB) boxB.classList.remove('hidden');
@@ -42793,8 +42830,12 @@ window.openHealthMedsModal = function() {
     });
   };
 
-  // 6. Comparativo de Mercados (Item 10) — Sempre acima do modalShoppingListHistory (z-index 3600)
+  // 6. Comparativo de Mercados — Integrado como Aba da Lista de Compras (sem popup)
   window.openComparativoMercadosModal = function() {
+    if (typeof switchShoppingModalTab === 'function') {
+      switchShoppingModalTab('markets');
+      return;
+    }
     window.ensureModalsOnBody();
     const m = document.getElementById('modalComparativoMercados');
     if (m) {
@@ -46845,8 +46886,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
     // 2. Renderização Dinâmica do Comparativo de Mercados
     window.renderComparativoMercadosDynamic = function() {
-      const body = document.getElementById('comparativoMercadosDynamicBody');
-      if (!body) return;
+      const targets = [
+        document.getElementById('shoppingListMarketsDynamicBody'),
+        document.getElementById('comparativoMercadosDynamicBody')
+      ].filter(Boolean);
+      if (targets.length === 0) return;
       const isMaster = typeof isCurrentUserMaster === 'function' ? isCurrentUserMaster() : false;
       const hist = (typeof priceHistory !== 'undefined' && Array.isArray(priceHistory)) ? priceHistory : [];
 
@@ -46902,7 +46946,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           </div>
         `).join('');
 
-        body.innerHTML = `
+        const compHtml = `
           <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Mapeado no Histórico</span>
@@ -46924,6 +46968,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             <div>${bestDeals}</div>
           </div>
         `;
+        targets.forEach(b => { b.innerHTML = compHtml; });
       }
     };
 
