@@ -5324,7 +5324,7 @@ html, body {
           <div class="flex items-center justify-between mb-4 relative z-20 w-full">
             
             <!-- Avatar e Nome do Membro Ativo à Esquerda -->
-            <div class="flex items-center gap-2.5 cursor-pointer group" onclick="toggleUserProfileType()" title="Toque para alternar Família / Solteiro">
+            <div class="flex items-center gap-2.5 cursor-pointer group" onclick="window.openUserProfileModal()" title="Toque para ver Meu Perfil e Assinatura">
               <div class="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-amber-200 shadow-md flex-shrink-0">
                 <div class="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center text-sm">
                   <span id="headerUserAvatar">👨</span>
@@ -16771,6 +16771,27 @@ Confirmar reconhecimento biométrico para ${memberName}?`);
       if (passInp) passInp.value = '';
       if (passConfInp) passConfInp.value = '';
       const __pa = document.getElementById('inputProfileSenhaAtual'); if (__pa) __pa.value = '';
+
+      // Atualiza card de assinatura no Meu Perfil
+      try {
+        const sub = typeof window.getUserSubscriptionRecord === 'function' ? window.getUserSubscriptionRecord() : null;
+        const subTitleEl = document.getElementById('userProfileSubTitle');
+        const subBadgeEl = document.getElementById('userProfileSubBadge');
+        const subValEl = document.getElementById('userProfileSubValidity');
+        if (sub) {
+          const planNames = { individual: 'Plano Solteiro (Individual)', casal: 'Plano Casal', familia: 'Plano Família' };
+          const planName = (sub.planTier && planNames[sub.planTier]) || 'Plano ControlPig Pro';
+          const isTrial = sub.status === 'trial' || !sub.paidActivatedAt;
+          const isLife = sub.status === 'master_lifetime' || sub.status === 'vip_lifetime';
+          const until = isLife ? 'Acesso Vitalício VIP' : (sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '-');
+
+          if (subTitleEl) subTitleEl.textContent = planName;
+          if (subValEl) subValEl.textContent = until;
+          if (subBadgeEl) {
+            subBadgeEl.textContent = isLife ? 'Vitalício VIP' : (isTrial ? '7 Dias Grátis' : 'Ativo');
+          }
+        }
+      } catch (err) {}
       
       modal.classList.remove('hidden');
     }
@@ -25444,6 +25465,36 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </button>
       </div>
 
+      <!-- CARD DESTACADO: MINHA ASSINATURA & CANCELAMENTO EXPLÍCITO -->
+      <div class="mt-3.5 p-3.5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl border border-amber-400/50 shadow-md space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">💎</span>
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 block">Minha Assinatura</span>
+              <h4 id="userProfileSubTitle" class="font-black text-xs text-white leading-tight">Plano Solteiro</h4>
+            </div>
+          </div>
+          <span id="userProfileSubBadge" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ativo</span>
+        </div>
+
+        <div class="p-2 rounded-xl bg-white/10 border border-white/10 flex items-center justify-between text-[11px]">
+          <span class="text-blue-100">Validade / Renovação:</span>
+          <strong id="userProfileSubValidity" class="font-mono font-black text-amber-300">--/--/----</strong>
+        </div>
+
+        <!-- Ações Explícitas de Cancelamento e Reembolso -->
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button type="button" onclick="closeUserProfileModal(); window.openExplicitCancelSubModal('cancel');" class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all border border-rose-400/40">
+            <span>🚫 Cancelar Assinatura</span>
+          </button>
+          <button type="button" onclick="closeUserProfileModal(); window.openExplicitCancelSubModal('refund');" class="py-2.5 px-3 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+            <span>↩️ Reembolso (7 dias)</span>
+          </button>
+        </div>
+        <p class="text-[9px] text-slate-300 text-center">Cancele quando quiser sem multa. O acesso permanece ativo até o fim do período já pago.</p>
+      </div>
+
       <form onsubmit="handleSaveUserProfile(event)" class="mt-4 space-y-3.5">
         
         <!-- Seleção de Avatar por Perfil / Idade / Gênero -->
@@ -25547,6 +25598,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <div id="adminMasterView" class="mt-4 space-y-3.5">
         
 <!-- SEÇÃO: MODO DEMONSTRAÇÃO REMOVIDA -->
+
+        <!-- SEÇÃO: GESTÃO DE CONTA, PRIVACIDADE & CANCELAMENTO (RODRIGO ADMIN) -->
+        <div class="p-3.5 bg-gradient-to-br from-slate-900 to-slate-850 rounded-2xl border border-slate-700 text-white shadow-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-black text-white flex items-center gap-1.5 text-xs">
+              <span>🛡️</span><span>Privacidade, Conta &amp; Cancelamento</span>
+            </h4>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">LGPD &amp; CDC</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-relaxed">
+            Acesse diretamente a Central de Privacidade, consulte termos ou teste o fluxo explícito de cancelamento e reembolso.
+          </p>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="closeAdminModal(); CPSec.openPrivacyCenter();" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl text-xs border border-slate-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>🛡️ Central Privacidade</span>
+            </button>
+            <button type="button" onclick="closeAdminModal(); window.openExplicitCancelSubModal('cancel');" class="py-2 px-3 bg-rose-600/30 hover:bg-rose-600/40 text-rose-200 hover:text-white font-black rounded-xl text-xs border border-rose-500/40 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>🚫 Cancelar / Reembolso</span>
+            </button>
+          </div>
+        </div>
 
         <!-- SEÇÃO: SIMULAR / RESETAR 1º ACESSO & TUTORIAL (RODRIGO ADMIN) -->
         <div class="p-3.5 bg-gradient-to-br from-sky-50 to-blue-50 dark:from-slate-800/90 dark:to-slate-850 rounded-2xl border border-sky-200/80 dark:border-sky-900/60 shadow-xs">
@@ -26051,6 +26123,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
               <span>🎟️ Ativar Código / Cupom</span>
             </button>
           </div>
+
+          <button type="button" onclick="closeAdminModal(); window.openExplicitCancelSubModal('cancel');" class="w-full py-2.5 px-3 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 hover:text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all">
+            <span>🚫 Cancelar Assinatura / Solicitar Reembolso</span>
+          </button>
         </div>
 
         <!-- 0. Escolha da Modalidade do Plano (Solteiro vs Casal vs Família) -->
@@ -48598,6 +48674,133 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- ========================================================================= -->
   <!-- MODAL: PAYWALL DE PLANOS & ASSINATURA (3 PLANOS OFICIAIS + MEMBRO EXTRA)  -->
   <!-- ========================================================================= -->
+  <!-- ========================================================================= -->
+  <!-- MODAL: CANCELAMENTO & REEMBOLSO EXPLÍCITO DE ASSINATURA (TRANSPARÊNCIA TOTAL) -->
+  <!-- ========================================================================= -->
+  <div id="modalExplicitCancelSub" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99999] hidden flex items-center justify-center p-3 sm:p-4 select-none overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-[28px] max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative max-h-[92vh] overflow-y-auto custom-scrollbar text-xs space-y-4">
+      
+      <!-- Cabeçalho do Modal -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-rose-500/15 border border-rose-400/30 flex items-center justify-center text-xl text-rose-500 flex-shrink-0">
+            🚫
+          </div>
+          <div>
+            <h3 class="font-black text-sm sm:text-base text-slate-900 dark:text-white leading-tight">Gestão da Assinatura</h3>
+            <p class="text-[10px] text-slate-500">Cancelamento ou estorno com transparência total</p>
+          </div>
+        </div>
+        <button type="button" onclick="window.closeExplicitCancelSubModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- VISÃO 1: FORMULÁRIO / INFORMAÇÕES DE CANCELAMENTO -->
+      <div id="cancelSubViewForm" class="space-y-3.5">
+        
+        <!-- Card Informativo do Plano Atual -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-700 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] uppercase font-black tracking-wider text-amber-300">Sua Assinatura Atual</span>
+            <span id="cancelSubModalPlanBadge" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ativo</span>
+          </div>
+          <h4 id="cancelSubModalPlanTitle" class="font-black text-sm text-white">Plano Solteiro • R$ 29,90/mês</h4>
+          <div class="p-2 rounded-xl bg-white/10 text-[11px] flex items-center justify-between">
+            <span class="text-slate-300">Acesso garantido até:</span>
+            <strong id="cancelSubModalValidityDate" class="font-mono text-amber-300">--/--/----</strong>
+          </div>
+        </div>
+
+        <!-- Box de Direitos e Garantias -->
+        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-2">
+          <span class="font-extrabold text-[11px] text-slate-800 dark:text-slate-200 block">Suas Garantias de Cancelamento:</span>
+          <ul class="space-y-1.5 text-[10px] text-slate-600 dark:text-slate-300">
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-500 font-black">✓</span>
+              <span><strong>Sem cobranças futuras:</strong> Nenhuma renovação automática será realizada.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-500 font-black">✓</span>
+              <span><strong>Sem multa ou taxas:</strong> Você não paga nada para cancelar.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-500 font-black">✓</span>
+              <span><strong>Dados salvos:</strong> Suas transações e notas fiscais continuarão salvas em segurança no aparelho.</span>
+            </li>
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-500 font-black">✓</span>
+              <span><strong>Uso até o vencimento:</strong> Você continua utilizando todas as funções até a data de expiração.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Banner de Reembolso 7 Dias (CDC) -->
+        <div id="cancelSubRefundNoticeBox" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300/80 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-[10px] leading-snug">
+          <strong>Direito de Arrependimento (Art. 49 do CDC):</strong>
+          <span id="cancelSubRefundNoticeText">Se você realizou um pagamento nos últimos 7 dias, tem direito ao reembolso integral imediato.</span>
+        </div>
+
+        <!-- Botões de Ação Explícita -->
+        <div class="space-y-2 pt-1">
+          <button type="button" onclick="window.confirmExplicitCancelSubExecution('cancel')" class="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer active:scale-98 transition-all border border-rose-400/40">
+            <i data-lucide="check-circle" class="w-4 h-4 text-white"></i>
+            <span>Confirmar Cancelamento da Assinatura</span>
+          </button>
+          
+          <button type="button" id="btnExplicitRequestRefund" onclick="window.confirmExplicitCancelSubExecution('refund')" class="w-full py-2.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-98 transition-all">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Solicitar Reembolso Integral (7 Dias CDC)</span>
+          </button>
+
+          <button type="button" onclick="window.closeExplicitCancelSubModal()" class="w-full py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center cursor-pointer transition-all">
+            <span>Voltar / Manter Minha Assinatura</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VISÃO 2: COMPROVANTE DE SUCESSO & PROTOCOLO OFICIAL -->
+      <div id="cancelSubViewSuccess" class="hidden space-y-3.5 text-center">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center text-3xl shadow-sm">
+          ✅
+        </div>
+        <div>
+          <h4 id="cancelSubSuccessTitle" class="font-black text-base text-slate-900 dark:text-white">Cancelamento Confirmado!</h4>
+          <p id="cancelSubSuccessDesc" class="text-[11px] text-slate-500 mt-1">
+            Sua solicitação foi registrada com sucesso e não haverá novas cobranças.
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-left space-y-2">
+          <span class="text-[10px] font-bold uppercase text-slate-400 block">Comprovante de Solicitação</span>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <div>
+              <span class="text-[9px] text-slate-400 block">Número de Protocolo Oficial</span>
+              <strong id="cancelSubProtocolDisplay" class="font-mono font-black text-sm text-blue-600 dark:text-blue-400">CAN-20261115-0000</strong>
+            </div>
+            <button type="button" onclick="window.copyCancelProtocol()" class="px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 font-black text-[10px] cursor-pointer hover:bg-blue-100 transition-all flex items-center gap-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copiar</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-[11px] pt-1">
+            <span class="text-slate-500">Acesso ativo até:</span>
+            <strong id="cancelSubSuccessUntilDate" class="font-mono font-black text-slate-800 dark:text-white">--/--/----</strong>
+          </div>
+        </div>
+
+        <p class="text-[10px] text-slate-400 leading-snug">
+          Uma cópia deste comprovante foi encaminhada para os registros de auditoria da sua conta.
+        </p>
+
+        <button type="button" onclick="window.closeExplicitCancelSubModal()" class="w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs cursor-pointer shadow-md active:scale-98 transition-all">
+          <span>Fechar Comprovante</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <div id="modalSubscriptionPaywall" class="fixed inset-0 bg-[#041126]/95 backdrop-blur-lg z-[4200] hidden flex items-center justify-center p-3 sm:p-4 select-none overflow-y-auto">
     <div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-[32px] max-w-2xl w-full p-4 sm:p-6 shadow-2xl border-2 border-amber-400/50 space-y-3.5 my-auto max-h-[95vh] overflow-y-auto custom-scrollbar text-xs">
       
@@ -48799,6 +49002,17 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Box de Cancelamento Explícito no Paywall -->
+      <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+        <div>
+          <span class="font-extrabold text-xs text-slate-800 dark:text-slate-200 block">Já é assinante e deseja cancelar?</span>
+          <span class="text-[10px] text-slate-500 dark:text-slate-400">Cancelamento imediato sem multas ou reembolso integral nos primeiros 7 dias.</span>
+        </div>
+        <button type="button" onclick="window.closeSubscriptionPaywallModal(); window.openExplicitCancelSubModal('cancel');" class="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs whitespace-nowrap cursor-pointer shadow-xs active:scale-95 transition-all flex items-center justify-center gap-1.5 flex-shrink-0">
+          <span>🚫 Cancelar Minha Assinatura</span>
+        </button>
       </div>
 
       <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] leading-snug text-slate-600 dark:text-slate-300">
@@ -49812,6 +50026,168 @@ Deseja incluir +1 Membro Adicional na sua assinatura por + R$ ${cfg.extraMemberP
       const box = document.getElementById('paywallCheckoutActionBox');
       if (box && !box.classList.contains('hidden')) {
         window.startSubscriptionCheckout();
+      }
+    };
+
+
+    // =========================================================================
+    // CANCELAMENTO E REEMBOLSO EXPLÍCITO DE ASSINATURA (TRANSPARÊNCIA TOTAL)
+    // =========================================================================
+    window.openExplicitCancelSubModal = function(initialAction = 'cancel') {
+      window.ensureModalsOnBody();
+      const m = document.getElementById('modalExplicitCancelSub');
+      if (!m) return;
+      if (m.parentElement !== document.body) document.body.appendChild(m);
+
+      const sub = typeof window.getUserSubscriptionRecord === 'function' ? window.getUserSubscriptionRecord() : null;
+      const isLife = sub && (sub.status === 'master_lifetime' || sub.status === 'vip_lifetime');
+      
+      if (isLife) {
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('👑 Seu acesso é vitalício/cortesia: não há cobranças recorrentes nem assinatura a cancelar.', false);
+        } else {
+          alert('Seu acesso é vitalício: não há cobranças recorrentes nem assinatura a cancelar.');
+        }
+        return;
+      }
+
+      // Reseta visões
+      const formView = document.getElementById('cancelSubViewForm');
+      const successView = document.getElementById('cancelSubViewSuccess');
+      if (formView) formView.classList.remove('hidden');
+      if (successView) successView.classList.add('hidden');
+
+      // Preenche dados do plano
+      const planTitle = document.getElementById('cancelSubModalPlanTitle');
+      const planBadge = document.getElementById('cancelSubModalPlanBadge');
+      const validityDate = document.getElementById('cancelSubModalValidityDate');
+      const refundNoticeText = document.getElementById('cancelSubRefundNoticeText');
+
+      const planNames = { individual: 'Plano Solteiro (Individual)', casal: 'Plano Casal', familia: 'Plano Família' };
+      const currentPlan = (sub && sub.planTier && planNames[sub.planTier]) || 'Plano ControlPig Pro';
+      
+      const until = sub && sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '-';
+      if (planTitle) planTitle.textContent = currentPlan;
+      if (validityDate) validityDate.textContent = until;
+
+      const isTrial = sub && (sub.status === 'trial' || !sub.paidActivatedAt);
+      if (planBadge) {
+        planBadge.textContent = isTrial ? '7 Dias Grátis (Teste)' : 'Assinatura Ativa';
+        planBadge.className = isTrial 
+          ? 'px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-500/20 text-amber-300 border border-amber-400/40'
+          : 'px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+      }
+
+      if (refundNoticeText) {
+        if (isTrial) {
+          refundNoticeText.textContent = 'Você está no período de teste gratuito: nenhuma cobrança foi realizada e nenhum valor será cobrado no seu cartão.';
+        } else {
+          const days = sub && sub.paidActivatedAt ? Math.floor((Date.now() - sub.paidActivatedAt) / 86400000) : 99;
+          if (days <= 7) {
+            refundNoticeText.textContent = `Você realizou o pagamento há ${days} ${days === 1 ? 'dia' : 'dias'} (dentro do prazo de 7 dias do CDC). O reembolso integral de 100% do valor pago é garantido.`;
+          } else {
+            refundNoticeText.textContent = `Já se passaram ${days} dias da contratação. O cancelamento interrompe qualquer cobrança futura imediatamente e mantém seu acesso até ${until}.`;
+          }
+        }
+      }
+
+      m.classList.remove('hidden');
+      m.style.display = 'flex';
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    };
+
+    window.closeExplicitCancelSubModal = function() {
+      const m = document.getElementById('modalExplicitCancelSub');
+      if (m) {
+        m.classList.add('hidden');
+        m.style.display = 'none';
+      }
+    };
+
+    window.confirmExplicitCancelSubExecution = function(actionType) {
+      const sub = typeof window.getUserSubscriptionRecord === 'function' ? window.getUserSubscriptionRecord() : null;
+      const until = sub && sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '-';
+
+      const prefix = actionType === 'refund' ? 'REE' : 'CAN';
+      const now = new Date();
+      const ymd = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+      const protocolo = prefix + '-' + ymd + '-' + Math.floor(1000 + Math.random() * 9000);
+
+      // Registra no BILL_KEY do CPSec
+      const BILL_KEY = 'financas_billing_events';
+      let list = [];
+      try { list = JSON.parse(localStorage.getItem(BILL_KEY) || '[]'); } catch (e) { list = []; }
+      list.push({
+        type: actionType === 'refund' ? 'refund' : 'cancel',
+        protocol: protocolo,
+        at: now.toISOString(),
+        plan: sub && sub.planTier,
+        accessUntil: sub && sub.expiresAt
+      });
+      localStorage.setItem(BILL_KEY, JSON.stringify(list));
+
+      // Auditoria
+      if (typeof audit === 'function') {
+        audit(actionType === 'refund' ? 'refund_request' : 'subscription_cancel', { p: protocolo });
+      } else if (window.CPSec && typeof window.CPSec.audit === 'function') {
+        window.CPSec.audit(actionType === 'refund' ? 'refund_request' : 'subscription_cancel', { p: protocolo });
+      }
+
+      // Atualiza visão de sucesso
+      const formView = document.getElementById('cancelSubViewForm');
+      const successView = document.getElementById('cancelSubViewSuccess');
+      const protDisp = document.getElementById('cancelSubProtocolDisplay');
+      const untilDisp = document.getElementById('cancelSubSuccessUntilDate');
+      const successTitle = document.getElementById('cancelSubSuccessTitle');
+      const successDesc = document.getElementById('cancelSubSuccessDesc');
+
+      if (formView) formView.classList.add('hidden');
+      if (successView) successView.classList.remove('hidden');
+
+      if (protDisp) protDisp.textContent = protocolo;
+      if (untilDisp) untilDisp.textContent = until;
+
+      if (actionType === 'refund') {
+        if (successTitle) successTitle.textContent = 'Pedido de Reembolso Registrado!';
+        if (successDesc) successDesc.textContent = 'Sua solicitação de estorno integral (Art. 49 CDC) foi registrada com sucesso.';
+      } else {
+        if (successTitle) successTitle.textContent = 'Cancelamento Confirmado!';
+        if (successDesc) successDesc.textContent = 'Sua assinatura foi cancelada. Não haverá novas cobranças e seu acesso continuará ativo até o vencimento.';
+      }
+
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`✅ Solicitação registrada! Protocolo: ${protocolo}`, false);
+      }
+
+      // Prepara e-mail opcional
+      try {
+        const emailTo = 'suporte@controlpig.com.br';
+        const subj = (actionType === 'refund' ? 'Reembolso ' : 'Cancelamento de Assinatura ') + protocolo;
+        const body = `Protocolo: ${protocolo}\nConta: ${(window.currentUserSession || {}).email || ''}\nData: ${now.toLocaleDateString('pt-BR')}\nSolicito o ${actionType === 'refund' ? 'reembolso' : 'cancelamento'} da minha assinatura.`;
+        const mailUrl = 'mailto:' + encodeURIComponent(emailTo) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+        if (typeof bridge === 'function') {
+          bridge({ action: 'open_external_url', url: mailUrl });
+        }
+      } catch (e) {}
+
+      if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+    };
+
+    window.copyCancelProtocol = function() {
+      const el = document.getElementById('cancelSubProtocolDisplay');
+      const text = el ? el.textContent.trim() : '';
+      if (text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        if (typeof showToastUndo === 'function') showToastUndo('📋 Protocolo copiado para a área de transferência!', false);
       }
     };
 
