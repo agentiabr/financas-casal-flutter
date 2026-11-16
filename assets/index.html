@@ -5373,9 +5373,9 @@ html, body {
               <!-- Subtítulo Configurável via Admin com limite de caracteres para nunca quebrar o layout -->
               <p id="heroGreetingSubtitle" class="text-xs text-blue-200 mt-1 leading-snug max-w-[220px]">Tudo certo por aqui! Finanças sob controle.</p>
               
-              <!-- Pílula do Ciclo Vigente -->
+              <!-- Pílula do Ciclo Vigente com Menu Dropdown Direto (Sem abrir nova seção) -->
               <div class="relative inline-block mt-3">
-                <button type="button" onclick="openSelectCycleModal()" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 text-white transition-all shadow-md cursor-pointer text-left">
+                <button type="button" id="btnHeroCycleDropdown" onclick="toggleHeroCycleDropdown(event)" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 text-white transition-all shadow-md cursor-pointer text-left active:scale-95" title="Selecionar ciclo financeiro">
                   <i data-lucide="calendar" class="w-4 h-4 text-amber-300 flex-shrink-0"></i>
                   <div class="flex flex-col items-start leading-tight">
                     <span id="heroCycleTitle" class="text-xs font-black text-white whitespace-nowrap">Outubro 2026</span>
@@ -5383,6 +5383,34 @@ html, body {
                   </div>
                   <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-white/70"></i>
                 </button>
+
+                <!-- MENU DROPDOWN DE CICLOS FINANCEIROS (FLUTUANTE DIRETO NO CARD) -->
+                <div id="cycleHeroDropdownMenu" class="hidden absolute left-0 top-full mt-2 z-[999999] w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl border border-slate-200/90 dark:border-slate-700 shadow-2xl p-3 select-none text-xs">
+                  <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800 mb-2">
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      <span>📅</span> <span>Ciclos Financeiros</span>
+                    </span>
+                    <button type="button" onclick="closeHeroCycleDropdown()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer">✕</button>
+                  </div>
+
+                  <!-- Lista de Ciclos Disponíveis -->
+                  <div id="cycleHeroDropdownList" class="max-h-56 overflow-y-auto space-y-1 pr-1 custom-scrollbar"></div>
+
+                  <!-- Ações Rápidas no Rodapé do Dropdown -->
+                  <div class="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2 space-y-1">
+                    <button type="button" onclick="promptCloseOrAdvanceCycle('fechar')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-black bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 flex items-center justify-between transition-all cursor-pointer shadow-2xs">
+                      <span class="flex items-center gap-1.5"><span>🔒</span> <span>Fechar Ciclo &amp; Próximo...</span></span>
+                      <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button type="button" onclick="promptCloseOrAdvanceCycle('novo')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-black bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-between transition-all cursor-pointer shadow-2xs">
+                      <span class="flex items-center gap-1.5"><span>➕</span> <span>Novo Ciclo...</span></span>
+                      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <button type="button" onclick="openSelectCycleModal(); closeHeroCycleDropdown();" class="w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 cursor-pointer">
+                      <span>⚙️</span> <span>Gerenciar todos os ciclos &amp; Lixeira</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -41047,6 +41075,81 @@ window.openHealthMedsModal = function() {
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL: CONFIRMAÇÃO INTELIGENTE DE FECHAMENTO & CRIAÇÃO AUTOMÁTICA DE CICLO -->
+  <!-- ========================================================================= -->
+  <div id="modalCycleAdvancePrompt" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[1000060] hidden flex items-center justify-center p-4 select-none">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center text-lg shadow-xs">
+            🔒
+          </div>
+          <div>
+            <h3 id="promptAdvanceModalTitle" class="font-black text-base text-slate-900 leading-tight">Fechar Ciclo &amp; Iniciar Próximo</h3>
+            <p class="text-[11px] text-slate-500">Geração automática com cópia de despesas fixas</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCycleAdvancePrompt()" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <!-- Ciclo Atual que está sendo fechado -->
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+          <div class="min-w-0">
+            <span class="text-[10px] font-bold uppercase text-slate-400 block">Ciclo Atual</span>
+            <strong id="promptCurrentCycleLabel" class="text-xs font-black text-slate-800 block truncate">Outubro 2026 (05/Out a 04/Nov)</strong>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-extrabold text-[10px]">Concluindo</span>
+        </div>
+
+        <!-- Próximo Ciclo Sugerido (Padrão 05 a 04) -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/80 border-2 border-blue-200 space-y-1.5">
+          <span class="text-[10px] font-black uppercase tracking-wider text-blue-700 block">Próximo Ciclo Sugerido</span>
+          <div class="flex items-baseline justify-between">
+            <h4 id="promptNextCycleTitle" class="text-base font-black text-slate-900">Novembro 2026</h4>
+            <span id="promptNextCycleSub" class="text-xs font-black text-blue-600 bg-white px-2.5 py-0.5 rounded-full border border-blue-200 shadow-2xs">05/Nov a 04/Dez</span>
+          </div>
+          <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+            💡 <strong>Padrão Mantido:</strong> Salário, despesas fixas (aluguel, condomínio, internet...) e parcelas ativas serão gerados no novo ciclo com 1 toque!
+          </p>
+        </div>
+
+        <!-- Painel retrátil para escolher outras datas (se o usuário desejar) -->
+        <div id="boxCustomCycleDates" class="hidden p-3 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2">
+          <span class="text-[11px] font-black text-amber-900 block">📅 Escolher Outro Período de Início e Término</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700 text-[10px] mb-1">Início do Ciclo *</label>
+              <input type="date" id="promptNextStartDate" onchange="onPromptCycleDatesChanged()" class="w-full px-2.5 py-1.5 rounded-xl border border-amber-300 bg-white font-bold text-slate-900">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 text-[10px] mb-1">Término do Ciclo *</label>
+              <input type="date" id="promptNextEndDate" onchange="onPromptCycleDatesChanged()" class="w-full px-2.5 py-1.5 rounded-xl border border-amber-300 bg-white font-bold text-slate-900">
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão para alternar escolha de outras datas -->
+        <div class="text-center">
+          <button type="button" onclick="toggleCustomCycleDatesPrompt()" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+            🗓️ Deseja alterar as datas de início e fim? Clique aqui
+          </button>
+        </div>
+
+        <!-- Botões de Ação Final -->
+        <div class="pt-2 flex flex-col gap-2">
+          <button type="button" onclick="confirmAdvanceToNextCycle()" class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2">
+            <span>✓</span> <span>Manter Padrão e Iniciar Novo Ciclo</span>
+          </button>
+          <button type="button" onclick="closeCycleAdvancePrompt()" class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs cursor-pointer">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: CRIAR NOVO CICLO PADRONIZADO (SEM NOMES ALEATÓRIOS) -->
   <div id="modalCreateNewCycle" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[120] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-slate-200 space-y-4">
@@ -42159,6 +42262,188 @@ window.openHealthMedsModal = function() {
       m.style.zIndex = '';
     }
   };
+
+  // ============================================================================
+  // DROPDOWN HERO DO CICLO FINANCEIRO & CRIAÇÃO AUTOMÁTICA DE NOVO CICLO
+  // ============================================================================
+  window.toggleHeroCycleDropdown = function(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const menu = document.getElementById('cycleHeroDropdownMenu');
+    if (!menu) return;
+    const isHidden = menu.classList.contains('hidden');
+    if (isHidden) {
+      window.renderHeroCycleDropdownItems();
+      menu.classList.remove('hidden');
+    } else {
+      menu.classList.add('hidden');
+    }
+  };
+
+  window.closeHeroCycleDropdown = function() {
+    const menu = document.getElementById('cycleHeroDropdownMenu');
+    if (menu) menu.classList.add('hidden');
+  };
+
+  window.renderHeroCycleDropdownItems = function() {
+    const container = document.getElementById('cycleHeroDropdownList');
+    if (!container) return;
+
+    const activeKey = window.currentActiveCycleKey || 'out_2026';
+    const cyclesMap = window.appCyclesData || {};
+
+    const allKeys = Object.keys(cyclesMap);
+    allKeys.sort((a, b) => {
+      const cA = cyclesMap[a] || {};
+      const cB = cyclesMap[b] || {};
+      const dA = cA.startIso || (a.includes('out') ? '2026-10-05' : '2026-06-05');
+      const dB = cB.startIso || (b.includes('out') ? '2026-10-05' : '2026-06-05');
+      return dB.localeCompare(dA);
+    });
+
+    container.innerHTML = allKeys.map(k => {
+      const c = cyclesMap[k] || {};
+      const isActive = (k === activeKey);
+      const tag = c.tag || c.subtitle || '';
+      return `
+        <button type="button" onclick="selectCycleFromDropdown('${k}')" class="w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${isActive ? 'bg-blue-600 text-white font-black shadow-xs' : 'text-slate-700 hover:bg-slate-100 font-bold'}">
+          <div class="min-w-0 pr-2">
+            <span class="block truncate ${isActive ? 'text-white' : 'text-slate-900'}">${escapeHtml(c.name || k)}</span>
+            ${tag ? `<span class="text-[10px] block truncate ${isActive ? 'text-blue-100' : 'text-slate-400'}">${escapeHtml(tag)}</span>` : ''}
+          </div>
+          ${isActive ? '<span class="text-[9px] font-black bg-white/20 px-2 py-0.5 rounded-full text-white flex-shrink-0">✓ Ativo</span>' : ''}
+        </button>
+      `;
+    }).join('');
+  };
+
+  window.selectCycleFromDropdown = function(key) {
+    window.closeHeroCycleDropdown();
+    if (typeof window.setActiveCycle === 'function') {
+      window.setActiveCycle(key);
+    }
+  };
+
+  window.promptCloseOrAdvanceCycle = function(mode) {
+    window.closeHeroCycleDropdown();
+    window.openCycleAdvancePrompt(mode);
+  };
+
+  window.openCycleAdvancePrompt = function(mode) {
+    const m = document.getElementById('modalCycleAdvancePrompt');
+    if (!m) {
+      if (typeof window.openCreateNewCycleModal === 'function') window.openCreateNewCycleModal();
+      return;
+    }
+
+    const activeKey = window.currentActiveCycleKey || 'out_2026';
+    const cyclesMap = window.appCyclesData || {};
+    const currentObj = cyclesMap[activeKey] || { name: 'Outubro 2026', tag: '05/Out a 04/Nov', startIso: '2026-10-05', endIso: '2026-11-04' };
+
+    let nextStart = '2026-11-05';
+    let nextEnd = '2026-12-04';
+    if (typeof window.computeStandardCycleFromDates === 'function') {
+      const candidates = [
+        ['2026-11-05', '2026-12-04'],
+        ['2026-12-05', '2027-01-04'],
+        ['2027-01-05', '2027-02-04'],
+        ['2027-02-05', '2027-03-04'],
+        ['2027-03-05', '2027-04-04']
+      ];
+      for (const [sIso, eIso] of candidates) {
+        const candInfo = window.computeStandardCycleFromDates(sIso, eIso);
+        if (!cyclesMap[candInfo.key]) {
+          nextStart = sIso;
+          nextEnd = eIso;
+          break;
+        }
+      }
+    }
+
+    const nextInfo = (typeof window.computeStandardCycleFromDates === 'function')
+      ? window.computeStandardCycleFromDates(nextStart, nextEnd)
+      : { name: 'Novembro 2026', subtitle: '05/Nov a 04/Dez' };
+
+    const modalTitle = document.getElementById('promptAdvanceModalTitle');
+    if (modalTitle) {
+      modalTitle.textContent = (mode === 'fechar') ? 'Fechar Ciclo & Iniciar Próximo' : 'Iniciar Próximo Ciclo';
+    }
+
+    const currentLabel = document.getElementById('promptCurrentCycleLabel');
+    if (currentLabel) {
+      currentLabel.textContent = `${currentObj.name || 'Outubro 2026'} (${currentObj.tag || '05/Out a 04/Nov'})`;
+    }
+
+    const nextTitle = document.getElementById('promptNextCycleTitle');
+    const nextSub = document.getElementById('promptNextCycleSub');
+    if (nextTitle) nextTitle.textContent = nextInfo.name;
+    if (nextSub) nextSub.textContent = nextInfo.subtitle;
+
+    const sInp = document.getElementById('promptNextStartDate');
+    const eInp = document.getElementById('promptNextEndDate');
+    if (sInp) sInp.value = nextStart;
+    if (eInp) eInp.value = nextEnd;
+
+    const boxCustom = document.getElementById('boxCustomCycleDates');
+    if (boxCustom) boxCustom.classList.add('hidden');
+
+    m.classList.remove('hidden');
+    m.style.setProperty('display', 'flex', 'important');
+    m.style.zIndex = '1000060';
+  };
+
+  window.closeCycleAdvancePrompt = function() {
+    const m = document.getElementById('modalCycleAdvancePrompt');
+    if (m) {
+      m.classList.add('hidden');
+      m.style.setProperty('display', 'none', 'important');
+    }
+  };
+
+  window.toggleCustomCycleDatesPrompt = function() {
+    const box = document.getElementById('boxCustomCycleDates');
+    if (box) box.classList.toggle('hidden');
+  };
+
+  window.onPromptCycleDatesChanged = function() {
+    const sIso = document.getElementById('promptNextStartDate')?.value || '2026-11-05';
+    const eIso = document.getElementById('promptNextEndDate')?.value || '2026-12-04';
+    if (typeof window.computeStandardCycleFromDates === 'function') {
+      const info = window.computeStandardCycleFromDates(sIso, eIso);
+      const nextTitle = document.getElementById('promptNextCycleTitle');
+      const nextSub = document.getElementById('promptNextCycleSub');
+      if (nextTitle) nextTitle.textContent = info.name;
+      if (nextSub) nextSub.textContent = info.subtitle;
+    }
+  };
+
+  window.confirmAdvanceToNextCycle = function() {
+    const sIso = document.getElementById('promptNextStartDate')?.value || '2026-11-05';
+    const eIso = document.getElementById('promptNextEndDate')?.value || '2026-12-04';
+
+    const sEl = document.getElementById('inputStandardCycleStartDate');
+    const eEl = document.getElementById('inputStandardCycleEndDate');
+    if (sEl) sEl.value = sIso;
+    if (eEl) eEl.value = eIso;
+
+    window.closeCycleAdvancePrompt();
+
+    if (typeof window.handleSaveNewCycle === 'function') {
+      window.handleSaveNewCycle({ preventDefault: () => {} });
+    }
+  };
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('cycleHeroDropdownMenu');
+    const btn = document.getElementById('btnHeroCycleDropdown');
+    if (menu && !menu.classList.contains('hidden')) {
+      if (!menu.contains(e.target) && !btn?.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    }
+  });
 
   // Criar Novo Ciclo Padronizado
   window.openCreateNewCycleModal = function() {
