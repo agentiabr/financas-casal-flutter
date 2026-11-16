@@ -45950,6 +45950,37 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </button>
       </div>
 
+      <!-- BALÃO RESUMIDO COM O PIGGY PROFESSOR (ESTILO HERO DA LISTA DE COMPRAS - ALTURA CONFORTÁVEL & ESPAÇOSA) -->
+      <div id="kidsAreaHeroBanner" class="relative overflow-hidden rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-lg min-h-[175px] sm:min-h-[195px] flex items-center">
+        <div class="absolute -right-10 -top-10 w-44 h-44 bg-sky-400/25 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-8 -bottom-8 w-36 h-36 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-4 w-full">
+          <!-- Coluna de Texto com Respiro e Largura Adaptativa -->
+          <div class="flex-1 min-w-0 pr-1 flex flex-col justify-center space-y-1.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider border border-white/30 shadow-xs">
+                🎓 Piggy Professor
+              </span>
+              <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[9px] border border-emerald-400/40">
+                Ganha PiggyCoins
+              </span>
+            </div>
+            <h3 id="kidsHeroBannerTitle" class="font-black text-base sm:text-lg text-white leading-tight drop-shadow-xs">
+              Cadastre tarefas reais de casa para seu filho(a)...
+            </h3>
+            <p id="kidsHeroBannerDesc" class="text-xs sm:text-[13px] text-blue-100/90 leading-relaxed">
+              Quando ele cumprir, você aprova com 1 toque e ele ganha moedas e XP para evoluir a Cidade do Piggy no game!
+            </p>
+          </div>
+
+          <!-- Mascote Piggy Professor (3D Sem Cortes) -->
+          <div class="w-28 sm:w-36 flex-shrink-0 flex items-center justify-center">
+            <img src="images/mascote_educacao.png" onerror="this.src='assets/images/mascote_educacao.png'" alt="Piggy Professor" class="w-full h-auto max-h-[135px] sm:max-h-[150px] object-contain drop-shadow-2xl hover:scale-105 transition-transform select-none">
+          </div>
+        </div>
+      </div>
+
       <!-- Barra Superior Interna: Carrossel de Filhos + Botão Cadastrar Filho(a) -->
       <div class="flex items-center justify-between gap-2">
         <div id="kidsSelectorPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 flex-1"></div>
@@ -45958,201 +45989,23 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </button>
       </div>
 
-      <!-- NAVEGAÇÃO SEGMENTADA POR ABAS DO ESPAÇO KIDS -->
-      <div class="grid grid-cols-4 gap-1 p-1 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 shadow-xs text-center select-none">
-        <button type="button" id="tabBtnKids_missoes" onclick="switchKidsAreaTab('missoes')" class="py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
-          <span class="text-sm">🏅</span><span class="truncate">Missões Pais</span>
+      <!-- NAVEGAÇÃO SEGMENTADA POR ABAS DO ESPAÇO KIDS (3 ABAS: BOLETIM À ESQUERDA) -->
+      <div class="grid grid-cols-3 gap-1.5 p-1 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 shadow-xs text-center select-none">
+        <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2.5 px-2 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+          <span class="text-base">📝</span><span class="truncate">Boletim &amp; Aulas</span>
         </button>
-        <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
-          <span class="text-sm">📝</span><span class="truncate">Boletim &amp; Aulas</span>
+        <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+          <span class="text-base">🎓</span><span class="truncate">Despesas</span>
         </button>
-        <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
-          <span class="text-sm">🎓</span><span class="truncate">Despesas</span>
-        </button>
-        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer">
-          <span class="text-sm">🎮</span><span class="truncate">Games (Breve)</span>
+        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+          <span class="text-base">🎮</span><span class="truncate">Games &amp; Missões</span>
         </button>
       </div>
 
       <!-- ======================================================== -->
-      <!-- ABA 1: CIDADE DO PIGGY & GAME FINANCEIRO EVOLUTIVO       -->
+      <!-- ABA 1: BOLETIM ESCOLAR & HORÁRIOS (PRIMEIRA ABA À ESQUERDA) -->
       <!-- ======================================================== -->
-      <div id="kidsViewSection_game" class="hidden space-y-3.5">
-        <!-- Card 1: Perfil do Jogador & Status Gamificado -->
-        <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-pink-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg border border-pink-400/40 relative overflow-hidden space-y-3">
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-12 h-12 rounded-2xl bg-pink-500/30 border-2 border-pink-400 text-2xl flex items-center justify-center shadow-md flex-shrink-0">
-                🐷
-              </div>
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <h3 id="kidGamePlayerName" class="font-black text-sm sm:text-base text-white truncate">Lucas</h3>
-                  <span id="kidGameTierBadge" class="px-2 py-0.5 rounded-full bg-pink-500/30 border border-pink-400 text-pink-200 text-[10px] font-black uppercase tracking-wider flex-shrink-0">7 a 10 anos</span>
-                </div>
-                <p id="kidGameLevelTitle" class="text-[11px] text-pink-200 font-bold">Nível 2 • Pequeno Magnata</p>
-              </div>
-            </div>
-            
-            <!-- Seletor Rápido de Calibração de Idade -->
-            <div class="flex flex-col items-end flex-shrink-0">
-              <span class="text-[9px] uppercase font-black text-pink-300 tracking-wider">Ajustar Idade</span>
-              <select id="quickSelectKidAge" onchange="changeActiveKidAge(this.value)" class="text-[10px] font-black px-2 py-1 rounded-xl bg-slate-800 text-white border border-pink-400/50 focus:outline-none cursor-pointer">
-                <option value="5">🌱 4 a 6 anos</option>
-                <option value="8">🧭 7 a 10 anos</option>
-                <option value="12">🚀 11 a 14 anos</option>
-                <option value="16">💎 15+ anos</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Placar de Recursos: Moedas, Estrelas, XP -->
-          <div class="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
-            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
-              <span class="text-[10px] text-amber-300 font-black block uppercase">PiggyCoins</span>
-              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-amber-300">
-                <span>🪙</span><span id="kidGameCoinsCount">120</span>
-              </div>
-            </div>
-            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
-              <span class="text-[10px] text-yellow-300 font-black block uppercase">Estrelas</span>
-              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-yellow-300">
-                <span>⭐</span><span id="kidGameStarsCount">8</span>
-              </div>
-            </div>
-            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
-              <span class="text-[10px] text-cyan-300 font-black block uppercase">Nível &amp; XP</span>
-              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-cyan-300">
-                <span>🏆</span><span id="kidGameXpCount">280 XP</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Barra de XP para o próximo nível -->
-          <div class="space-y-1">
-            <div class="flex items-center justify-between text-[10px] font-bold text-pink-200">
-              <span>Progresso para o Nível <strong id="kidGameNextLevelNum">3</strong></span>
-              <span id="kidGameXpProgressLabel">280 / 400 XP</span>
-            </div>
-            <div class="w-full h-2.5 rounded-full bg-black/40 overflow-hidden border border-white/15">
-              <div id="kidGameXpProgressBar" class="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-amber-400 rounded-full transition-all duration-500" style="width: 70%;"></div>
-            </div>
-          </div>
-        </div>
-
-        
-        <!-- Card Reformulação dos Mini-Games do Piggy -->
-        <div class="bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 text-white rounded-3xl p-6 border-2 border-pink-400/50 shadow-xl space-y-4 text-center">
-          <div class="w-16 h-16 mx-auto rounded-3xl bg-pink-500/30 border border-pink-300 flex items-center justify-center text-4xl shadow-lg">
-            🎮
-          </div>
-          <div>
-            <span class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-300/40 text-[10px] font-black uppercase tracking-wider">
-              ✨ Em Reformulação Total
-            </span>
-            <h3 class="text-base sm:text-lg font-black text-white mt-2">
-              4 Novos Mini-Games Educativos do Piggy!
-            </h3>
-            <p class="text-xs text-purple-200 max-w-md mx-auto mt-1 leading-relaxed">
-              Os jogos antigos foram desativados para dar lugar a uma nova experiência visual incrível com o Piggy, inspirada em grandes sucessos dos games casuais e focada em aprendizado financeiro real!
-            </p>
-          </div>
-
-          <!-- Preview dos 4 Novos Games -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2">
-            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
-              <span class="text-2xl">🧩</span>
-              <div>
-                <strong class="text-xs font-black text-amber-300 block">1. Piggy Slide 15</strong>
-                <span class="text-[10px] text-slate-300">Deslize blocos e ordene moedas no cofre</span>
-              </div>
-            </div>
-            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
-              <span class="text-2xl">🧪</span>
-              <div>
-                <strong class="text-xs font-black text-emerald-300 block">2. Piggy Bubble Sort</strong>
-                <span class="text-[10px] text-slate-300">Separe os 3 cofrinhos: Poupar, Gastar e Doar</span>
-              </div>
-            </div>
-            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
-              <span class="text-2xl">🎲</span>
-              <div>
-                <strong class="text-xs font-black text-cyan-300 block">3. Ludo Piggy Mesada</strong>
-                <span class="text-[10px] text-slate-300">Trilha de tabuleiro 3D em família</span>
-              </div>
-            </div>
-            <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
-              <span class="text-2xl">🍎</span>
-              <div>
-                <strong class="text-xs font-black text-pink-300 block">4. Mercearia do Piggy</strong>
-                <span class="text-[10px] text-slate-300">Desafio matemático do troco no caixa</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2">
-            <button type="button" onclick="switchKidsAreaTab('missoes')" class="px-5 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs rounded-2xl shadow-md transition-all cursor-pointer active:scale-95">
-              Ver Missões dos Pais
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ======================================================== -->
-      <!-- ABA 2: MISSÕES DOS PAIS (TAREFAS DO MUNDO REAL)          -->
-      <!-- ======================================================== -->
-      <div id="kidsViewSection_missoes" class="space-y-3.5">
-        <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-4 shadow-sm space-y-2 border border-blue-400/30">
-          <div class="flex items-center justify-between">
-            <h3 class="font-black text-sm flex items-center gap-1.5">
-              <span>🏅</span><span>Painel dos Pais: Missões do Mundo Real</span>
-            </h3>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">Ganha PiggyCoins</span>
-          </div>
-          <p class="text-[11px] text-blue-100 leading-relaxed">
-            Cadastre tarefas reais de casa para seu filho(a). Quando ele cumprir, você aprova com 1 toque e ele ganha moedas e XP para evoluir a Cidade do Piggy no game!
-          </p>
-        </div>
-
-        <!-- Formulário para Criar Nova Missão -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
-          <h4 class="font-black text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-            <span>➕</span><span>Adicionar Missão Real para o Filho(a)</span>
-          </h4>
-          <form onsubmit="handleCreateParentMission(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-            <input type="text" id="inputMissionTitle" required placeholder="Ex: Arrumar a própria cama, Lição de casa..." class="sm:col-span-2 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[11px] font-black text-amber-500">🪙 Moedas:</span>
-              <input type="number" id="inputMissionRewardCoins" min="5" max="200" value="20" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold text-xs text-center">
-            </div>
-            <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black text-xs shadow-xs cursor-pointer">+ Criar Missão</button>
-          </form>
-          <!-- Sugestões Rápidas -->
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
-            <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
-            <button type="button" onclick="fillQuickMissionPreset('🛏️ Arrumar a própria cama', 15)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🛏️ Arrumar cama (15 🪙)</button>
-            <button type="button" onclick="fillQuickMissionPreset('📚 Fazer lição de casa sem reclamar', 25)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">📚 Lição de casa (25 🪙)</button>
-            <button type="button" onclick="fillQuickMissionPreset('💰 Guardar 20% da mesada no cofrinho físico', 50)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">💰 Guardar mesada (50 🪙)</button>
-            <button type="button" onclick="fillQuickMissionPreset('🧸 Guardar todos os brinquedos', 20)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🧸 Guardar brinquedos (20 🪙)</button>
-          </div>
-        </div>
-
-        <!-- Lista de Missões Ativas & Concluídas -->
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
-          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span class="font-black text-xs text-slate-900 dark:text-white">Tarefas &amp; Aprovações</span>
-            <span id="kidsPendingMissionsBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">0 pendentes</span>
-          </div>
-          <div id="parentMissionsListContainer" class="space-y-2">
-            <!-- Injetado dinamicamente via renderParentMissionsUI() -->
-          </div>
-        </div>
-      </div>
-
-      <!-- ======================================================== -->
-      <!-- ABA 3: BOLETIM ESCOLAR & HORÁRIOS DE ATIVIDADES EXTRAS   -->
-      <!-- ======================================================== -->
-      <div id="kidsViewSection_escola" class="hidden space-y-3.5">
+      <div id="kidsViewSection_escola" class="space-y-3.5">
 
       <!-- Formulário Cadastrar Filho(a) -->
       <div id="boxAddKidForm" class="hidden bg-white rounded-3xl p-4 border border-pink-300 shadow-md space-y-2.5">
@@ -46266,7 +46119,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
 
       <!-- ======================================================== -->
-      <!-- ABA 4: DESPESAS COM EDUCAÇÃO NO CICLO ATUAL              -->
+      <!-- ABA 2: DESPESAS COM EDUCAÇÃO NO CICLO ATUAL              -->
       <!-- ======================================================== -->
       <div id="kidsViewSection_gastos" class="hidden space-y-3.5">
         <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
@@ -46291,6 +46144,178 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           </form>
 
           <div id="kidsEducationTransactionsList" class="space-y-1.5"></div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- ABA 3: GAMES & MISSÕES DOS PAIS (INTEGRADOS NO MESMO ESPAÇO) -->
+      <!-- ======================================================== -->
+      <div id="kidsViewSection_game" class="hidden space-y-3.5">
+        <!-- Card 1: Perfil do Jogador & Status Gamificado -->
+        <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-pink-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg border border-pink-400/40 relative overflow-hidden space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-12 h-12 rounded-2xl bg-pink-500/30 border-2 border-pink-400 text-2xl flex items-center justify-center shadow-md flex-shrink-0">
+                🐷
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <h3 id="kidGamePlayerName" class="font-black text-sm sm:text-base text-white truncate">Lucas</h3>
+                  <span id="kidGameTierBadge" class="px-2 py-0.5 rounded-full bg-pink-500/30 border border-pink-400 text-pink-200 text-[10px] font-black uppercase tracking-wider flex-shrink-0">7 a 10 anos</span>
+                </div>
+                <p id="kidGameLevelTitle" class="text-[11px] text-pink-200 font-bold">Nível 2 • Pequeno Magnata</p>
+              </div>
+            </div>
+            
+            <!-- Seletor Rápido de Calibração de Idade -->
+            <div class="flex flex-col items-end flex-shrink-0">
+              <span class="text-[9px] uppercase font-black text-pink-300 tracking-wider">Ajustar Idade</span>
+              <select id="quickSelectKidAge" onchange="changeActiveKidAge(this.value)" class="text-[10px] font-black px-2 py-1 rounded-xl bg-slate-800 text-white border border-pink-400/50 focus:outline-none cursor-pointer">
+                <option value="5">🌱 4 a 6 anos</option>
+                <option value="8">🧭 7 a 10 anos</option>
+                <option value="12">🚀 11 a 14 anos</option>
+                <option value="16">💎 15+ anos</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Placar de Recursos: Moedas, Estrelas, XP -->
+          <div class="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-amber-300 font-black block uppercase">PiggyCoins</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-amber-300">
+                <span>🪙</span><span id="kidGameCoinsCount">120</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-yellow-300 font-black block uppercase">Estrelas</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-yellow-300">
+                <span>⭐</span><span id="kidGameStarsCount">8</span>
+              </div>
+            </div>
+            <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <span class="text-[10px] text-cyan-300 font-black block uppercase">Nível &amp; XP</span>
+              <div class="flex items-center justify-center gap-1 text-base sm:text-lg font-black text-cyan-300">
+                <span>🏆</span><span id="kidGameXpCount">280 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barra de XP para o próximo nível -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-bold text-pink-200">
+              <span>Progresso para o Nível <strong id="kidGameNextLevelNum">3</strong></span>
+              <span id="kidGameXpProgressLabel">280 / 400 XP</span>
+            </div>
+            <div class="w-full h-2.5 rounded-full bg-black/40 overflow-hidden border border-white/15">
+              <div id="kidGameXpProgressBar" class="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-amber-400 rounded-full transition-all duration-500" style="width: 70%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-navegação interna elegante: Missões dos Pais & Mini-Games -->
+        <div class="flex items-center justify-center gap-2 p-1 bg-white/80 dark:bg-slate-800/80 rounded-2xl max-w-sm mx-auto shadow-xs border border-slate-200/80 select-none">
+          <button type="button" id="subBtnKidsGame_missoes" onclick="switchKidsGameSubTab('missoes')" class="flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+            <span>🏅</span><span>Missões dos Pais</span>
+          </button>
+          <button type="button" id="subBtnKidsGame_jogos" onclick="switchKidsGameSubTab('jogos')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5">
+            <span>🎮</span><span>Mini-Games</span>
+          </button>
+        </div>
+
+        <!-- SUB-ABA 1: MISSÕES DOS PAIS (DENTRO DE GAMES) -->
+        <div id="kidsGameSub_missoes" class="space-y-3">
+          <!-- Formulário para Criar Nova Missão -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
+            <h4 class="font-black text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>➕</span><span>Adicionar Missão Real para o Filho(a)</span>
+            </h4>
+            <form onsubmit="handleCreateParentMission(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+              <input type="text" id="inputMissionTitle" required placeholder="Ex: Arrumar a própria cama, Lição de casa..." class="sm:col-span-2 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-black text-amber-500">🪙 Moedas:</span>
+                <input type="number" id="inputMissionRewardCoins" min="5" max="200" value="20" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono font-bold text-xs text-center">
+              </div>
+              <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-black text-xs shadow-xs cursor-pointer">+ Criar Missão</button>
+            </form>
+            <!-- Sugestões Rápidas -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
+              <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
+              <button type="button" onclick="fillQuickMissionPreset('🛏️ Arrumar a própria cama', 15)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🛏️ Arrumar cama (15 🪙)</button>
+              <button type="button" onclick="fillQuickMissionPreset('📚 Fazer lição de casa sem reclamar', 25)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">📚 Lição de casa (25 🪙)</button>
+              <button type="button" onclick="fillQuickMissionPreset('💰 Guardar 20% da mesada no cofrinho físico', 50)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">💰 Guardar mesada (50 🪙)</button>
+              <button type="button" onclick="fillQuickMissionPreset('🧸 Guardar todos os brinquedos', 20)" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] whitespace-nowrap cursor-pointer">🧸 Guardar brinquedos (20 🪙)</button>
+            </div>
+          </div>
+
+          <!-- Lista de Missões Ativas & Concluídas -->
+          <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-2.5">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <span class="font-black text-xs text-slate-900 dark:text-white">Tarefas &amp; Aprovações</span>
+              <span id="kidsPendingMissionsBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">0 pendentes</span>
+            </div>
+            <div id="parentMissionsListContainer" class="space-y-2">
+              <!-- Injetado dinamicamente via renderParentMissionsUI() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-ABA 2: MINI-GAMES EDUCATIVOS DO PIGGY -->
+        <div id="kidsGameSub_jogos" class="hidden space-y-3">
+          <div class="bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 text-white rounded-3xl p-6 border-2 border-pink-400/50 shadow-xl space-y-4 text-center">
+            <div class="w-16 h-16 mx-auto rounded-3xl bg-pink-500/30 border border-pink-300 flex items-center justify-center text-4xl shadow-lg">
+              🎮
+            </div>
+            <div>
+              <span class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-300/40 text-[10px] font-black uppercase tracking-wider">
+                ✨ Em Reformulação Total
+              </span>
+              <h3 class="text-base sm:text-lg font-black text-white mt-2">
+                4 Novos Mini-Games Educativos do Piggy!
+              </h3>
+              <p class="text-xs text-purple-200 max-w-md mx-auto mt-1 leading-relaxed">
+                Os jogos antigos foram desativados para dar lugar a uma nova experiência visual incrível com o Piggy, inspirada em grandes sucessos dos games casuais e focada em aprendizado financeiro real!
+              </p>
+            </div>
+
+            <!-- Preview dos 4 Novos Games -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left pt-2">
+              <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+                <span class="text-2xl">🧩</span>
+                <div>
+                  <strong class="text-xs font-black text-amber-300 block">1. Piggy Slide 15</strong>
+                  <span class="text-[10px] text-slate-300">Deslize blocos e ordene moedas no cofre</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+                <span class="text-2xl">🧪</span>
+                <div>
+                  <strong class="text-xs font-black text-emerald-300 block">2. Piggy Bubble Sort</strong>
+                  <span class="text-[10px] text-slate-300">Separe os 3 cofrinhos: Poupar, Gastar e Doar</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+                <span class="text-2xl">🎲</span>
+                <div>
+                  <strong class="text-xs font-black text-cyan-300 block">3. Ludo Piggy Mesada</strong>
+                  <span class="text-[10px] text-slate-300">Trilha de tabuleiro 3D em família</span>
+                </div>
+              </div>
+              <div class="p-3 rounded-2xl bg-white/10 border border-white/10 flex items-center gap-3">
+                <span class="text-2xl">🍎</span>
+                <div>
+                  <strong class="text-xs font-black text-pink-300 block">4. Mercearia do Piggy</strong>
+                  <span class="text-[10px] text-slate-300">Desafio matemático do troco no caixa</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button type="button" onclick="switchKidsGameSubTab('missoes')" class="px-5 py-2.5 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs rounded-2xl shadow-md transition-all cursor-pointer active:scale-95">
+                🏅 Ver Missões dos Pais
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -46860,18 +46885,48 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     // =========================================================================
     // 6. MOTOR DO GAME KIDS & A CIDADE DO PIGGY (TYCOON & EDUCAÇÃO FINANCEIRA)
     // =========================================================================
-    window.activeKidsTab = 'missoes';
+    window.activeKidsTab = 'escola';
+
+    window.switchKidsGameSubTab = function(sub) {
+      const isMissoes = sub === 'missoes';
+      const btnMissoes = document.getElementById('subBtnKidsGame_missoes');
+      const btnJogos = document.getElementById('subBtnKidsGame_jogos');
+      const viewMissoes = document.getElementById('kidsGameSub_missoes');
+      const viewJogos = document.getElementById('kidsGameSub_jogos');
+
+      if (btnMissoes) {
+        btnMissoes.className = isMissoes
+          ? 'flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5'
+          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5';
+      }
+      if (btnJogos) {
+        btnJogos.className = !isMissoes
+          ? 'flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5'
+          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5';
+      }
+      if (viewMissoes) {
+        if (isMissoes) viewMissoes.classList.remove('hidden'); else viewMissoes.classList.add('hidden');
+      }
+      if (viewJogos) {
+        if (!isMissoes) viewJogos.classList.remove('hidden'); else viewJogos.classList.add('hidden');
+      }
+      if (typeof window.renderKidsAreaUI === 'function') window.renderKidsAreaUI();
+    };
 
     window.switchKidsAreaTab = function(tabName) {
+      if (tabName === 'missoes') {
+        tabName = 'game';
+        if (typeof window.switchKidsGameSubTab === 'function') window.switchKidsGameSubTab('missoes');
+      }
       window.activeKidsTab = tabName;
-      ['game', 'missoes', 'escola', 'gastos'].forEach(t => {
+      ['escola', 'gastos', 'game'].forEach(t => {
         const btn = document.getElementById(`tabBtnKids_${t}`);
         const view = document.getElementById(`kidsViewSection_${t}`);
         if (btn) {
           if (t === tabName) {
-            btn.className = 'py-2 px-1.5 rounded-xl font-black text-[11px] transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer';
+            btn.className = 'py-2.5 px-2 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer';
           } else {
-            btn.className = 'py-2 px-1.5 rounded-xl font-bold text-[11px] transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer';
+            btn.className = 'py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer';
           }
         }
         if (view) {
@@ -47820,7 +47875,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         if (m.parentElement !== document.body) document.body.appendChild(m);
         m.classList.remove('hidden');
         m.style.display = 'flex';
-        if (typeof window.renderKidsAreaUI === 'function') window.renderKidsAreaUI();
+        if (typeof window.switchKidsAreaTab === 'function') {
+          window.switchKidsAreaTab('escola');
+        } else if (typeof window.renderKidsAreaUI === 'function') {
+          window.renderKidsAreaUI();
+        }
         if (window.lucide) lucide.createIcons();
       }
     };
