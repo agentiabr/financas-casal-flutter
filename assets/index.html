@@ -45629,32 +45629,21 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       });
       const otherItems = filtered.filter(t => !isTxFixedExpense(t)).sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
-      const formatSingleLineDesc = (text, maxWords = 4, maxChars = 24) => {
-        if (!text) return '';
-        const clean = String(text).trim();
-        const words = clean.split(/\s+/);
-        let res = clean;
-        if (words.length > maxWords) {
-          res = words.slice(0, maxWords).join(' ');
-        }
-        if (res.length > maxChars) {
-          res = res.slice(0, maxChars).trim();
-        }
-        return res;
-      };
-
-      const renderSingleTxCleanRow = (t) => {
+      const renderSingleTxCleanRow = (t, isFixed = false) => {
         const isRec = t.tipo === 'Receita';
         const isPago = t.status === 'Pago' || t.status === 'Recebido';
         const valNum = parseFloat(t.valor) || 0;
         const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
         const valColor = isRec ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
         const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-white/15 text-white' };
-        const btnQuitar = `
+        const btnQuitar = !isRec ? `
           <button type="button" onclick="event.stopPropagation(); togglePagarTx(${t.id});" class="px-2.5 py-1 rounded-xl text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400/40' : 'bg-blue-600 hover:bg-blue-500 text-white border-blue-400/50 shadow-xs'}" title="Clique para alterar status">
             ${isPago ? 'Pago ✓' : 'Pagar ⚡'}
           </button>
-        `;
+        ` : '';
+
+        const isNfce = !!(t.chave_nfce || t.origem_comprovante === 'com_nota');
+
         return `
           <div class="flex items-center gap-3 py-3 px-1.5 hover:bg-white/5 transition-colors cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});">
             
@@ -45666,18 +45655,20 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
             <!-- CORPO DO CARD COM INFORMAÇÕES DISTRIBUÍDAS EM 3 LINHAS -->
             <div class="min-w-0 flex-1 space-y-1">
               
-              <!-- LINHA 1: NOME DO LANÇAMENTO SOZINHO (100% LEGÍVEL, EX: Vivo Rodrigo) -->
+              <!-- LINHA 1: NOME DO LANÇAMENTO SOZINHO (100% LEGÍVEL, SEM CORTES) -->
               <div class="w-full">
                 <h4 class="font-black text-sm sm:text-[15px] text-white leading-tight break-words tracking-tight" title="${escapeHtml(t.descricao || '')}">
-                  ${escapeHtml(t.descricao || t.categoria || 'Gasto Fixo')}
+                  ${escapeHtml(t.descricao || t.categoria || (isRec ? 'Receita' : (isFixed ? 'Gasto Fixo' : 'Lançamento')))}
                 </h4>
               </div>
 
-              <!-- LINHA 2: CATEGORIA E RESPONSÁVEL DISTRIBUÍDOS -->
+              <!-- LINHA 2: CATEGORIA, RESPONSÁVEL E BADGES DISTRIBUÍDOS -->
               <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
-                <span class="text-blue-200 font-medium">${escapeHtml(t.categoria || 'Fixa')}</span>
+                <span class="text-blue-200 font-medium">${escapeHtml(t.categoria || (isRec ? 'Receita' : (isFixed ? 'Fixa' : 'Geral')))}</span>
                 ${t.responsavel ? `<span class="text-[10px] font-semibold text-slate-200 bg-white/15 px-2 py-0.5 rounded-md border border-white/10">${escapeHtml(t.responsavel)}</span>` : ''}
-                ${t.data ? `<span class="text-[10px] text-white/50 font-mono">📅 ${window.formatDateBR ? window.formatDateBR(t.data) : t.data}</span>` : ''}
+                ${isFixed && t.data ? `<span class="text-[10px] text-white/50 font-mono">📅 ${window.formatDateBR ? window.formatDateBR(t.data) : t.data}</span>` : ''}
+                ${isRec ? `<span class="text-[9px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-md border border-emerald-400/30">Receita</span>` : ''}
+                ${isNfce ? `<span class="text-[9px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-md border border-emerald-400/30 flex items-center gap-1">🧾 NFC-e</span>` : ''}
               </div>
 
               <!-- LINHA 3: VALOR EM DESTAQUE + BOTÃO PAGAR/QUITAR + BOTÃO EXCLUIR -->
@@ -45685,7 +45676,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
                 <span class="font-mono text-sm sm:text-base font-black ${valColor}">${valFormatted}</span>
                 <div class="flex items-center gap-1.5 flex-shrink-0">
                   ${btnQuitar}
-                  <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/50 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento fixo">
+                  <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/50 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                   </button>
                   <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-white/40"></i>
@@ -45697,50 +45688,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         `;
       };
 
-      const renderSingleTxCard = (t) => {
-        const isRec = t.tipo === 'Receita';
-        const isFixa = isTxFixedExpense(t);
-        const isPago = t.status === 'Pago' || t.status === 'Recebido';
-        const valNum = parseFloat(t.valor) || 0;
-        const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
-        const valColor = isRec ? 'text-emerald-600' : 'text-rose-600';
-        const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-slate-100 text-slate-700' };
-        const memberBadge = t.responsavel ? `<span class="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : '';
-        const fixedPinBadge = isFixa ? `<span class="text-[9px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.2 rounded">📌 Fixo</span>` : '';
-        const btnQuitar = !isRec ? `
-          <button type="button" onclick="event.stopPropagation(); togglePagarTx(${t.id});" class="px-2 py-0.5 rounded-lg text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500 shadow-xs'}" title="Clique para alterar status">
-            ${isPago ? 'Pago ✓' : 'Pagar ⚡'}
-          </button>
-        ` : '';
-
-        return `
-          <div class="swipe-tx-container relative overflow-hidden rounded-2xl select-none mb-1.5" data-tx-id="${t.id}">
-            <div class="swipe-tx-card relative bg-white rounded-2xl p-3 shadow-xs border ${isFixa ? 'border-blue-200/90' : 'border-slate-200/70'} flex items-center justify-between cursor-pointer hover:border-blue-400 z-10 transition-transform duration-100 ease-out will-change-transform" onclick="if (!this.dataset.dragged) { if (typeof openEditTxModal === 'function') openEditTxModal(${t.id}); }">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center text-lg flex-shrink-0">
-                  ${meta.emoji}
-                </div>
-                <div class="min-w-0 flex-1">
-                  <h4 class="font-extrabold text-xs text-slate-900 leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
-                  <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                    <span class="text-[11px] text-slate-400">${t.categoria || 'Geral'}</span>
-                    ${fixedPinBadge}
-                    ${memberBadge}
-                    ${btnQuitar}
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0">
-                <span class="font-black text-xs ${valColor}">${valFormatted}</span>
-                <button type="button" onclick="event.stopPropagation(); if (typeof window.deleteTxWithAnimation === 'function') { window.deleteTxWithAnimation(${t.id}, this.closest('.swipe-tx-container')); } else if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300"></i>
-              </div>
-            </div>
-          </div>
-        `;
-      };
+      const renderSingleTxCard = (t) => renderSingleTxCleanRow(t, isTxFixedExpense(t));
 
       let html = '';
 
@@ -45758,13 +45706,13 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               <span class="text-[11px] font-black text-sky-200 bg-white/15 px-2.5 py-0.5 rounded-full border border-white/20">${fixedItems.length} itens • ${totalFixosFmt}</span>
             </div>
             <div class="divide-y divide-white/10">
-              ${fixedItems.map(t => renderSingleTxCleanRow(t)).join('')}
+              ${fixedItems.map(t => renderSingleTxCleanRow(t, true)).join('')}
             </div>
           </div>
         `;
       }
 
-      // 2. DEMAIS LANÇAMENTOS AGRUPADOS POR DATA
+      // 2. DEMAIS LANÇAMENTOS AGRUPADOS POR DATA (FORMATO 3 LINHAS HARMONIOSO)
       const groups = {};
       otherItems.forEach(t => {
         const d = t.data || 'Outros';
@@ -45780,49 +45728,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               <span class="text-[10px] font-bold text-white/60">${items.length} ${items.length === 1 ? 'lançamento' : 'lançamentos'}</span>
             </div>
             <div class="divide-y divide-white/10">
-        `;
-
-        items.forEach(t => {
-          const isRec = t.tipo === 'Receita';
-          const isFixa = t.tipo === 'Despesa Fixa' || t.categoria === 'Fixa' || t.categoria === 'Moradia';
-          const isPago = t.status === 'Pago' || t.status === 'Recebido';
-          const valNum = parseFloat(t.valor) || 0;
-          const valFormatted = isHidden ? 'R$ •••••' : (typeof formatBRL === 'function' ? (isRec ? '+ ' : '- ') + formatBRL(valNum, isRec ? 'receitas' : 'despesa') : (isRec ? '+ R$ ' : '- R$ ') + valNum.toFixed(2));
-          const valColor = isRec ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
-          const meta = window.getCategoryEmoji ? window.getCategoryEmoji(t.categoria, t.tipo) : { emoji: '🧾', bg: 'bg-white/15 text-white' };
-          const btnQuitar = !isRec ? `
-            <button type="button" onclick="event.stopPropagation(); togglePagarTx(${t.id});" class="px-2.5 py-1 rounded-xl text-[10px] font-black border transition-all cursor-pointer ${isPago ? 'bg-emerald-500/25 text-emerald-200 border-emerald-400/40' : 'bg-blue-600 hover:bg-blue-500 text-white border-blue-400/50 shadow-xs'}" title="Clique para alterar status">
-              ${isPago ? 'Pago ✓' : 'Pagar ⚡'}
-            </button>
-          ` : '';
-
-          html += `
-            <div class="flex items-center justify-between py-2.5 px-1 hover:bg-white/5 transition-colors cursor-pointer" onclick="if (typeof openEditTxModal === 'function') openEditTxModal(${t.id});">
-              <div class="flex items-center gap-3 min-w-0 flex-1 mr-2">
-                <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
-                  ${meta.emoji}
-                </div>
-                <div class="min-w-0 flex-1 overflow-hidden">
-                  <h4 class="font-bold text-xs text-white leading-tight truncate whitespace-nowrap overflow-hidden text-ellipsis" title="${escapeHtml(t.descricao || '')}">${escapeHtml(formatSingleLineDesc(t.descricao || t.categoria || 'Transação'))}</h4>
-                  <div class="flex items-center gap-1.5 mt-0.5 truncate whitespace-nowrap overflow-hidden">
-                    <span class="text-[10px] text-blue-200 truncate whitespace-nowrap">${escapeHtml(t.categoria || 'Geral')}</span>
-                    ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded truncate whitespace-nowrap">${escapeHtml(t.responsavel)}</span>` : ''}
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0">
-                <span class="font-mono text-xs ${valColor}">${valFormatted}</span>
-                ${btnQuitar}
-                <button type="button" onclick="event.stopPropagation(); if (typeof deleteTx === 'function') { deleteTx(${t.id}); }" class="w-7 h-7 rounded-lg text-white/40 hover:text-rose-300 hover:bg-rose-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Excluir lançamento">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-white/40"></i>
-              </div>
+              ${items.map(t => renderSingleTxCleanRow(t, false)).join('')}
             </div>
-          `;
-        });
-
-        html += `</div></div>`;
+          </div>
+        `;
       }
 
       container.innerHTML = html;
