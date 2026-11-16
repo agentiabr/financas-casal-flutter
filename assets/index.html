@@ -41300,7 +41300,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
-  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[3600] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
+  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none" style="background-color: #071933 !important; opacity: 1 !important;">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
@@ -41323,7 +41323,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3.5 shadow-2xl">
+    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-8 space-y-3.5 shadow-2xl">
       
       <!-- Card Total Geral de Mercado -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -41401,13 +41401,6 @@ window.openHealthMedsModal = function() {
 
     </div>
 
-    <!-- Rodapé persistente com botão Fechar destacado -->
-    <div class="px-5 py-3 bg-[#071933] border-t border-white/10 flex items-center justify-center flex-shrink-0">
-      <button type="button" onclick="closeComparativoMercadosModal()" class="w-full max-w-xs py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 active:scale-98 flex items-center justify-center gap-2 text-white font-extrabold text-xs transition-all cursor-pointer shadow-md">
-        <i data-lucide="x" class="w-4 h-4 text-white stroke-[2.8]"></i>
-        <span>Fechar Comparativo</span>
-      </button>
-    </div>
   </div>
 
 
@@ -42503,7 +42496,9 @@ window.openHealthMedsModal = function() {
     const m = document.getElementById('modalComparativoMercados');
     if (m) {
       if (m.parentElement !== document.body) document.body.appendChild(m);
-      m.style.zIndex = '3600';
+      m.style.zIndex = '1000050';
+      m.style.backgroundColor = '#071933';
+      m.style.opacity = '1';
       m.classList.remove('hidden');
       m.style.display = 'flex';
     }
@@ -45625,6 +45620,20 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       });
       const otherItems = filtered.filter(t => !isTxFixedExpense(t)).sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
+      const formatSingleLineDesc = (text, maxWords = 4, maxChars = 24) => {
+        if (!text) return '';
+        const clean = String(text).trim();
+        const words = clean.split(/\s+/);
+        let res = clean;
+        if (words.length > maxWords) {
+          res = words.slice(0, maxWords).join(' ');
+        }
+        if (res.length > maxChars) {
+          res = res.slice(0, maxChars).trim();
+        }
+        return res;
+      };
+
       const renderSingleTxCleanRow = (t) => {
         const isRec = t.tipo === 'Receita';
         const isPago = t.status === 'Pago' || t.status === 'Recebido';
@@ -45643,11 +45652,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
               <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
                 ${meta.emoji}
               </div>
-              <div class="min-w-0 flex-1">
-                <h4 class="font-bold text-xs text-white leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Gasto Fixo')}</h4>
-                <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                  <span class="text-[10px] text-blue-200">${escapeHtml(t.categoria || 'Fixa')}</span>
-                  ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : ''}
+              <div class="min-w-0 flex-1 overflow-hidden">
+                <h4 class="font-bold text-xs text-white leading-tight truncate whitespace-nowrap overflow-hidden text-ellipsis" title="${escapeHtml(t.descricao || '')}">${escapeHtml(formatSingleLineDesc(t.descricao || t.categoria || 'Gasto Fixo'))}</h4>
+                <div class="flex items-center gap-1.5 mt-0.5 truncate whitespace-nowrap overflow-hidden">
+                  <span class="text-[10px] text-blue-200 truncate whitespace-nowrap">${escapeHtml(t.categoria || 'Fixa')}</span>
+                  ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded truncate whitespace-nowrap">${escapeHtml(t.responsavel)}</span>` : ''}
                 </div>
               </div>
             </div>
@@ -45768,11 +45777,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
                 <div class="w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center text-base flex-shrink-0">
                   ${meta.emoji}
                 </div>
-                <div class="min-w-0 flex-1">
-                  <h4 class="font-bold text-xs text-white leading-snug break-words whitespace-normal">${escapeHtml(t.descricao || t.categoria || 'Transação')}</h4>
-                  <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                    <span class="text-[10px] text-blue-200">${escapeHtml(t.categoria || 'Geral')}</span>
-                    ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded">${escapeHtml(t.responsavel)}</span>` : ''}
+                <div class="min-w-0 flex-1 overflow-hidden">
+                  <h4 class="font-bold text-xs text-white leading-tight truncate whitespace-nowrap overflow-hidden text-ellipsis" title="${escapeHtml(t.descricao || '')}">${escapeHtml(formatSingleLineDesc(t.descricao || t.categoria || 'Transação'))}</h4>
+                  <div class="flex items-center gap-1.5 mt-0.5 truncate whitespace-nowrap overflow-hidden">
+                    <span class="text-[10px] text-blue-200 truncate whitespace-nowrap">${escapeHtml(t.categoria || 'Geral')}</span>
+                    ${t.responsavel ? `<span class="text-[9px] font-semibold text-slate-300 bg-white/10 px-1.5 py-0.2 rounded truncate whitespace-nowrap">${escapeHtml(t.responsavel)}</span>` : ''}
                   </div>
                 </div>
               </div>
