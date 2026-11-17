@@ -22310,27 +22310,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         foto: ''
       },
       {
-        id: 'pet_thor',
-        nome: 'Thor',
-        especie: 'Cachorro',
-        emoji: '🐕',
-        raca: 'Golden Retriever',
-        idade: '3 anos',
-        peso: '28 kg',
-        plano: 'Porto Pet Saúde',
-        microchip: '',
-        foto: ''
-      },
-      {
         id: 'pet_luna',
-        nome: 'Luna',
+        nome: 'Luna (Gatinha)',
         especie: 'Gato',
         emoji: '🐱',
         raca: 'Siamês',
         idade: '2 anos',
         peso: '4.2 kg',
         plano: 'Nofaro Pet',
-        microchip: '',
+        microchip: '985.112.004.772.105',
+        foto: ''
+      },
+      {
+        id: 'pet_zeca',
+        nome: 'Zeca (Furão)',
+        especie: 'Furão',
+        emoji: '🦡',
+        raca: 'Ferret Sable Americano',
+        idade: '1 ano',
+        peso: '1.2 kg',
+        plano: 'Clínica Silvestres & Exóticos',
+        microchip: '985.112.004.993.441',
         foto: ''
       }
     ];
@@ -22381,12 +22381,38 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     const FICTIONAL_STARTER_PETS = [
       {
         id: 'pet_ficticio_1',
-        nome: 'Rex (Exemplo)',
+        nome: 'Rex (Cachorro)',
         especie: 'Cachorro',
+        emoji: '🐶',
         raca: 'SRD / Caramelo',
         idade: '2 anos',
         peso: '10 kg',
-        plano: 'Clínica Veterinária Exemplo (Fictícia)',
+        plano: 'Porto Pet Saúde (Exemplo)',
+        microchip: '985.112.004.589',
+        foto: ''
+      },
+      {
+        id: 'pet_ficticio_2',
+        nome: 'Mimi (Gatinha)',
+        especie: 'Gato',
+        emoji: '🐱',
+        raca: 'Siamês',
+        idade: '3 anos',
+        peso: '4.2 kg',
+        plano: 'Petlove Saúde (Exemplo)',
+        microchip: '985.112.004.772',
+        foto: ''
+      },
+      {
+        id: 'pet_ficticio_3',
+        nome: 'Zeca (Furão)',
+        especie: 'Furão',
+        emoji: '🦡',
+        raca: 'Ferret Sable Americano',
+        idade: '1 ano',
+        peso: '1.2 kg',
+        plano: 'Clínica Silvestres & Exóticos',
+        microchip: '985.112.004.993',
         foto: ''
       }
     ];
@@ -22395,11 +22421,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       {
         id: 'vac_ficticia_1',
         petId: 'pet_ficticio_1',
-        nome: 'Vacina V10 Anual (Exemplo)',
-        descricao: 'Imunização anual de exemplo (pode editar ou excluir)',
+        nome: 'Vacina V10 Polivalente (Cão)',
+        descricao: 'Imunização canina anual obrigatória',
+        tipo: 'Anual Obrigatória',
         ultimaDose: '2026-06-15',
         proximaDose: '2027-06-15',
         clinica: 'Clínica Veterinária Exemplo'
+      },
+      {
+        id: 'vac_ficticia_2',
+        petId: 'pet_ficticio_2',
+        nome: 'Vacina V5 Quíntupla (Gato)',
+        descricao: 'Panleucopenia, Calicivirose, Rinotraqueíte e FeLV',
+        tipo: 'Anual Obrigatória',
+        ultimaDose: '2026-05-10',
+        proximaDose: '2027-05-10',
+        clinica: 'Hospital Veterinário Felino'
+      },
+      {
+        id: 'vac_ficticia_3',
+        petId: 'pet_ficticio_3',
+        nome: 'Vacina Cinomose & Raiva (Furão)',
+        descricao: 'Imunização anual específica para Ferrets',
+        tipo: 'Anual Obrigatória',
+        ultimaDose: '2026-04-20',
+        proximaDose: '2027-04-20',
+        clinica: 'Centro de Animais Exóticos'
       }
     ];
 
@@ -22413,8 +22460,32 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           if (Array.isArray(parsed) && parsed.length > 0) {
             if (!isMaster) {
               parsed = parsed.filter(p => p && p.id !== 'pet_pantone' && !String(p.nome || '').toLowerCase().includes('pantone'));
-              if (parsed.length > 0) return parsed;
+              if (parsed.length > 0) {
+                const hasCat = parsed.some(p => p && (p.especie === 'Gato' || String(p.nome || '').toLowerCase().includes('mimi') || String(p.nome || '').toLowerCase().includes('luna')));
+                const hasFurao = parsed.some(p => p && (p.especie === 'Furão' || String(p.nome || '').toLowerCase().includes('furão') || String(p.nome || '').toLowerCase().includes('ferret') || String(p.nome || '').toLowerCase().includes('zeca')));
+                let changed = false;
+                if (!hasCat) {
+                  const cat = FICTIONAL_STARTER_PETS.find(p => p.especie === 'Gato');
+                  if (cat) { parsed.push(JSON.parse(JSON.stringify(cat))); changed = true; }
+                }
+                if (!hasFurao) {
+                  const furao = FICTIONAL_STARTER_PETS.find(p => p.especie === 'Furão');
+                  if (furao) { parsed.push(JSON.parse(JSON.stringify(furao))); changed = true; }
+                }
+                if (changed) {
+                  try { localStorage.setItem(petKey, JSON.stringify(parsed)); } catch (e) {}
+                }
+                return parsed;
+              }
             } else {
+              const hasFurao = parsed.some(p => p && (p.especie === 'Furão' || String(p.nome || '').toLowerCase().includes('furão') || String(p.nome || '').toLowerCase().includes('ferret') || String(p.nome || '').toLowerCase().includes('zeca')));
+              if (!hasFurao) {
+                const furao = DEFAULT_PETS_LIST.find(p => p.especie === 'Furão');
+                if (furao) {
+                  parsed.push(JSON.parse(JSON.stringify(furao)));
+                  try { localStorage.setItem(petKey, JSON.stringify(parsed)); } catch (e) {}
+                }
+              }
               return parsed;
             }
           }
@@ -22450,15 +22521,58 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       return pets[0]?.id || 'pet_ficticio_1';
     }
 
-    function setActivePetId(id) {
+    function setActivePetId(id, skipScroll) {
       const actKey = typeof getUserScopedStorageKey === 'function' ? getUserScopedStorageKey('ctrlpig_active_pet_id') : 'ctrlpig_active_pet_id';
       localStorage.setItem(actKey, id);
       renderPetCarouselTabs();
-      renderPetProfileUI();
+      renderPetProfileUI(skipScroll);
       renderPetVaccinesList();
       renderPetCareList();
       renderPetExpensesSummary();
     }
+    window.setActivePetId = setActivePetId;
+
+    function scrollToPetCard(petId) {
+      setActivePetId(petId, true);
+      const card = document.getElementById(`petHeroCard_${petId}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+    window.scrollToPetCard = scrollToPetCard;
+
+    function editPetById(petId) {
+      const pets = getRegisteredPets();
+      const pet = pets.find(p => p.id === petId) || getActivePet();
+      if (pet) openAddPetModal(pet);
+    }
+    window.editPetById = editPetById;
+
+    function openAddPetGroomingModalForPet(petId) {
+      setActivePetId(petId, true);
+      openAddPetGroomingModal(petId);
+    }
+    window.openAddPetGroomingModalForPet = openAddPetGroomingModalForPet;
+
+    function openAddPetVaccineModalForPet(petId) {
+      setActivePetId(petId, true);
+      openAddPetVaccineModal();
+    }
+    window.openAddPetVaccineModalForPet = openAddPetVaccineModalForPet;
+
+    function openAddPetMedModalForPet(petId) {
+      setActivePetId(petId, true);
+      openAddPetMedModal(petId);
+    }
+    window.openAddPetMedModalForPet = openAddPetMedModalForPet;
+
+    function openPetExpenseQuickModalForPet(petId) {
+      setActivePetId(petId, true);
+      if (typeof window.openPetExpenseQuickModal === 'function') {
+        window.openPetExpenseQuickModal(petId);
+      }
+    }
+    window.openPetExpenseQuickModalForPet = openPetExpenseQuickModalForPet;
 
     function getActivePet() {
       const pets = getRegisteredPets();
@@ -22857,7 +22971,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           : 'text-slate-700 dark:text-slate-300 font-bold';
 
         return `
-          <div onclick="setActivePetId('${p.id}')" class="w-[72px] flex flex-col items-center flex-shrink-0 cursor-pointer group select-none py-1 transition-all">
+          <div onclick="scrollToPetCard('${p.id}')" class="w-[72px] flex flex-col items-center flex-shrink-0 cursor-pointer group select-none py-1 transition-all">
             <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${ringCls}">
               ${p.foto ? `
                 <img src="${escapeHtml(p.foto)}" alt="${escapeHtml(p.nome)}" class="w-full h-full object-cover rounded-full">
@@ -22888,87 +23002,216 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (window.lucide) lucide.createIcons();
     }
 
-    function renderPetProfileUI() {
-      const pet = getActivePet();
-      const heroPhotoImg = document.getElementById('heroPetPhotoImg');
-      const heroPhotoEmoji = document.getElementById('heroPetPhotoEmoji');
-      const heroName = document.getElementById('heroPetName');
-      const heroSpeciesBadge = document.getElementById('heroPetSpeciesBadge');
-      const heroBreed = document.getElementById('heroPetBreed');
-      const heroAge = document.getElementById('heroPetAge');
-      const heroBreedAge = document.getElementById('heroPetBreedAge');
-      const heroWeight = document.getElementById('heroPetWeight');
-      const heroPlan = document.getElementById('heroPetPlan');
-      const heroMicrochip = document.getElementById('heroPetMicrochip');
-      const heroMicrochipCard = document.getElementById('heroPetMicrochipCard');
+    let _petCarouselScrollDebounce = null;
+    function setupPetCardsCarouselScrollListener() {
+      const container = document.getElementById('petsHeroCardsCarousel');
+      if (!container || container.dataset.scrollListenerAttached) return;
+      container.dataset.scrollListenerAttached = 'true';
+
+      container.addEventListener('scroll', () => {
+        clearTimeout(_petCarouselScrollDebounce);
+        _petCarouselScrollDebounce = setTimeout(() => {
+          const pets = getRegisteredPets();
+          const containerRect = container.getBoundingClientRect();
+          const containerCenter = containerRect.left + containerRect.width / 2;
+
+          let closestPetId = null;
+          let minDistance = Infinity;
+
+          pets.forEach(p => {
+            const card = document.getElementById(`petHeroCard_${p.id}`);
+            if (card) {
+              const cardRect = card.getBoundingClientRect();
+              const cardCenter = cardRect.left + cardRect.width / 2;
+              const dist = Math.abs(cardCenter - containerCenter);
+              if (dist < minDistance) {
+                minDistance = dist;
+                closestPetId = p.id;
+              }
+            }
+          });
+
+          if (closestPetId && closestPetId !== getActivePetId()) {
+            setActivePetId(closestPetId, true);
+          }
+        }, 120);
+      }, { passive: true });
+    }
+
+    function renderPetProfileUI(skipScroll) {
+      const container = document.getElementById('petsHeroCardsCarousel');
+      const dotsContainer = document.getElementById('petsCarouselDots');
+      const countBadge = document.getElementById('petCardsCountBadge');
+      const pets = getRegisteredPets();
+      const activeId = getActivePetId();
+      const activePet = getActivePet();
+
+      // Atualiza título da seção de gastos
       const expensesTitle = document.getElementById('petExpensesSectionTitle');
+      if (expensesTitle && activePet) expensesTitle.textContent = `Gastos com ${activePet.nome} no Ciclo`;
 
-      if (heroName) heroName.textContent = pet.nome;
-      if (heroSpeciesBadge) {
-        const icon = pet.especie === 'Gato' ? '🐱' : (pet.especie === 'Cachorro' ? '🐶' : (pet.emoji || '🐾'));
-        heroSpeciesBadge.innerHTML = `<span class="mr-1">${icon}</span><span>${escapeHtml(pet.especie || 'Pet')}</span>`;
-      }
-      if (heroBreed) heroBreed.textContent = pet.raca ? pet.raca : 'Não informada';
-      if (heroAge) heroAge.textContent = pet.idade ? pet.idade : 'Não informada';
-      if (heroBreedAge) {
-        const parts = [];
-        if (pet.raca) parts.push(pet.raca);
-        if (pet.idade) parts.push(pet.idade);
-        heroBreedAge.textContent = parts.length > 0 ? parts.join(' • ') : 'Raça / Idade n/i';
-      }
-      if (heroWeight) heroWeight.textContent = pet.peso ? pet.peso : 'Não informado';
-      if (heroPlan) heroPlan.textContent = pet.plano ? pet.plano : 'Sem plano/clínica';
+      // Atualiza badge de contagem de cards
+      const activeIndex = Math.max(0, pets.findIndex(p => p.id === activeId));
+      if (countBadge) countBadge.textContent = `${activeIndex + 1} de ${pets.length}`;
 
-      const chipVal = (pet.microchip || '').trim();
-      if (heroMicrochipCard) {
-        if (chipVal) {
-          heroMicrochipCard.innerHTML = `
-            <div class="flex items-center justify-between gap-1.5 w-full">
-              <div class="flex items-center gap-2 min-w-0">
-                <span class="w-7 h-7 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800 flex items-center justify-center text-xs flex-shrink-0">📡</span>
-                <div class="min-w-0">
-                  <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 leading-none">Microchip do Pet</div>
-                  <div class="text-[11px] font-black font-mono text-indigo-900 dark:text-indigo-200 truncate mt-0.5">${escapeHtml(chipVal)}</div>
-                </div>
+      // Atualiza fallback para elementos legados
+      const legacyName = document.getElementById('heroPetName');
+      if (legacyName && activePet) legacyName.textContent = activePet.nome;
+
+      if (!container) return;
+
+      container.innerHTML = pets.map((p, idx) => {
+        const isActive = p.id === activeId;
+        const icon = p.especie === 'Gato' ? '🐱' : (p.especie === 'Furão' ? '🦡' : (p.especie === 'Cachorro' ? '🐶' : (p.emoji || '🐾')));
+        const chipVal = (p.microchip || '').trim();
+
+        const chipHtml = chipVal ? `
+          <div class="flex items-center justify-between gap-1.5 w-full p-2 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-xs flex-shrink-0">📡</span>
+              <div class="min-w-0">
+                <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 leading-none">Microchip</div>
+                <div class="text-[11px] font-black font-mono text-indigo-900 dark:text-indigo-200 truncate mt-0.5">${escapeHtml(chipVal)}</div>
               </div>
-              <button type="button" onclick="event.stopPropagation(); copyPetMicrochip('${escapeHtml(chipVal)}')" class="px-2 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] flex-shrink-0 cursor-pointer transition-colors" title="Copiar número do microchip">
-                📋 Copiar
-              </button>
             </div>
-          `;
-        } else {
-          heroMicrochipCard.innerHTML = `
-            <div onclick="openAddPetModalFocusMicrochip()" class="flex items-center justify-between gap-1.5 w-full cursor-pointer group">
-              <div class="flex items-center gap-2 min-w-0">
-                <span class="w-7 h-7 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-xs flex-shrink-0">📡</span>
-                <div class="min-w-0">
-                  <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 leading-none">Microchip (Opcional)</div>
-                  <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 group-hover:text-amber-600 truncate mt-0.5">Não cadastrado</div>
+            <button type="button" onclick="event.stopPropagation(); copyPetMicrochip('${escapeHtml(chipVal)}')" class="px-2 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] flex-shrink-0 cursor-pointer transition-colors" title="Copiar microchip">
+              📋 Copiar
+            </button>
+          </div>
+        ` : '';
+
+        return `
+          <div id="petHeroCard_${p.id}" onclick="setActivePetId('${p.id}', true)" class="w-[93%] sm:w-[480px] min-w-[280px] flex-shrink-0 snap-center bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border ${isActive ? 'border-amber-400 ring-2 ring-amber-300/40' : 'border-slate-200/80 dark:border-slate-800'} space-y-3.5 select-none transition-all cursor-pointer">
+            <!-- Topo: Foto destacada com badge de edição + Espécie + Botão Editar e Nome Completo Sem Corte -->
+            <div class="flex items-start gap-3.5">
+              <div class="relative flex-shrink-0 group" onclick="event.stopPropagation(); editPetById('${p.id}')" title="Clique para editar pet e foto">
+                <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-4xl overflow-hidden shadow-xs">
+                  ${p.foto ? `<img src="${escapeHtml(p.foto)}" alt="${escapeHtml(p.nome)}" class="w-full h-full object-cover">` : `<span class="text-4xl leading-none">${icon}</span>`}
                 </div>
+                <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center text-[11px] font-bold shadow-xs border-2 border-white dark:border-slate-900 transition-transform active:scale-90" title="Editar Pet e Foto">✏️</span>
               </div>
-              <span class="px-2 py-1 rounded-lg bg-amber-100 group-hover:bg-amber-200 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-black text-[10px] flex-shrink-0 transition-colors">
-                + Cadastrar
-              </span>
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                  <span class="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-100/90 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300/70 dark:border-amber-700">
+                    <span class="mr-1">${icon}</span><span>${escapeHtml(p.especie || 'Pet')}</span>
+                  </span>
+                  <button type="button" onclick="event.stopPropagation(); editPetById('${p.id}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
+                    <span>✏️</span> Editar
+                  </button>
+                </div>
+                
+                <!-- Nome completo do pet sem corte, com quebra limpa e destaque -->
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight break-words mt-1">${escapeHtml(p.nome)}</h3>
+              </div>
             </div>
-          `;
-        }
-      } else if (heroMicrochip) {
-        heroMicrochip.textContent = chipVal ? `📡 Microchip: ${chipVal}` : (pet.plano ? `🏥 ${pet.plano}` : '🏷️ Sem microchip');
+
+            <!-- Grade de Informações Essenciais (Raça, Idade, Peso, Plano) - Organizada e Clara -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <!-- 1. Raça -->
+              <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                  <span>🧬</span> Raça
+                </span>
+                <span class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">${escapeHtml(p.raca || 'Não informada')}</span>
+              </div>
+
+              <!-- 2. Idade -->
+              <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                  <span>🎂</span> Idade
+                </span>
+                <span class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">${escapeHtml(p.idade || 'Não informada')}</span>
+              </div>
+
+              <!-- 3. Peso -->
+              <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                  <span>⚖️</span> Peso
+                </span>
+                <span class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">${escapeHtml(p.peso || 'Não informado')}</span>
+              </div>
+
+              <!-- 4. Plano / Clínica -->
+              <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                  <span>🏥</span> Plano / Saúde
+                </span>
+                <span class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">${escapeHtml(p.plano || 'Sem plano')}</span>
+              </div>
+            </div>
+
+            <!-- Microchip (se cadastrado) -->
+            ${chipHtml}
+
+            <!-- BOTÕES DE AÇÃO RÁPIDA (COM AGENDAR BANHO, TOSA & HIGIENE) -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <!-- Botão 1: Banho, Tosa & Higiene -->
+                <button type="button" onclick="event.stopPropagation(); openAddPetGroomingModalForPet('${p.id}')" class="py-2.5 px-2 rounded-2xl bg-cyan-50 hover:bg-cyan-100/90 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-200/80 dark:border-cyan-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Agendar lembrete de Banho, Tosa ou Higiene">
+                  <span class="text-lg group-hover:scale-110 transition-transform">🛁</span>
+                  <span class="text-[11px] font-black leading-tight">Banho &amp; Tosa</span>
+                  <span class="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 leading-none">Agendar lembrete</span>
+                </button>
+
+                <!-- Botão 2: Nova Vacina -->
+                <button type="button" onclick="event.stopPropagation(); openAddPetVaccineModalForPet('${p.id}')" class="py-2.5 px-2 rounded-2xl bg-blue-50 hover:bg-blue-100/90 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-200/80 dark:border-blue-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Registrar dose de vacina">
+                  <span class="text-lg group-hover:scale-110 transition-transform">💉</span>
+                  <span class="text-[11px] font-black leading-tight">Nova Vacina</span>
+                  <span class="text-[9px] font-semibold text-blue-600 dark:text-blue-400 leading-none">Carteira digital</span>
+                </button>
+
+                <!-- Botão 3: Remédio -->
+                <button type="button" onclick="event.stopPropagation(); openAddPetMedModalForPet('${p.id}')" class="py-2.5 px-2 rounded-2xl bg-rose-50 hover:bg-rose-100/90 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-200/80 dark:border-rose-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Cadastrar remédio ou tratamento contínuo">
+                  <span class="text-lg group-hover:scale-110 transition-transform">💊</span>
+                  <span class="text-[11px] font-black leading-tight">Remédio</span>
+                  <span class="text-[9px] font-semibold text-rose-600 dark:text-rose-400 leading-none">Horários &amp; doses</span>
+                </button>
+
+                <!-- Botão 4: Lançar Gasto -->
+                <button type="button" onclick="event.stopPropagation(); openPetExpenseQuickModalForPet('${p.id}')" class="py-2.5 px-2 rounded-2xl bg-amber-50 hover:bg-amber-100/90 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Lançar despesa veterinária, ração ou tosa no ciclo">
+                  <span class="text-lg group-hover:scale-110 transition-transform">💰</span>
+                  <span class="text-[11px] font-black leading-tight">Lançar Gasto</span>
+                  <span class="text-[9px] font-semibold text-amber-600 dark:text-amber-400 leading-none">Finanças do pet</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Adiciona card no final para adicionar novo pet se < 10
+      if (pets.length < 10) {
+        container.innerHTML += `
+          <div onclick="openAddPetModal()" class="w-[200px] sm:w-[220px] flex-shrink-0 snap-center bg-white/70 dark:bg-slate-900/60 rounded-3xl p-5 border-2 border-dashed border-amber-300 dark:border-amber-700/60 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-amber-50/50 dark:hover:bg-amber-950/20 transition-all active:scale-95 shadow-sm group select-none" title="Adicionar novo pet à família">
+            <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform mb-2">
+              ➕
+            </div>
+            <h4 class="font-black text-sm text-slate-800 dark:text-slate-100">+ Novo Pet</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Cachorro, gato, furão ou outro pet</p>
+          </div>
+        `;
       }
 
-      if (expensesTitle) expensesTitle.textContent = `Gastos com ${pet.nome} no Ciclo`;
-
-      if (heroPhotoImg && heroPhotoEmoji) {
-        if (pet.foto) {
-          heroPhotoImg.src = pet.foto;
-          heroPhotoImg.classList.remove('hidden');
-          heroPhotoEmoji.classList.add('hidden');
-        } else {
-          heroPhotoImg.classList.add('hidden');
-          heroPhotoEmoji.classList.remove('hidden');
-          heroPhotoEmoji.textContent = pet.emoji || (pet.especie === 'Gato' ? '🐱' : '🐶');
-        }
+      // Renderiza os pontinhos de paginação
+      if (dotsContainer) {
+        dotsContainer.innerHTML = pets.map((p, idx) => `
+          <button type="button" onclick="scrollToPetCard('${p.id}')" class="h-2 rounded-full transition-all cursor-pointer ${p.id === activeId ? 'w-6 bg-amber-500' : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-amber-300'}" title="Ir para ${escapeHtml(p.nome)}"></button>
+        `).join('');
       }
+
+      // Rola suavemente até o card ativo se não for skipScroll
+      if (!skipScroll) {
+        setTimeout(() => {
+          const activeCard = document.getElementById(`petHeroCard_${activeId}`);
+          if (activeCard) {
+            activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 50);
+      }
+
+      // Configura o ouvinte de rolagem do carrossel
+      setupPetCardsCarouselScrollListener();
     }
 
     // Variável para armazenar a foto selecionada no modal de adicionar/editar pet
@@ -23343,6 +23586,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const emojiMap = {
         'Cachorro': '🐶',
         'Gato': '🐱',
+        'Furão': '🦡',
         'Pássaro': '🦜',
         'Outro': '🐰'
       };
@@ -27633,104 +27877,44 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <input type="file" id="petPhotoFileInput" accept="image/*" class="hidden" onchange="handlePetPhotoFileInput(event)">
     </div>
 
-    <!-- HERO CARD DO PET ATIVO (FOTO, NOME E DADOS REORGANIZADOS E LIMPOS) -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5">
-      
-      <!-- Topo: Foto destacada com badge de edição + Espécie + Botão Editar e Nome Completo Sem Corte -->
-      <div class="flex items-start gap-3.5">
-        <div class="relative flex-shrink-0 cursor-pointer group" onclick="editCurrentPet()" title="Clique para editar pet e foto">
-          <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-4xl overflow-hidden shadow-xs">
-            <span id="heroPetPhotoEmoji">🐕</span>
-            <img id="heroPetPhotoImg" src="" alt="Pet" class="hidden w-full h-full object-cover">
-          </div>
-          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center text-[11px] font-bold shadow-xs border-2 border-white dark:border-slate-900 transition-transform active:scale-90" title="Editar Pet e Foto">✏️</span>
+    <!-- CARROSSEL HORIZONTAL DE CARDS DE PETS (CORRE PARA O LADO E NÃO PARA BAIXO) -->
+    <div class="space-y-2">
+      <!-- Cabeçalho do Carrossel com Indicador de Navegação -->
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">Carteirinhas dos Pets</span>
+          <span id="petCardsCountBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">1 de 3</span>
         </div>
-        
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-1.5 flex-wrap">
-            <span id="heroPetSpeciesBadge" class="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-100/90 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300/70 dark:border-amber-700">🐶 Cachorro</span>
-            <button type="button" onclick="editCurrentPet()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
-              <span>✏️</span> Editar
-            </button>
-          </div>
-          
-          <!-- Nome completo do pet sem corte, com quebra limpa e destaque -->
-          <h3 id="heroPetName" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight break-words mt-1">Rex</h3>
-          <span id="heroPetBreedAge" class="hidden text-xs text-slate-500"></span>
+        <div class="flex items-center gap-1 text-[11px] font-bold text-slate-500">
+          <span>Deslize para o lado</span>
+          <span class="animate-pulse">➔</span>
         </div>
       </div>
 
-      <!-- Grade de Informações Essenciais (Raça, Idade, Peso, Plano) - Organizada e Clara -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-        <!-- 1. Raça -->
-        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-            <span>🧬</span> Raça
-          </span>
-          <span id="heroPetBreed" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informada</span>
-        </div>
-
-        <!-- 2. Idade -->
-        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-            <span>🎂</span> Idade
-          </span>
-          <span id="heroPetAge" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informada</span>
-        </div>
-
-        <!-- 3. Peso -->
-        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-            <span>⚖️</span> Peso
-          </span>
-          <span id="heroPetWeight" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informado</span>
-        </div>
-
-        <!-- 4. Plano / Clínica -->
-        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-            <span>🏥</span> Plano / Saúde
-          </span>
-          <span id="heroPetPlan" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Sem plano</span>
-          <span id="heroPetMicrochip" class="hidden"></span>
-        </div>
+      <!-- Container do Carrossel de Cards dos Pets (Horizontal Snap) -->
+      <div id="petsHeroCardsCarousel" class="flex items-stretch overflow-x-auto snap-x snap-mandatory gap-3.5 pb-2 no-scrollbar scroll-smooth w-full px-0.5">
+        <!-- Injetado dinamicamente via renderPetProfileUI() -->
       </div>
 
-      <!-- Card Opcional de Microchip -->
-      <div id="heroPetMicrochipCard" class="pt-0.5"></div>
-
-      <!-- BOTÕES DE AÇÃO RÁPIDA (COM AGENDAR BANHO, TOSA & HIGIENE) -->
-      <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-          <!-- Botão 1: Banho, Tosa & Higiene (Novo e Destacado!) -->
-          <button type="button" onclick="openAddPetGroomingModal()" class="py-2.5 px-2 rounded-2xl bg-cyan-50 hover:bg-cyan-100/90 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-200/80 dark:border-cyan-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Agendar lembrete de Banho, Tosa ou Higiene">
-            <span class="text-lg group-hover:scale-110 transition-transform">🛁</span>
-            <span class="text-[11px] font-black leading-tight">Banho &amp; Tosa</span>
-            <span class="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 leading-none">Agendar lembrete</span>
-          </button>
-
-          <!-- Botão 2: Nova Vacina -->
-          <button type="button" onclick="openAddPetVaccineModal()" class="py-2.5 px-2 rounded-2xl bg-blue-50 hover:bg-blue-100/90 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-200/80 dark:border-blue-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Registrar dose de vacina">
-            <span class="text-lg group-hover:scale-110 transition-transform">💉</span>
-            <span class="text-[11px] font-black leading-tight">Nova Vacina</span>
-            <span class="text-[9px] font-semibold text-blue-600 dark:text-blue-400 leading-none">Carteira digital</span>
-          </button>
-
-          <!-- Botão 3: Remédio -->
-          <button type="button" onclick="openAddPetMedModal()" class="py-2.5 px-2 rounded-2xl bg-rose-50 hover:bg-rose-100/90 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-200/80 dark:border-rose-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Cadastrar remédio ou tratamento contínuo">
-            <span class="text-lg group-hover:scale-110 transition-transform">💊</span>
-            <span class="text-[11px] font-black leading-tight">Remédio</span>
-            <span class="text-[9px] font-semibold text-rose-600 dark:text-rose-400 leading-none">Horários &amp; doses</span>
-          </button>
-
-          <!-- Botão 4: Lançar Gasto -->
-          <button type="button" onclick="openPetExpenseQuickModal()" class="py-2.5 px-2 rounded-2xl bg-amber-50 hover:bg-amber-100/90 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Lançar despesa veterinária, ração ou tosa no ciclo">
-            <span class="text-lg group-hover:scale-110 transition-transform">💰</span>
-            <span class="text-[11px] font-black leading-tight">Lançar Gasto</span>
-            <span class="text-[9px] font-semibold text-amber-600 dark:text-amber-400 leading-none">Finanças do pet</span>
-          </button>
-        </div>
+      <!-- Pontinhos de Paginação do Carrossel -->
+      <div id="petsCarouselDots" class="flex items-center justify-center gap-1.5 py-0.5">
+        <!-- Injetado dinamicamente via renderPetProfileUI() -->
       </div>
+    </div>
+
+    <!-- Elementos Ocultos para Compatibilidade de Seletores Legados -->
+    <div class="hidden" aria-hidden="true">
+      <span id="heroPetName"></span>
+      <img id="heroPetPhotoImg" src="" alt="Pet">
+      <span id="heroPetPhotoEmoji"></span>
+      <span id="heroPetSpeciesBadge"></span>
+      <span id="heroPetBreed"></span>
+      <span id="heroPetAge"></span>
+      <span id="heroPetBreedAge"></span>
+      <span id="heroPetWeight"></span>
+      <span id="heroPetPlan"></span>
+      <span id="heroPetMicrochip"></span>
+      <div id="heroPetMicrochipCard"></div>
     </div>
 
         <!-- ROTINA DE CUIDADOS, BANHO, TOSA & REMÉDIOS DO PET -->
@@ -28383,6 +28567,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <select id="inputPetEspecie" onchange="updatePetFormPhotoUI()" class="w-full px-2.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-amber-500">
               <option value="Cachorro">🐶 Cachorro</option>
               <option value="Gato">🐱 Gato</option>
+              <option value="Furão">🦡 Furão / Ferret</option>
               <option value="Pássaro">🦜 Pássaro</option>
               <option value="Outro">🐰 Coelho / Outro</option>
             </select>
