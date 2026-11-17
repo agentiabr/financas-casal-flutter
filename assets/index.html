@@ -22894,6 +22894,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const heroPhotoEmoji = document.getElementById('heroPetPhotoEmoji');
       const heroName = document.getElementById('heroPetName');
       const heroSpeciesBadge = document.getElementById('heroPetSpeciesBadge');
+      const heroBreed = document.getElementById('heroPetBreed');
+      const heroAge = document.getElementById('heroPetAge');
       const heroBreedAge = document.getElementById('heroPetBreedAge');
       const heroWeight = document.getElementById('heroPetWeight');
       const heroPlan = document.getElementById('heroPetPlan');
@@ -22902,7 +22904,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       const expensesTitle = document.getElementById('petExpensesSectionTitle');
 
       if (heroName) heroName.textContent = pet.nome;
-      if (heroSpeciesBadge) heroSpeciesBadge.textContent = pet.especie || 'Pet';
+      if (heroSpeciesBadge) {
+        const icon = pet.especie === 'Gato' ? '🐱' : (pet.especie === 'Cachorro' ? '🐶' : (pet.emoji || '🐾'));
+        heroSpeciesBadge.innerHTML = `<span class="mr-1">${icon}</span><span>${escapeHtml(pet.especie || 'Pet')}</span>`;
+      }
+      if (heroBreed) heroBreed.textContent = pet.raca ? pet.raca : 'Não informada';
+      if (heroAge) heroAge.textContent = pet.idade ? pet.idade : 'Não informada';
       if (heroBreedAge) {
         const parts = [];
         if (pet.raca) parts.push(pet.raca);
@@ -23600,6 +23607,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       'Remédio': '💊',
       'Banho': '🛁',
       'Tosa': '✂️',
+      'Higiene': '🧼',
       'Antipulgas': '🛡️',
       'Vermífugo': '🪱',
       'Consulta': '🩺',
@@ -23833,6 +23841,24 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       if (modal) modal.classList.add('hidden');
     }
 
+    function openAddPetGroomingModal(defaultPetId) {
+      const modal = document.getElementById('modalAddEditPetCare');
+      if (!modal) return;
+      openAddPetCareModal();
+      const catSelect = document.getElementById('inputPetCareCategoria');
+      if (catSelect) {
+        catSelect.value = 'Banho';
+        handlePetCareCategoryChange('Banho');
+      }
+      const titleInput = document.getElementById('inputPetCareTitulo');
+      if (titleInput && !titleInput.value) {
+        titleInput.value = 'Banho & Tosa Completa';
+      }
+      const modalTitle = document.getElementById('modalPetCareTitle');
+      if (modalTitle) modalTitle.innerHTML = '<span>🛁</span> Agendar Banho, Tosa &amp; Higiene';
+    }
+    window.openAddPetGroomingModal = openAddPetGroomingModal;
+
     function openAddPetMedModal(defaultPetId) {
       const modal = document.getElementById('modalAddEditPetCare');
       if (!modal) return;
@@ -23857,11 +23883,14 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <button type="button" onclick="quickFillPetCare('Remédio', 'Antibiótico', 'A cada 12 horas')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💊 Antibiótico (12h)</button>
           <button type="button" onclick="quickFillPetCare('Remédio', 'Colírio Oftálmico', 'Diário')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">💧 Colírio</button>
         `;
-      } else if (cat === 'Banho' || cat === 'Tosa') {
+      } else if (cat === 'Banho' || cat === 'Tosa' || cat === 'Higiene') {
         shortcuts.innerHTML = `
           <button type="button" onclick="quickFillPetCare('Banho', 'Banho Completo', 'Semanal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🛁 Banho Semanal</button>
           <button type="button" onclick="quickFillPetCare('Tosa', 'Tosa Higiênica', 'A cada 15 dias')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">✂️ Tosa Higiênica</button>
           <button type="button" onclick="quickFillPetCare('Tosa', 'Tosa Geral na Máquina', 'Mensal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">✂️ Tosa Geral</button>
+          <button type="button" onclick="quickFillPetCare('Banho', 'Banho &amp; Tosa no Pet Shop', 'Quinzenal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🐾 Banho + Tosa Pet Shop</button>
+          <button type="button" onclick="quickFillPetCare('Higiene', 'Corte de Unhas &amp; Higiene', 'Mensal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🧼 Corte de Unhas</button>
+          <button type="button" onclick="quickFillPetCare('Higiene', 'Limpeza de Ouvidos &amp; Dentes', 'Semanal')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">🦷 Dentes &amp; Ouvidos</button>
         `;
       } else if (cat === 'Antipulgas') {
         shortcuts.innerHTML = `
@@ -27604,70 +27633,129 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <input type="file" id="petPhotoFileInput" accept="image/*" class="hidden" onchange="handlePetPhotoFileInput(event)">
     </div>
 
-    <!-- HERO CARD DO PET ATIVO (FOTO, NOME E DADOS LIMPOS) -->
-    <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
-      <div class="flex items-center gap-3.5">
+    <!-- HERO CARD DO PET ATIVO (FOTO, NOME E DADOS REORGANIZADOS E LIMPOS) -->
+    <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5">
+      
+      <!-- Topo: Foto destacada com badge de edição + Espécie + Botão Editar e Nome Completo Sem Corte -->
+      <div class="flex items-start gap-3.5">
         <div class="relative flex-shrink-0 cursor-pointer group" onclick="editCurrentPet()" title="Clique para editar pet e foto">
-          <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-3xl overflow-hidden shadow-xs">
+          <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center text-4xl overflow-hidden shadow-xs">
             <span id="heroPetPhotoEmoji">🐕</span>
             <img id="heroPetPhotoImg" src="" alt="Pet" class="hidden w-full h-full object-cover">
           </div>
-          <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-[10px] font-bold shadow-xs border border-white dark:border-slate-900" title="Editar Pet">✏️</span>
+          <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center text-[11px] font-bold shadow-xs border-2 border-white dark:border-slate-900 transition-transform active:scale-90" title="Editar Pet e Foto">✏️</span>
         </div>
+        
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-1">
-            <h3 id="heroPetName" class="text-base font-black text-slate-900 dark:text-white leading-tight truncate">Rex (Exemplo)</h3>
-            <div class="flex items-center gap-1.5">
-              <span id="heroPetSpeciesBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">Cachorro</span>
-              <button type="button" onclick="editCurrentPet()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
-                <span>✏️</span> Editar
-              </button>
-            </div>
+          <div class="flex items-center justify-between gap-1.5 flex-wrap">
+            <span id="heroPetSpeciesBadge" class="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-100/90 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300/70 dark:border-amber-700">🐶 Cachorro</span>
+            <button type="button" onclick="editCurrentPet()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-700 dark:text-slate-200 font-bold text-[11px] border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-2xs" title="Editar dados e foto do pet">
+              <span>✏️</span> Editar
+            </button>
           </div>
-          <p id="heroPetBreedAge" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">Frajola • 4 anos</p>
-          <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-600 dark:text-slate-300 font-semibold">
-            <span id="heroPetWeight">⚖️ 4.8 kg</span>
-            <span>•</span>
-            <span id="heroPetMicrochip">🏥 Sem plano</span>
-          </div>
+          
+          <!-- Nome completo do pet sem corte, com quebra limpa e destaque -->
+          <h3 id="heroPetName" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight break-words mt-1">Rex</h3>
+          <span id="heroPetBreedAge" class="hidden text-xs text-slate-500"></span>
         </div>
       </div>
 
-      <!-- BOTÕES DE AÇÃO RÁPIDA DO PET -->
-      <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100 text-center">
-        <button type="button" onclick="openAddPetVaccineModal()" class="py-2 px-1 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex flex-col items-center gap-0.5 transition-all cursor-pointer">
-          <span class="text-base">💉</span>
-          <span class="text-[10px]">Nova Vacina</span>
-        </button>
-        <button type="button" onclick="openAddPetMedModal()" class="py-2 px-1 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex flex-col items-center gap-0.5 transition-all cursor-pointer">
-          <span class="text-base">💊</span>
-          <span class="text-[10px]">Remédio</span>
-        </button>
-        <button type="button" onclick="openPetExpenseQuickModal()" class="py-2 px-1 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs flex flex-col items-center gap-0.5 transition-all cursor-pointer">
-          <span class="text-base">💰</span>
-          <span class="text-[10px]">Lançar Gasto</span>
-        </button>
+      <!-- Grade de Informações Essenciais (Raça, Idade, Peso, Plano) - Organizada e Clara -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+        <!-- 1. Raça -->
+        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <span>🧬</span> Raça
+          </span>
+          <span id="heroPetBreed" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informada</span>
+        </div>
+
+        <!-- 2. Idade -->
+        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <span>🎂</span> Idade
+          </span>
+          <span id="heroPetAge" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informada</span>
+        </div>
+
+        <!-- 3. Peso -->
+        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <span>⚖️</span> Peso
+          </span>
+          <span id="heroPetWeight" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Não informado</span>
+        </div>
+
+        <!-- 4. Plano / Clínica -->
+        <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60 flex flex-col justify-center">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <span>🏥</span> Plano / Saúde
+          </span>
+          <span id="heroPetPlan" class="text-xs sm:text-[13px] font-black text-slate-800 dark:text-slate-100 mt-0.5 break-words leading-tight">Sem plano</span>
+          <span id="heroPetMicrochip" class="hidden"></span>
+        </div>
+      </div>
+
+      <!-- Card Opcional de Microchip -->
+      <div id="heroPetMicrochipCard" class="pt-0.5"></div>
+
+      <!-- BOTÕES DE AÇÃO RÁPIDA (COM AGENDAR BANHO, TOSA & HIGIENE) -->
+      <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+          <!-- Botão 1: Banho, Tosa & Higiene (Novo e Destacado!) -->
+          <button type="button" onclick="openAddPetGroomingModal()" class="py-2.5 px-2 rounded-2xl bg-cyan-50 hover:bg-cyan-100/90 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-200/80 dark:border-cyan-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Agendar lembrete de Banho, Tosa ou Higiene">
+            <span class="text-lg group-hover:scale-110 transition-transform">🛁</span>
+            <span class="text-[11px] font-black leading-tight">Banho &amp; Tosa</span>
+            <span class="text-[9px] font-semibold text-cyan-600 dark:text-cyan-400 leading-none">Agendar lembrete</span>
+          </button>
+
+          <!-- Botão 2: Nova Vacina -->
+          <button type="button" onclick="openAddPetVaccineModal()" class="py-2.5 px-2 rounded-2xl bg-blue-50 hover:bg-blue-100/90 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-200/80 dark:border-blue-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Registrar dose de vacina">
+            <span class="text-lg group-hover:scale-110 transition-transform">💉</span>
+            <span class="text-[11px] font-black leading-tight">Nova Vacina</span>
+            <span class="text-[9px] font-semibold text-blue-600 dark:text-blue-400 leading-none">Carteira digital</span>
+          </button>
+
+          <!-- Botão 3: Remédio -->
+          <button type="button" onclick="openAddPetMedModal()" class="py-2.5 px-2 rounded-2xl bg-rose-50 hover:bg-rose-100/90 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-200/80 dark:border-rose-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Cadastrar remédio ou tratamento contínuo">
+            <span class="text-lg group-hover:scale-110 transition-transform">💊</span>
+            <span class="text-[11px] font-black leading-tight">Remédio</span>
+            <span class="text-[9px] font-semibold text-rose-600 dark:text-rose-400 leading-none">Horários &amp; doses</span>
+          </button>
+
+          <!-- Botão 4: Lançar Gasto -->
+          <button type="button" onclick="openPetExpenseQuickModal()" class="py-2.5 px-2 rounded-2xl bg-amber-50 hover:bg-amber-100/90 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200/80 dark:border-amber-800 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs group" title="Lançar despesa veterinária, ração ou tosa no ciclo">
+            <span class="text-lg group-hover:scale-110 transition-transform">💰</span>
+            <span class="text-[11px] font-black leading-tight">Lançar Gasto</span>
+            <span class="text-[9px] font-semibold text-amber-600 dark:text-amber-400 leading-none">Finanças do pet</span>
+          </button>
+        </div>
       </div>
     </div>
 
-        <!-- ROTINA DE REMÉDIOS E HORÁRIOS DO PET (SIMILAR A REMÉDIOS HUMANOS) -->
+        <!-- ROTINA DE CUIDADOS, BANHO, TOSA & REMÉDIOS DO PET -->
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 space-y-3">
-      <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg shadow-2xs">
-            💊
+          <div class="w-9 h-9 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center font-bold text-lg shadow-2xs">
+            🛁
           </div>
           <div>
             <h3 class="font-black text-sm text-slate-900 tracking-tight flex items-center gap-1.5 leading-tight">
-              <span>Remédios &amp; Horários do Pet</span>
-              <span id="petMedsCountBadge" class="text-[9px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">Rotina Ativa</span>
+              <span>Cuidados, Banho &amp; Remédios</span>
+              <span id="petMedsCountBadge" class="text-[9px] font-black px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800">Em dia</span>
             </h3>
-            <p class="text-[11px] text-slate-500">Medicamentos contínuos, horários das doses e alarmes</p>
+            <p class="text-[11px] text-slate-500">Banho, tosa, antipulgas, vermífugo e remédios com lembrete</p>
           </div>
         </div>
-        <button type="button" onclick="openAddPetMedModal()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1">
-          <span>+ Remédio</span>
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="openAddPetGroomingModal()" class="px-2.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Agendar Banho, Tosa ou Higiene">
+            <span>+ Banho/Tosa</span>
+          </button>
+          <button type="button" onclick="openAddPetMedModal()" class="px-2.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1" title="Adicionar Remédio">
+            <span>+ Remédio</span>
+          </button>
+        </div>
       </div>
 
       <div id="petCareListContainer" class="space-y-2 mt-2">
@@ -28422,7 +28510,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <option value="Remédio">💊 Remédio / Medicação Contínua</option>
             <option value="Banho">🛁 Banho</option>
             <option value="Tosa">✂️ Tosa (Higiênica / Geral)</option>
-            <option value="Antipulgas">🛡️ Antipulgas & Carrapatos (Bravecto/NexGard)</option>
+            <option value="Higiene">🧼 Higiene &amp; Cuidados (Unhas, Dentes, Ouvidos)</option>
+            <option value="Antipulgas">🛡️ Antipulgas &amp; Carrapatos (Bravecto/NexGard)</option>
             <option value="Vermífugo">🪱 Vermífugo (Drontal / etc.)</option>
             <option value="Consulta">🩺 Consulta Veterinária / Retorno</option>
             <option value="Outro">✨ Outro Cuidado</option>
