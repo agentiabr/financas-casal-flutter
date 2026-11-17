@@ -287,10 +287,14 @@
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
   .full-screen-page > div:first-child {
+    background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
     background-color: #071933 !important;
     color: #FFFFFF !important;
-    padding: 0.75rem 1.25rem !important;
-    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+    padding: 0.85rem 1rem !important;
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
+    padding-bottom: 0.85rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -299,8 +303,8 @@
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
     height: auto !important;
-    max-height: 68px !important;
-    min-height: 0 !important;
+    min-height: 64px !important;
+    max-height: none !important;
     margin: 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: none !important;
@@ -2752,13 +2756,14 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: var(--cp-primary);
-  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(10px, var(--cp-safe-top));
-  padding-bottom: 0.75rem;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3264,13 +3269,14 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: var(--cp-primary);
-  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(10px, var(--cp-safe-top));
-  padding-bottom: 0.75rem;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3447,10 +3453,16 @@ html, body {
     }
     #modalFamilyChat .page-header-back {
       flex-shrink: 0 !important;
+      background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
       background-color: #071933 !important;
       color: #FFFFFF !important;
-      padding: 0.85rem 1.25rem !important;
-      padding-top: max(env(safe-area-inset-top, 0px), 0.85rem) !important;
+      padding: 0.85rem 1rem !important;
+      padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
+      padding-bottom: 0.85rem !important;
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+      min-height: 64px !important;
+      max-height: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
@@ -3547,10 +3559,14 @@ html, body {
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
   .full-screen-page > div:first-child {
+    background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
     background-color: #071933 !important;
     color: #FFFFFF !important;
-    padding: 0.75rem 1.25rem !important;
-    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+    padding: 0.85rem 1rem !important;
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
+    padding-bottom: 0.85rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -3559,8 +3575,8 @@ html, body {
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
     height: auto !important;
-    max-height: 68px !important;
-    min-height: 0 !important;
+    min-height: 64px !important;
+    max-height: none !important;
     margin: 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: none !important;
@@ -4016,13 +4032,14 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: var(--cp-primary);
-  background: linear-gradient(180deg, var(--cp-primary-deep) 0%, var(--cp-primary) 100%);
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(10px, var(--cp-safe-top));
-  padding-bottom: 0.75rem;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6269,7 +6286,7 @@ html, body {
   <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO AZUL AURORA OFICIAL DO DASHBOARD) -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -7535,7 +7552,7 @@ html, body {
   <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -7553,7 +7570,7 @@ html, body {
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD: LISTA DE CARTÕES ATUAIS -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -26972,9 +26989,9 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, COM SELEÇÃO DE MEMBRO + CONVERSAR & LISTA DE COMPRAS) -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
+  <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET / WHATSAPP) -->
-    <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5 min-w-0">
         <button type="button" id="btnChatHeaderBack" onclick="handleChatHeaderBack()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer flex-shrink-0" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -27840,7 +27857,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
   
   <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-  <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+  <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
     <div class="flex items-center gap-2.5">
       <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
         <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -27858,7 +27875,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
     
     <!-- SELETOR DE PETS DA FAMÍLIA (AVATARES COM FOTO E NOME, ATÉ 10 PETS) -->
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -28149,7 +28166,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -28167,7 +28184,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD 1: ROTINA DO MEMBRO ATIVO (MANTIDO EXATAMENTE CONFORME SOLICITADO) -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -29526,7 +29543,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -29544,7 +29561,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -29632,7 +29649,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -29650,7 +29667,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -34309,7 +34326,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 <div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -34327,7 +34344,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
 
       <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
       <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
@@ -41322,7 +41339,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: SELETOR DE CICLOS MENSAIS COM OPÇÃO '+ NOVO CICLO' (ITEM 1)        -->
   <!-- ========================================================================= -->
   <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeSelectCycleModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41345,7 +41362,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
           <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
@@ -41518,7 +41535,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: QUESTIONÁRIO DE PERFIL FINANCEIRO DO USUÁRIO & FAMÍLIA (ITEM 5)     -->
   <!-- ========================================================================= -->
   <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41723,7 +41740,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
   <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none" style="background-color: #071933 !important; opacity: 1 !important;">
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -46382,7 +46399,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
   <!-- ========================================================================= -->
   <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -46401,7 +46418,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
         <div class="flex items-center gap-1.5">
@@ -46560,7 +46577,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
   <!-- ========================================================================= -->
   <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -46583,7 +46600,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <!-- BANNER DE CONFORMIDADE LGPD: CONSENTIMENTO DO RESPONSÁVEL LEGAL (ART. 14) -->
       <div id="bannerKidsParentalConsent" class="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-purple-50/90 border border-blue-200/80 shadow-2xs flex items-center justify-between gap-3 text-xs mb-1">
         <div class="flex items-center gap-2.5 min-w-0">
