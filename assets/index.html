@@ -4265,6 +4265,13 @@ html, body {
     #modalEditPriceItem {
       z-index: 3600 !important;
     }
+
+    /* POPUPS DE NOTA FISCAL (Chave de Acesso e Leitor QR-Code) - Ficam SEMPRE acima de Garantias e todas as seções */
+    #modalInputInvoiceKey,
+    #modalInvoiceScan,
+    #modalDuplicateInvoiceAlert {
+      z-index: 5000 !important;
+    }
     </style>
 <style id="ctrlpigGlobalFooterStyles">
   /* v2.1.124 - Rodapé global inteligente */
@@ -6997,7 +7004,7 @@ html, body {
   
   <!-- MODAL: INCLUIR NOTA FISCAL POR CHAVE DE ACESSO OU QR-CODE -->
   <!-- ========================================================= -->
-  <div id="modalInputInvoiceKey" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-3 sm:p-4 select-none">
+  <div id="modalInputInvoiceKey" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-3 sm:p-4 select-none" style="z-index: 5000 !important;" onclick="if(event.target === this) closeManualInvoiceKeyModal();">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 space-y-4">
       
       <!-- Cabeçalho -->
@@ -7109,7 +7116,7 @@ html, body {
 
   <!-- MODAL: LEITURA INTELIGENTE DE NOTA FISCAL (FOTOGRAFAR CUPOM DIRETO) -->
   <!-- ========================================== -->
-  <div id="modalInvoiceScan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="modalInvoiceScan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-3 sm:p-4" style="z-index: 5000 !important;">
     <div class="bg-white rounded-none max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       
       <!-- Cabeçalho Limpo: Fotografar Nota Fiscal -->
@@ -45382,6 +45389,7 @@ window.openManualInvoiceKeyModal = function(target) {
   window.currentInvoiceKeyTarget = target || 'transactions';
   const modal = document.getElementById('modalInputInvoiceKey');
   if (!modal) return;
+  modal.style.zIndex = '5000';
 
   const titleEl = document.getElementById('modalInputInvoiceKeyTitle');
   const subEl = document.getElementById('modalInputInvoiceKeySubtitle');
