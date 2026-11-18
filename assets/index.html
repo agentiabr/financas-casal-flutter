@@ -282,7 +282,7 @@
     display: none !important;
   }
 
-  /* Cabeçalho Aurora Contínuo Transparente (Padrão Oficial Seção Transações) */
+  /* Cabeçalho Aurora das Telas Internas */
   .page-header-back,
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
@@ -307,8 +307,8 @@
     min-height: 0 !important;
     max-height: none !important;
     margin: 0 !important;
-    border-bottom: none !important;
     border: none !important;
+    border-bottom: none !important;
     box-shadow: none !important;
   }
 
@@ -331,7 +331,7 @@
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
+    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
@@ -2758,21 +2758,19 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
-  padding-bottom: 0.75rem !important;
-  padding-left: 1.25rem !important;
-  padding-right: 1.25rem !important;
-  min-height: 0 !important;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
 }
 
 .btn-back-circle {
@@ -3273,21 +3271,19 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
-  padding-bottom: 0.75rem !important;
-  padding-left: 1.25rem !important;
-  padding-right: 1.25rem !important;
-  min-height: 0 !important;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
 }
 
 .btn-back-circle {
@@ -3459,22 +3455,20 @@ html, body {
     }
     #modalFamilyChat .page-header-back {
       flex-shrink: 0 !important;
-      background: transparent !important;
-      background-color: transparent !important;
-      background-image: none !important;
+      background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
+      background-color: #071933 !important;
       color: #FFFFFF !important;
-      padding: 0.75rem 1.25rem !important;
-      padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
-      padding-bottom: 0.75rem !important;
-      padding-left: 1.25rem !important;
-      padding-right: 1.25rem !important;
-      min-height: 0 !important;
+      padding: 0.85rem 1rem !important;
+      padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
+      padding-bottom: 0.85rem !important;
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+      min-height: 64px !important;
       max-height: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      border-bottom: none !important;
-      box-shadow: none !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
     #modalFamilyChat #chatRecipientBar {
       display: none !important;
@@ -3562,7 +3556,7 @@ html, body {
     display: none !important;
   }
 
-  /* Cabeçalho Aurora Contínuo Transparente (Padrão Oficial Seção Transações) */
+  /* Cabeçalho das páginas inteiras: Topo Aurora com setinha e título brancos */
   .page-header-back,
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
@@ -3587,8 +3581,8 @@ html, body {
     min-height: 0 !important;
     max-height: none !important;
     margin: 0 !important;
-    border-bottom: none !important;
     border: none !important;
+    border-bottom: none !important;
     box-shadow: none !important;
   }
 
@@ -3613,7 +3607,7 @@ html, body {
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
+    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
@@ -4042,21 +4036,19 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
+  background-color: #071933;
+  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
   color: #FFFFFF;
-  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
-  padding-bottom: 0.75rem !important;
-  padding-left: 1.25rem !important;
-  padding-right: 1.25rem !important;
-  min-height: 0 !important;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
+  padding-bottom: 0.85rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
 }
 
 .btn-back-circle {
@@ -4218,6 +4210,11 @@ html, body {
     }
   </style>
 <style>
+        #modalInputInvoiceKey,
+    #modalInvoiceScan {
+      z-index: 5000 !important;
+    }
+
     /* Seções principais e hubs em tela cheia */
     div[id^="modal"]:not(.full-screen-page),
     #modalHealthMeds,
@@ -4315,11 +4312,11 @@ html, body {
       background-size: cover !important;
     }
 
-    /* Remove fundos escuros pretos/sólidos e bacias cinzas em todas as seções e modais */
-    .bg-\[\#071933\],
-    [class*="bg-[#071933]"],
-    section[class*="bg-[#071933]"],
-    div[class*="bg-[#071933]"],
+    /* Remove fundos escuros pretos/sólidos e bacias cinzas em seções internas (NUNCA em .full-screen-page) */
+    :not(.full-screen-page).bg-\[\#071933\],
+    :not(.full-screen-page)[class*="bg-[#071933]"],
+    section:not(.full-screen-page)[class*="bg-[#071933]"],
+    div:not(.full-screen-page)[class*="bg-[#071933]"],
     header[class*="bg-[#071933]"],
     .bg-\[\#DFEAF7\],
     [class*="bg-[#DFEAF7]"],
@@ -4548,7 +4545,18 @@ html, body {
       box-shadow: 0 2px 8px rgba(4, 20, 64, 0.10) !important;
     }
 
-    /* 5. MODAIS FULL SCREEN E DIÁLOGOS LIQUID GLASS */
+    
+    /* Garantia de Fundo Opaco Oficial nas Telas Inteiras */
+    .full-screen-page {
+      background-color: var(--liquid-bg-main) !important;
+      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+      background-size: cover !important;
+      opacity: 1 !important;
+      z-index: 1050 !important;
+    }
+/* 5. MODAIS FULL SCREEN E DIÁLOGOS LIQUID GLASS */
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
@@ -5989,7 +5997,7 @@ html, body {
       <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] min-h-screen overflow-y-auto pb-24">
         
         <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
-        <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+        <div class="px-4 pt-2 pb-1 flex items-center justify-between text-white flex-shrink-0 relative z-30">
           <div class="flex items-center gap-2.5">
             <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41881,7 +41889,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
-  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover; opacity: 1 !important;">
+  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none" style="background-color: #071933 !important; opacity: 1 !important;">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
@@ -45382,6 +45390,8 @@ window.openManualInvoiceKeyModal = function(target) {
   window.currentInvoiceKeyTarget = target || 'transactions';
   const modal = document.getElementById('modalInputInvoiceKey');
   if (!modal) return;
+  if (modal.parentElement !== document.body) document.body.appendChild(modal);
+  modal.style.zIndex = '5000';
 
   const titleEl = document.getElementById('modalInputInvoiceKeyTitle');
   const subEl = document.getElementById('modalInputInvoiceKeySubtitle');
