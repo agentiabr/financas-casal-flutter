@@ -312,45 +312,31 @@
     box-shadow: none !important;
   }
 
-  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
+  /* Corpo com Caixa Flutuante Arredondada (#DFEAF7) com margens laterais idênticas ao Dashboard */
   .full-screen-page > div.bg-\[\#DFEAF7\],
   .full-screen-page > div[class*="bg-[#DFEAF7]"],
   .full-screen-page > .full-screen-inner,
-  .full-screen-page > div:nth-child(2),
-  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+  .full-screen-page > div:nth-child(2) {
     flex: 1 1 0% !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: calc(100% - 2rem) !important;
+    max-width: calc(100% - 2rem) !important;
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    margin-bottom: 1.25rem !important;
+    margin-top: 0.25rem !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
-    border-top-left-radius: 32px !important;
-    border-top-right-radius: 32px !important;
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    background-color: #DFEAF7 !important;
+    border-radius: 2rem !important;
+    border-top-left-radius: 2rem !important;
+    border-top-right-radius: 2rem !important;
+    border-bottom-left-radius: 2rem !important;
+    border-bottom-right-radius: 2rem !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
-    margin: 0 !important;
-    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
     border: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.75rem !important;
-  }
-
-  /* Cartões brancos limpos com cantos arredondados dentro das telas */
-  .full-screen-page div.bg-white,
-  .full-screen-page form.bg-white,
-  .full-screen-page form[class*="bg-slate-50"],
-  .full-screen-page div[class*="rounded-3xl"] {
-    background-color: #FFFFFF !important;
-    border-radius: 1.5rem !important;
-    border: 1px solid rgba(226, 232, 240, 0.85) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    padding: 1.15rem 1.25rem !important;
-    color: #1E293B !important;
   }
 
   /* Botão circular de voltar com toque suave */
@@ -3592,47 +3578,33 @@ html, body {
     box-shadow: none !important;
   }
 
-  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
+  /* Corpo com Caixa Flutuante Arredondada (#DFEAF7) com margens laterais idênticas ao Dashboard */
   .full-screen-page > .full-screen-inner,
   .full-screen-page > div[class*="max-w-"],
   .full-screen-page > div[class*="rounded-"],
   .full-screen-page > div.bg-\[\#DFEAF7\],
   .full-screen-page > div[class*="bg-[#DFEAF7]"],
-  .full-screen-page > div:nth-child(2),
-  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
+  .full-screen-page > div:nth-child(2) {
     flex: 1 1 0% !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: calc(100% - 2rem) !important;
+    max-width: calc(100% - 2rem) !important;
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    margin-bottom: 1.25rem !important;
+    margin-top: 0.25rem !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
-    border-top-left-radius: 32px !important;
-    border-top-right-radius: 32px !important;
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+    background-color: #DFEAF7 !important;
+    border-radius: 2rem !important;
+    border-top-left-radius: 2rem !important;
+    border-top-right-radius: 2rem !important;
+    border-bottom-left-radius: 2rem !important;
+    border-bottom-right-radius: 2rem !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
-    margin: 0 !important;
-    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
     border: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.75rem !important;
-  }
-
-  /* Cartões brancos limpos com cantos arredondados dentro das telas */
-  .full-screen-page div.bg-white,
-  .full-screen-page form.bg-white,
-  .full-screen-page form[class*="bg-slate-50"],
-  .full-screen-page div[class*="rounded-3xl"] {
-    background-color: #FFFFFF !important;
-    border-radius: 1.5rem !important;
-    border: 1px solid rgba(226, 232, 240, 0.85) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-    padding: 1.15rem 1.25rem !important;
-    color: #1E293B !important;
   }
 
   /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO - TOPO ABSOLUTO */
@@ -5855,7 +5827,7 @@ html, body {
         </div>
 
         <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
-        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-4 sm:px-5 pt-3 pb-6 space-y-3 shadow-2xl">
+        <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl flex flex-col overflow-y-auto px-4 sm:px-5 pt-3 pb-6 space-y-3 shadow-2xl">
           
           <!-- CARD RESUMO TOTAL DA TELA DE TRANSAÇÕES (DESTAQUE PARA GASTO TOTAL) -->
           <div class="bg-gradient-to-br from-white via-white to-rose-50/50 rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -7711,7 +7683,7 @@ html, body {
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD: LISTA DE CARTÕES ATUAIS -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -27159,7 +27131,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 (PADRÃO OFICIAL DO APP) -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-hidden flex flex-col shadow-2xl">
 
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
@@ -28016,7 +27988,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+  <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
     
     <!-- SELETOR DE PETS DA FAMÍLIA (AVATARES COM FOTO E NOME, ATÉ 10 PETS) -->
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -28325,7 +28297,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD 1: ROTINA DO MEMBRO ATIVO (MANTIDO EXATAMENTE CONFORME SOLICITADO) -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -29702,7 +29674,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -29808,7 +29780,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -34485,7 +34457,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
 
       <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
       <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
@@ -41511,7 +41483,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
           <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
@@ -41701,7 +41673,7 @@ window.openHealthMedsModal = function() {
       </button>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-4 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-4 shadow-2xl">
       
       <!-- ETAPA 1: PAPEL FAMILIAR -->
       <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 space-y-3">
@@ -41911,7 +41883,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-8 space-y-3.5 shadow-2xl">
+    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 sm:px-5 pt-3 pb-8 space-y-3.5 shadow-2xl">
       
       <!-- Card Total Geral de Mercado -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -46994,7 +46966,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
         <div class="flex items-center gap-1.5 flex-wrap">
@@ -47227,7 +47199,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <!-- BANNER DE CONFORMIDADE LGPD: CONSENTIMENTO DO RESPONSÁVEL LEGAL (ART. 14) -->
       <div id="bannerKidsParentalConsent" class="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-purple-50/90 border border-blue-200/80 shadow-2xs flex items-center justify-between gap-3 text-xs mb-1">
         <div class="flex items-center gap-2.5 min-w-0">
