@@ -190,7 +190,7 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
     }
   }
 
-  static const String _kCurrentAppVersion = '2.1.216+294';
+  static const String _kCurrentAppVersion = '2.1.217+295';
 
   Future<void> _requestPostLoginPermissions() async {
     // Permissões não são mais solicitadas em massa na abertura do app para não sobrecarregar o usuário.
@@ -585,10 +585,15 @@ class _DashboardContainerScreenState extends State<DashboardContainerScreen>
             window.onNativeCameraPermissionResult(${status.isGranted});
           }
         """);
-      } else if (action == 'fetch_nfce_url') {
-        final url = data['url'] as String?;
-        if (url != null && url.isNotEmpty) {
-          await _fetchNfceFromUrl(url);
+      } else if (action == 'fetch_nfce_url' || action == 'fetch_nfce_key' || action == 'consult_invoice_key') {
+        final rawKeyOrUrl = (data['url'] ?? data['key'] ?? data['accessKey']) as String?;
+        if (rawKeyOrUrl != null && rawKeyOrUrl.trim().isNotEmpty) {
+          final cleanDigits = rawKeyOrUrl.replaceAll(RegExp(r'\D'), '');
+          String target = rawKeyOrUrl.trim();
+          if (cleanDigits.length == 44) {
+            target = NfceNumberParser.buildUrlFromAccessKey(cleanDigits);
+          }
+          await _fetchNfceFromUrl(target.isNotEmpty ? target : rawKeyOrUrl);
         }
       } else if (action == 'scan_invoice_qrcode' || action == 'open_invoice_qr_scanner') {
         _isPickingExternalMedia = true;

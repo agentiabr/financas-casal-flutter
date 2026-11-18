@@ -6461,10 +6461,15 @@ html, body {
             <span id="btnSendShoppingListLabel" class="text-white">Compartilhar lista de compras</span>
           </button>
 
-          <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer">
-            <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
-            <span>Escanear QR-Code da Nota Fiscal (NFC-e)</span>
-          </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-2.5 px-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer" title="Escanear QR-Code da Nota Fiscal">
+              <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+              <span>Escanear QR-Code</span>
+            </button>
+            <button type="button" onclick="openManualInvoiceKeyModal('shopping')" class="w-full py-2.5 px-3 bg-emerald-700 hover:bg-emerald-600 active:scale-98 text-white font-bold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer" title="Digitar ou colar chave de 44 dígitos">
+              <span>🔢 Digitar Chave da NF</span>
+            </button>
+          </div>
 
           <!-- CONTAINER DE CONFERÊNCIA DE NOTA FISCAL ESCANEADA NA LISTA DE COMPRAS -->
           <div id="shoppingListInvoicePreviewContainer" class="hidden mt-3 p-4 bg-white dark:bg-slate-900 rounded-3xl border-2 border-emerald-500 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-200">
@@ -6977,6 +6982,119 @@ html, body {
   <!-- MODAL: LEITURA INTELIGENTE DE NOTA FISCAL  -->
   <!-- ========================================== -->
   <!-- ========================================== -->
+  
+  <!-- MODAL: INCLUIR NOTA FISCAL POR CHAVE DE ACESSO OU QR-CODE -->
+  <!-- ========================================================= -->
+  <div id="modalInputInvoiceKey" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-3 sm:p-4 select-none">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 space-y-4">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm">
+            🧾
+          </div>
+          <div>
+            <h3 id="modalInputInvoiceKeyTitle" class="font-black text-sm sm:text-base text-slate-800 dark:text-white">Incluir por Nota Fiscal</h3>
+            <p id="modalInputInvoiceKeySubtitle" class="text-[11px] text-slate-500 dark:text-slate-400">Nem toda nota possui QR-Code. Digite a chave ou escaneie o código.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeManualInvoiceKeyModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Abas / Métodos: Chave de Acesso vs QR-Code -->
+      <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl select-none">
+        <button type="button" id="tabInvoiceKeyMethodKey" onclick="switchInvoiceKeyMethod('chave')" class="py-2 px-3 rounded-xl font-black text-xs transition-all bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>🔢</span> <span>Chave da NF (44 dígitos)</span>
+        </button>
+        <button type="button" id="tabInvoiceKeyMethodQr" onclick="switchInvoiceKeyMethod('qrcode')" class="py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-400 hover:bg-white/40 flex items-center justify-center gap-1.5 cursor-pointer">
+          <i data-lucide="qr-code" class="w-4 h-4 text-emerald-500"></i> <span>Escanear QR-Code</span>
+        </button>
+      </div>
+
+      <!-- Conteúdo da Aba Chave de Acesso -->
+      <div id="contentInvoiceKeyManual" class="space-y-3">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block font-black text-slate-700 dark:text-slate-200 text-xs">Chave de Acesso (DANFE / NFC-e / NF-e)</label>
+            <span id="badgeInvoiceKeyDigitsCount" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+              0 / 44 dígitos
+            </span>
+          </div>
+          <div class="relative">
+            <textarea id="inputInvoiceAccessKeyRaw" rows="3" oninput="handleInvoiceKeyInput(this.value)" placeholder="Digite ou cole a chave de 44 dígitos da nota fiscal... Ex: 3526 1003 4567 8901 2345 5500 1000 0458 9210 1234 5678" class="w-full p-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-mono text-xs text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500 tracking-wider resize-none"></textarea>
+          </div>
+          <div class="flex items-center justify-between gap-2 mt-1.5 flex-wrap">
+            <button type="button" onclick="pasteInvoiceKeyFromClipboard()" class="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer">
+              <span>📋</span> <span>Colar da Área de Transferência</span>
+            </button>
+            <button type="button" onclick="clearInvoiceKeyInput()" class="text-[11px] font-bold text-slate-400 hover:text-slate-600 cursor-pointer">
+              Limpar
+            </button>
+          </div>
+        </div>
+
+        <!-- Card de Metadados Decodificados em Tempo Real -->
+        <div id="boxInvoiceKeyDecodedInfo" class="hidden p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1">
+              <span>✓</span> <span>Chave Válida Reconhecida!</span>
+            </span>
+            <span id="badgeKeyModelo" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-200">
+              NF-e
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div>
+              <span class="text-slate-500 block">Número da NF:</span>
+              <strong id="textKeyNFNumber" class="text-slate-900 dark:text-white font-mono">-</strong>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Emissão (Mês/Ano):</span>
+              <strong id="textKeyEmissao" class="text-slate-900 dark:text-white font-mono">-</strong>
+            </div>
+            <div>
+              <span class="text-slate-500 block">Estado (UF):</span>
+              <strong id="textKeyUF" class="text-slate-900 dark:text-white">-</strong>
+            </div>
+            <div>
+              <span class="text-slate-500 block">CNPJ Emitente:</span>
+              <strong id="textKeyCNPJ" class="text-slate-900 dark:text-white font-mono">-</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeManualInvoiceKeyModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer">
+            Cancelar
+          </button>
+          <button type="button" id="btnSubmitInvoiceKey" onclick="submitManualInvoiceKey()" disabled class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-xs shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95">
+            <span>🔍</span> <span id="textSubmitInvoiceKey">Consultar &amp; Incluir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Conteúdo da Aba QR-Code -->
+      <div id="contentInvoiceKeyQr" class="hidden text-center py-4 space-y-3">
+        <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-sm">
+          <i data-lucide="qr-code" class="w-7 h-7 text-emerald-600"></i>
+        </div>
+        <div>
+          <h4 class="font-black text-sm text-slate-800 dark:text-white">Leitor Contínuo de QR-Code</h4>
+          <p class="text-xs text-slate-500 max-w-xs mx-auto mt-1">Aponte a câmera para o QR-Code impresso no cupom fiscal para ler e preencher automaticamente.</p>
+        </div>
+        <button type="button" onclick="startActiveInvoiceQrScan()" class="w-full py-3 px-4 rounded-2xl bg-slate-900 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer active:scale-95">
+          <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i>
+          <span>Abrir Câmera de Leitura</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL: LEITURA INTELIGENTE DE NOTA FISCAL (FOTOGRAFAR CUPOM DIRETO) -->
   <!-- ========================================== -->
   <div id="modalInvoiceScan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
@@ -7107,12 +7225,16 @@ html, body {
           </button>
         </div>
 
-        <!-- RODAPÉ FIXO: ESCANEAR QR-CODE DA NOTA FISCAL (NFC-E) -->
+        <!-- RODAPÉ FIXO: ESCANEAR QR-CODE OU DIGITAR CHAVE DA NOTA FISCAL (NFC-E / NF-E) -->
         <div class="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pt-3 pb-1 mt-4 shadow-md z-20">
-          <div class="flex items-center justify-center max-w-lg mx-auto">
-            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2.5 shadow-md transition-all cursor-pointer" title="Escanear QR-Code NFC-e da Nota Fiscal">
-              <i data-lucide="qr-code" class="w-5 h-5 text-emerald-400"></i>
-              <span>Escanear QR-Code da Nota Fiscal</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-lg mx-auto">
+            <button type="button" onclick="triggerScanQrWithNativeCamera()" class="w-full py-3 px-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer" title="Escanear QR-Code NFC-e da Nota Fiscal">
+              <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+              <span>Escanear QR-Code</span>
+            </button>
+            <button type="button" onclick="openManualInvoiceKeyModal('transactions')" class="w-full py-3 px-3 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-xs sm:text-sm rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer" title="Digitar ou colar a chave de acesso de 44 dígitos">
+              <i data-lucide="key" class="w-4 h-4 text-white"></i>
+              <span>Digitar Chave da NF</span>
             </button>
           </div>
         </div>
@@ -40388,6 +40510,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   const accessKey = res.accessKey || res.chave || (res.rawUrl ? (res.rawUrl.match(/(\d{44})/)?.[1] || null) : null);
   const receiptIdentifier = accessKey || res.rawUrl;
 
+  // ROTEAMENTO PARA SEÇÃO GARANTIAS SE INICIADO LÁ
+  if (window.lastInvoiceTargetScreen === 'garantias') {
+    if (typeof window.applyInvoiceToWarranty === 'function') {
+      window.applyInvoiceToWarranty(res);
+    }
+    return;
+  }
+
   const executeInvoiceProcessing = function() {
     const isShoppingModalOpen = document.getElementById('modalShoppingList') && !document.getElementById('modalShoppingList').classList.contains('hidden');
     const modal = document.getElementById('modalInvoiceScan');
@@ -45172,6 +45302,424 @@ window.openHealthMedsModal = function() {
 // ============================================================================
 // MÓDULO OFICIAL DE PROCESSAMENTO DE NOTA FISCAL NFC-E & PREÇOS FRACIONADOS (V2.1.80)
 // ============================================================================
+
+// ============================================================================
+// DECODIFICAÇÃO E GESTÃO DE CHAVE DE ACESSO DA NOTA FISCAL (DANFE / NFC-E / NF-E)
+// ============================================================================
+window.parseNfceAccessKey = function(rawKey) {
+  if (!rawKey) return null;
+  const digits = String(rawKey).replace(/\D/g, '');
+  if (digits.length !== 44) return null;
+
+  const ufCodes = {
+    '11': 'RO', '12': 'AC', '13': 'AM', '14': 'RR', '15': 'PA', '16': 'AP', '17': 'TO',
+    '21': 'MA', '22': 'PI', '23': 'CE', '24': 'RN', '25': 'PB', '26': 'PE', '27': 'AL',
+    '28': 'SE', '29': 'BA', '31': 'MG', '32': 'ES', '33': 'RJ', '35': 'SP', '41': 'PR',
+    '42': 'SC', '43': 'RS', '50': 'MS', '51': 'MT', '52': 'GO', '53': 'DF'
+  };
+
+  const ufCode = digits.substring(0, 2);
+  const uf = ufCodes[ufCode] || 'BR';
+  const aamm = digits.substring(2, 6);
+  const year = '20' + aamm.substring(0, 2);
+  const month = aamm.substring(2, 4);
+  const cnpjRaw = digits.substring(6, 20);
+  const cnpj = cnpjRaw.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  const modCode = digits.substring(20, 22);
+  const modelo = modCode === '55' ? 'NF-e (Produto / Eletrônico)' : (modCode === '65' ? 'NFC-e (Consumidor)' : `Modelo ${modCode}`);
+  const serie = digits.substring(22, 25);
+  const nNF = parseInt(digits.substring(25, 34), 10) || 0;
+  const formattedNF = String(nNF);
+
+  // Constrói URL de consulta pública oficial
+  let url = '';
+  switch (ufCode) {
+    case '35': url = `https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=${digits}`; break;
+    case '33': url = `http://www.fazenda.rj.gov.br/consultaNFCe?p=${digits}`; break;
+    case '31': url = `http://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml?p=${digits}`; break;
+    case '43': url = `https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx?p=${digits}`; break;
+    case '41': url = `http://www.fazenda.pr.gov.br/nfce/qrcode?p=${digits}`; break;
+    case '29': url = `http://nfe.sefaz.ba.gov.br/servicos/nfce/qrcode.aspx?p=${digits}`; break;
+    case '53': url = `http://dec.fazenda.df.gov.br/ConsultarNFCe.aspx?p=${digits}`; break;
+    case '52': url = `https://nfe.sefaz.go.gov.br/nfeweb/sites/nfce/danfeNFCe?p=${digits}`; break;
+    case '42': url = `https://sat.sef.sc.gov.br/nfce/consulta?p=${digits}`; break;
+    case '23': url = `http://nfce.sefaz.ce.gov.br/pages/ShowNFCe.html?p=${digits}`; break;
+    default: url = `https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=${digits}`; break;
+  }
+
+  return {
+    digits,
+    uf,
+    year,
+    month,
+    dateIso: `${year}-${month}-01`,
+    cnpj,
+    cnpjRaw,
+    modelo,
+    modCode,
+    serie,
+    nNF,
+    formattedNF,
+    url
+  };
+};
+
+window.currentInvoiceKeyTarget = 'transactions';
+
+window.openManualInvoiceKeyModal = function(target) {
+  window.currentInvoiceKeyTarget = target || 'transactions';
+  const modal = document.getElementById('modalInputInvoiceKey');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('modalInputInvoiceKeyTitle');
+  const subEl = document.getElementById('modalInputInvoiceKeySubtitle');
+  const btnTextEl = document.getElementById('textSubmitInvoiceKey');
+
+  if (target === 'garantias') {
+    if (titleEl) titleEl.textContent = 'Incluir Nota Fiscal na Garantia';
+    if (subEl) subEl.textContent = 'Vincule a Nota Fiscal ao produto ou equipamento por Chave ou QR-Code.';
+    if (btnTextEl) btnTextEl.textContent = 'Preencher Garantia';
+  } else if (target === 'shopping') {
+    if (titleEl) titleEl.textContent = 'Digitar Chave para Lista de Compras';
+    if (subEl) subEl.textContent = 'Consulte os itens e preços da Nota Fiscal pela chave de 44 dígitos.';
+    if (btnTextEl) btnTextEl.textContent = 'Consultar & Importar Itens';
+  } else {
+    if (titleEl) titleEl.textContent = 'Digitar Chave da Nota Fiscal';
+    if (subEl) subEl.textContent = 'Nem toda nota possui QR-Code. Digite a chave de 44 dígitos da DANFE / NFC-e.';
+    if (btnTextEl) btnTextEl.textContent = 'Consultar & Lançar';
+  }
+
+  window.switchInvoiceKeyMethod('chave');
+  window.clearInvoiceKeyInput();
+  modal.classList.remove('hidden');
+  if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+};
+
+window.closeManualInvoiceKeyModal = function() {
+  const modal = document.getElementById('modalInputInvoiceKey');
+  if (modal) modal.classList.add('hidden');
+};
+
+window.switchInvoiceKeyMethod = function(method) {
+  const tabKey = document.getElementById('tabInvoiceKeyMethodKey');
+  const tabQr = document.getElementById('tabInvoiceKeyMethodQr');
+  const contentKey = document.getElementById('contentInvoiceKeyManual');
+  const contentQr = document.getElementById('contentInvoiceKeyQr');
+
+  if (method === 'qrcode') {
+    if (tabQr) {
+      tabQr.className = 'py-2 px-3 rounded-xl font-black text-xs transition-all bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer';
+    }
+    if (tabKey) {
+      tabKey.className = 'py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-400 hover:bg-white/40 flex items-center justify-center gap-1.5 cursor-pointer';
+    }
+    if (contentKey) contentKey.classList.add('hidden');
+    if (contentQr) contentQr.classList.remove('hidden');
+  } else {
+    if (tabKey) {
+      tabKey.className = 'py-2 px-3 rounded-xl font-black text-xs transition-all bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer';
+    }
+    if (tabQr) {
+      tabQr.className = 'py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-400 hover:bg-white/40 flex items-center justify-center gap-1.5 cursor-pointer';
+    }
+    if (contentKey) contentKey.classList.remove('hidden');
+    if (contentQr) contentQr.classList.add('hidden');
+  }
+  if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+};
+
+window.handleInvoiceKeyInput = function(val) {
+  const raw = String(val || '');
+  const digits = raw.replace(/\D/g, '');
+  const badge = document.getElementById('badgeInvoiceKeyDigitsCount');
+  const btnSubmit = document.getElementById('btnSubmitInvoiceKey');
+  const decodedBox = document.getElementById('boxInvoiceKeyDecodedInfo');
+
+  if (badge) {
+    badge.textContent = `${digits.length} / 44 dígitos`;
+    if (digits.length === 44) {
+      badge.className = 'text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+    } else {
+      badge.className = 'text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+    }
+  }
+
+  if (digits.length === 44) {
+    const info = window.parseNfceAccessKey(digits);
+    if (info) {
+      const numEl = document.getElementById('textKeyNFNumber');
+      const emiEl = document.getElementById('textKeyEmissao');
+      const ufEl = document.getElementById('textKeyUF');
+      const cnpjEl = document.getElementById('textKeyCNPJ');
+      const modBadge = document.getElementById('badgeKeyModelo');
+
+      if (numEl) numEl.textContent = info.formattedNF;
+      if (emiEl) emiEl.textContent = `${info.month}/${info.year}`;
+      if (ufEl) ufEl.textContent = info.uf;
+      if (cnpjEl) cnpjEl.textContent = info.cnpj;
+      if (modBadge) modBadge.textContent = info.modelo;
+
+      if (decodedBox) decodedBox.classList.remove('hidden');
+      if (btnSubmit) btnSubmit.disabled = false;
+      return;
+    }
+  }
+
+  if (decodedBox) decodedBox.classList.add('hidden');
+  if (btnSubmit) btnSubmit.disabled = true;
+};
+
+window.pasteInvoiceKeyFromClipboard = async function() {
+  try {
+    if (navigator.clipboard && navigator.clipboard.readText) {
+      const text = await navigator.clipboard.readText();
+      const input = document.getElementById('inputInvoiceAccessKeyRaw');
+      if (input && text) {
+        input.value = text;
+        window.handleInvoiceKeyInput(text);
+        if (typeof showToastUndo === 'function') {
+          showToastUndo('Chave colada da área de transferência!', false);
+        }
+      }
+    } else {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Cole manualmente com Ctrl+V ou toque prolongado.', false);
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao colar do clipboard:', e);
+  }
+};
+
+window.clearInvoiceKeyInput = function() {
+  const input = document.getElementById('inputInvoiceAccessKeyRaw');
+  if (input) input.value = '';
+  window.handleInvoiceKeyInput('');
+};
+
+window.startActiveInvoiceQrScan = function() {
+  window.closeManualInvoiceKeyModal();
+  window.lastInvoiceTargetScreen = window.currentInvoiceKeyTarget || 'transacoes';
+  if (typeof triggerScanQrWithNativeCamera === 'function') {
+    triggerScanQrWithNativeCamera();
+  }
+};
+
+window.submitManualInvoiceKey = function() {
+  const input = document.getElementById('inputInvoiceAccessKeyRaw');
+  const digits = String(input ? input.value : '').replace(/\D/g, '');
+  if (digits.length !== 44) {
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('A chave deve conter exatamente 44 dígitos.', true);
+    }
+    return;
+  }
+  window.consultNfceByAccessKey(digits, window.currentInvoiceKeyTarget);
+};
+
+window.consultNfceByAccessKey = function(rawKey, target) {
+  const digits = String(rawKey || '').replace(/\D/g, '');
+  if (digits.length !== 44) return;
+
+  const parsed = window.parseNfceAccessKey(digits);
+  const targetScreen = target || window.currentInvoiceKeyTarget || 'transactions';
+  window.lastInvoiceTargetScreen = targetScreen;
+
+  if (window.FlutterBridge) {
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('⚡ Consultando dados da Nota Fiscal na SEFAZ...', false);
+    }
+    window.FlutterBridge.postMessage(JSON.stringify({
+      action: 'fetch_nfce_key',
+      key: digits,
+      url: parsed ? parsed.url : ''
+    }));
+    window.closeManualInvoiceKeyModal();
+  } else {
+    // Modo Web / Offline: Monta dados com metadados decodificados da chave
+    const syntheticInvoice = {
+      success: true,
+      accessKey: digits,
+      rawUrl: parsed ? parsed.url : '',
+      store: `Loja Emitente (CNPJ ${parsed.cnpj})`,
+      date: parsed.dateIso,
+      total: 0,
+      invoiceNumber: parsed.formattedNF,
+      items: [
+        {
+          name: `${parsed.modelo} Nº ${parsed.formattedNF}`,
+          quantity: 1,
+          unitPrice: 0,
+          total: 0
+        }
+      ]
+    };
+
+    window.closeManualInvoiceKeyModal();
+    if (targetScreen === 'garantias') {
+      window.applyInvoiceToWarranty(syntheticInvoice);
+    } else {
+      window.onNativeInvoiceQrResult(syntheticInvoice);
+    }
+  }
+};
+
+window.openWarrantyInvoiceModal = function() {
+  window.openManualInvoiceKeyModal('garantias');
+};
+
+window.startWarrantyInvoiceScan = function(method) {
+  if (method === 'chave') {
+    window.openManualInvoiceKeyModal('garantias');
+  } else {
+    window.lastInvoiceTargetScreen = 'garantias';
+    if (typeof triggerScanQrWithNativeCamera === 'function') {
+      triggerScanQrWithNativeCamera();
+    }
+  }
+};
+
+window.applyInvoiceToWarranty = function(res) {
+  if (!res) return;
+  const accessKey = res.accessKey || res.chave || (res.rawUrl ? (res.rawUrl.match(/(\d{44})/)?.[1] || null) : null);
+  const items = Array.isArray(res.items) ? res.items : (Array.isArray(res.itens) ? res.itens : []);
+
+  // Abre modal de Garantias se fechado
+  if (typeof window.openProductWarrantiesModal === 'function') {
+    window.openProductWarrantiesModal();
+  }
+  // Abre o formulário de cadastro como garantia
+  if (typeof window.toggleAddWarrantyForm === 'function') {
+    window.toggleAddWarrantyForm(true, 'garantia');
+  }
+
+  // Preenche loja
+  const storeInput = document.getElementById('inputWarrantyStore');
+  if (storeInput) {
+    storeInput.value = res.store || res.estabelecimento || 'Loja Emitente';
+  }
+
+  // Preenche data
+  const dateInput = document.getElementById('inputWarrantyDate');
+  if (dateInput) {
+    let dt = res.date || res.data;
+    if (dt && dt.includes('/')) {
+      const parts = dt.split('/');
+      if (parts.length === 3) dt = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+    dateInput.value = dt || new Date().toISOString().split('T')[0];
+  }
+
+  // Preenche NF
+  const nfInput = document.getElementById('inputWarrantyNf');
+  if (nfInput) {
+    const num = res.invoiceNumber || res.numero || (accessKey ? String(parseInt(accessKey.substring(25, 34), 10) || '') : '');
+    nfInput.value = num ? `NF ${num}` : '';
+  }
+
+  // Preenche chave oculta e preview
+  const keyInput = document.getElementById('inputWarrantyAccessKey');
+  if (keyInput) keyInput.value = accessKey || '';
+  const keyPreviewBox = document.getElementById('boxWarrantyNfKeyPreview');
+  const keyPreviewText = document.getElementById('textWarrantyNfKey');
+  if (keyPreviewBox && keyPreviewText && accessKey) {
+    keyPreviewText.textContent = `${accessKey.substring(0, 4)} ... ${accessKey.substring(40)}`;
+    keyPreviewBox.classList.remove('hidden');
+  }
+
+  // Preenche produto e valor
+  const prodInput = document.getElementById('inputWarrantyProduct');
+  const valInput = document.getElementById('inputWarrantyValue');
+
+  window.pendingWarrantyInvoiceItems = items;
+  const itemSelectorBox = document.getElementById('boxWarrantyInvoiceItemSelector');
+  const itemSelectorList = document.getElementById('listWarrantyInvoiceItems');
+  const itemsBadge = document.getElementById('badgeWarrantyItemsCount');
+
+  if (items && items.length > 0) {
+    if (itemsBadge) itemsBadge.textContent = `${items.length} itens`;
+    const sorted = [...items].sort((a, b) => (parseFloat(b.total || b.preco || 0) || 0) - (parseFloat(a.total || a.preco || 0) || 0));
+    const mainItem = sorted[0];
+    const mainName = mainItem.produto || mainItem.nome || mainItem.name || 'Produto da Nota Fiscal';
+    const mainVal = parseFloat(mainItem.total || mainItem.preco || res.total || 0) || 0;
+
+    if (prodInput) prodInput.value = mainName;
+    if (valInput) valInput.value = mainVal.toFixed(2);
+
+    if (itemSelectorBox && itemSelectorList) {
+      itemSelectorList.innerHTML = items.map((it, idx) => {
+        const name = it.produto || it.nome || it.name || 'Produto';
+        const val = parseFloat(it.total || it.preco || 0) || 0;
+        return `
+          <button type="button" onclick="selectWarrantyInvoiceItem(${idx})" class="w-full text-left p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs transition-colors cursor-pointer group shadow-2xs">
+            <span class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 truncate pr-2">${escapeHtml(name)}</span>
+            <span class="font-mono font-black text-emerald-600 dark:text-emerald-400 flex-shrink-0">R$ ${val.toFixed(2)}</span>
+          </button>
+        `;
+      }).join('');
+      itemSelectorBox.classList.remove('hidden');
+    }
+  } else {
+    if (prodInput) prodInput.value = res.description || 'Produto da Nota Fiscal';
+    if (valInput) valInput.value = (parseFloat(res.total) || 0).toFixed(2);
+    if (itemSelectorBox) itemSelectorBox.classList.add('hidden');
+  }
+
+  // Sugere garantia de 12 meses
+  const baseMonthsSelect = document.getElementById('inputWarrantyBaseMonths');
+  if (baseMonthsSelect) baseMonthsSelect.value = '12';
+
+  if (typeof showToastUndo === 'function') {
+    showToastUndo('🧾 Dados da Nota Fiscal preenchidos na Garantia!', false);
+  }
+};
+
+window.selectWarrantyInvoiceItem = function(idx) {
+  const items = window.pendingWarrantyInvoiceItems || [];
+  const it = items[idx];
+  if (!it) return;
+  const name = it.produto || it.nome || it.name || '';
+  const val = parseFloat(it.total || it.preco || 0) || 0;
+  const prodInput = document.getElementById('inputWarrantyProduct');
+  const valInput = document.getElementById('inputWarrantyValue');
+  if (prodInput && name) prodInput.value = name;
+  if (valInput) valInput.value = val.toFixed(2);
+  if (typeof showToastUndo === 'function') {
+    showToastUndo(`Item "${name}" selecionado para a garantia!`, false);
+  }
+};
+
+window.clearWarrantyNfKey = function() {
+  const keyInput = document.getElementById('inputWarrantyAccessKey');
+  if (keyInput) keyInput.value = '';
+  const keyPreviewBox = document.getElementById('boxWarrantyNfKeyPreview');
+  if (keyPreviewBox) keyPreviewBox.classList.add('hidden');
+};
+
+window.consultStoredNfceKey = function(key) {
+  if (!key) return;
+  const parsed = window.parseNfceAccessKey(key);
+  if (window.FlutterBridge) {
+    window.FlutterBridge.postMessage(JSON.stringify({
+      action: 'fetch_nfce_key',
+      key: key,
+      url: parsed ? parsed.url : ''
+    }));
+  } else if (parsed && parsed.url) {
+    window.open(parsed.url, '_blank');
+  }
+};
+
+window.copyNfAccessKey = function(key) {
+  if (!key) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(key);
+  }
+  if (typeof showToastUndo === 'function') {
+    showToastUndo('📋 Chave da NF copiada!', false);
+  }
+};
+
 window.extractCleanNfceKey = function(keyOrUrl) {
   if (!keyOrUrl) return null;
   const str = String(keyOrUrl).trim();
@@ -45722,6 +46270,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
   const accessKey = res.accessKey || res.chave || window.extractCleanNfceKey(res.rawUrl);
   const receiptIdentifier = accessKey || res.rawUrl;
+
+  // ROTEAMENTO PARA SEÇÃO GARANTIAS SE INICIADO LÁ
+  if (window.lastInvoiceTargetScreen === 'garantias') {
+    if (typeof window.applyInvoiceToWarranty === 'function') {
+      window.applyInvoiceToWarranty(res);
+    }
+    return;
+  }
 
   const executeInvoiceProcessing = function() {
     const isShoppingModalOpen = document.getElementById('modalShoppingList') && !document.getElementById('modalShoppingList').classList.contains('hidden');
@@ -46421,7 +46977,10 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" onclick="openWarrantyInvoiceModal()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95 flex items-center gap-1" title="Incluir garantia a partir de Nota Fiscal (QR-Code ou Chave de Acesso)">
+            <span>🧾</span> <span>+ Nota Fiscal</span>
+          </button>
           <button type="button" onclick="toggleAddWarrantyForm(true, 'manutencao')" class="px-2.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95 flex items-center gap-1">
             <span>🔧</span> <span>+ Manutenção</span>
           </button>
@@ -46465,6 +47024,53 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           </button>
         </div>
 
+        <!-- Opção Rápida: Preencher com Nota Fiscal (QR-Code ou Chave) -->
+        <div id="boxWarrantyNfQuickActions" class="p-2.5 rounded-2xl bg-emerald-50/80 border border-emerald-300/80 flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-base flex-shrink-0">🧾</span>
+            <div>
+              <span class="font-black text-xs text-emerald-950 block">Preencher com Nota Fiscal</span>
+              <span class="text-[10px] text-emerald-800">Importe dados e garantia via QR-Code ou Chave de Acesso</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button type="button" onclick="startWarrantyInvoiceScan('qrcode')" class="px-2.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-[11px] flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-xs" title="Escanear QR-Code da Nota Fiscal">
+              <i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>QR-Code</span>
+            </button>
+            <button type="button" onclick="startWarrantyInvoiceScan('chave')" class="px-2.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center gap-1.5 active:scale-95 cursor-pointer shadow-xs" title="Digitar ou colar a chave de acesso de 44 dígitos">
+              <span>🔢 Chave (44D)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Seletor Dinâmico de Itens da Nota Fiscal Importada -->
+        <div id="boxWarrantyInvoiceItemSelector" class="hidden p-3 bg-emerald-50/90 border border-emerald-300 rounded-2xl space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-xs text-emerald-900 flex items-center gap-1.5">
+              <span>🛒</span> <span>Itens da Nota Fiscal: toque para selecionar o produto</span>
+            </span>
+            <span id="badgeWarrantyItemsCount" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800">
+              0 itens
+            </span>
+          </div>
+          <div id="listWarrantyInvoiceItems" class="max-h-40 overflow-y-auto space-y-1.5 custom-scrollbar pr-1"></div>
+        </div>
+
+        <!-- Badge de Chave NF Vinculada -->
+        <div id="boxWarrantyNfKeyPreview" class="hidden p-2.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs flex items-center justify-between text-emerald-900">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-base flex-shrink-0">🧾</span>
+            <div class="truncate">
+              <span class="font-black text-xs block text-emerald-950">Chave de Acesso Vinculada:</span>
+              <span id="textWarrantyNfKey" class="font-mono text-[10px] font-bold tracking-wider text-emerald-800 truncate block"></span>
+            </div>
+          </div>
+          <button type="button" onclick="clearWarrantyNfKey()" class="text-rose-600 hover:text-rose-800 text-[11px] font-bold underline flex-shrink-0 cursor-pointer">
+            Desvincular
+          </button>
+        </div>
+
         <!-- Sugestões Rápidas: Manutenções da Casa & Eletrodomésticos -->
         <div id="boxQuickMaintenancePresets" class="hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           <span class="text-[10px] font-bold text-slate-400 uppercase flex-shrink-0">Rápido:</span>
@@ -46478,6 +47084,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         <form onsubmit="handleSaveProductWarranty(event)" class="space-y-2.5">
           <input type="hidden" id="inputWarrantyId" value="">
           <input type="hidden" id="inputWarrantyItemType" value="garantia">
+          <input type="hidden" id="inputWarrantyAccessKey" value="">
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
@@ -47541,18 +48148,24 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const baseMonths = parseInt(document.getElementById('inputWarrantyBaseMonths')?.value, 10) || 12;
       const hasExtended = itemType === 'garantia' ? (document.getElementById('inputWarrantyHasExtended')?.value === 'sim') : false;
       const extendedMonths = hasExtended ? (parseInt(document.getElementById('inputWarrantyExtendedMonths')?.value, 10) || 12) : 0;
+      const accessKey = (document.getElementById('inputWarrantyAccessKey')?.value || '').trim();
       const notes = (document.getElementById('inputWarrantyNotes')?.value || '').trim();
 
       if (!product) return;
       const list = window.getProductWarranties().filter(w => w.id !== id);
-      list.unshift({ id, itemType, product, store, purchaseDate, value, nf, origin, baseMonths, hasExtended, extendedMonths, notes });
+      list.unshift({ id, itemType, product, store, purchaseDate, value, nf, accessKey, origin, baseMonths, hasExtended, extendedMonths, notes });
       window.saveProductWarranties(list);
       document.getElementById('inputWarrantyId').value = '';
       document.getElementById('inputWarrantyProduct').value = '';
       document.getElementById('inputWarrantyStore').value = '';
       document.getElementById('inputWarrantyValue').value = '';
       document.getElementById('inputWarrantyNf').value = '';
+      document.getElementById('inputWarrantyAccessKey').value = '';
       document.getElementById('inputWarrantyNotes').value = '';
+      const keyPreviewBox = document.getElementById('boxWarrantyNfKeyPreview');
+      if (keyPreviewBox) keyPreviewBox.classList.add('hidden');
+      const itemSelectorBox = document.getElementById('boxWarrantyInvoiceItemSelector');
+      if (itemSelectorBox) itemSelectorBox.classList.add('hidden');
       window.toggleAddWarrantyForm(false);
       const msg = itemType === 'manutencao' ? `🔧 Manutenção de "${product}" salva com sucesso!` : `🛡️ Garantia de "${product}" salva com sucesso!`;
       if (typeof showToastUndo === 'function') showToastUndo(msg, false);
@@ -47667,6 +48280,20 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
                 </div>
                 ${w.notes ? `<span class="text-[10px] text-slate-500 italic">💬 ${escapeHtml(w.notes)}</span>` : ''}
               </div>
+              ${w.accessKey ? `
+                <div class="pt-1.5 border-t border-dashed border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-[10px] text-slate-600 dark:text-slate-300 flex-wrap gap-2">
+                  <div class="flex items-center gap-1.5 font-mono text-[10px] bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200">
+                    <span class="font-bold">🧾 Chave NF:</span>
+                    <span class="tracking-wider" title="${escapeHtml(w.accessKey)}">${escapeHtml(w.accessKey.substring(0, 4))}...${escapeHtml(w.accessKey.substring(40))}</span>
+                    <button type="button" onclick="copyNfAccessKey('${escapeHtml(w.accessKey)}')" class="text-emerald-700 hover:text-emerald-900 ml-1 cursor-pointer font-bold" title="Copiar chave completa de 44 dígitos">
+                      📋
+                    </button>
+                  </div>
+                  <button type="button" onclick="consultStoredNfceKey('${escapeHtml(w.accessKey)}')" class="px-2 py-0.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-bold text-[10px] flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs">
+                    <span>🔍</span> <span>Ver Nota SEFAZ</span>
+                  </button>
+                </div>
+              ` : ''}
             </div>
           `;
         }).join('');
