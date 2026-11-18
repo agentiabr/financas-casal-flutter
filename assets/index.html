@@ -282,19 +282,20 @@
     display: none !important;
   }
 
-  /* Cabeçalho Aurora das Telas Internas */
+  /* Cabeçalho Aurora Contínuo Transparente (Padrão Oficial Seção Transações) */
   .page-header-back,
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
   .full-screen-page > div:first-child {
-    background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
-    background-color: #071933 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     color: #FFFFFF !important;
-    padding: 0.85rem 1rem !important;
-    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
-    padding-bottom: 0.85rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+    padding: 0.75rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+    padding-bottom: 0.75rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -303,10 +304,11 @@
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
     height: auto !important;
-    min-height: 64px !important;
+    min-height: 0 !important;
     max-height: none !important;
     margin: 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: none !important;
+    border: none !important;
     box-shadow: none !important;
   }
 
@@ -329,7 +331,7 @@
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
+    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
@@ -2756,19 +2758,21 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: #071933;
-  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   color: #FFFFFF;
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
-  padding-bottom: 0.85rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  min-height: 64px;
+  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+  padding-bottom: 0.75rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  min-height: 0 !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .btn-back-circle {
@@ -3269,19 +3273,21 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: #071933;
-  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   color: #FFFFFF;
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
-  padding-bottom: 0.85rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  min-height: 64px;
+  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+  padding-bottom: 0.75rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  min-height: 0 !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .btn-back-circle {
@@ -3453,20 +3459,22 @@ html, body {
     }
     #modalFamilyChat .page-header-back {
       flex-shrink: 0 !important;
-      background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
-      background-color: #071933 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image: none !important;
       color: #FFFFFF !important;
-      padding: 0.85rem 1rem !important;
-      padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
-      padding-bottom: 0.85rem !important;
-      padding-left: 1rem !important;
-      padding-right: 1rem !important;
-      min-height: 64px !important;
+      padding: 0.75rem 1.25rem !important;
+      padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+      padding-bottom: 0.75rem !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.25rem !important;
+      min-height: 0 !important;
       max-height: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
     }
     #modalFamilyChat #chatRecipientBar {
       display: none !important;
@@ -3554,19 +3562,20 @@ html, body {
     display: none !important;
   }
 
-  /* Cabeçalho das páginas inteiras: Topo Aurora com setinha e título brancos */
+  /* Cabeçalho Aurora Contínuo Transparente (Padrão Oficial Seção Transações) */
   .page-header-back,
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
   .full-screen-page > div:first-child {
-    background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%) !important;
-    background-color: #071933 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     color: #FFFFFF !important;
-    padding: 0.85rem 1rem !important;
-    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem) !important;
-    padding-bottom: 0.85rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
+    padding: 0.75rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+    padding-bottom: 0.75rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -3575,10 +3584,11 @@ html, body {
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
     height: auto !important;
-    min-height: 64px !important;
+    min-height: 0 !important;
     max-height: none !important;
     margin: 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-bottom: none !important;
+    border: none !important;
     box-shadow: none !important;
   }
 
@@ -3603,7 +3613,7 @@ html, body {
     border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 0.75rem 1rem 6.5rem 1rem !important; /* Margem e respiro equilibrado sem vão excessivo */
+    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
     margin: 0 !important;
     box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
@@ -4032,19 +4042,21 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 51;
-  background-color: #071933;
-  background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #0E356A 100%);
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   color: #FFFFFF;
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.65rem), 1.25rem);
-  padding-bottom: 0.85rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  min-height: 64px;
+  padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
+  padding-bottom: 0.75rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  min-height: 0 !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  box-shadow: 0 2px 10px rgba(10, 57, 129, 0.2);
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .btn-back-circle {
@@ -5977,7 +5989,7 @@ html, body {
       <section id="screen_familia" class="w-full hidden flex flex-col bg-[#071933] min-h-screen overflow-y-auto pb-24">
         
         <!-- Topo Integrado com Setinha Voltar ‹, Título e Lâmpada de Insights -->
-        <div class="px-4 pt-2 pb-1 flex items-center justify-between text-white flex-shrink-0 relative z-30">
+        <div class="px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0 relative z-30">
           <div class="flex items-center gap-2.5">
             <button type="button" onclick="switchScreen('dashboard')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
               <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -6286,7 +6298,7 @@ html, body {
   <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO AZUL AURORA OFICIAL DO DASHBOARD) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeShoppingListModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -7674,7 +7686,7 @@ html, body {
   <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeManageCardsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -27113,7 +27125,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET / WHATSAPP) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5 min-w-0">
         <button type="button" id="btnChatHeaderBack" onclick="handleChatHeaderBack()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer flex-shrink-0" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -27979,7 +27991,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
   
   <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
-  <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+  <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
     <div class="flex items-center gap-2.5">
       <button type="button" onclick="closePetAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
         <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -28288,7 +28300,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeHealthMedsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -29665,7 +29677,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeVeiculosHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -29771,7 +29783,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeEducacaoHub()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -34448,7 +34460,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
 <div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeServiceProvidersModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar ao início">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41469,7 +41481,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: SELETOR DE CICLOS MENSAIS COM OPÇÃO '+ NOVO CICLO' (ITEM 1)        -->
   <!-- ========================================================================= -->
   <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeSelectCycleModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41665,7 +41677,7 @@ window.openHealthMedsModal = function() {
   <!-- MODAL: QUESTIONÁRIO DE PERFIL FINANCEIRO DO USUÁRIO & FAMÍLIA (ITEM 5)     -->
   <!-- ========================================================================= -->
   <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -41869,8 +41881,8 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
-  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none" style="background-color: #071933 !important; opacity: 1 !important;">
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover; opacity: 1 !important;">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -46955,7 +46967,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
   <!-- ========================================================================= -->
   <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -47184,7 +47196,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
   <!-- ========================================================================= -->
   <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
-    <div class="page-header-back px-4 pt-5 pb-3.5 flex items-center justify-between text-white flex-shrink-0 bg-gradient-to-b from-[#071933] via-[#0A264F] to-[#0E356A] border-b border-white/10 shadow-sm">
+    <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
           <i data-lucide="chevron-left" class="w-5 h-5"></i>
