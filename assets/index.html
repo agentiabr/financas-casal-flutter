@@ -312,31 +312,45 @@
     box-shadow: none !important;
   }
 
-  /* Corpo com Caixa Flutuante Arredondada (#DFEAF7) com margens laterais idênticas ao Dashboard */
+  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
   .full-screen-page > div.bg-\[\#DFEAF7\],
   .full-screen-page > div[class*="bg-[#DFEAF7]"],
   .full-screen-page > .full-screen-inner,
-  .full-screen-page > div:nth-child(2) {
+  .full-screen-page > div:nth-child(2),
+  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
     flex: 1 1 0% !important;
-    width: calc(100% - 2rem) !important;
-    max-width: calc(100% - 2rem) !important;
-    margin-left: 1rem !important;
-    margin-right: 1rem !important;
-    margin-bottom: 1.25rem !important;
-    margin-top: 0.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    background-color: #DFEAF7 !important;
-    border-radius: 2rem !important;
-    border-top-left-radius: 2rem !important;
-    border-top-right-radius: 2rem !important;
-    border-bottom-left-radius: 2rem !important;
-    border-bottom-right-radius: 2rem !important;
+    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
+    margin: 0 !important;
+    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Cartões brancos limpos com cantos arredondados dentro das telas */
+  .full-screen-page div.bg-white,
+  .full-screen-page form.bg-white,
+  .full-screen-page form[class*="bg-slate-50"],
+  .full-screen-page div[class*="rounded-3xl"] {
+    background-color: #FFFFFF !important;
+    border-radius: 1.5rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    padding: 1.15rem 1.25rem !important;
+    color: #1E293B !important;
   }
 
   /* Botão circular de voltar com toque suave */
@@ -3578,33 +3592,47 @@ html, body {
     box-shadow: none !important;
   }
 
-  /* Corpo com Caixa Flutuante Arredondada (#DFEAF7) com margens laterais idênticas ao Dashboard */
+  /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
   .full-screen-page > .full-screen-inner,
   .full-screen-page > div[class*="max-w-"],
   .full-screen-page > div[class*="rounded-"],
   .full-screen-page > div.bg-\[\#DFEAF7\],
   .full-screen-page > div[class*="bg-[#DFEAF7]"],
-  .full-screen-page > div:nth-child(2) {
+  .full-screen-page > div:nth-child(2),
+  .full-screen-page > div:not(:first-child):not(.page-header-back):not([class*="z-[9"]):not([class*="z-50"]):not(.mascot-speech-bubble) {
     flex: 1 1 0% !important;
-    width: calc(100% - 2rem) !important;
-    max-width: calc(100% - 2rem) !important;
-    margin-left: 1rem !important;
-    margin-right: 1rem !important;
-    margin-bottom: 1.25rem !important;
-    margin-top: 0.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    background-color: #DFEAF7 !important;
-    border-radius: 2rem !important;
-    border-top-left-radius: 2rem !important;
-    border-top-right-radius: 2rem !important;
-    border-bottom-left-radius: 2rem !important;
-    border-bottom-right-radius: 2rem !important;
+    background-color: #DFEAF7 !important; /* Caixa cinza-azulada aprovada */
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+    padding: 0.75rem 1.25rem 6.5rem 1.25rem !important; /* Margem e respiro harmonizado com px-5 / 1.25rem */
+    margin: 0 !important;
+    box-shadow: inset 0 2px 8px rgba(7, 25, 51, 0.05) !important;
     border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Cartões brancos limpos com cantos arredondados dentro das telas */
+  .full-screen-page div.bg-white,
+  .full-screen-page form.bg-white,
+  .full-screen-page form[class*="bg-slate-50"],
+  .full-screen-page div[class*="rounded-3xl"] {
+    background-color: #FFFFFF !important;
+    border-radius: 1.5rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    padding: 1.15rem 1.25rem !important;
+    color: #1E293B !important;
   }
 
   /* OVERLAY DO PIGGY EXPLICATIVO EM CADA SEÇÃO - TOPO ABSOLUTO */
@@ -4237,13 +4265,6 @@ html, body {
     #modalEditPriceItem {
       z-index: 3600 !important;
     }
-
-    /* POPUPS DE NOTA FISCAL (Chave de Acesso e Leitor QR-Code) - Ficam SEMPRE acima de Garantias e todas as seções */
-    #modalInputInvoiceKey,
-    #modalInvoiceScan,
-    #modalDuplicateInvoiceAlert {
-      z-index: 5000 !important;
-    }
     </style>
 <style id="ctrlpigGlobalFooterStyles">
   /* v2.1.124 - Rodapé global inteligente */
@@ -4294,12 +4315,16 @@ html, body {
       background-size: cover !important;
     }
 
-    /* Remove fundos escuros pretos/sólidos em seções internas (NUNCA em .full-screen-page nem seu card #DFEAF7) */
-    :not(.full-screen-page).bg-\[\#071933\],
-    :not(.full-screen-page)[class*="bg-[#071933]"],
-    section:not(.full-screen-page)[class*="bg-[#071933]"],
-    div:not(.full-screen-page)[class*="bg-[#071933]"],
+    /* Remove fundos escuros pretos/sólidos e bacias cinzas em todas as seções e modais */
+    .bg-\[\#071933\],
+    [class*="bg-[#071933]"],
+    section[class*="bg-[#071933]"],
+    div[class*="bg-[#071933]"],
     header[class*="bg-[#071933]"],
+    .bg-\[\#DFEAF7\],
+    [class*="bg-[#DFEAF7]"],
+    div[class*="bg-[#DFEAF7]"],
+    div[id*="Container"].bg-\[\#DFEAF7\],
     #screen_transacoes,
     #screen_familia,
     #screen_chat,
@@ -4308,65 +4333,6 @@ html, body {
     #chatMembersDirectoryView {
       background: transparent !important;
       box-shadow: none !important;
-    }
-
-    /* Telas Full Screen & Modais de Módulos (100% Opacos com Degradê Aurora Oficial, Bloqueando Qualquer Conteúdo Por Trás) */
-    .full-screen-page,
-    div.full-screen-page,
-    div[id^="modal"].full-screen-page {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 1050 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      background-color: var(--liquid-bg-main) !important;
-      background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
-      background-repeat: no-repeat !important;
-      background-size: cover !important;
-      opacity: 1 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      isolation: isolate !important;
-    }
-    .full-screen-page.hidden {
-      display: none !important;
-    }
-
-    /* Cabeçalho Aurora Contínuo Transparente */
-    .page-header-back,
-    .full-screen-page > .page-header-back,
-    .full-screen-page > header,
-    .full-screen-page > div:first-child {
-      background: transparent !important;
-      background-color: transparent !important;
-      background-image: none !important;
-      color: #FFFFFF !important;
-      padding: 0.75rem 1.25rem !important;
-      padding-top: max(env(safe-area-inset-top, 0px), 0.75rem) !important;
-      padding-bottom: 0.75rem !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-    }
-
-    /* Card Arredondado Interno (#DFEAF7) */
-    .full-screen-page > div.bg-\[\#DFEAF7\],
-    .full-screen-page > div[class*="bg-[#DFEAF7]"],
-    .full-screen-page > .full-screen-inner,
-    .full-screen-page > div:nth-child(2) {
-      flex: 1 1 0% !important;
-      width: calc(100% - 2rem) !important;
-      max-width: calc(100% - 2rem) !important;
-      margin-left: 1rem !important;
-      margin-right: 1rem !important;
-      margin-bottom: 1.25rem !important;
-      margin-top: 0.25rem !important;
-      background-color: #DFEAF7 !important;
-      border-radius: 1.5rem !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
     }
 
     /* 2. CARDS LIQUID GLASS FROSTED COM CORES PADRONIZADAS E SOMBRA SUTIL */
@@ -5882,7 +5848,7 @@ html, body {
         </div>
 
         <!-- BOX COM CANTOS ARREDONDADOS NO TOPO (rounded-t-[32px]) E FUNDO CINZA #DFEAF7 -->
-        <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl flex flex-col overflow-y-auto px-4 sm:px-5 pt-3 pb-6 space-y-3 shadow-2xl">
+        <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] flex flex-col overflow-y-auto px-4 sm:px-5 pt-3 pb-6 space-y-3 shadow-2xl">
           
           <!-- CARD RESUMO TOTAL DA TELA DE TRANSAÇÕES (DESTAQUE PARA GASTO TOTAL) -->
           <div class="bg-gradient-to-br from-white via-white to-rose-50/50 rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -7031,7 +6997,7 @@ html, body {
   
   <!-- MODAL: INCLUIR NOTA FISCAL POR CHAVE DE ACESSO OU QR-CODE -->
   <!-- ========================================================= -->
-  <div id="modalInputInvoiceKey" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-3 sm:p-4 select-none" style="z-index: 5000 !important;" onclick="if(event.target === this) closeManualInvoiceKeyModal();">
+  <div id="modalInputInvoiceKey" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-3 sm:p-4 select-none">
     <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 space-y-4">
       
       <!-- Cabeçalho -->
@@ -7143,7 +7109,7 @@ html, body {
 
   <!-- MODAL: LEITURA INTELIGENTE DE NOTA FISCAL (FOTOGRAFAR CUPOM DIRETO) -->
   <!-- ========================================== -->
-  <div id="modalInvoiceScan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-3 sm:p-4" style="z-index: 5000 !important;">
+  <div id="modalInvoiceScan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-none max-w-lg w-full p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-300">
       
       <!-- Cabeçalho Limpo: Fotografar Nota Fiscal -->
@@ -7717,7 +7683,7 @@ html, body {
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: CARTÕES & FATURAS (PADRÃO MUNDO PET & SAÚDE)      -->
   <!-- ============================================================== -->
-  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -7738,7 +7704,7 @@ html, body {
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD: LISTA DE CARTÕES ATUAIS -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -27157,7 +27123,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, COM SELEÇÃO DE MEMBRO + CONVERSAR & LISTA DE COMPRAS) -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col bg-[#071933] w-full h-full overflow-hidden select-none">
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET / WHATSAPP) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5 min-w-0">
@@ -27186,7 +27152,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 (PADRÃO OFICIAL DO APP) -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-hidden flex flex-col shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-hidden flex flex-col shadow-2xl">
 
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
@@ -28022,7 +27988,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <!-- ============================================================== -->
 <!-- PÁGINA COMPLETA: MUNDO PET • PERFIL, GASTOS & CARTEIRA VACINAS (ESTILO PAYNO) -->
 <!-- ============================================================== -->
-<div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+<div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
   
   <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
   <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -28043,7 +28009,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   </div>
 
   <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-  <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+  <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
     
     <!-- SELETOR DE PETS DA FAMÍLIA (AVATARES COM FOTO E NOME, ATÉ 10 PETS) -->
     <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -28331,7 +28297,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -28352,7 +28318,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- CARD 1: ROTINA DO MEMBRO ATIVO (MANTIDO EXATAMENTE CONFORME SOLICITADO) -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -29708,7 +29674,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
-  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -29729,7 +29695,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -29814,7 +29780,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
-  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -29835,7 +29801,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -34491,7 +34457,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none">
+<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
@@ -34512,7 +34478,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 E MARGENS HARMONIOSAS -->
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
 
       <!-- 1. Botão / Formulário de Cadastrar ou Editar Prestador -->
       <div class="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-slate-800/60 p-3.5">
@@ -41514,7 +41480,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: SELETOR DE CICLOS MENSAIS COM OPÇÃO '+ NOVO CICLO' (ITEM 1)        -->
   <!-- ========================================================================= -->
-  <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeSelectCycleModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -41538,7 +41504,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-3 pb-20 space-y-3 shadow-2xl">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
           <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
@@ -41710,7 +41676,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: QUESTIONÁRIO DE PERFIL FINANCEIRO DO USUÁRIO & FAMÍLIA (ITEM 5)     -->
   <!-- ========================================================================= -->
-  <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -41728,7 +41694,7 @@ window.openHealthMedsModal = function() {
       </button>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-4 shadow-2xl">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-5 pb-20 space-y-4 shadow-2xl">
       
       <!-- ETAPA 1: PAPEL FAMILIAR -->
       <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 space-y-3">
@@ -41938,7 +41904,7 @@ window.openHealthMedsModal = function() {
       </div>
     </div>
 
-    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 sm:px-5 pt-3 pb-8 space-y-3.5 shadow-2xl">
+    <div id="comparativoMercadosDynamicBody" class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 sm:px-5 pt-3 pb-8 space-y-3.5 shadow-2xl">
       
       <!-- Card Total Geral de Mercado -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
@@ -45416,7 +45382,6 @@ window.openManualInvoiceKeyModal = function(target) {
   window.currentInvoiceKeyTarget = target || 'transactions';
   const modal = document.getElementById('modalInputInvoiceKey');
   if (!modal) return;
-  modal.style.zIndex = '5000';
 
   const titleEl = document.getElementById('modalInputInvoiceKeyTitle');
   const subEl = document.getElementById('modalInputInvoiceKeySubtitle');
@@ -47001,7 +46966,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- ========================================================================= -->
   <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
   <!-- ========================================================================= -->
-  <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -47021,7 +46986,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
         <div class="flex items-center gap-1.5 flex-wrap">
@@ -47230,7 +47195,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- ========================================================================= -->
   <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
   <!-- ========================================================================= -->
-  <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none">
+  <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full bg-[#071933] overflow-hidden select-none">
     <div class="page-header-back px-5 pt-3 pb-3 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -47254,7 +47219,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
     </div>
 
-    <div class="flex-1 bg-[#DFEAF7] mx-4 mb-4 rounded-3xl overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
+    <div class="flex-1 bg-[#DFEAF7] rounded-t-[32px] overflow-y-auto px-4 pt-4 pb-24 space-y-3.5 shadow-2xl text-xs">
       <!-- BANNER DE CONFORMIDADE LGPD: CONSENTIMENTO DO RESPONSÁVEL LEGAL (ART. 14) -->
       <div id="bannerKidsParentalConsent" class="p-3 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/90 to-purple-50/90 border border-blue-200/80 shadow-2xs flex items-center justify-between gap-3 text-xs mb-1">
         <div class="flex items-center gap-2.5 min-w-0">
