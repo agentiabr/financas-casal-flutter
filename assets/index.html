@@ -4552,7 +4552,19 @@ html, body {
       opacity: 1 !important;
       z-index: 1050 !important;
     }
-/* 5. MODAIS FULL SCREEN E DIÁLOGOS LIQUID GLASS */
+    /* Harmonização e Refinamento de Contraste nas Seções (Elimina Cinza sobre Azul) */
+    .full-screen-page .section-header-contrast,
+    .full-screen-page > div > .flex > span[class*="text-slate-600"],
+    .full-screen-page > div > .flex > span[class*="text-slate-500"] {
+      color: #FFFFFF !important;
+      text-shadow: 0 1px 2px rgba(4, 20, 64, 0.5) !important;
+    }
+    .full-screen-page .section-sub-contrast,
+    .full-screen-page > div > .flex > div[class*="text-slate-500"] {
+      color: #DBEAFE !important;
+    }
+
+    /* 5. MODAIS FULL SCREEN E DIÁLOGOS LIQUID GLASS */
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
@@ -6364,18 +6376,18 @@ html, body {
           <span>Minha Lista</span>
         </button>
 
-        <button type="button" onclick="switchShoppingModalTab('gondola')" id="tabBtnShoppingGondola" class="hidden flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-slate-700 bg-white/70 hover:bg-white/95 border border-white/60 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md">
+        <button type="button" onclick="switchShoppingModalTab('gondola')" id="tabBtnShoppingGondola" class="hidden flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-blue-100 hover:text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md">
           <i data-lucide="shopping-cart" class="w-3.5 h-3.5 text-emerald-600"></i>
           <span>Fazer Compras</span>
         </button>
 
-        <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-950 bg-white/70 hover:bg-white/95 border border-white/60 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md">
-          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-600"></i>
+        <button type="button" onclick="switchShoppingModalTab('comparator')" id="tabBtnShoppingComparator" class="flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-blue-100 hover:text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md">
+          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-blue-200"></i>
           <span>Histórico</span>
         </button>
 
-        <button type="button" id="tabBtnShoppingMarkets" onclick="switchShoppingModalTab('markets')" class="flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-950 bg-white/70 hover:bg-white/95 border border-white/60 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md" title="Ver ranking comparativo entre mercados">
-          <i data-lucide="scale" class="w-3.5 h-3.5 text-slate-600"></i>
+        <button type="button" id="tabBtnShoppingMarkets" onclick="switchShoppingModalTab('markets')" class="flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-blue-100 hover:text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md" title="Ver ranking comparativo entre mercados">
+          <i data-lucide="scale" class="w-3.5 h-3.5 text-blue-200"></i>
           <span>Comparativo</span>
         </button>
       </div>
@@ -7714,7 +7726,7 @@ html, body {
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-black uppercase tracking-wider text-slate-500">Cartões Cadastrados</span>
+            <span class="text-xs font-black uppercase tracking-wider text-slate-800">Cartões Cadastrados</span>
           </div>
           <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">Limites &amp; Vencimentos</span>
         </div>
@@ -12767,7 +12779,7 @@ html, body {
 
       const activeBlue = 'flex-1 py-2 px-3 rounded-2xl text-xs font-black bg-blue-600 text-white shadow-md shadow-blue-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-blue-400/40';
       const activeGreen = 'flex-1 py-2 px-3 rounded-2xl text-xs font-black bg-emerald-600 text-white shadow-md shadow-emerald-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-emerald-400/40';
-      const inactiveCls = 'flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-slate-700 hover:text-slate-950 bg-white/70 hover:bg-white/95 border border-white/60 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md';
+      const inactiveCls = 'flex-1 py-2 px-3 rounded-2xl text-xs font-bold text-blue-100 hover:text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-md';
 
       if (btnB) btnB.className = inactiveCls;
       if (btnG) btnG.className = inactiveCls;
@@ -23351,7 +23363,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       // Renderiza os pontinhos de paginação
       if (dotsContainer) {
         dotsContainer.innerHTML = pets.map((p, idx) => `
-          <button type="button" onclick="scrollToPetCard('${p.id}')" class="h-2 rounded-full transition-all cursor-pointer ${p.id === activeId ? 'w-6 bg-amber-500' : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-amber-300'}" title="Ir para ${escapeHtml(p.nome)}"></button>
+          <button type="button" onclick="scrollToPetCard('${p.id}')" class="h-2 rounded-full transition-all cursor-pointer ${p.id === activeId ? 'w-6 bg-amber-400 shadow-xs' : 'w-2 bg-white/40 hover:bg-white/70'}" title="Ir para ${escapeHtml(p.nome)}"></button>
         `).join('');
       }
 
@@ -27184,8 +27196,8 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
         <!-- Atalho para gerenciar/adicionar membros da família -->
         <div class="pt-1">
-          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3.5 px-4 rounded-3xl bg-white hover:bg-slate-50 border border-dashed border-slate-300 text-slate-700 font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-98 cursor-pointer">
-            <i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i>
+          <button type="button" onclick="closeFamilyChatModal(); if(typeof openAddUserModal === 'function'){ openAddUserModal(); } else if(typeof switchScreen === 'function'){ switchScreen('config'); }" class="w-full py-3.5 px-4 rounded-3xl bg-white/15 hover:bg-white/25 border-2 border-dashed border-white/40 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm backdrop-blur-md transition-all active:scale-98 cursor-pointer">
+            <i data-lucide="user-plus" class="w-4 h-4 text-sky-300"></i>
             <span>Adicionar ou Gerenciar Membros da Família</span>
           </button>
         </div>
@@ -28037,10 +28049,10 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- Cabeçalho do Carrossel com Indicador de Navegação -->
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">Carteirinhas dos Pets</span>
-          <span id="petCardsCountBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">1 de 3</span>
+          <span class="text-xs font-black uppercase tracking-wider text-white drop-shadow-xs">Carteirinhas dos Pets</span>
+          <span id="petCardsCountBadge" class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black shadow-xs">1 de 3</span>
         </div>
-        <div class="flex items-center gap-1 text-[11px] font-bold text-slate-500">
+        <div class="flex items-center gap-1.5 text-[11px] font-extrabold text-blue-100 bg-white/15 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md shadow-2xs">
           <span>Deslize para o lado</span>
           <span class="animate-pulse">➔</span>
         </div>
@@ -28353,12 +28365,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
 
       <!-- OPCAO: NAO FALAR O NOME NO ALARME (DIRETA E RESPEITOSA) -->
-      <div class="mb-3 p-3 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-between gap-3 text-xs">
+      <div class="mb-3 p-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-between gap-3 text-xs shadow-xs">
         <div class="flex items-center gap-2.5">
           <span class="text-base">&#129323;</span>
           <div>
-            <div class="font-bold text-white">Privacidade de Voz no Alarme</div>
-            <div class="text-[10px] text-slate-400">Nao falar o nome da pessoa ("Falar apenas: Atencao, hora de tomar seu remedio")</div>
+            <div class="font-black text-white">Privacidade de Voz no Alarme</div>
+            <div class="text-[10px] text-blue-100 font-medium">Nao falar o nome da pessoa ("Falar apenas: Atencao, hora de tomar seu remedio")</div>
           </div>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
@@ -29704,7 +29716,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Gasto neste Ciclo com Transporte</span>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Total Gasto neste Ciclo com Transporte</span>
           <div class="text-xl sm:text-2xl font-black text-blue-600 font-mono mt-0.5" id="veiculosCicloTotal">R$ 0,00</div>
           <p class="text-[10px] text-slate-500 mt-1" id="veiculosCicloCount">0 lançamentos registrados</p>
         </div>
@@ -29810,7 +29822,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- Resumo de Gastos do Ciclo Vigente -->
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Gasto neste Ciclo com Educação</span>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Total Gasto neste Ciclo com Educação</span>
           <div class="text-xl sm:text-2xl font-black text-indigo-600 font-mono mt-0.5" id="educacaoCicloTotal">R$ 0,00</div>
           <p class="text-[10px] text-slate-500 mt-1" id="educacaoCicloCount">0 lançamentos registrados</p>
         </div>
@@ -34580,7 +34592,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       <!-- 2. Busca e Filtro por Especialidade -->
       <div class="space-y-2">
         <div class="relative">
-          <input type="text" id="spSearchInput" oninput="renderServiceProvidersList()" placeholder="🔍 Buscar por nome, profissão (ex: eletricista, gás, móveis, pedreiro)..." class="w-full pl-3.5 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold text-xs">
+          <input type="text" id="spSearchInput" oninput="renderServiceProvidersList()" placeholder="🔍 Buscar por nome, profissão (ex: eletricista, gás, móveis, pedreiro)..." class="w-full pl-3.5 pr-3 py-2 rounded-xl border border-white/70 bg-white/95 text-slate-900 placeholder-slate-400 font-semibold text-xs shadow-sm">
         </div>
 
         <div id="spFilterPills" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
@@ -34589,8 +34601,8 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
       </div>
 
       <!-- 2.5 Barra de Seleção e Ação em Massa -->
-      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700">
-        <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-extrabold select-none text-xs">
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-xs">
+        <label class="flex items-center gap-2 cursor-pointer text-white font-extrabold select-none text-xs">
           <input type="checkbox" id="spSelectAll" onchange="toggleSelectAllProviders(this.checked)" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer">
           <span id="spSelectAllLabel">Selecionar Todos</span>
         </label>
@@ -35010,8 +35022,8 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         return `
           <button type="button" onclick="setSpCategoryFilter('${cat.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
             isActive
-              ? 'bg-blue-600 text-white shadow-xs'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+              ? 'bg-blue-600 text-white shadow-sm font-black border border-blue-400/40'
+              : 'bg-white/15 backdrop-blur-md text-blue-100 hover:text-white hover:bg-white/25 border border-white/20 font-bold'
           }">
             ${cat === 'TODOS' ? `📋 Todos (${list.length})` : cat}
           </button>
@@ -41511,7 +41523,7 @@ window.openHealthMedsModal = function() {
     <div class="flex-1 bg-transparent overflow-y-auto px-3.5 sm:px-5 pt-2 pb-28 space-y-3.5">
       <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200/80">
         <div class="flex items-center justify-between mb-3 px-1">
-          <span class="text-xs font-black uppercase tracking-wider text-slate-500">Selecione o Ciclo para Visualizar</span>
+          <span class="text-xs font-black uppercase tracking-wider text-slate-800">Selecione o Ciclo para Visualizar</span>
           <button type="button" onclick="openCreateNewCycleModal()" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition-all active:scale-95 cursor-pointer shadow-xs" title="Iniciar novo ciclo mensal">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>Novo Ciclo</span>
@@ -46994,7 +47006,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
     <div class="flex-1 bg-transparent overflow-y-auto px-3.5 sm:px-5 pt-2 pb-28 space-y-3.5 text-xs">
       <div class="flex items-center justify-between gap-2 flex-wrap">
-        <span class="text-[11px] font-black uppercase tracking-wider text-slate-600">Painel de Garantias &amp; Manutenções</span>
+        <span class="text-xs font-black uppercase tracking-wider text-white drop-shadow-xs">Painel de Garantias &amp; Manutenções</span>
         <div class="flex items-center gap-1.5 flex-wrap">
           <button type="button" onclick="openWarrantyInvoiceModal()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm cursor-pointer active:scale-95 flex items-center gap-1" title="Incluir garantia a partir de Nota Fiscal (QR-Code ou Chave de Acesso)">
             <span>🧾</span> <span>+ Nota Fiscal</span>
@@ -47010,15 +47022,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       <!-- Resumo de Garantias & Manutenções -->
       <div class="grid grid-cols-3 gap-2">
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block">Em Dia / Ativas</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-600 block">Em Dia / Ativas</span>
           <strong id="warrantyStatActive" class="text-base font-black text-emerald-600">0</strong>
         </div>
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block">Vencendo (30d)</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-600 block">Vencendo (30d)</span>
           <strong id="warrantyStatExpiring" class="text-base font-black text-amber-600">0</strong>
         </div>
         <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-2xs text-center">
-          <span class="text-[10px] font-bold uppercase text-slate-400 block">Manutenções / Ext.</span>
+          <span class="text-[10px] font-extrabold uppercase text-slate-600 block">Manutenções / Ext.</span>
           <strong id="warrantyStatExtended" class="text-base font-black text-purple-600">0</strong>
         </div>
       </div>
@@ -47272,14 +47284,14 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       </div>
 
       <!-- NAVEGAÇÃO SEGMENTADA POR ABAS DO ESPAÇO KIDS (3 ABAS: BOLETIM À ESQUERDA) -->
-      <div class="grid grid-cols-3 gap-1.5 p-1 bg-white/90 dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 shadow-xs text-center select-none">
-        <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2.5 px-2 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+      <div class="grid grid-cols-3 gap-1.5 p-1.5 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20 shadow-xs text-center select-none">
+        <button type="button" id="tabBtnKids_escola" onclick="switchKidsAreaTab('escola')" class="py-2.5 px-2 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-sm flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-base">📝</span><span class="truncate">Boletim &amp; Aulas</span>
         </button>
-        <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+        <button type="button" id="tabBtnKids_gastos" onclick="switchKidsAreaTab('gastos')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-base">🎓</span><span class="truncate">Despesas</span>
         </button>
-        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
+        <button type="button" id="tabBtnKids_game" onclick="switchKidsAreaTab('game')" class="py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-base">🎮</span><span class="truncate">Games &amp; Missões</span>
         </button>
       </div>
@@ -47513,11 +47525,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         </div>
 
         <!-- Sub-navegação interna elegante: Missões dos Pais & Mini-Games -->
-        <div class="flex items-center justify-center gap-2 p-1 bg-white/80 dark:bg-slate-800/80 rounded-2xl max-w-sm mx-auto shadow-xs border border-slate-200/80 select-none">
+        <div class="flex items-center justify-center gap-2 p-1.5 bg-white/15 backdrop-blur-md rounded-2xl max-w-sm mx-auto shadow-xs border border-white/20 select-none">
           <button type="button" id="subBtnKidsGame_missoes" onclick="switchKidsGameSubTab('missoes')" class="flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
             <span>🏅</span><span>Missões dos Pais</span>
           </button>
-          <button type="button" id="subBtnKidsGame_jogos" onclick="switchKidsGameSubTab('jogos')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5">
+          <button type="button" id="subBtnKidsGame_jogos" onclick="switchKidsGameSubTab('jogos')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-center gap-1.5">
             <span>🎮</span><span>Mini-Games</span>
           </button>
         </div>
@@ -48340,12 +48352,12 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       if (btnMissoes) {
         btnMissoes.className = isMissoes
           ? 'flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5'
-          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5';
+          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-center gap-1.5';
       }
       if (btnJogos) {
         btnJogos.className = !isMissoes
           ? 'flex-1 py-2 px-3 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5'
-          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5';
+          : 'flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-center gap-1.5';
       }
       if (viewMissoes) {
         if (isMissoes) viewMissoes.classList.remove('hidden'); else viewMissoes.classList.add('hidden');
@@ -48369,7 +48381,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           if (t === tabName) {
             btn.className = 'py-2.5 px-2 rounded-xl font-black text-xs transition-all bg-pink-600 text-white shadow-xs flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer';
           } else {
-            btn.className = 'py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer';
+            btn.className = 'py-2.5 px-2 rounded-xl font-bold text-xs transition-all text-blue-100 hover:text-white hover:bg-white/10 flex flex-col sm:flex-row items-center justify-center gap-1.5 cursor-pointer';
           }
         }
         if (view) {
