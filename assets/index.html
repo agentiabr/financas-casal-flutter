@@ -28585,7 +28585,27 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- ============================================================== -->
     <!-- ABA 2: ACADEMIA, ATLETA & HIDRATAÇÃO                          -->
     <!-- ============================================================== -->
-    <div id="containerHealthFitnessTab" class="hidden space-y-3 pt-2">
+        <div id="containerHealthFitnessTab" class="hidden space-y-3 pt-2">
+      <!-- BOTAO HERO EM DESTAQUE: MODO TREINO ATLETA (TELA ESCURA COM CRONOMETRO E SERIES) -->
+      <button type="button" onclick="openAthleteWorkoutHUD()" class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-cyan-600 text-white shadow-lg shadow-emerald-950/30 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group border border-emerald-400/40">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-black/40 border border-emerald-400/50 flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition-transform">
+            🔥
+          </div>
+          <div class="text-left">
+            <div class="flex items-center gap-2">
+              <span class="font-black text-sm sm:text-base tracking-wide uppercase">Iniciar Treino Agora</span>
+              <span class="bg-black/50 text-emerald-300 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-400/30 uppercase tracking-wider">Modo Atleta</span>
+            </div>
+            <p class="text-[11px] text-emerald-100 font-medium mt-0.5">Tela escura com cronometro, descanso e series em tempo real</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-xs font-black transition-all">
+          <span>Treinar</span>
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+        </div>
+      </button>
+
       <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
         <div class="flex items-center justify-between">
           <h4 class="font-black text-slate-900 dark:text-white text-xs sm:text-sm flex items-center gap-1.5">
@@ -28645,6 +28665,197 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       </div>
     </div>
 
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: TELA ESCURA DO ATLETA (HUD NOTURNO DE TREINO)           -->
+  <!-- ============================================================== -->
+  <div id="modalAthleteWorkoutHUD" class="hidden fixed inset-0 z-[120] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #070b14 !important; background-image: radial-gradient(circle at 50% 0%, #111d33 0%, #070b14 70%);">
+    
+    <!-- TOPO HUD: MINIMIZAR, TITULO DO TREINO E BOTAO FINALIZAR -->
+    <div class="px-4 py-3 bg-[#0a0f1d]/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between text-white flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeAthleteWorkoutHUD()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 active:scale-95 flex items-center justify-center text-slate-300 transition-all cursor-pointer" title="Minimizar">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs">⚡</span>
+            <span id="hudRoutineBadge" class="text-xs font-black tracking-wider uppercase text-emerald-400">Treino A</span>
+            <span class="text-[9px] bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded-full font-bold">MODO FOCO</span>
+          </div>
+          <div id="hudRoutineSubtitle" class="text-[11px] text-slate-400 font-medium">Sessao em andamento</div>
+        </div>
+      </div>
+
+      <!-- SELETOR RAPIDO DE ROTINAS (DESKTOP) -->
+      <div class="hidden sm:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
+        <button type="button" onclick="switchHudRoutine('A')" id="hudChipA" class="px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all">A</button>
+        <button type="button" onclick="switchHudRoutine('B')" id="hudChipB" class="px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all">B</button>
+        <button type="button" onclick="switchHudRoutine('C')" id="hudChipC" class="px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all">C</button>
+        <button type="button" onclick="switchHudRoutine('Cardio')" id="hudChipCardio" class="px-2.5 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all">Cardio</button>
+      </div>
+
+      <button type="button" onclick="finishAthleteWorkout()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-md shadow-emerald-900/40 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
+        <span>🏁</span>
+        <span>Finalizar</span>
+      </button>
+    </div>
+
+    <!-- CORPO DO MODO ATLETA (ROLA SUAVEMENTE) -->
+    <div class="flex-1 overflow-y-auto px-3.5 sm:px-5 py-3 space-y-3.5 custom-scrollbar pb-24">
+      
+      <!-- SELETOR RAPIDO DE ROTINAS MOBILE -->
+      <div class="flex sm:hidden items-center justify-between gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800/80">
+        <button type="button" onclick="switchHudRoutine('A')" id="hudChipAMobile" class="flex-1 py-1.5 rounded-xl text-xs font-black cursor-pointer text-center transition-all">Treino A</button>
+        <button type="button" onclick="switchHudRoutine('B')" id="hudChipBMobile" class="flex-1 py-1.5 rounded-xl text-xs font-black cursor-pointer text-center transition-all">Treino B</button>
+        <button type="button" onclick="switchHudRoutine('C')" id="hudChipCMobile" class="flex-1 py-1.5 rounded-xl text-xs font-black cursor-pointer text-center transition-all">Treino C</button>
+        <button type="button" onclick="switchHudRoutine('Cardio')" id="hudChipCardioMobile" class="flex-1 py-1.5 rounded-xl text-xs font-black cursor-pointer text-center transition-all">Cardio</button>
+      </div>
+
+      <!-- CARD 1: CRONOMETRO PRINCIPAL DO TREINO (STOPWATCH) -->
+      <div class="p-4 rounded-2xl bg-[#0d1527] border border-slate-800 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-[10px] font-black tracking-wider uppercase text-slate-400">Tempo de Treino</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="toggleAthleteStopwatch()" id="hudBtnStopwatchToggle" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 border border-slate-700 cursor-pointer active:scale-95 transition-all">
+              ❚❚ Pausar
+            </button>
+            <button type="button" onclick="resetAthleteStopwatch()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 border border-slate-700 cursor-pointer active:scale-95 transition-all">
+              ↺ Zerar
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center py-1">
+          <div id="hudStopwatchDisplay" class="font-mono font-black text-3xl sm:text-4xl text-emerald-400 tracking-wider">00:00:00</div>
+          <div id="hudStopwatchStatus" class="text-[10px] font-semibold text-emerald-300/80 mt-0.5">● Treino ativo • Continue no foco!</div>
+        </div>
+      </div>
+
+      <!-- CARD 2: TIMER DE DESCANSO ENTRE SERIES (REST TIMER ATLETA) -->
+      <div id="hudRestTimerCard" class="p-3.5 rounded-2xl bg-[#0c1926] border border-teal-500/30 shadow-lg transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-sm">⏱️</span>
+            <span class="text-xs font-black text-teal-300 tracking-wide uppercase">Descanso Entre Series</span>
+          </div>
+          <!-- Presets rapidos de descanso -->
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="setAthleteRestPreset(30)" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">30s</button>
+            <button type="button" onclick="setAthleteRestPreset(45)" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">45s</button>
+            <button type="button" onclick="setAthleteRestPreset(60)" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-teal-800/80 text-teal-200 border border-teal-500/50 cursor-pointer">60s</button>
+            <button type="button" onclick="setAthleteRestPreset(90)" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">90s</button>
+            <button type="button" onclick="setAthleteRestPreset(120)" class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">2m</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div id="hudRestTimerDisplay" class="font-mono font-black text-2xl text-teal-400">00:60</div>
+            <div class="text-[10px] text-slate-400 leading-tight">
+              <span id="hudRestTimerStatus">Pronto para iniciar</span><br>
+              <span class="text-slate-500">Bip sonoro ao zerar 🔔</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="addAthleteRestTime(15)" class="px-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">
+              +15s
+            </button>
+            <button type="button" onclick="toggleAthleteRestTimer()" id="hudBtnRestToggle" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs shadow-md active:scale-95 cursor-pointer">
+              ▶ Iniciar
+            </button>
+            <button type="button" onclick="skipAthleteRestTimer()" id="hudBtnRestSkip" class="hidden px-2 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 cursor-pointer">
+              Pular
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra de Progresso do Descanso -->
+        <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden mt-2.5 border border-slate-800">
+          <div id="hudRestProgressBar" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full w-full transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- CARD 3: BARRA DE PROGRESSO DO TREINO -->
+      <div class="p-3 rounded-2xl bg-[#0a1220] border border-slate-800 flex items-center justify-between gap-3 text-xs">
+        <div class="flex-1">
+          <div class="flex items-center justify-between mb-1 text-[11px]">
+            <span class="font-bold text-slate-400">Progresso do Treino</span>
+            <span id="hudProgressText" class="font-black text-emerald-400">0 de 0 concluidos (0%)</span>
+          </div>
+          <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+            <div id="hudProgressBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTA DE EXERCICIOS DA SESSAO NO MODO ESCURO -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-black text-white text-xs sm:text-sm flex items-center gap-1.5 uppercase tracking-wider">
+            <span>🏋️</span>
+            <span>Exercicios da Sessao</span>
+          </h4>
+          <button type="button" onclick="openAddExerciseModal()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95">
+            <span>+ Adicionar Exercicio</span>
+          </button>
+        </div>
+
+        <div id="hudExercisesList" class="space-y-3">
+          <!-- Renderizado dinamicamente via renderHudExercises() -->
+        </div>
+      </div>
+
+      <!-- BOTAO INFERIOR FINALIZAR TREINO -->
+      <div class="pt-2">
+        <button type="button" onclick="finishAthleteWorkout()" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-sm shadow-xl shadow-emerald-950/40 flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer">
+          <span class="text-lg">🏆</span>
+          <span>FINALIZAR TREINO COM SUCESSO</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: RESUMO COMEMORATIVO DE TREINO FINALIZADO -->
+  <div id="modalWorkoutSummary" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[150] hidden flex items-center justify-center p-4">
+    <div class="bg-[#0b1322] border border-emerald-500/40 rounded-3xl max-w-sm w-full p-5 text-white shadow-2xl text-center space-y-4">
+      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-3xl mx-auto shadow-lg shadow-emerald-500/30">
+        🏆
+      </div>
+      <div>
+        <h3 class="text-lg font-black text-white">Treino Concluido!</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Parabens pelo esforco e dedicacao de atleta!</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 bg-slate-900/80 p-3 rounded-2xl border border-slate-800 text-left">
+        <div>
+          <div class="text-[10px] text-slate-400 font-bold uppercase">Tempo Total</div>
+          <div id="summaryWorkoutDuration" class="font-mono font-black text-base text-emerald-400">00:00</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 font-bold uppercase">Exercicios</div>
+          <div id="summaryWorkoutExercises" class="font-mono font-black text-base text-teal-300">0 / 0</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 font-bold uppercase">Series Feitas</div>
+          <div id="summaryWorkoutSets" class="font-mono font-black text-base text-cyan-300">0 series</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 font-bold uppercase">Rotina</div>
+          <div id="summaryWorkoutRoutine" class="font-bold text-xs text-amber-300 uppercase mt-0.5">Treino A</div>
+        </div>
+      </div>
+      <div class="text-[11px] text-emerald-200/90 italic bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-800/40">
+        "A consistencia e o que transforma esforco diario em resultados reais." 💪
+      </div>
+      <button type="button" onclick="closeWorkoutSummaryModal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-xs cursor-pointer shadow-md">
+        Fechar e Salvar
+      </button>
     </div>
   </div>
 
@@ -39990,13 +40201,18 @@ window.renderFitnessExercises = function() {
   }
   list.innerHTML = exercises.map((ex, idx) => `
     <div class="p-3 rounded-2xl bg-slate-900 border ${ex.done ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-slate-700/80'} flex items-center justify-between text-xs transition-all">
-      <div class="min-w-0 pr-2">
+      <div class="min-w-0 pr-2 cursor-pointer" onclick="openAthleteWorkoutHUD()">
         <div class="font-extrabold ${ex.done ? 'line-through text-slate-400' : 'text-white'} truncate">${escapeHtml(ex.nome)}</div>
         <div class="text-[10px] text-slate-400 mt-0.5">${ex.series} séries × ${ex.reps} reps • <strong class="text-sky-300">${ex.peso}</strong></div>
       </div>
-      <button type="button" onclick="toggleFitnessExerciseDone(${idx})" class="px-2.5 py-1.5 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 ${ex.done ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'}">
-        <span>${ex.done ? '✓ Feito' : 'Concluir'}</span>
-      </button>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="openAthleteWorkoutHUD()" class="px-2 py-1.5 rounded-xl bg-teal-900/60 hover:bg-teal-800 text-teal-300 border border-teal-500/40 font-bold text-[10px] flex items-center gap-1 cursor-pointer active:scale-95 transition-all" title="Abrir no Modo Treino Atleta">
+          <span>⚡ Treinar</span>
+        </button>
+        <button type="button" onclick="toggleFitnessExerciseDone(${idx})" class="px-2.5 py-1.5 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 ${ex.done ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'}">
+          <span>${ex.done ? '✓ Feito' : 'Concluir'}</span>
+        </button>
+      </div>
     </div>
   `).join('');
 };
@@ -40059,6 +40275,566 @@ window.resetFitnessWater = function() {
   window.fitnessWaterAmount = 0;
   localStorage.setItem('ctrlpig_fitness_water', '0');
   window.renderFitnessWaterUI();
+};
+
+// ============================================================================
+// MODO TREINO ATLETA - HUD ESCURO, CRONOMETRO, DESCANSO & SERIES
+// ============================================================================
+window.athleteWorkoutStopwatch = {
+  seconds: 0,
+  timerId: null,
+  running: false
+};
+
+window.athleteRestTimer = {
+  duration: 60,
+  remaining: 60,
+  timerId: null,
+  active: false
+};
+
+// Web Audio API Beep sintetizado para avisos sonoros no descanso
+window.playAthleteTone = function(freq = 880, duration = 0.12, type = 'sine') {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {}
+};
+
+// Fanfarra triunfante sintetizada ao finalizar o treino
+window.playAthleteVictoryFanfare = function() {
+  try {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      setTimeout(() => {
+        window.playAthleteTone(freq, 0.22, 'triangle');
+      }, idx * 160);
+    });
+  } catch (e) {}
+};
+
+window.openAthleteWorkoutHUD = function(routine) {
+  if (routine) window.currentFitnessRoutine = routine;
+  else if (!window.currentFitnessRoutine) window.currentFitnessRoutine = 'A';
+
+  const m = document.getElementById('modalAthleteWorkoutHUD');
+  if (m) {
+    if (m.parentElement !== document.body) document.body.appendChild(m);
+    m.classList.remove('hidden');
+    m.style.display = 'flex';
+  }
+
+  // Inicia o cronometro do treino automaticamente se nao estiver rodando
+  if (!window.athleteWorkoutStopwatch.running && window.athleteWorkoutStopwatch.seconds === 0) {
+    window.startAthleteStopwatch();
+  }
+
+  window.updateHudRoutineTabs();
+  window.renderHudExercises();
+  window.updateHudProgress();
+
+  if (window.lucide) lucide.createIcons();
+};
+
+window.closeAthleteWorkoutHUD = function() {
+  const m = document.getElementById('modalAthleteWorkoutHUD');
+  if (m) {
+    m.classList.add('hidden');
+    m.style.display = 'none';
+  }
+  if (typeof window.renderFitnessExercises === 'function') {
+    window.renderFitnessExercises();
+  }
+};
+
+window.switchHudRoutine = function(r) {
+  window.currentFitnessRoutine = r;
+  window.updateHudRoutineTabs();
+  window.renderHudExercises();
+  window.updateHudProgress();
+};
+
+window.updateHudRoutineTabs = function() {
+  const r = window.currentFitnessRoutine || 'A';
+  const badge = document.getElementById('hudRoutineBadge');
+  const sub = document.getElementById('hudRoutineSubtitle');
+  const titles = {
+    'A': 'Treino A • Peito & Triceps',
+    'B': 'Treino B • Costas & Biceps',
+    'C': 'Treino C • Pernas & Ombros',
+    'Cardio': 'Treino D • Cardio & Abdomen'
+  };
+  if (badge) badge.textContent = titles[r] || ('Treino ' + r);
+  if (sub) sub.textContent = 'Modo Atleta Foco Ativo • Alta Performance';
+
+  ['A', 'B', 'C', 'Cardio'].forEach(key => {
+    const desktopChip = document.getElementById('hudChip' + key);
+    const mobileChip = document.getElementById('hudChip' + key + 'Mobile');
+    const isAct = (key === r);
+    const actClass = 'bg-emerald-600 text-white font-black shadow-sm';
+    const inactClass = 'bg-slate-800 text-slate-400 font-bold hover:text-white';
+
+    if (desktopChip) {
+      desktopChip.className = `px-2.5 py-1 rounded-lg text-[10px] cursor-pointer transition-all ${isAct ? actClass : inactClass}`;
+    }
+    if (mobileChip) {
+      mobileChip.className = `flex-1 py-1.5 rounded-xl text-xs cursor-pointer text-center transition-all ${isAct ? actClass : inactClass}`;
+    }
+  });
+};
+
+// Cronometro do Treino (Stopwatch)
+window.startAthleteStopwatch = function() {
+  if (window.athleteWorkoutStopwatch.running) return;
+  window.athleteWorkoutStopwatch.running = true;
+  window.updateStopwatchDisplay();
+  const btn = document.getElementById('hudBtnStopwatchToggle');
+  const status = document.getElementById('hudStopwatchStatus');
+  if (btn) btn.textContent = '❚❚ Pausar';
+  if (status) status.textContent = '● Treino ativo • Continue no foco!';
+
+  window.athleteWorkoutStopwatch.timerId = setInterval(() => {
+    window.athleteWorkoutStopwatch.seconds++;
+    window.updateStopwatchDisplay();
+  }, 1000);
+};
+
+window.pauseAthleteStopwatch = function() {
+  window.athleteWorkoutStopwatch.running = false;
+  if (window.athleteWorkoutStopwatch.timerId) {
+    clearInterval(window.athleteWorkoutStopwatch.timerId);
+    window.athleteWorkoutStopwatch.timerId = null;
+  }
+  const btn = document.getElementById('hudBtnStopwatchToggle');
+  const status = document.getElementById('hudStopwatchStatus');
+  if (btn) btn.textContent = '▶ Retomar';
+  if (status) status.textContent = '❚❚ Treino pausado';
+};
+
+window.toggleAthleteStopwatch = function() {
+  if (window.athleteWorkoutStopwatch.running) {
+    window.pauseAthleteStopwatch();
+  } else {
+    window.startAthleteStopwatch();
+  }
+};
+
+window.resetAthleteStopwatch = function() {
+  if (confirm('Deseja zerar o cronometro do treino?')) {
+    window.pauseAthleteStopwatch();
+    window.athleteWorkoutStopwatch.seconds = 0;
+    window.updateStopwatchDisplay();
+  }
+};
+
+window.updateStopwatchDisplay = function() {
+  const disp = document.getElementById('hudStopwatchDisplay');
+  if (!disp) return;
+  const s = window.athleteWorkoutStopwatch.seconds;
+  const hrs = Math.floor(s / 3600);
+  const mins = Math.floor((s % 3600) / 60);
+  const secs = s % 60;
+  disp.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
+// Cronometro de Descanso entre Series (Rest Timer)
+window.setAthleteRestPreset = function(secs) {
+  window.athleteRestTimer.duration = secs;
+  window.athleteRestTimer.remaining = secs;
+  window.updateRestTimerUI();
+  window.startAthleteRestTimer();
+};
+
+window.addAthleteRestTime = function(secs) {
+  window.athleteRestTimer.remaining += secs;
+  if (window.athleteRestTimer.remaining > window.athleteRestTimer.duration) {
+    window.athleteRestTimer.duration = window.athleteRestTimer.remaining;
+  }
+  window.updateRestTimerUI();
+};
+
+window.startAthleteRestTimer = function() {
+  if (window.athleteRestTimer.timerId) {
+    clearInterval(window.athleteRestTimer.timerId);
+  }
+  window.athleteRestTimer.active = true;
+  window.updateRestTimerUI();
+
+  const btnToggle = document.getElementById('hudBtnRestToggle');
+  const btnSkip = document.getElementById('hudBtnRestSkip');
+  if (btnToggle) btnToggle.textContent = '❚❚ Pausar';
+  if (btnSkip) btnSkip.classList.remove('hidden');
+
+  window.athleteRestTimer.timerId = setInterval(() => {
+    window.athleteRestTimer.remaining--;
+    window.updateRestTimerUI();
+
+    // Bip nos ultimos 3 segundos
+    if (window.athleteRestTimer.remaining <= 3 && window.athleteRestTimer.remaining > 0) {
+      window.playAthleteTone(800, 0.1);
+      if (navigator.vibrate) navigator.vibrate(40);
+    }
+
+    if (window.athleteRestTimer.remaining <= 0) {
+      clearInterval(window.athleteRestTimer.timerId);
+      window.athleteRestTimer.timerId = null;
+      window.athleteRestTimer.active = false;
+      window.athleteRestTimer.remaining = window.athleteRestTimer.duration;
+      window.updateRestTimerUI();
+
+      // Bip triunfal e vibracao de final do descanso
+      window.playAthleteTone(1200, 0.4, 'triangle');
+      if (navigator.vibrate) navigator.vibrate([100, 50, 150]);
+
+      if (btnToggle) btnToggle.textContent = '▶ Iniciar';
+      if (btnSkip) btnSkip.classList.add('hidden');
+      const st = document.getElementById('hudRestTimerStatus');
+      if (st) st.textContent = '⚡ Hora da proxima serie! Bora!';
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('⏰ Descanso finalizado! Hora da proxima serie, atleta! 💪', false);
+      }
+    }
+  }, 1000);
+};
+
+window.pauseAthleteRestTimer = function() {
+  window.athleteRestTimer.active = false;
+  if (window.athleteRestTimer.timerId) {
+    clearInterval(window.athleteRestTimer.timerId);
+    window.athleteRestTimer.timerId = null;
+  }
+  const btnToggle = document.getElementById('hudBtnRestToggle');
+  if (btnToggle) btnToggle.textContent = '▶ Continuar';
+};
+
+window.toggleAthleteRestTimer = function() {
+  if (window.athleteRestTimer.active) {
+    window.pauseAthleteRestTimer();
+  } else {
+    window.startAthleteRestTimer();
+  }
+};
+
+window.skipAthleteRestTimer = function() {
+  if (window.athleteRestTimer.timerId) {
+    clearInterval(window.athleteRestTimer.timerId);
+    window.athleteRestTimer.timerId = null;
+  }
+  window.athleteRestTimer.active = false;
+  window.athleteRestTimer.remaining = window.athleteRestTimer.duration;
+  window.updateRestTimerUI();
+  const btnToggle = document.getElementById('hudBtnRestToggle');
+  const btnSkip = document.getElementById('hudBtnRestSkip');
+  if (btnToggle) btnToggle.textContent = '▶ Iniciar';
+  if (btnSkip) btnSkip.classList.add('hidden');
+  const st = document.getElementById('hudRestTimerStatus');
+  if (st) st.textContent = 'Descanso pulado. Foco no treino!';
+};
+
+window.updateRestTimerUI = function() {
+  const disp = document.getElementById('hudRestTimerDisplay');
+  const bar = document.getElementById('hudRestProgressBar');
+  const st = document.getElementById('hudRestTimerStatus');
+  const r = window.athleteRestTimer.remaining;
+  const d = window.athleteRestTimer.duration || 60;
+  if (disp) {
+    const mins = Math.floor(r / 60);
+    const secs = r % 60;
+    disp.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+  if (bar) {
+    const pct = Math.max(0, Math.min(100, (r / d) * 100));
+    bar.style.width = pct + '%';
+  }
+  if (st && window.athleteRestTimer.active) {
+    st.textContent = `Descanso em andamento (${r}s)`;
+  }
+};
+
+// Renderizacao dos Exercicios no HUD
+window.renderHudExercises = function() {
+  const list = document.getElementById('hudExercisesList');
+  if (!list) return;
+
+  const routine = window.currentFitnessRoutine || 'A';
+  const exercises = window.fitnessRoutinesData[routine] || [];
+
+  if (exercises.length === 0) {
+    list.innerHTML = `
+      <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
+        <div class="text-3xl">🏋️</div>
+        <div class="text-xs text-slate-300 font-bold">Nenhum exercicio cadastrado no Treino ${routine}.</div>
+        <p class="text-[11px] text-slate-500">Toque em "+ Adicionar Exercicio" para montar sua rotina.</p>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = exercises.map((ex, idx) => {
+    const numSeries = parseInt(ex.series) || 3;
+    if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+      ex.completedSets = Array(numSeries).fill(ex.done === true);
+    }
+    const completedCount = ex.completedSets.filter(Boolean).length;
+    const isExDone = completedCount === numSeries;
+
+    const setChipsHtml = ex.completedSets.map((done, sIdx) => `
+      <button type="button" onclick="hudToggleSet(${idx}, ${sIdx})" class="px-2.5 py-1.5 rounded-xl border text-xs font-black transition-all flex items-center gap-1 cursor-pointer active:scale-95 ${
+        done 
+          ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300 shadow-sm shadow-emerald-500/20' 
+          : 'bg-slate-800/80 border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white'
+      }">
+        <span>${done ? '✓' : ''} Serie ${sIdx + 1}</span>
+        ${done ? '<span class="text-[10px] text-emerald-400">ok</span>' : ''}
+      </button>
+    `).join('');
+
+    return `
+      <div class="p-3.5 rounded-2xl bg-[#0d1627] border ${isExDone ? 'border-emerald-500/40 bg-emerald-950/15' : 'border-slate-800'} shadow-md space-y-3 transition-all">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm">⚡</span>
+              <h5 class="font-extrabold text-sm ${isExDone ? 'text-emerald-300 line-through' : 'text-white'}">${escapeHtml(ex.nome)}</h5>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">
+              ${numSeries} series × ${escapeHtml(ex.reps)} reps • 
+              <span class="font-bold ${isExDone ? 'text-emerald-400' : 'text-teal-300'}">${completedCount} de ${numSeries} concluidas</span>
+            </div>
+          </div>
+
+          <!-- Ajuste Rapido de Carga / Peso -->
+          <div class="flex items-center gap-1 bg-slate-900/90 border border-slate-700/80 p-1 rounded-xl">
+            <button type="button" onclick="hudAdjustWeight(${idx}, -2.5)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs flex items-center justify-center cursor-pointer active:scale-95">-</button>
+            <button type="button" onclick="hudPromptWeight(${idx})" class="px-2 py-0.5 text-xs font-black text-amber-300 cursor-pointer hover:underline" title="Toque para editar o peso">${escapeHtml(ex.peso || 'Livre')}</button>
+            <button type="button" onclick="hudAdjustWeight(${idx}, +2.5)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-xs flex items-center justify-center cursor-pointer active:scale-95">+</button>
+          </div>
+        </div>
+
+        <!-- Botoes de Series Interativas -->
+        <div class="space-y-1.5">
+          <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
+            <span>Marcar Series Realizadas:</span>
+            <span class="text-teal-300/80">Toque para concluir & descansar</span>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            ${setChipsHtml}
+          </div>
+        </div>
+
+        <!-- Controles do Exercicio: Aumentar Serie, Remover Serie e Concluir Tudo -->
+        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="hudAddSet(${idx})" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 text-[10px] font-bold flex items-center gap-1 cursor-pointer active:scale-95">
+              <span>+ Serie</span>
+            </button>
+            <button type="button" onclick="hudRemoveSet(${idx})" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 text-[10px] font-bold cursor-pointer active:scale-95" title="Remover ultima serie">
+              <span>- Serie</span>
+            </button>
+          </div>
+
+          <button type="button" onclick="hudToggleExerciseAll(${idx})" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 cursor-pointer active:scale-95 ${
+            isExDone 
+              ? 'bg-emerald-600/80 text-white hover:bg-emerald-600' 
+              : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+          }">
+            <span>${isExDone ? '✓ Concluido' : 'Concluir Tudo'}</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.hudToggleSet = function(exIdx, sIdx) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex) return;
+
+  const numSeries = parseInt(ex.series) || 3;
+  if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+    ex.completedSets = Array(numSeries).fill(false);
+  }
+
+  ex.completedSets[sIdx] = !ex.completedSets[sIdx];
+  ex.done = ex.completedSets.every(Boolean);
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.renderHudExercises();
+  window.updateHudProgress();
+
+  if (ex.completedSets[sIdx]) {
+    if (navigator.vibrate) navigator.vibrate(50);
+    window.playAthleteTone(950, 0.1);
+    window.setAthleteRestPreset(window.athleteRestTimer.duration || 60);
+
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Serie ${sIdx + 1} concluida! Descanso iniciado ⏱️`, false);
+    }
+  }
+};
+
+window.hudAddSet = function(exIdx) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex) return;
+
+  ex.series = (parseInt(ex.series) || 3) + 1;
+  if (!Array.isArray(ex.completedSets)) ex.completedSets = [];
+  ex.completedSets.push(false);
+  ex.done = false;
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.renderHudExercises();
+  window.updateHudProgress();
+
+  if (typeof showToastUndo === 'function') {
+    showToastUndo(`+1 Serie adicionada para ${ex.nome}! Bora pra mais uma! 🔥`, false);
+  }
+};
+
+window.hudRemoveSet = function(exIdx) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex || (parseInt(ex.series) || 3) <= 1) return;
+
+  ex.series = (parseInt(ex.series) || 3) - 1;
+  if (Array.isArray(ex.completedSets)) ex.completedSets.pop();
+  ex.done = ex.completedSets.every(Boolean);
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.renderHudExercises();
+  window.updateHudProgress();
+};
+
+window.hudAdjustWeight = function(exIdx, delta) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex) return;
+
+  const currentStr = String(ex.peso || '');
+  const match = currentStr.match(/([\d\.,]+)/);
+  if (match) {
+    let num = parseFloat(match[1].replace(',', '.'));
+    if (!isNaN(num)) {
+      num = Math.max(0, num + delta);
+      ex.peso = num + 'kg';
+    }
+  } else {
+    ex.peso = Math.max(0, 10 + delta) + 'kg';
+  }
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.renderHudExercises();
+};
+
+window.hudPromptWeight = function(exIdx) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex) return;
+
+  const val = prompt(`Ajustar carga/peso para "${ex.nome}":`, ex.peso || '20kg');
+  if (val !== null && val.trim()) {
+    ex.peso = val.trim();
+    localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+    window.renderHudExercises();
+  }
+};
+
+window.hudToggleExerciseAll = function(exIdx) {
+  const routine = window.currentFitnessRoutine || 'A';
+  const ex = window.fitnessRoutinesData[routine][exIdx];
+  if (!ex) return;
+
+  const numSeries = parseInt(ex.series) || 3;
+  const newDone = !ex.done;
+  ex.done = newDone;
+  ex.completedSets = Array(numSeries).fill(newDone);
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.renderHudExercises();
+  window.updateHudProgress();
+
+  if (newDone) {
+    if (navigator.vibrate) navigator.vibrate([60, 40, 80]);
+    window.playAthleteTone(1100, 0.18);
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Exercicio "${ex.nome}" 100% concluido! Parabens! 💪`, false);
+    }
+  }
+};
+
+window.updateHudProgress = function() {
+  const routine = window.currentFitnessRoutine || 'A';
+  const exercises = window.fitnessRoutinesData[routine] || [];
+  const total = exercises.length;
+  const done = exercises.filter(e => e.done === true).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  const txt = document.getElementById('hudProgressText');
+  const bar = document.getElementById('hudProgressBar');
+  if (txt) txt.textContent = `${done} de ${total} exercicios concluidos (${pct}%)`;
+  if (bar) bar.style.width = pct + '%';
+};
+
+window.finishAthleteWorkout = function() {
+  const routine = window.currentFitnessRoutine || 'A';
+  const exercises = window.fitnessRoutinesData[routine] || [];
+  const s = window.athleteWorkoutStopwatch.seconds;
+  const doneCount = exercises.filter(e => e.done === true).length;
+  const totalSets = exercises.reduce((acc, e) => acc + (Array.isArray(e.completedSets) ? e.completedSets.filter(Boolean).length : (e.done ? (parseInt(e.series) || 3) : 0)), 0);
+
+  window.pauseAthleteStopwatch();
+
+  const durEl = document.getElementById('summaryWorkoutDuration');
+  const exEl = document.getElementById('summaryWorkoutExercises');
+  const setEl = document.getElementById('summaryWorkoutSets');
+  const routEl = document.getElementById('summaryWorkoutRoutine');
+  if (durEl) {
+    const hrs = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    durEl.textContent = hrs > 0 ? `${hrs}h ${m}m ${sec}s` : `${m}m ${sec}s`;
+  }
+  if (exEl) exEl.textContent = `${doneCount} de ${exercises.length} feitos`;
+  if (setEl) setEl.textContent = `${totalSets} series`;
+  if (routEl) routEl.textContent = `Treino ${routine}`;
+
+  window.playAthleteVictoryFanfare();
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+
+  try {
+    const history = JSON.parse(localStorage.getItem('ctrlpig_workout_history') || '[]');
+    history.unshift({
+      date: new Date().toISOString(),
+      routine: routine,
+      durationSeconds: s,
+      exercisesDone: doneCount,
+      totalExercises: exercises.length,
+      totalSets: totalSets
+    });
+    localStorage.setItem('ctrlpig_workout_history', JSON.stringify(history.slice(0, 50)));
+  } catch (e) {}
+
+  const summaryModal = document.getElementById('modalWorkoutSummary');
+  if (summaryModal) summaryModal.classList.remove('hidden');
+};
+
+window.closeWorkoutSummaryModal = function() {
+  const summaryModal = document.getElementById('modalWorkoutSummary');
+  if (summaryModal) summaryModal.classList.add('hidden');
+  window.closeAthleteWorkoutHUD();
 };
 
 // ----------------------------------------------------------------------------
