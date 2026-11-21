@@ -8059,6 +8059,8 @@ html, body {
     </div>
   </div>
 
+
+
   <!-- ========================================== -->
   <!-- JAVASCRIPT PRINCIPAL DO APLICATIVO         -->
   <!-- ========================================== -->
@@ -13265,6 +13267,11 @@ html, body {
       } else {
         builderSelectedItems[name].selected = !builderSelectedItems[name].selected;
       }
+      if (builderSelectedItems[name] && builderSelectedItems[name].selected) {
+        if (typeof checkAgenticShoppingItemTrigger === 'function') {
+          checkAgenticShoppingItemTrigger(name);
+        }
+      }
       renderShoppingListBuilder();
     }
 
@@ -13377,6 +13384,9 @@ html, body {
       if (priceInput) priceInput.value = '';
       renderShoppingListBuilder();
       showToastUndo(`Produto "${name}" adicionado à lista!`, false);
+      if (typeof checkAgenticShoppingItemTrigger === 'function') {
+        checkAgenticShoppingItemTrigger(name);
+      }
     }
 
     function updateBuilderSummaryUI() {
@@ -40829,6 +40839,13 @@ window.finishAthleteWorkout = function() {
 
   const summaryModal = document.getElementById('modalWorkoutSummary');
   if (summaryModal) summaryModal.classList.remove('hidden');
+
+  // Disparo Proativo do Porquinho Mentor: Hidratação & Pós-Treino
+  if (typeof triggerAgenticWorkoutFinished === 'function') {
+    setTimeout(() => {
+      triggerAgenticWorkoutFinished(routine, Math.max(1, Math.round(s / 60)), totalSets);
+    }, 1800);
+  }
 };
 
 window.closeWorkoutSummaryModal = function() {
@@ -40836,6 +40853,338 @@ window.closeWorkoutSummaryModal = function() {
   if (summaryModal) summaryModal.classList.add('hidden');
   window.closeAthleteWorkoutHUD();
 };
+
+// ============================================================================
+// MOTOR AGÊNTICO DO PORQUINHO MENTOR (IA PROATIVA, CRUZAMENTO DE DADOS & HÁBITOS)
+// ============================================================================
+
+window.agenticPiggyState = {
+  active: false,
+  triggerType: null,
+  originalItem: null,
+  suggestedItem: null,
+  customAction: null
+};
+
+// Catálogo de Substituições Inteligentes para Atletas (Camada On-Device)
+const ATHLETE_FOOD_SUBS = [
+  {
+    regex: /(refrigerante|coca[- ]?cola|fanta|guaran[aá]|pepsi|sprite|sukita|energ[eé]tico|red bull|monster)/i,
+    category: 'bebida_acucarada',
+    suggestion: 'Água com Gás e Limão ou Chá Gelado Natural',
+    tip: 'Bebidas com muito açúcar dão pico de insulina e prejudicam a queima de gordura pós-treino! Que tal trocarmos por Água com Gás e Limão ou Água de Coco? 🍋💧'
+  },
+  {
+    regex: /(biscoito|bolacha|rechead[oa]|trakinas|oreo|passatempo|bono|wafer|rosquinha)/i,
+    category: 'doce_ultraprocessado',
+    suggestion: 'Pasta de Amendoim Integral ou Iogurte com Granola',
+    tip: 'Biscoito recheado tem gordura vegetal hidrogenada que rouba sua energia pro supino! Que tal trocarmos por Pasta de Amendoim Integral ou Iogurte com Aveia? 🥜💪'
+  },
+  {
+    regex: /(salgadinho|doritos|cheetos|ruffles|fandangos|lays|torcida|batata frita congelada)/i,
+    category: 'snack_sodio',
+    suggestion: 'Mix de Castanhas e Nozes ou Pipoca de Panela',
+    tip: 'O excesso de sódio retém líquido e esconde a definição muscular! Que tal um Mix de Castanhas ou Pipoca de panela com azeite? 🍿🌰'
+  },
+  {
+    regex: /(cerveja|heineken|brahma|skol|amstel|budweiser|chopp|vodka|whisky|gin|corote|conhaque)/i,
+    category: 'alcool',
+    suggestion: 'Cerveja Zero Álcool ou Água de Coco Natural',
+    tip: 'O álcool desacelera a síntese proteica e atrapalha a hipertrofia por até 48 horas! Que tal trocarmos por Cerveja Zero ou Água de Coco geladinha? 🥥🍻'
+  },
+  {
+    regex: /(salsicha|nuggets|hamb[uú]rguer congelado|empanado de frango)/i,
+    category: 'embutido',
+    suggestion: 'Filé de Peito de Frango ou Ovos Caipiras',
+    tip: 'Embutidos têm muita gordura saturada e pouca proteína aproveitável. Ovos caipiras ou peito de frango puro alimentam o músculo com muito mais qualidade! 🍳🍗'
+  },
+  {
+    regex: /(sorvete|picol[eé]|leite condensado|nutella|creme de avel[aã]|doce de leite)/i,
+    category: 'acucar_denso',
+    suggestion: 'Açaí Puro sem Xarope com Banana ou Frutas Congeladas',
+    tip: 'Vontade de doce pós-treino? Banana congelada batida com cacau 100% ou açaí puro dão a mesma cremosidade com vitaminas de verdade! 🍌🍫'
+  },
+  {
+    regex: /(miojo|macarr[aã]o instant[aâ]neo|cup noodles)/i,
+    category: 'ultraprocessado_rapido',
+    suggestion: 'Macarrão Integral ou Crepioca com Queijo Branco',
+    tip: 'Miojo é pré-frito em gordura e tem sódio pra semana inteira! Uma crepioca com ovos fica pronta em 3 minutos e turbina seus músculos! 🥞'
+  }
+];
+
+// 1. Disparador de Análise de Itens da Lista de Compras
+window.checkAgenticShoppingItemTrigger = async function(productName) {
+  if (!productName || typeof productName !== 'string') return;
+  const cleanName = productName.trim();
+
+  // Verifica se o item já foi sonegador pelo usuário nas últimas 24 horas
+  const snoozedKey = 'agentic_snooze_' + cleanName.toLowerCase().replace(/\s+/g, '_');
+  const snoozedUntil = parseInt(localStorage.getItem(snoozedKey) || '0');
+  if (Date.now() < snoozedUntil) return;
+
+  // Verifica se combina com algum item do catálogo
+  const matchedSub = ATHLETE_FOOD_SUBS.find(s => s.regex.test(cleanName));
+  if (!matchedSub) return;
+
+  window.agenticPiggyState.triggerType = 'shopping_unhealthy_item';
+  window.agenticPiggyState.originalItem = cleanName;
+  window.agenticPiggyState.suggestedItem = matchedSub.suggestion;
+
+  let comment = matchedSub.tip;
+  let suggestion = matchedSub.suggestion;
+  let badge = 'Dica do Porquinho • Foco Atleta';
+  let img = 'assets/images/mascote_oficial_compras.png';
+
+  // Se houver chave do Google Gemini, gera fala dinâmica e inteligente com a persona
+  const apiKey = (localStorage.getItem('financas_gemini_api_key') || '').trim();
+  if (apiKey && typeof window.callGeminiAPI === 'function') {
+    try {
+      const userNome = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Rodrigo';
+      const prompt = `Você é o Porquinho (Professor Piggy / ControlPig), mentor carismático, divertido e amigo da família de ${userNome}.
+O usuário treina musculação no app e colocou "${cleanName}" na lista de compras.
+Dê uma dica curta (máximo 2 frases), bem-humorada, espirituosa e carinhosa (sem dar bronca chata!), fazendo uma brincadeira leve com o treino/supino e sugerindo trocar por "${matchedSub.suggestion}".
+Responda EXCLUSIVAMENTE em formato JSON:
+{
+  "comentario": "texto da fala do porquinho",
+  "sugestao": "${matchedSub.suggestion}"
+}`;
+      const res = await Promise.race([
+        window.callGeminiAPI([{ text: prompt }], { temperature: 0.7, response_mime_type: "application/json" }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2200))
+      ]);
+      if (res && res.comentario) {
+        comment = res.comentario;
+        if (res.sugestao) suggestion = res.sugestao;
+      }
+    } catch (e) {
+      console.log('Gemini em espera, usando motor local do Porquinho:', e.message);
+    }
+  }
+
+  window.showAgenticPiggyDrawer({
+    img: img,
+    badge: badge,
+    subtitle: `Notado na Lista de Compras: "${cleanName}"`,
+    message: comment,
+    acceptLabel: `Trocar por ${suggestion.split(' ')[0]}...`,
+    acceptIcon: '💡',
+    dismissLabel: '😋 Hoje eu mereço!',
+    onAccept: () => {
+      window.replaceShoppingItemWithSuggestion(cleanName, suggestion);
+    },
+    onDismiss: () => {
+      // Snooze por 24 horas para não incomodar de novo
+      localStorage.setItem(snoozedKey, String(Date.now() + 24 * 3600 * 1000));
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Combinado! Equilíbrio é tudo: 80% foco e 20% alegria! 🐷😄', false);
+      }
+    }
+  });
+};
+
+// 2. Disparador de Conclusão de Treino (Hidratação & Recuperação)
+window.triggerAgenticWorkoutFinished = function(routine, durationMins, totalSets) {
+  const userNome = (window.currentUserSession && window.currentUserSession.nome) ? window.currentUserSession.nome : 'Rodrigo';
+  
+  window.showAgenticPiggyDrawer({
+    img: 'assets/images/mascote_oficial_saude.png',
+    badge: 'Saúde do Atleta • Hidratação',
+    subtitle: `Treino ${routine} Concluído (${durationMins} min)! 🏆`,
+    message: `Sensacional, ${userNome}! Você completou ${totalSets} séries com foco total! 🔥
+
+Agora o corpo perdeu líquidos e precisa de pelo menos 500ml de água para acelerar a recuperação muscular e evitar cãibras. Vamos hidratar?`,
+    acceptLabel: '+500ml de Água Agora',
+    acceptIcon: '💧',
+    dismissLabel: 'Já bebi água 👍',
+    onAccept: () => {
+      if (typeof addFitnessWater === 'function') {
+        addFitnessWater(500);
+      }
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Meta de hidratação atualizada! Músculos hidratados! 💧🐷', false);
+      }
+    },
+    onDismiss: () => {
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('Ótimo descanso, atleta! Recuperação é parte do treino. 💪', false);
+      }
+    }
+  });
+};
+
+// 3. Disparador de Alerta de Medicamento Contínuo com Pouco Estoque
+window.checkAgenticMedicationStockTrigger = function() {
+  if (typeof getHealthMeds !== 'function') return;
+  const meds = getHealthMeds();
+  if (!Array.isArray(meds) || meds.length === 0) return;
+
+  const lowMed = meds.find(m => {
+    const qtd = parseInt(m.estoqueQtd || m.comprimidosRestantes || '0');
+    const doseDia = parseInt(m.dosesPorDia || '1');
+    const diasRestantes = Math.floor(qtd / (doseDia || 1));
+    return diasRestantes > 0 && diasRestantes <= 5;
+  });
+
+  if (!lowMed) return;
+
+  const lowMedKey = 'agentic_med_alert_' + lowMed.nome;
+  if (sessionStorage.getItem(lowMedKey)) return;
+  sessionStorage.setItem(lowMedKey, 'true');
+
+  window.showAgenticPiggyDrawer({
+    img: 'assets/images/mascote_oficial_saude.png',
+    badge: 'Alerta Preventivo • Farmácia & Saúde',
+    subtitle: `Estoque Baixo: ${lowMed.nome}`,
+    message: `Atenção na rotina da família! 💊 O remédio ${lowMed.nome} tem estoque para poucos dias. Deseja que eu coloque na lista de compras agora para não faltar no fim de semana?`,
+    acceptLabel: 'Adicionar à Lista de Compras',
+    acceptIcon: '🛒',
+    dismissLabel: 'Lembrar mais tarde',
+    onAccept: () => {
+      if (typeof customBuilderProducts !== 'undefined') {
+        customBuilderProducts.push({ produto: lowMed.nome });
+      }
+      if (typeof builderSelectedItems !== 'undefined') {
+        builderSelectedItems[lowMed.nome] = { selected: true, qtd: 1, unidade: 'cx' };
+      }
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`Remédio "${lowMed.nome}" adicionado à lista de compras! 💊`, false);
+      }
+    },
+    onDismiss: () => {}
+  });
+};
+
+// 4. Execução de Substituição de Produto na Lista de Compras
+window.replaceShoppingItemWithSuggestion = function(oldName, newName) {
+  try {
+    let oldQtd = 1;
+    if (typeof builderSelectedItems !== 'undefined' && builderSelectedItems[oldName]) {
+      oldQtd = builderSelectedItems[oldName].qtd || 1;
+      delete builderSelectedItems[oldName];
+      builderSelectedItems[newName] = {
+        selected: true,
+        qtd: oldQtd,
+        unidade: 'un',
+        lojaNome: '',
+        menorPreco: 0,
+        lojaMenorPreco: '',
+        ultimoPreco: 0,
+        lojaUltimoPreco: ''
+      };
+    }
+
+    if (typeof customBuilderProducts !== 'undefined' && Array.isArray(customBuilderProducts)) {
+      const idx = customBuilderProducts.findIndex(p => p.produto === oldName);
+      if (idx !== -1) {
+        customBuilderProducts[idx].produto = newName;
+      } else {
+        customBuilderProducts.push({ produto: newName });
+      }
+    }
+
+    if (typeof renderShoppingListBuilder === 'function') {
+      renderShoppingListBuilder();
+    }
+
+    // Som de sucesso e vibração
+    if (typeof playAthleteTone === 'function') {
+      playAthleteTone(1050, 0.2);
+    }
+    if (navigator.vibrate) navigator.vibrate([60, 40, 80]);
+
+    // Atualiza o drawer com mensagem de agradecimento
+    const msgEl = document.getElementById('agenticPiggyMessage');
+    const actionsEl = document.getElementById('agenticPiggyActions');
+    if (msgEl) {
+      msgEl.innerHTML = `<strong>Troca realizada com sucesso! ✨</strong><br>Removido: <span class="line-through text-slate-400">${escapeHtml(oldName)}</span><br>Adicionado: <strong class="text-emerald-400">${escapeHtml(newName)}</strong> (${oldQtd} un).<br><span class="text-amber-300 font-bold">O Porquinho está orgulhoso da sua disciplina de atleta! 🐷💪</span>`;
+    }
+    if (actionsEl) {
+      actionsEl.innerHTML = `
+        <button type="button" onclick="closeAgenticPiggyDrawer()" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all text-center">
+          Continuar Compras ✓
+        </button>
+      `;
+    }
+
+    setTimeout(() => {
+      window.closeAgenticPiggyDrawer();
+    }, 2800);
+
+  } catch (err) {
+    console.error('Erro ao substituir item:', err);
+  }
+};
+
+// 5. Exibição e Fechamento do Drawer Flutuante do Porquinho
+window.showAgenticPiggyDrawer = function(opts) {
+  const drawer = document.getElementById('agenticPiggyMentorDrawer');
+  if (!drawer) return;
+
+  const imgEl = document.getElementById('agenticPiggyImg');
+  const badgeEl = document.getElementById('agenticPiggyBadge');
+  const subEl = document.getElementById('agenticPiggySubtitle');
+  const msgEl = document.getElementById('agenticPiggyMessage');
+  const btnAccept = document.getElementById('agenticPiggyBtnAccept');
+  const btnAcceptLabel = document.getElementById('agenticPiggyBtnAcceptLabel');
+  const btnAcceptIcon = document.getElementById('agenticPiggyBtnAcceptIcon');
+  const btnDismiss = document.getElementById('agenticPiggyBtnDismiss');
+
+  if (imgEl && opts.img) imgEl.src = opts.img;
+  if (badgeEl && opts.badge) badgeEl.textContent = opts.badge;
+  if (subEl && opts.subtitle) subEl.textContent = opts.subtitle;
+  if (msgEl && opts.message) msgEl.textContent = opts.message;
+  if (btnAcceptLabel && opts.acceptLabel) btnAcceptLabel.textContent = opts.acceptLabel;
+  if (btnAcceptIcon && opts.acceptIcon) btnAcceptIcon.textContent = opts.acceptIcon;
+  if (btnDismiss && opts.dismissLabel) btnDismiss.querySelector('span').textContent = opts.dismissLabel;
+
+  window.agenticPiggyState.onAccept = opts.onAccept || null;
+  window.agenticPiggyState.onDismiss = opts.onDismiss || null;
+
+  // Garante posicionamento no body se necessário
+  if (drawer.parentElement !== document.body) {
+    document.body.appendChild(drawer);
+  }
+
+  drawer.classList.remove('hidden');
+  drawer.style.display = 'block';
+
+  // Som suave de notificação do mascote
+  if (typeof playAthleteTone === 'function') {
+    playAthleteTone(850, 0.12);
+  }
+};
+
+window.closeAgenticPiggyDrawer = function() {
+  const drawer = document.getElementById('agenticPiggyMentorDrawer');
+  if (drawer) {
+    drawer.classList.add('hidden');
+    drawer.style.display = 'none';
+  }
+};
+
+window.acceptAgenticPiggySuggestion = function() {
+  if (typeof window.agenticPiggyState.onAccept === 'function') {
+    window.agenticPiggyState.onAccept();
+  } else {
+    window.closeAgenticPiggyDrawer();
+  }
+};
+
+window.dismissAgenticPiggyWithSmile = function() {
+  if (typeof window.agenticPiggyState.onDismiss === 'function') {
+    window.agenticPiggyState.onDismiss();
+  }
+  window.closeAgenticPiggyDrawer();
+};
+
+// Verifica remédios com pouco estoque após inicialização da tela
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (typeof checkAgenticMedicationStockTrigger === 'function') {
+      checkAgenticMedicationStockTrigger();
+    }
+  }, 4000);
+});
 
 // ----------------------------------------------------------------------------
 // TOGGLE DE PRIVACIDADE: NÃO FALAR NOME NO ALARME
