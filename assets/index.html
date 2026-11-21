@@ -5554,7 +5554,7 @@ html, body {
 
               <!-- Lado Direito: Olhinho no topo e Botão Discreto de Lançar Valores logo abaixo -->
               <div class="flex flex-col items-end gap-1.5 -mr-1">
-                <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-slate-900 bg-transparent transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
+                <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-9 h-9 -mr-1 flex items-center justify-center rounded-full hover:bg-slate-100/80 active:scale-95 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
                   <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
                 </button>
                 <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold text-xs border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas">
@@ -11428,9 +11428,10 @@ html, body {
         elSaldoText.dataset.real = formattedSaldo;
         elSaldoText.textContent = isHeroBalanceHidden ? 'R$ •••••' : formattedSaldo;
       }
-      const heroEyeIcon = document.getElementById('iconHeroPrivacy');
-      if (heroEyeIcon) {
-        heroEyeIcon.setAttribute('data-lucide', isHeroBalanceHidden ? 'eye-off' : 'eye');
+      const btnHeroDash = document.getElementById('btnHeroPrivacyToggle');
+      if (btnHeroDash) {
+        btnHeroDash.innerHTML = `<i data-lucide="${isHeroBalanceHidden ? 'eye-off' : 'eye'}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>`;
+        btnHeroDash.title = isHeroBalanceHidden ? 'Mostrar Saldo e Valores do Card' : 'Ocultar Saldo e Valores do Card';
       }
       if (elReceitasVal) {
         const formattedReceitas = typeof formatBRL === 'function' ? '+ ' + formatBRL(receitas, 'receitas') : '+ R$ ' + receitas.toFixed(2);
@@ -33634,13 +33635,18 @@ Frase falada: "${spokenText}"`;
   //    - Se o olhinho estiver desligado (isHeroBalanceHidden === true -> eye-off), o valor fica "R$ •••••"
   //    - Se o olhinho estiver ligado (isHeroBalanceHidden === false -> eye), o valor mostra "R$ X.XXX,XX"
   window.syncHeroCardEyeAndBalance = function() {
-    const valEl = document.getElementById('heroSaldoDisponivelVal');
-    const btnEl = document.getElementById('btnHeroPrivacyToggle');
-    const badgeEl = document.getElementById('heroSaldoStatusBadge');
-
     const hidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
     isHeroBalanceHidden = hidden;
 
+    const btnEl = document.getElementById('btnHeroPrivacyToggle');
+    if (btnEl) {
+      const iconName = hidden ? 'eye-off' : 'eye';
+      btnEl.title = hidden ? 'Mostrar Saldo e Valores do Card' : 'Ocultar Saldo e Valores do Card';
+      btnEl.innerHTML = `<i data-lucide="${iconName}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>`;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    const valEl = document.getElementById('heroSaldoDisponivelVal');
     if (valEl) {
       const currentTxt = (valEl.textContent || '').trim();
       if (currentTxt && currentTxt !== 'R$ •••••') {
@@ -33653,31 +33659,25 @@ Frase falada: "${spokenText}"`;
       }
     }
 
-    if (btnEl) {
-      const iconName = hidden ? 'eye-off' : 'eye';
-      btnEl.title = hidden ? 'Mostrar Saldo Livre Disponível' : 'Ocultar Saldo Livre Disponível';
-      btnEl.innerHTML = `<i data-lucide="${iconName}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-700" style="color: #334155 !important;"></i>`;
-      if (window.lucide) lucide.createIcons();
-    }
-
-    // Garante que o badge Saldo Positivo / Negativo nunca quebre de linha
-    if (badgeEl) {
-      badgeEl.classList.add('whitespace-nowrap', 'flex-shrink-0');
+    const sEl = document.getElementById('heroSaldoText');
+    if (sEl) {
+      const currentTxt = (sEl.textContent || '').trim();
+      if (currentTxt && currentTxt !== 'R$ •••••') {
+        sEl.dataset.real = currentTxt;
+      }
+      if (hidden) {
+        sEl.textContent = 'R$ •••••';
+      } else if (sEl.dataset.real && !sEl.dataset.real.includes('•')) {
+        sEl.textContent = sEl.dataset.real;
+      }
     }
   };
 
   window.applyHeroBalancePrivacyState = window.syncHeroCardEyeAndBalance;
-
   window.toggleHeroCardPrivacy = function() {
-    const currentHidden = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
-    const nextHidden = !currentHidden;
-    isHeroBalanceHidden = nextHidden;
-    localStorage.setItem('ctrlpig_hero_balance_hidden', nextHidden ? 'true' : 'false');
-
-    if (!nextHidden && typeof updateDashboard === 'function') {
-      updateDashboard();
+    if (typeof window.togglePrivacy === 'function') {
+      window.togglePrivacy();
     }
-    window.syncHeroCardEyeAndBalance();
   };
 
   // Impede que updatePrivacyGlobalUI sobrescreva o ícone do olhinho do Card Azul com o estado errado
@@ -43075,18 +43075,31 @@ window.openHealthMedsModal = function() {
     const isHidden = !currentHidden;
     localStorage.setItem('ctrlpig_hero_balance_hidden', isHidden ? 'true' : 'false');
     window.privacyHidden = false; // Garante que NUNCA esconde os demais cards ou métricas fora do card Saldo Atual
+    if (typeof isHeroBalanceHidden !== 'undefined') isHeroBalanceHidden = isHidden;
     if (typeof isPrivacyGlobal !== 'undefined') isPrivacyGlobal = false;
     if (typeof isTablePrivacy !== 'undefined') isTablePrivacy = false;
 
-    // Atualiza os ícones de olhinho do card de Saldo Atual
-    const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
-    eyeIcons.forEach(eyeIcon => {
+    // 1. Atualiza imediatamente o botão do olhinho com nova tag <i> para Lucide recriar o SVG perfeitamente
+    const btnHero = document.getElementById('btnHeroPrivacyToggle');
+    if (btnHero) {
+      btnHero.innerHTML = `<i data-lucide="${isHidden ? 'eye-off' : 'eye'}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>`;
+      btnHero.title = isHidden ? 'Mostrar Saldo e Valores do Card' : 'Ocultar Saldo e Valores do Card';
+    }
+
+    const otherEyeIcons = document.querySelectorAll('[data-hero-privacy-icon], #iconHeroPrivacy2');
+    otherEyeIcons.forEach(eyeIcon => {
       eyeIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
-      eyeIcon.className = 'w-4 h-4 text-slate-600';
-      eyeIcon.style.color = '#475569';
     });
 
-    // Oculta ou exibe EXCLUSIVAMENTE o que está no card de Saldo Atual
+    // 2. Chama incondicionalmente updateDashboard() para recalcular saldos, receitas, despesas e aplicar as máscaras ou valores reais
+    if (typeof updateDashboard === 'function') {
+      updateDashboard();
+    }
+    if (typeof window.syncApprovedDesignWithAppData === 'function') {
+      window.syncApprovedDesignWithAppData();
+    }
+
+    // 3. Atualização direta garantida caso updateDashboard não tenha dados em memória
     const saldoText = document.getElementById('heroSaldoText');
     if (saldoText) {
       if (isHidden) {
@@ -43096,8 +43109,8 @@ window.openHealthMedsModal = function() {
           }
         }
         saldoText.textContent = 'R$ •••••';
-      } else {
-        saldoText.textContent = saldoText.dataset.real || 'R$ 0,00';
+      } else if (saldoText.dataset.real && !saldoText.dataset.real.includes('•')) {
+        saldoText.textContent = saldoText.dataset.real;
       }
     }
 
@@ -43110,8 +43123,8 @@ window.openHealthMedsModal = function() {
           }
         }
         recVal.textContent = '+ R$ •••••';
-      } else {
-        recVal.textContent = recVal.dataset.real || '+ R$ 0,00';
+      } else if (recVal.dataset.real && !recVal.dataset.real.includes('•')) {
+        recVal.textContent = recVal.dataset.real;
       }
     }
 
@@ -43124,8 +43137,8 @@ window.openHealthMedsModal = function() {
           }
         }
         despVal.textContent = '- R$ •••••';
-      } else {
-        despVal.textContent = despVal.dataset.real || '- R$ 0,00';
+      } else if (despVal.dataset.real && !despVal.dataset.real.includes('•')) {
+        despVal.textContent = despVal.dataset.real;
       }
     }
 
@@ -43143,14 +43156,13 @@ window.openHealthMedsModal = function() {
       }
     }
 
-    // Mini métricas dentro do card de Saldo Atual
     const diasEl = document.getElementById('valDiasRestantes');
     if (diasEl) {
       if (isHidden) {
         if (!diasEl.dataset.real && !diasEl.textContent.includes('•')) diasEl.dataset.real = diasEl.textContent;
         diasEl.textContent = '•• dias';
-      } else {
-        diasEl.textContent = diasEl.dataset.real || '9 dias';
+      } else if (diasEl.dataset.real && !diasEl.dataset.real.includes('•')) {
+        diasEl.textContent = diasEl.dataset.real;
       }
     }
 
@@ -43159,8 +43171,8 @@ window.openHealthMedsModal = function() {
       if (isHidden) {
         if (!compEl.dataset.real && !compEl.textContent.includes('•')) compEl.dataset.real = compEl.textContent;
         compEl.textContent = '••%';
-      } else {
-        compEl.textContent = compEl.dataset.real || '78%';
+      } else if (compEl.dataset.real && !compEl.dataset.real.includes('•')) {
+        compEl.textContent = compEl.dataset.real;
       }
     }
 
@@ -43169,8 +43181,8 @@ window.openHealthMedsModal = function() {
       if (isHidden) {
         if (!parcEl.dataset.real && !parcEl.textContent.includes('•')) parcEl.dataset.real = parcEl.textContent;
         parcEl.textContent = '• ativas';
-      } else {
-        parcEl.textContent = parcEl.dataset.real || '0 ativas';
+      } else if (parcEl.dataset.real && !parcEl.dataset.real.includes('•')) {
+        parcEl.textContent = parcEl.dataset.real;
       }
     }
 
@@ -43185,21 +43197,10 @@ window.openHealthMedsModal = function() {
       }
     }
 
-    const btnHero = document.getElementById('btnHeroPrivacyToggle');
-    if (btnHero) {
-      btnHero.title = isHidden ? 'Mostrar Saldo e Valores do Card' : 'Ocultar Saldo e Valores do Card';
+    // 4. Lucide recria os ícones SVG
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
     }
-
-    // Se reexibir, ressincroniza dados do ciclo no card
-    if (!isHidden) {
-      if (typeof window.syncApprovedDesignWithAppData === 'function') {
-        window.syncApprovedDesignWithAppData();
-      } else if (typeof updateDashboard === 'function') {
-        updateDashboard();
-      }
-    }
-
-    if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
   };
 
   // 4. Acessibilidade A- / A+ com Persistência
@@ -44074,6 +44075,11 @@ window.openHealthMedsModal = function() {
   const initialize = () => {
     // Aplica imediatamente a persistência do olhinho salvo pelo usuário (apenas no Card Saldo Atual)
     const savedHeroPrivacy = localStorage.getItem('ctrlpig_hero_balance_hidden') === 'true';
+    const btnHeroInit = document.getElementById('btnHeroPrivacyToggle');
+    if (btnHeroInit) {
+      btnHeroInit.innerHTML = `<i data-lucide="${savedHeroPrivacy ? 'eye-off' : 'eye'}" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>`;
+      btnHeroInit.title = savedHeroPrivacy ? 'Mostrar Saldo e Valores do Card' : 'Ocultar Saldo e Valores do Card';
+    }
     if (savedHeroPrivacy) {
       const elSaldo = document.getElementById('heroSaldoText');
       const elRec = document.getElementById('heroReceitasVal');
@@ -44089,10 +44095,6 @@ window.openHealthMedsModal = function() {
       if (elComp) elComp.textContent = '••%';
       if (elParc) elParc.textContent = '• ativas';
       if (elBadge) { elBadge.textContent = ''; elBadge.style.display = 'none'; }
-      const eyeIcons = document.querySelectorAll('#iconHeroPrivacy, [data-hero-privacy-icon], #iconHeroPrivacy2');
-      eyeIcons.forEach(eyeIcon => {
-        eyeIcon.setAttribute('data-lucide', 'eye-off');
-      });
     }
     window.piggyTips = updateTipsFromAdmin();
     if (window.piggyTips.length) window.stepPiggyTip(0);
