@@ -263,13 +263,22 @@
   .full-screen-page {
     position: fixed !important;
     inset: 0 !important;
-    z-index: 100 !important;
+    z-index: 1050 !important;
     width: 100vw !important;
     height: 100vh !important;
     min-height: 100vh !important;
     max-width: 100vw !important;
     max-height: 100vh !important;
-    background-color: #071933 !important; /* Topo aurora escuro fintech */
+    background: #071933 !important;
+    background-color: #071933 !important;
+    background-image: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
+                         radial-gradient(circle at 15% 45%, rgba(99, 102, 241, 0.20) 0%, transparent 50%),
+                         radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.18) 0%, transparent 45%),
+                         linear-gradient(180deg, #071933 0%, #0b3182 25%, #0e3d9e 50%, #09286c 80%, #071933 100%) !important;
+    background-attachment: scroll !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    opacity: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     margin: 0 !important;
@@ -287,13 +296,12 @@
   .full-screen-page > .page-header-back,
   .full-screen-page > header,
   .full-screen-page > div:first-child {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
+    background-color: #071933 !important;
+    background: linear-gradient(180deg, #071933 0%, #0A264F 50%, #071933 100%) !important;
     color: #FFFFFF !important;
-    padding: 0.25rem 1.25rem 0.5rem 1.25rem !important;
-    padding-top: max(env(safe-area-inset-top, 0px), 0.25rem) !important;
-    padding-bottom: 0.5rem !important;
+    padding: 0.5rem 1.25rem !important;
+    padding-top: max(env(safe-area-inset-top, 0px), 0.5rem) !important;
+    padding-bottom: 0.65rem !important;
     padding-left: 1.25rem !important;
     padding-right: 1.25rem !important;
     display: flex !important;
@@ -304,12 +312,14 @@
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
     height: auto !important;
-    min-height: 0 !important;
+    min-height: 56px !important;
     max-height: none !important;
     margin: 0 !important;
     border: none !important;
-    border-bottom: none !important;
-    box-shadow: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 12px rgba(4, 20, 64, 0.3) !important;
+    position: relative !important;
+    z-index: 50 !important;
   }
 
   /* Corpo com Caixa Arredondada (#DFEAF7) com respiro amplo e rolagem suave */
@@ -3506,7 +3516,7 @@ html, body {
     #modalShoppingListHistory {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
+      background-attachment: scroll !important;
       background-repeat: no-repeat !important;
       background-size: cover !important;
       overflow: hidden !important;
@@ -4303,7 +4313,7 @@ html, body {
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
+      background-attachment: scroll !important;
       background-repeat: no-repeat !important;
       background-size: cover !important;
     }
@@ -4546,7 +4556,7 @@ html, body {
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
+      background-attachment: scroll !important;
       background-repeat: no-repeat !important;
       background-size: cover !important;
       opacity: 1 !important;
@@ -4568,7 +4578,7 @@ html, body {
     .full-screen-page {
       background-color: var(--liquid-bg-main) !important;
       background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient) !important;
-      background-attachment: fixed !important;
+      background-attachment: scroll !important;
       background-repeat: no-repeat !important;
       background-size: cover !important;
     }
@@ -6311,7 +6321,7 @@ html, body {
   </div>
 
   <!-- 1. MODAL: HISTÓRICO & COMPARADOR DA LISTA DE COMPRAS (V4.9.4) -->
-  <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalShoppingListHistory" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO AZUL AURORA OFICIAL DO DASHBOARD) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -7699,7 +7709,7 @@ html, body {
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: CARTÕES & FATURAS (PADRÃO MUNDO PET & SAÚDE)      -->
   <!-- ============================================================== -->
-  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalManageCards" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -18806,7 +18816,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     };
 
     window.updateChatNavDockVisibility = function(isInsideConversation) {
-      const navBottom = document.querySelector('.bottom-nav');
+      const navBottom = document.querySelector('.bottom-nav') || document.getElementById('appBottomNavBar');
       if (!navBottom) return;
       const modalChat = document.getElementById('modalFamilyChat');
       const isChatOpen = modalChat && !modalChat.classList.contains('hidden') && modalChat.style.display !== 'none';
@@ -18815,14 +18825,17 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         if (isInsideConversation) {
           // Ao entrar no chat com um membro, NÃO exibe o rodapé com os botões (dar lugar ao input)
           navBottom.style.display = 'none';
+          navBottom.classList.remove('cp-nav-over-modules');
           navBottom.style.zIndex = '';
         } else {
           // No chat da família na página inicial (lista de conversas/membros), exibe o rodapé com os botões
           navBottom.style.display = 'block';
-          navBottom.style.zIndex = '130';
+          navBottom.classList.add('cp-nav-over-modules');
+          navBottom.style.zIndex = '1000001';
         }
       } else {
         navBottom.style.display = 'block';
+        navBottom.classList.remove('cp-nav-over-modules');
         navBottom.style.zIndex = '';
       }
     };
@@ -27140,7 +27153,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL: CHAT DA FAMÍLIA (ESTILO WHATSAPP, COM SELEÇÃO DE MEMBRO + CONVERSAR & LISTA DE COMPRAS) -->
   <!-- ============================================================== -->
-  <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalFamilyChat" class="full-screen-page fixed inset-0 z-[120] hidden flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET / WHATSAPP) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5 min-w-0">
@@ -27169,12 +27182,12 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     </div>
 
     <!-- 2. CORPO COM CAIXA ARREDONDADA CINZA #DFEAF7 (PADRÃO OFICIAL DO APP) -->
-    <div class="flex-1 bg-transparent overflow-hidden flex flex-col px-3.5 sm:px-5 pb-4">
+    <div class="flex-1 bg-transparent overflow-hidden flex flex-col p-0 m-0">
 
       <!-- ============================================================== -->
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
       <!-- ============================================================== -->
-      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-4 pt-3 pb-28 space-y-3">
+      <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3">
         <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3.5 min-w-0">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
@@ -28005,7 +28018,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 <!-- ============================================================== -->
 <!-- PÁGINA COMPLETA: MUNDO PET • PERFIL, GASTOS & CARTEIRA VACINAS (ESTILO PAYNO) -->
 <!-- ============================================================== -->
-<div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+<div id="modalPetArea" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
   
   <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (NOVO DESIGN SYSTEM) -->
   <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -28314,7 +28327,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
 
   <!-- MODAL 2: CONTROLE DE SAÚDE & REMÉDIOS CONTÍNUOS DE RODRIGO     -->
   <!-- ============================================================== -->
-  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalHealthMeds" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -29691,7 +29704,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: VEÍCULOS & TRANSPORTE DO CASAL                 -->
   <!-- ============================================================== -->
-  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalVeiculosHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -29797,7 +29810,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL DEDICADO: EDUCAÇÃO & FORMAÇÃO DO CASAL                   -->
   <!-- ============================================================== -->
-  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalEducacaoHub" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -34473,7 +34486,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
      SPRINT V2.0.4: CATÁLOGO DE PRESTADORES DE SERVIÇOS DE CONFIANÇA
      (ELETRICISTA, MONTADOR DE MÓVEIS, GÁS NATURAL, PEDREIRO, ENCANADOR, ETC.)
      ============================================================================ -->
-<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+<div id="modalServiceProviders" class="full-screen-page hidden fixed inset-0 z-50 flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     
     <!-- 1. TOPO INTEGRADO COM SETINHA VOLTAR E TÍTULO (PADRÃO MUNDO PET & SAÚDE) -->
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
@@ -40961,15 +40974,22 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
         'modalFullScreenAlarmOverlay',
         'modalAddNewContinuousMed', 'modalEditMedication', 'modalMedTakeConfirmation',
         'modalAddEditPet', 'modalAddPetVaccine', 'modalAddEditPetCare', 'modalPetQrCode',
-        'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel', 'modalAddUser', 'modalAddUser',
+        'modalServiceProviders', 'modalHealthMeds', 'modalPetArea', 'modalAdminPanel', 'modalAddUser',
         'modalManageCards', 'modalVeiculosHub', 'modalEducacaoHub', 'modalEducacaoExpenseQuick', 'modalVeiculosExpenseQuick', 'modalPetExpenseQuick', 'modalHealthExpenseQuick', 'modalSelectCycle',
         'modalComparativoMercados', 'modalNewTx', 'modalEditTx', 'modalTrash',
-        'modalCreatePiggy', 'modalPiggyDepositSpecific', 'modalPiggyWithdrawSpecific'
+        'modalCreatePiggy', 'modalPiggyDepositSpecific', 'modalPiggyWithdrawSpecific',
+        'modalProductWarranties', 'modalKidsArea', 'modalFamilyChat', 'modalShoppingListHistory'
       ];
       modalIds.forEach(id => {
         const el = document.getElementById(id);
-        if (el && el.parentElement !== document.body) {
-          document.body.appendChild(el);
+        if (el) {
+          if (el.parentElement !== document.body) {
+            document.body.appendChild(el);
+          }
+          if (el.classList.contains('full-screen-page')) {
+            el.style.backgroundColor = '#071933';
+            el.style.opacity = '1';
+          }
         }
       });
     } catch(e) {}
@@ -41496,7 +41516,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: SELETOR DE CICLOS MENSAIS COM OPÇÃO '+ NOVO CICLO' (ITEM 1)        -->
   <!-- ========================================================================= -->
-  <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalSelectCycle" class="full-screen-page hidden fixed inset-0 z-[110] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeSelectCycleModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -41692,7 +41712,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: QUESTIONÁRIO DE PERFIL FINANCEIRO DO USUÁRIO & FAMÍLIA (ITEM 5)     -->
   <!-- ========================================================================= -->
-  <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalUserProfileSurvey" class="full-screen-page hidden fixed inset-0 z-[115] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeUserProfileSurveyModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -41897,7 +41917,7 @@ window.openHealthMedsModal = function() {
   <!-- ========================================================================= -->
   <!-- MODAL: COMPARATIVO GRÁFICO DE MERCADOS REAIS (ITEM 10)                     -->
   <!-- ========================================================================= -->
-  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalComparativoMercados" class="full-screen-page hidden fixed inset-0 z-[1000050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeComparativoMercadosModal()" class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar / Fechar">
@@ -46527,6 +46547,8 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       el.style.zIndex = '999999';
       el.style.position = 'fixed';
       el.style.inset = '0';
+      el.style.backgroundColor = '#071933';
+      el.style.opacity = '1';
     }
     if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     return el;
@@ -46986,7 +47008,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- ========================================================================= -->
   <!-- MODAL: GARANTIAS DE PRODUTOS DA CASA (FABRICANTE / LOJA / ESTENDIDA)      -->
   <!-- ========================================================================= -->
-  <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalProductWarranties" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeProductWarrantiesModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -47215,7 +47237,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
   <!-- ========================================================================= -->
   <!-- MODAL: CRIANÇAS & ESCOLA (BOLETIM ESCOLAR + INTEGRAÇÃO GASTOS EDUCAÇÃO)   -->
   <!-- ========================================================================= -->
-  <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: var(--liquid-bg-main); background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-attachment: fixed; background-size: cover;">
+  <div id="modalKidsArea" class="full-screen-page hidden fixed inset-0 z-[1050] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #071933; background-image: var(--liquid-bg-ambient), var(--liquid-bg-gradient); background-size: cover;">
     <div class="page-header-back px-5 pt-1.5 pb-2 flex items-center justify-between text-white flex-shrink-0">
       <div class="flex items-center gap-2.5">
         <button type="button" onclick="closeKidsAreaModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white transition-all cursor-pointer" title="Voltar">
@@ -48060,11 +48082,15 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
     };
 
     window.openProductWarrantiesModal = function() {
+      if (typeof window.ensureModalsOnBody === 'function') window.ensureModalsOnBody();
       const m = document.getElementById('modalProductWarranties');
       if (m) {
         if (m.parentElement !== document.body) document.body.appendChild(m);
         m.classList.remove('hidden');
         m.style.display = 'flex';
+        m.style.zIndex = '1050';
+        m.style.backgroundColor = '#071933';
+        m.style.opacity = '1';
         const dtInput = document.getElementById('inputWarrantyDate');
         if (dtInput && !dtInput.value) dtInput.value = new Date().toISOString().split('T')[0];
         window.renderProductWarrantiesList();
