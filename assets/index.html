@@ -6479,7 +6479,7 @@ html, body {
             <span class="text-[11px] font-bold text-slate-400">Toque no círculo para marcar</span>
           </div>
           
-          <div id="builderProductsListContainer" class="space-y-2 pt-0.5 pb-1 w-full">
+          <div id="builderProductsListContainer" class="divide-y divide-slate-100 dark:divide-slate-800/80 pt-0.5 pb-1 w-full">
             <!-- Injetado dinamicamente via renderShoppingListBuilder() -->
           </div>
         </div>
@@ -13197,17 +13197,17 @@ html, body {
           : 'bg-slate-100/90 dark:bg-slate-800/75 border-slate-200 dark:border-slate-700';
 
         return `
-          <div class="p-2.5 rounded-2xl border transition-all flex flex-col gap-1.5 shadow-2xs w-full overflow-hidden box-border ${
+          <div class="py-2.5 px-1.5 transition-colors flex flex-col gap-1.5 w-full overflow-hidden box-border ${
             isChecked 
-              ? 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800' 
-              : 'bg-white dark:bg-slate-850 border-slate-200/80 dark:border-slate-750'
+              ? 'bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl' 
+              : ''
           }">
-            <!-- LINHA 1: Checkbox + Nome do Produto | Preço unitário (se comprado anteriormente) + Lixeira -->
+            <!-- LINHA 1: Círculo de Seleção + Nome do Produto | Preço unitário + Lixeira -->
             <div class="flex items-center justify-between gap-2 w-full">
-              <div class="flex items-center gap-2 min-w-0 flex-1 cursor-pointer select-none" onclick="toggleBuilderItem('${safeName}')">
-                <button type="button" onclick="event.stopPropagation(); toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-md flex items-center justify-center transition-all font-black text-xs ${
+              <div class="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer select-none" onclick="toggleBuilderItem('${safeName}')">
+                <button type="button" onclick="event.stopPropagation(); toggleBuilderItem('${safeName}')" class="w-5 h-5 rounded-full flex items-center justify-center transition-all font-black text-xs ${
                   isChecked
-                    ? 'bg-emerald-600 border-2 border-emerald-600 text-white shadow-2xs'
+                    ? 'bg-emerald-600 border-2 border-emerald-600 text-white'
                     : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-850 text-transparent hover:border-emerald-500'
                 } cursor-pointer flex-shrink-0" title="${isChecked ? 'Desmarcar' : 'Marcar para comprar'}">
                   ${isChecked ? '<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : ''}
@@ -13227,7 +13227,7 @@ html, body {
             </div>
 
             <!-- LINHA 2: Quantidade (Stepper) | Melhor Loja (se houver) | Botão Editar -->
-            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-750/70 text-xs w-full">
+            <div class="flex items-center justify-between gap-2 pt-0.5 text-xs w-full">
               <div class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-750 bg-slate-50 dark:bg-slate-800 px-1 py-0.5 text-xs shadow-2xs flex-shrink-0 whitespace-nowrap">
                 <button type="button" onclick="updateBuilderItemQtd('${safeName}', -1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 font-bold leading-none cursor-pointer" title="Diminuir">−</button>
                 <span class="px-2 font-bold font-mono text-[11px] text-slate-800 dark:text-slate-200 whitespace-nowrap">${itemState.qtd || 1} ${itemState.unidade || 'un'}</span>
