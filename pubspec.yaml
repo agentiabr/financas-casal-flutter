@@ -29,7 +29,7 @@ dependencies:
   # Gerenciamento de Estado e Armazenamento Local / Offline
   provider: ^6.1.2
   shared_preferences: ^2.3.3
-  permission_handler: ^11.3.1
+  permission_handler: ^13.0.2
   # AutenticaÃ§Ã£o BiomÃ©trica e Face ID
   local_auth: ^2.3.0
 
