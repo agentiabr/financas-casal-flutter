@@ -28611,41 +28611,46 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     <!-- ABA 2: ACADEMIA, ATLETA & HIDRATAÇÃO                          -->
     <!-- ============================================================== -->
         <div id="containerHealthFitnessTab" class="hidden space-y-3 pt-2">
-      <!-- BOTAO HERO EM DESTAQUE: MODO TREINO ATLETA (TELA ESCURA COM CRONOMETRO E SERIES) -->
-      <button type="button" onclick="openAthleteWorkoutHUD()" class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-cyan-600 text-white shadow-lg shadow-emerald-950/30 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group border border-emerald-400/40">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-black/40 border border-emerald-400/50 flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition-transform">
-            🔥
+      <!-- CARD HERO LIMPO: FOCO TOTAL EM TREINAR -->
+      <button type="button" onclick="openAthleteWorkoutHUD()" class="w-full p-4 rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-500 hover:to-cyan-600 text-white shadow-xl shadow-emerald-950/25 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group border border-emerald-400/40">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-black/40 border border-emerald-400/50 flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition-transform">
+            ⚡
           </div>
           <div class="text-left">
-            <div class="flex items-center gap-2">
-              <span class="font-black text-sm sm:text-base tracking-wide uppercase">Iniciar Treino Agora</span>
-              <span class="bg-black/50 text-emerald-300 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-400/30 uppercase tracking-wider">Modo Atleta</span>
-            </div>
-            <p class="text-[11px] text-emerald-100 font-medium mt-0.5">Tela escura com cronometro, descanso e series em tempo real</p>
+            <span class="font-black text-base sm:text-lg tracking-wide uppercase">Treinar Agora</span>
+            <p class="text-xs text-emerald-100 font-medium mt-0.5">Acessar fichas, séries e placar em tela escura</p>
           </div>
         </div>
-        <div class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-xl text-xs font-black transition-all">
-          <span>Treinar</span>
-          <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+        <div class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3.5 py-2 rounded-xl text-xs font-black transition-all">
+          <span>Iniciar</span>
+          <i data-lucide="play" class="w-4 h-4 fill-current"></i>
         </div>
       </button>
 
-      <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+      <!-- FICHAS E SÉRIES CADASTRADAS (INTERFACE DIRETA E LIMPA) -->
+      <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2.5">
         <div class="flex items-center justify-between">
-          <h4 class="font-black text-slate-900 dark:text-white text-xs sm:text-sm flex items-center gap-1.5">
-            <span>🏋️</span><span>Fichas de Treino &amp; Exercícios</span>
-          </h4>
-          <button type="button" onclick="openAddExerciseModal()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px] rounded-lg cursor-pointer">
-            + Exercício
+          <div class="flex items-center gap-1.5">
+            <span class="text-base">📋</span>
+            <span class="font-black text-slate-900 dark:text-white text-xs sm:text-sm">Séries Cadastradas</span>
+          </div>
+          <button type="button" onclick="openAddExerciseModal()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px] rounded-lg cursor-pointer flex items-center gap-1">
+            <span>+</span><span>Nova Série</span>
           </button>
         </div>
+        
+        <!-- SELEÇÃO RÁPIDA DE ROTINA / FICHA -->
         <div id="fitnessRoutineSelector" class="grid grid-cols-4 gap-1.5">
           <button type="button" onclick="selectFitnessRoutine('A')" class="routine-chip p-2 rounded-xl border border-sky-500 bg-sky-600/30 text-sky-200 font-black text-xs text-center cursor-pointer">Treino A</button>
           <button type="button" onclick="selectFitnessRoutine('B')" class="routine-chip p-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs text-center cursor-pointer">Treino B</button>
           <button type="button" onclick="selectFitnessRoutine('C')" class="routine-chip p-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs text-center cursor-pointer">Treino C</button>
           <button type="button" onclick="selectFitnessRoutine('Cardio')" class="routine-chip p-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-bold text-xs text-center cursor-pointer">Cardio</button>
         </div>
+        
+        <p class="text-[11px] text-slate-500 dark:text-slate-400 px-0.5">Toque em qualquer série para abrir o <strong>Placar Gigante</strong> em tela cheia.</p>
+
+        <!-- LISTA DAS SÉRIES CADASTRADAS -->
         <div id="fitnessExercisesList" class="space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar"></div>
       </div>
 
@@ -28888,6 +28893,178 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
   <!-- ============================================================== -->
   <!-- MODAL 3: POPUP DE CONFIRMAÇÃO COM REGRA DE HORÁRIO FLEXÍVEL    -->
   <!-- ============================================================== -->
+  
+  <!-- ============================================================== -->
+  <!-- MODAL: PLACAR GIGANTE DO EXERCÍCIO / SÉRIE (FOCO TOTAL DO ATLETA) -->
+  <!-- ============================================================== -->
+  <div id="modalAthleteScoreboard" class="hidden fixed inset-0 z-[160] flex flex-col w-full h-full overflow-hidden select-none" style="background-color: #060913 !important; background-image: radial-gradient(circle at 50% 20%, #0f1c38 0%, #060913 80%);">
+    
+    <!-- BARRA SUPERIOR DO PLACAR -->
+    <div class="px-4 py-3 bg-[#080d1a]/95 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between text-white flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="closeAthleteScoreboard()" class="w-9 h-9 rounded-full bg-slate-800/80 hover:bg-slate-700 active:scale-95 flex items-center justify-center text-slate-300 transition-all cursor-pointer" title="Voltar">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs">⚡</span>
+            <span id="scoreboardRoutineBadge" class="text-xs font-black tracking-wider uppercase text-emerald-400">Treino A</span>
+            <span class="text-[9px] bg-emerald-950/90 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded-full font-bold">PLACAR ATLETA</span>
+          </div>
+          <div id="scoreboardProgressSub" class="text-[11px] text-slate-400 font-medium">Série 1 de 4</div>
+        </div>
+      </div>
+
+      <!-- SELETOR RÁPIDO PARA ESCOLHER OUTRA SÉRIE -->
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="openScoreboardExercisePicker()" class="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-black flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+          <i data-lucide="list" class="w-3.5 h-3.5 text-teal-400"></i>
+          <span>Outra Série</span>
+        </button>
+        <button type="button" onclick="closeAthleteScoreboard()" class="w-8 h-8 rounded-full bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer text-xs font-bold">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- CORPO DO PLACAR GIGANTE (VISUAL DE LONGE, CLEAN, SEM DISTRAÇÕES) -->
+    <div class="flex-1 flex flex-col justify-between p-4 sm:p-6 max-w-lg mx-auto w-full overflow-y-auto custom-scrollbar">
+      
+      <!-- CABEÇALHO DO EXERCÍCIO COM NOME E CARGA EM DESTAQUE -->
+      <div class="text-center space-y-1.5 pt-1">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-teal-300 text-xs font-bold uppercase tracking-wider">
+          <span id="scoreboardExTypeBadge">🏋️ Exercício da Ficha</span>
+        </div>
+        <h2 id="scoreboardExerciseName" class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-2 px-2">
+          Supino Reto
+        </h2>
+        <div class="flex items-center justify-center gap-2 text-xs font-bold text-slate-400">
+          <span id="scoreboardRepsTarget">10 a 12 reps</span>
+          <span>•</span>
+          <button type="button" onclick="scoreboardPromptWeight()" class="text-amber-300 hover:underline flex items-center gap-1" title="Toque para editar o peso">
+            <span>Carga:</span>
+            <span id="scoreboardWeightVal" class="font-black text-sm text-amber-300">30kg</span>
+            <span class="text-[10px] text-slate-500">✏️</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PAINEL CENTRAL: PLACAR DA SÉRIE COM FONTES GIGANTES -->
+      <div class="my-auto py-2 space-y-3.5">
+        
+        <!-- CARD DO NÚMERO DA SÉRIE GIGANTE -->
+        <div class="p-6 sm:p-7 rounded-3xl bg-gradient-to-b from-[#0f1d35] to-[#0a1426] border-2 border-teal-500/40 shadow-2xl text-center relative overflow-hidden">
+          <div class="text-xs sm:text-sm font-black tracking-widest uppercase text-teal-400 mb-1 flex items-center justify-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+            <span>SÉRIE ATUAL</span>
+          </div>
+
+          <!-- NÚMERO DA SÉRIE GIGANTE COMO UM PLACAR -->
+          <div class="flex items-baseline justify-center gap-2 my-1">
+            <span id="scoreboardCurrentSetNum" class="text-7xl sm:text-8xl font-black text-white font-mono tracking-tight drop-shadow-md">1</span>
+            <span id="scoreboardTotalSetsNum" class="text-3xl sm:text-4xl font-black text-slate-500 font-mono">/ 4</span>
+          </div>
+
+          <div id="scoreboardSetStatusText" class="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            Série em andamento
+          </div>
+
+          <!-- BOTÕES DE CONTROLE RÁPIDO DA SÉRIE: + SÉRIE / - SÉRIE -->
+          <div class="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-slate-800/80">
+            <button type="button" onclick="scoreboardAdjustSets(-1)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs flex items-center gap-1 active:scale-95 cursor-pointer" title="Diminuir número de séries">
+              <span>- Série</span>
+            </button>
+            <span class="text-[11px] text-slate-500 font-bold px-1">Meta</span>
+            <button type="button" onclick="scoreboardAdjustSets(1)" class="px-3 py-1.5 rounded-xl bg-teal-900/60 hover:bg-teal-800 text-teal-200 border border-teal-500/40 font-bold text-xs flex items-center gap-1 active:scale-95 cursor-pointer" title="Aumentar número de séries">
+              <span>+ Série</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PLACAR DO CRONÔMETRO (ATIVADO PELO USUÁRIO) -->
+        <div class="p-3.5 sm:p-4 rounded-3xl bg-[#09101d] border border-slate-800 text-center shadow-lg">
+          <div class="flex items-center justify-between px-2 mb-1">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <span>⏱️</span>
+              <span id="scoreboardTimerModeLabel">CRONÔMETRO / DESCANSO</span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="scoreboardSetRestPreset(30)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">30s</button>
+              <button type="button" onclick="scoreboardSetRestPreset(60)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-teal-900/80 text-teal-200 border border-teal-500/40 cursor-pointer">60s</button>
+              <button type="button" onclick="scoreboardSetRestPreset(90)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 hover:bg-teal-900/60 cursor-pointer">90s</button>
+            </div>
+          </div>
+
+          <!-- DISPLAY GIGANTE DO CRONÔMETRO -->
+          <div id="scoreboardTimerDisplay" class="font-mono font-black text-4xl sm:text-5xl text-teal-400 tracking-wider my-1">
+            00:60
+          </div>
+
+          <div id="scoreboardTimerFeedback" class="text-[11px] font-semibold text-slate-400 mb-2">
+            Toque abaixo para iniciar o cronômetro
+          </div>
+
+          <!-- BOTÕES DE CONTROLE DO CRONÔMETRO -->
+          <div class="flex items-center justify-center gap-2">
+            <button type="button" onclick="scoreboardToggleTimer()" id="scoreboardBtnTimerToggle" class="px-5 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs sm:text-sm shadow-md active:scale-95 cursor-pointer transition-all flex items-center gap-1.5">
+              <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+              <span>Iniciar Cronômetro</span>
+            </button>
+            <button type="button" onclick="scoreboardAddTimerTime(15)" class="px-3 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold text-xs active:scale-95 cursor-pointer">
+              +15s
+            </button>
+            <button type="button" onclick="scoreboardResetTimer()" class="px-3 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700 font-bold text-xs active:scale-95 cursor-pointer" title="Reiniciar">
+              ↺
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÃO DE AÇÃO GIGANTE: SÉRIE CUMPRIDA -->
+      <div class="space-y-2 pt-2">
+        <button type="button" onclick="scoreboardCompleteCurrentSet()" id="scoreboardBtnCompleteSet" class="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-base sm:text-lg shadow-xl shadow-emerald-950/50 flex items-center justify-center gap-3 active:scale-[0.98] transition-all cursor-pointer border border-emerald-400/40">
+          <span class="text-xl">✓</span>
+          <span id="scoreboardCompleteBtnText">SÉRIE CUMPRIDA</span>
+        </button>
+
+        <!-- NAVEGAÇÃO ENTRE SÉRIES / EXERCÍCIOS NA SEQUÊNCIA -->
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button type="button" onclick="scoreboardStepExercise(-1)" id="scoreboardBtnPrevEx" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer border border-slate-700/80">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            <span>Série Anterior</span>
+          </button>
+          <button type="button" onclick="scoreboardStepExercise(1)" id="scoreboardBtnNextEx" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-teal-300 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer border border-teal-500/30">
+            <span>Próxima Série</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL SELETOR DE OUTRA SÉRIE / EXERCÍCIO DENTRO DO PLACAR -->
+  <div id="modalScoreboardExercisePicker" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[170] hidden flex items-center justify-center p-4">
+    <div class="bg-[#0c1424] border border-slate-700 rounded-3xl max-w-sm w-full p-4 text-white shadow-2xl space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📋</span>
+          <h4 class="font-black text-sm text-white">Escolher Série / Exercício</h4>
+        </div>
+        <button type="button" onclick="closeScoreboardExercisePicker()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-400">Selecione uma série para abrir no placar:</p>
+      
+      <div id="scoreboardExercisePickerList" class="space-y-1.5 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+        <!-- Preenchido via renderScoreboardExercisePicker() -->
+      </div>
+    </div>
+  </div>
+
   <div id="modalMedTakeConfirmation" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[2500] hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-5 text-slate-900 dark:text-white shadow-2xl text-center">
       
@@ -40219,27 +40396,42 @@ window.selectFitnessRoutine = function(r) {
 window.renderFitnessExercises = function() {
   const list = document.getElementById('fitnessExercisesList');
   if (!list) return;
-  const exercises = window.fitnessRoutinesData[window.currentFitnessRoutine] || [];
+  const routine = window.currentFitnessRoutine || 'A';
+  const exercises = window.fitnessRoutinesData[routine] || [];
   if (exercises.length === 0) {
-    list.innerHTML = '<div class="p-3 text-center text-slate-500 text-xs">Nenhum exercício cadastrado nesta rotina.</div>';
+    list.innerHTML = '<div class="p-3 text-center text-slate-500 text-xs">Nenhum exercício cadastrado nesta rotina. Toque em "+ Nova Série" para cadastrar.</div>';
     return;
   }
-  list.innerHTML = exercises.map((ex, idx) => `
-    <div class="p-3 rounded-2xl bg-slate-900 border ${ex.done ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-slate-700/80'} flex items-center justify-between text-xs transition-all">
-      <div class="min-w-0 pr-2 cursor-pointer" onclick="openAthleteWorkoutHUD()">
-        <div class="font-extrabold ${ex.done ? 'line-through text-slate-400' : 'text-white'} truncate">${escapeHtml(ex.nome)}</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">${ex.series} séries × ${ex.reps} reps • <strong class="text-sky-300">${ex.peso}</strong></div>
+  list.innerHTML = exercises.map((ex, idx) => {
+    const numSeries = parseInt(ex.series) || 3;
+    if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+      ex.completedSets = Array(numSeries).fill(ex.done === true);
+    }
+    const completedCount = ex.completedSets.filter(Boolean).length;
+    const isExDone = completedCount === numSeries;
+
+    return `
+      <div class="p-3 rounded-2xl bg-slate-900 border ${isExDone ? 'border-emerald-500/40 bg-emerald-950/20' : 'border-slate-700/80'} flex items-center justify-between text-xs transition-all hover:border-teal-500/50">
+        <div class="min-w-0 pr-2 cursor-pointer flex-1" onclick="openAthleteScoreboard('${routine}', ${idx})">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs">⚡</span>
+            <div class="font-extrabold ${isExDone ? 'line-through text-slate-400' : 'text-white'} truncate text-xs sm:text-sm">${escapeHtml(ex.nome)}</div>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-0.5">
+            ${numSeries} séries × ${escapeHtml(ex.reps)} reps • <strong class="text-amber-300">${escapeHtml(ex.peso || 'Livre')}</strong>
+            <span class="ml-1 px-1.5 py-0.2 rounded-md ${isExDone ? 'bg-emerald-900/60 text-emerald-300' : 'bg-slate-800 text-teal-300 font-bold'}">
+              ${completedCount}/${numSeries} feitas
+            </span>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="openAthleteScoreboard('${routine}', ${idx})" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-black text-xs flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-md" title="Abrir Placar Gigante">
+            <span>⚡ Placar</span>
+          </button>
+        </div>
       </div>
-      <div class="flex items-center gap-1.5">
-        <button type="button" onclick="openAthleteWorkoutHUD()" class="px-2 py-1.5 rounded-xl bg-teal-900/60 hover:bg-teal-800 text-teal-300 border border-teal-500/40 font-bold text-[10px] flex items-center gap-1 cursor-pointer active:scale-95 transition-all" title="Abrir no Modo Treino Atleta">
-          <span>⚡ Treinar</span>
-        </button>
-        <button type="button" onclick="toggleFitnessExerciseDone(${idx})" class="px-2.5 py-1.5 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 ${ex.done ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'}">
-          <span>${ex.done ? '✓ Feito' : 'Concluir'}</span>
-        </button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 };
 
 window.toggleFitnessExerciseDone = function(idx) {
@@ -40629,9 +40821,10 @@ window.renderHudExercises = function() {
       <div class="p-3.5 rounded-2xl bg-[#0d1627] border ${isExDone ? 'border-emerald-500/40 bg-emerald-950/15' : 'border-slate-800'} shadow-md space-y-3 transition-all">
         <div class="flex items-start justify-between gap-2">
           <div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 cursor-pointer" onclick="openAthleteScoreboard(window.currentFitnessRoutine || 'A', ${idx})" title="Abrir este exercício no Placar Gigante">
               <span class="text-sm">⚡</span>
-              <h5 class="font-extrabold text-sm ${isExDone ? 'text-emerald-300 line-through' : 'text-white'}">${escapeHtml(ex.nome)}</h5>
+              <h5 class="font-extrabold text-sm ${isExDone ? 'text-emerald-300 line-through' : 'text-white'} hover:underline">${escapeHtml(ex.nome)}</h5>
+              <span class="text-[9px] bg-teal-900/80 text-teal-300 border border-teal-500/40 px-1.5 py-0.2 rounded-full font-bold">Placar ⤢</span>
             </div>
             <div class="text-[11px] text-slate-400 mt-0.5">
               ${numSeries} series × ${escapeHtml(ex.reps)} reps • 
@@ -40862,6 +41055,460 @@ window.finishAthleteWorkout = function() {
     }, 1800);
   }
 };
+
+
+// ============================================================================
+// MOTOR DO PLACAR GIGANTE DO ATLETA (ESTILO SCOREBOARD PROFISSIONAL)
+// ============================================================================
+window.athleteScoreboard = {
+  routine: 'A',
+  exIndex: 0,
+  currentSet: 1,
+  totalSets: 3,
+  stopwatchActive: false,
+  stopwatchSeconds: 60,
+  timerDuration: 60,
+  timerId: null
+};
+
+window.openAthleteScoreboard = function(routine, exIdx, setNum) {
+  const r = routine || window.currentFitnessRoutine || 'A';
+  window.athleteScoreboard.routine = r;
+  window.currentFitnessRoutine = r;
+  
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  if (exercises.length === 0) {
+    if (typeof showToastUndo === 'function') {
+      showToastUndo('Nenhum exercício cadastrado nesta rotina. Adicione um exercício primeiro.', false);
+    }
+    return;
+  }
+
+  let idx = parseInt(exIdx);
+  if (isNaN(idx) || idx < 0 || idx >= exercises.length) idx = 0;
+  window.athleteScoreboard.exIndex = idx;
+
+  const ex = exercises[idx];
+  const numSeries = parseInt(ex.series) || 3;
+  if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+    ex.completedSets = Array(numSeries).fill(ex.done === true);
+  }
+
+  // Determina a primeira série ainda não cumprida ou a solicitada
+  if (typeof setNum === 'number' && setNum >= 1 && setNum <= numSeries) {
+    window.athleteScoreboard.currentSet = setNum;
+  } else {
+    const firstPending = ex.completedSets.findIndex(done => !done);
+    window.athleteScoreboard.currentSet = firstPending >= 0 ? (firstPending + 1) : numSeries;
+  }
+  window.athleteScoreboard.totalSets = numSeries;
+
+  // Garante que o modal esteja no body e visível
+  const m = document.getElementById('modalAthleteScoreboard');
+  if (m) {
+    if (m.parentElement !== document.body) document.body.appendChild(m);
+    m.classList.remove('hidden');
+    m.style.display = 'flex';
+  }
+
+  window.updateScoreboardUI();
+  if (window.lucide) lucide.createIcons();
+};
+
+window.closeAthleteScoreboard = function() {
+  const m = document.getElementById('modalAthleteScoreboard');
+  if (m) {
+    m.classList.add('hidden');
+    m.style.display = 'none';
+  }
+  window.scoreboardPauseTimer();
+  
+  if (typeof window.renderFitnessExercises === 'function') {
+    window.renderFitnessExercises();
+  }
+  if (typeof window.renderHudExercises === 'function') {
+    window.renderHudExercises();
+  }
+  if (typeof window.updateHudProgress === 'function') {
+    window.updateHudProgress();
+  }
+};
+
+window.updateScoreboardUI = function() {
+  const r = window.athleteScoreboard.routine || 'A';
+  const idx = window.athleteScoreboard.exIndex;
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  const ex = exercises[idx];
+  if (!ex) return;
+
+  const numSeries = parseInt(ex.series) || 3;
+  window.athleteScoreboard.totalSets = numSeries;
+  let curSet = window.athleteScoreboard.currentSet;
+  if (curSet > numSeries) curSet = numSeries;
+  if (curSet < 1) curSet = 1;
+  window.athleteScoreboard.currentSet = curSet;
+
+  if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+    ex.completedSets = Array(numSeries).fill(ex.done === true);
+  }
+
+  const isCurrentSetDone = !!ex.completedSets[curSet - 1];
+  const allSetsDone = ex.completedSets.every(Boolean);
+
+  // Textos e Badges do topo
+  const badge = document.getElementById('scoreboardRoutineBadge');
+  const progSub = document.getElementById('scoreboardProgressSub');
+  const exName = document.getElementById('scoreboardExerciseName');
+  const repsTarget = document.getElementById('scoreboardRepsTarget');
+  const weightVal = document.getElementById('scoreboardWeightVal');
+  const curSetNum = document.getElementById('scoreboardCurrentSetNum');
+  const totalSetsNum = document.getElementById('scoreboardTotalSetsNum');
+  const setStatus = document.getElementById('scoreboardSetStatusText');
+  const btnComplete = document.getElementById('scoreboardBtnCompleteSet');
+  const completeBtnText = document.getElementById('scoreboardCompleteBtnText');
+  const btnPrev = document.getElementById('scoreboardBtnPrevEx');
+  const btnNext = document.getElementById('scoreboardBtnNextEx');
+
+  if (badge) badge.textContent = `Treino ${r}`;
+  if (progSub) progSub.textContent = `Exercício ${idx + 1} de ${exercises.length}`;
+  if (exName) exName.textContent = ex.nome;
+  if (repsTarget) repsTarget.textContent = `${escapeHtml(ex.reps)} repetições`;
+  if (weightVal) weightVal.textContent = escapeHtml(ex.peso || 'Livre');
+
+  if (curSetNum) curSetNum.textContent = curSet;
+  if (totalSetsNum) totalSetsNum.textContent = `/ ${numSeries}`;
+
+  if (setStatus) {
+    if (allSetsDone) {
+      setStatus.innerHTML = '<span class="text-emerald-400 font-black">🔥 TODAS AS SÉRIES CUMPRIDAS COM SUCESSO!</span>';
+    } else if (isCurrentSetDone) {
+      setStatus.innerHTML = `<span class="text-emerald-400 font-bold">✓ Série ${curSet} marcada como cumprida</span>`;
+    } else {
+      setStatus.innerHTML = `<span class="text-slate-400 font-medium">Série ${curSet} em andamento • Foco total no movimento</span>`;
+    }
+  }
+
+  if (btnComplete && completeBtnText) {
+    if (isCurrentSetDone) {
+      completeBtnText.textContent = `✓ SÉRIE ${curSet} CUMPRIDA (TOQUE P/ DESMARCAR)`;
+      btnComplete.className = 'w-full py-4 px-5 rounded-2xl bg-emerald-700/80 hover:bg-emerald-600 text-white font-black text-base sm:text-lg shadow-xl shadow-emerald-950/50 flex items-center justify-center gap-3 active:scale-[0.98] transition-all cursor-pointer border border-emerald-400/50';
+    } else {
+      completeBtnText.textContent = `✓ SÉRIE ${curSet} CUMPRIDA!`;
+      btnComplete.className = 'w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-base sm:text-lg shadow-xl shadow-emerald-950/50 flex items-center justify-center gap-3 active:scale-[0.98] transition-all cursor-pointer border border-emerald-400/40 animate-pulse';
+    }
+  }
+
+  if (btnPrev) {
+    btnPrev.disabled = (idx === 0 && curSet === 1);
+    btnPrev.style.opacity = (idx === 0 && curSet === 1) ? '0.4' : '1';
+  }
+  if (btnNext) {
+    const isLastEx = idx >= exercises.length - 1;
+    const isLastSet = curSet >= numSeries;
+    if (isLastEx && isLastSet) {
+      btnNext.innerHTML = '<span>Finalizar Treino 🏁</span>';
+    } else {
+      btnNext.innerHTML = '<span>Próxima Série</span><i data-lucide="chevron-right" class="w-4 h-4"></i>';
+    }
+  }
+
+  window.scoreboardUpdateTimerDisplay();
+  if (window.lucide) lucide.createIcons();
+};
+
+window.scoreboardCompleteCurrentSet = function() {
+  const r = window.athleteScoreboard.routine || 'A';
+  const idx = window.athleteScoreboard.exIndex;
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  const ex = exercises[idx];
+  if (!ex) return;
+
+  const numSeries = parseInt(ex.series) || 3;
+  if (!Array.isArray(ex.completedSets) || ex.completedSets.length !== numSeries) {
+    ex.completedSets = Array(numSeries).fill(false);
+  }
+
+  const curSet = window.athleteScoreboard.currentSet;
+  const sIdx = curSet - 1;
+  const wasDone = !!ex.completedSets[sIdx];
+  ex.completedSets[sIdx] = !wasDone;
+  ex.done = ex.completedSets.every(Boolean);
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+
+  if (!wasDone) {
+    // Vibração háptica de conclusão
+    if (navigator.vibrate) navigator.vibrate([70, 40, 90]);
+    if (typeof window.playAthleteTone === 'function') window.playAthleteTone(950, 0.15, 'triangle');
+
+    // Inicia descanso e prepara para a próxima série
+    window.scoreboardSetRestPreset(window.athleteScoreboard.timerDuration || 60);
+
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Série ${curSet} concluída! Descanso ativado ⏱️`, false);
+    }
+
+    // Se ainda houver séries pendentes neste exercício, avança para a próxima
+    if (curSet < numSeries) {
+      setTimeout(() => {
+        window.athleteScoreboard.currentSet++;
+        window.updateScoreboardUI();
+      }, 350);
+    } else {
+      window.updateScoreboardUI();
+      if (typeof showToastUndo === 'function') {
+        showToastUndo(`🔥 Parabéns! Todas as ${numSeries} séries de "${ex.nome}" finalizadas!`, false);
+      }
+    }
+  } else {
+    window.updateScoreboardUI();
+  }
+};
+
+window.scoreboardAdjustSets = function(delta) {
+  const r = window.athleteScoreboard.routine || 'A';
+  const idx = window.athleteScoreboard.exIndex;
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  const ex = exercises[idx];
+  if (!ex) return;
+
+  const current = parseInt(ex.series) || 3;
+  const newTotal = current + delta;
+  if (newTotal < 1) return;
+
+  ex.series = newTotal;
+  if (!Array.isArray(ex.completedSets)) ex.completedSets = [];
+  
+  if (delta > 0) {
+    ex.completedSets.push(false);
+  } else if (ex.completedSets.length > newTotal) {
+    ex.completedSets.pop();
+  }
+  ex.done = ex.completedSets.every(Boolean);
+
+  localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+  window.athleteScoreboard.totalSets = newTotal;
+  if (window.athleteScoreboard.currentSet > newTotal) {
+    window.athleteScoreboard.currentSet = newTotal;
+  }
+
+  window.updateScoreboardUI();
+  if (typeof showToastUndo === 'function') {
+    showToastUndo(`Meta ajustada para ${newTotal} séries!`, false);
+  }
+};
+
+window.scoreboardStepExercise = function(direction) {
+  const r = window.athleteScoreboard.routine || 'A';
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  const idx = window.athleteScoreboard.exIndex;
+  const ex = exercises[idx];
+  const numSeries = ex ? (parseInt(ex.series) || 3) : 3;
+
+  if (direction > 0) {
+    // Avançar
+    if (window.athleteScoreboard.currentSet < numSeries) {
+      window.athleteScoreboard.currentSet++;
+      window.updateScoreboardUI();
+    } else {
+      // Próximo exercício na sequência
+      if (idx + 1 < exercises.length) {
+        window.athleteScoreboard.exIndex = idx + 1;
+        window.athleteScoreboard.currentSet = 1;
+        window.updateScoreboardUI();
+        if (typeof showToastUndo === 'function') {
+          showToastUndo(`Avançando para: ${exercises[idx + 1].nome}`, false);
+        }
+      } else {
+        // Fim de todos os exercícios
+        if (confirm('Você concluiu todas as séries desta rotina! Deseja finalizar o treino?')) {
+          window.closeAthleteScoreboard();
+          if (typeof window.finishAthleteWorkout === 'function') {
+            window.finishAthleteWorkout();
+          }
+        }
+      }
+    }
+  } else {
+    // Voltar
+    if (window.athleteScoreboard.currentSet > 1) {
+      window.athleteScoreboard.currentSet--;
+      window.updateScoreboardUI();
+    } else if (idx > 0) {
+      window.athleteScoreboard.exIndex = idx - 1;
+      const prevEx = exercises[idx - 1];
+      const prevNumSeries = prevEx ? (parseInt(prevEx.series) || 3) : 3;
+      window.athleteScoreboard.currentSet = prevNumSeries;
+      window.updateScoreboardUI();
+    }
+  }
+};
+
+window.scoreboardPromptWeight = function() {
+  const r = window.athleteScoreboard.routine || 'A';
+  const idx = window.athleteScoreboard.exIndex;
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+  const ex = exercises[idx];
+  if (!ex) return;
+
+  const val = prompt(`Ajustar peso/carga para "${ex.nome}":`, ex.peso || '30kg');
+  if (val !== null && val.trim() !== '') {
+    ex.peso = val.trim();
+    localStorage.setItem('ctrlpig_fitness_routines', JSON.stringify(window.fitnessRoutinesData));
+    window.updateScoreboardUI();
+    if (typeof showToastUndo === 'function') {
+      showToastUndo(`Carga atualizada para ${ex.peso}!`, false);
+    }
+  }
+};
+
+// Cronômetro do Placar
+window.scoreboardSetRestPreset = function(secs) {
+  window.athleteScoreboard.timerDuration = secs;
+  window.athleteScoreboard.stopwatchSeconds = secs;
+  window.scoreboardStartTimer();
+};
+
+window.scoreboardStartTimer = function() {
+  window.scoreboardPauseTimer();
+  window.athleteScoreboard.stopwatchActive = true;
+  window.scoreboardUpdateTimerDisplay();
+
+  window.athleteScoreboard.timerId = setInterval(() => {
+    window.athleteScoreboard.stopwatchSeconds--;
+    window.scoreboardUpdateTimerDisplay();
+
+    if (window.athleteScoreboard.stopwatchSeconds <= 3 && window.athleteScoreboard.stopwatchSeconds > 0) {
+      if (typeof window.playAthleteTone === 'function') window.playAthleteTone(800, 0.1);
+      if (navigator.vibrate) navigator.vibrate(40);
+    }
+
+    if (window.athleteScoreboard.stopwatchSeconds <= 0) {
+      window.scoreboardPauseTimer();
+      window.athleteScoreboard.stopwatchSeconds = window.athleteScoreboard.timerDuration || 60;
+      window.scoreboardUpdateTimerDisplay();
+
+      if (typeof window.playAthleteTone === 'function') window.playAthleteTone(1200, 0.35, 'triangle');
+      if (navigator.vibrate) navigator.vibrate([100, 50, 150]);
+
+      const fb = document.getElementById('scoreboardTimerFeedback');
+      if (fb) fb.innerHTML = '<span class="text-emerald-400 font-black">⏰ Tempo de descanso esgotado! Hora da série! 💪</span>';
+      if (typeof showToastUndo === 'function') {
+        showToastUndo('⏰ Descanso finalizado! Hora da próxima série!', false);
+      }
+    }
+  }, 1000);
+};
+
+window.scoreboardPauseTimer = function() {
+  window.athleteScoreboard.stopwatchActive = false;
+  if (window.athleteScoreboard.timerId) {
+    clearInterval(window.athleteScoreboard.timerId);
+    window.athleteScoreboard.timerId = null;
+  }
+  window.scoreboardUpdateTimerDisplay();
+};
+
+window.scoreboardToggleTimer = function() {
+  if (window.athleteScoreboard.stopwatchActive) {
+    window.scoreboardPauseTimer();
+  } else {
+    window.scoreboardStartTimer();
+  }
+};
+
+window.scoreboardAddTimerTime = function(secs) {
+  window.athleteScoreboard.stopwatchSeconds += secs;
+  if (window.athleteScoreboard.stopwatchSeconds > window.athleteScoreboard.timerDuration) {
+    window.athleteScoreboard.timerDuration = window.athleteScoreboard.stopwatchSeconds;
+  }
+  window.scoreboardUpdateTimerDisplay();
+};
+
+window.scoreboardResetTimer = function() {
+  window.scoreboardPauseTimer();
+  window.athleteScoreboard.stopwatchSeconds = window.athleteScoreboard.timerDuration || 60;
+  window.scoreboardUpdateTimerDisplay();
+};
+
+window.scoreboardUpdateTimerDisplay = function() {
+  const disp = document.getElementById('scoreboardTimerDisplay');
+  const btnToggle = document.getElementById('scoreboardBtnTimerToggle');
+  const fb = document.getElementById('scoreboardTimerFeedback');
+  const s = Math.max(0, window.athleteScoreboard.stopwatchSeconds);
+
+  if (disp) {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    disp.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+
+  if (btnToggle) {
+    if (window.athleteScoreboard.stopwatchActive) {
+      btnToggle.innerHTML = '<i data-lucide="pause" class="w-4 h-4 fill-current"></i><span>Pausar Cronômetro</span>';
+      btnToggle.className = 'px-5 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs sm:text-sm shadow-md active:scale-95 cursor-pointer transition-all flex items-center gap-1.5';
+    } else {
+      btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4 fill-current"></i><span>Iniciar Cronômetro</span>';
+      btnToggle.className = 'px-5 py-2.5 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-black text-xs sm:text-sm shadow-md active:scale-95 cursor-pointer transition-all flex items-center gap-1.5';
+    }
+  }
+
+  if (fb) {
+    if (window.athleteScoreboard.stopwatchActive) {
+      fb.innerHTML = `<span class="text-teal-300 font-bold">● Cronômetro em contagem (${s}s restantes)</span>`;
+    } else {
+      fb.innerHTML = '<span class="text-slate-400">Toque em Iniciar para cronometrar seu descanso</span>';
+    }
+  }
+  if (window.lucide) lucide.createIcons();
+};
+
+// Seletor de Outra Série no Placar
+window.openScoreboardExercisePicker = function() {
+  const m = document.getElementById('modalScoreboardExercisePicker');
+  const list = document.getElementById('scoreboardExercisePickerList');
+  if (!m || !list) return;
+
+  const r = window.athleteScoreboard.routine || 'A';
+  const exercises = (window.fitnessRoutinesData && window.fitnessRoutinesData[r]) || [];
+
+  list.innerHTML = exercises.map((ex, idx) => {
+    const isCur = idx === window.athleteScoreboard.exIndex;
+    const numSeries = parseInt(ex.series) || 3;
+    const doneCount = Array.isArray(ex.completedSets) ? ex.completedSets.filter(Boolean).length : (ex.done ? numSeries : 0);
+
+    return `
+      <button type="button" onclick="selectScoreboardExercise(${idx})" class="w-full p-2.5 rounded-xl border text-left flex items-center justify-between text-xs transition-all cursor-pointer ${
+        isCur 
+          ? 'bg-teal-950/80 border-teal-500 text-teal-200 font-black' 
+          : 'bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300'
+      }">
+        <div class="truncate pr-2">
+          <div class="font-bold truncate">${idx + 1}. ${escapeHtml(ex.nome)}</div>
+          <div class="text-[10px] text-slate-400">${numSeries} séries • ${escapeHtml(ex.peso || 'Livre')}</div>
+        </div>
+        <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${doneCount === numSeries ? 'bg-emerald-900 text-emerald-300' : 'bg-slate-800 text-slate-400'}">
+          ${doneCount}/${numSeries}
+        </span>
+      </button>
+    `;
+  }).join('');
+
+  m.classList.remove('hidden');
+};
+
+window.closeScoreboardExercisePicker = function() {
+  const m = document.getElementById('modalScoreboardExercisePicker');
+  if (m) m.classList.add('hidden');
+};
+
+window.selectScoreboardExercise = function(idx) {
+  window.closeScoreboardExercisePicker();
+  window.athleteScoreboard.exIndex = idx;
+  window.athleteScoreboard.currentSet = 1;
+  window.updateScoreboardUI();
+};
+
 
 window.closeWorkoutSummaryModal = function() {
   const summaryModal = document.getElementById('modalWorkoutSummary');
