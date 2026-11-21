@@ -5554,7 +5554,12 @@ html, body {
             
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
+                  <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100/80 active:scale-95 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
+                    <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
+                  </button>
+                </div>
                 <div class="mt-1 flex items-baseline gap-2">
                   <h2 id="heroSaldoText" class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
                     R$ •••••
@@ -5562,12 +5567,9 @@ html, body {
                 </div>
               </div>
 
-              <!-- Lado Direito: Olhinho no topo e Botão Discreto de Lançar Valores logo abaixo -->
+              <!-- Lado Direito: Botão Discreto de Lançar Valores -->
               <div class="flex flex-col items-end gap-1.5 -mr-1">
-                <button type="button" onclick="togglePrivacy()" id="btnHeroPrivacyToggle" class="w-9 h-9 -mr-1 flex items-center justify-center rounded-full hover:bg-slate-100/80 active:scale-95 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative z-40" title="Ocultar ou mostrar saldo e valores">
-                  <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600" style="color: #475569 !important;"></i>
-                </button>
-                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold text-xs border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas">
+                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold text-xs border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas">
                   <span class="text-blue-600 font-black text-xs leading-none">+</span>
                   <span>Lançar</span>
                 </button>
