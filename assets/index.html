@@ -6335,7 +6335,7 @@ html, body {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🛒</span><span>Lista de Compras</span>
           </h2>
-          <p id="shoppingListHeaderSubtitle" class="text-[11px] text-blue-200">Comparador de preços e compras em família</p>
+          <p id="shoppingListHeaderSubtitle" class="text-xs text-white/90 font-medium">Comparador de preços e compras em família</p>
         </div>
       </div>
       
@@ -7723,7 +7723,7 @@ html, body {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>💳</span><span>Cartões</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Controle de gastos com cartões e faturas</p>
+          <p class="text-xs text-white/90 font-medium">Controle de gastos com cartões e faturas</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('cartoes')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Cartões">
@@ -24736,11 +24736,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 mb-1">O que vocês já pagaram (seus lançamentos):</div>
             ${hist.map(t => `<div class="flex justify-between text-xs text-slate-700 dark:text-slate-200"><span class="truncate pr-2">${escapeHtml(t.descricao)} • ${escapeHtml(String(t.data || ''))}</span><strong class="font-mono">${fmt(t.valor)}</strong></div>`).join('')}
           </div>` : ''}
-        <div class="grid grid-cols-2 gap-1.5 pt-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
           ${catalog.map(st => `
-            <button type="button" onclick="openExternalUrl('${st.getUrl(query)}')" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-850 hover:border-blue-400 flex items-center justify-between gap-1 cursor-pointer transition-all">
-              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded-md ${st.badgeBg} truncate">${escapeHtml(st.name)}</span>
-              <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 shrink-0">Ver preço <i data-lucide="external-link" class="w-3 h-3"></i></span>
+            <button type="button" onclick="openExternalUrl('${st.getUrl(query)}')" class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-sky-400 flex items-center justify-between gap-2 cursor-pointer transition-all shadow-2xs">
+              <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(st.name)}</span>
+              <span class="text-xs font-black text-sky-700 flex items-center gap-1 shrink-0 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">Ver preço <i data-lucide="external-link" class="w-3 h-3"></i></span>
             </button>`).join('')}
         </div>
         <button type="button" onclick="${addFnName}('${safeQ}', 1, 0)" class="w-full mt-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black cursor-pointer">+ Adicionar na lista de compras</button>
@@ -25170,7 +25170,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         morningListEl.innerHTML = morningMeds.map(m => {
           const isTakenIndividually = m.lastTakenMorningDate === todayStr;
           return `
-            <div class="flex items-center justify-between p-2.5 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+            <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
               <div class="flex items-center gap-2.5 min-w-0">
                 <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'morning')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0" title="Marcar ou desmarcar este remédio">
                   ✓
@@ -25225,7 +25225,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         eveningListEl.innerHTML = eveningMeds.map(m => {
           const isTakenIndividually = m.lastTakenEveningDate === todayStr;
           return `
-            <div class="flex items-center justify-between p-2.5 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+            <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
               <div class="flex items-center gap-2.5 min-w-0">
                 <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'evening')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0" title="Marcar ou desmarcar este remédio">
                   ✓
@@ -27189,7 +27189,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <h2 id="chatHeaderTitle" class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight truncate">
             <span>💬</span><span>Chat da Família</span>
           </h2>
-          <p class="text-[11px] text-blue-200 truncate" id="chatHeaderSubtitle">Toque em um membro para conversar ou ver a Lista de Compras</p>
+          <p class="text-xs text-white/90 font-medium truncate" id="chatHeaderSubtitle">Toque em um membro para conversar ou ver a Lista de Compras</p>
         </div>
       </div>
 
@@ -27746,7 +27746,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
             <span class="text-base font-black text-emerald-300 font-mono" id="displayTripMonthlyVal">R$ 500,00 / mês</span>
           </div>
 
-          <div class="flex items-center justify-between text-[11px] text-blue-200/80">
+          <div class="flex items-center justify-between text-xs text-white/90 font-medium/80">
             <span>Equivalente por dia:</span>
             <span class="font-bold text-white font-mono" id="displayTripDailyVal">R$ 16,67 / dia (menos que um lanche!)</span>
           </div>
@@ -28055,7 +28055,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
           <span>🐾</span><span>Mundo Pet &amp; Saúde</span>
         </h2>
-        <p class="text-[11px] text-blue-200">Carteirinha digital, vacinas e gastos</p>
+        <p class="text-xs text-white/90 font-medium">Carteirinha digital, vacinas e gastos</p>
       </div>
     </div>
     <button type="button" onclick="openSectionLampInsight('pet')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights Mundo Pet">
@@ -28364,7 +28364,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>❤️</span><span>Vida Saudável</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Rotina diária, medicamentos contínuos e bem-estar</p>
+          <p class="text-xs text-white/90 font-medium">Rotina diária, medicamentos contínuos e bem-estar</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('saude')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights de Saúde & Bem-Estar">
@@ -28403,20 +28403,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </div>
       </div>
 
-      <!-- OPCAO: NAO FALAR O NOME NO ALARME (DIRETA E RESPEITOSA) -->
-      <div class="mb-3 p-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-between gap-3 text-xs shadow-xs">
-        <div class="flex items-center gap-2.5">
-          <span class="text-base">&#129323;</span>
-          <div>
-            <div class="font-black text-white">Privacidade de Voz no Alarme</div>
-            <div class="text-[10px] text-blue-100 font-medium">Nao falar o nome da pessoa ("Falar apenas: Atencao, hora de tomar seu remedio")</div>
-          </div>
-        </div>
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="chkHealthSpeakNameDisabled" onchange="toggleHealthSpeakNameDisabled(this.checked)" class="sr-only peer">
-          <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-        </label>
-      </div>
+
 
 <!-- BOTÃO RÁPIDO: LANÇAR GASTO COM SAÚDE / FARMÁCIA -->
       <div class="mb-3 flex items-center justify-between p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800">
@@ -28433,176 +28420,192 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         </button>
       </div>
 
-      <div id="containerHealthMedsTab">
-<div class="my-2 p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-700 flex items-center justify-center font-bold shadow-xs flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-          </div>
-          <div>
-            <h4 class="font-black text-xs sm:text-sm text-sky-950 dark:text-sky-100">Incluir Novo Medicamento</h4>
-            <p class="text-[11px] text-sky-700 dark:text-sky-300">Cadastre remédios de uso contínuo, tempo de tratamento, horários e estoque</p>
-          </div>
-        </div>
-        <button type="button" onclick="openAddNewContinuousMedModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer flex-shrink-0">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>+ Adicionar Remédio</span>
-        </button>
-      </div>
+      <div id="containerHealthMedsTab" class="space-y-4">
 
-      <!-- CARD DESTAQUE: LIGAR / DESLIGAR NOTIFICAÇÃO VIA ÁUDIO E ESCOLHA DO TIPO DE ALARME -->
-      <div class="my-2 p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <div id="healthAudioNotifCardIconBox" class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center flex-shrink-0">
-              <i data-lucide="volume-2" id="healthAudioNotifCardIcon" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Alarme dos Remédios</h4>
-                <span id="healthAudioNotifBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">Ligado</span>
-              </div>
-              <p id="healthAudioNotifDesc" class="text-[11px] text-slate-500 dark:text-slate-400">Personalize como o alarme toca: voz feminina, masculina ou só vibrar.</p>
-            </div>
-          </div>
+        <!-- ========================================================== -->
+        <!-- CARD UNIFICADO: GESTÃO COMPLETA DE MEDICAMENTOS & ALARMES  -->
+        <!-- ========================================================== -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/90 text-slate-900 space-y-4">
           
-        </div>
-
-        <!-- SELETOR DE ESTILO DO ALARME: VOZ FEMININA / VOZ MASCULINA / SOMENTE VIBRAR -->
-        <div id="alarmStyleSelectorBox" class="pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Como você quer ouvir o alarme?</label>
-            <span class="text-[10px] text-slate-400">Toque para escolher</span>
-          </div>
-          <div class="grid grid-cols-3 gap-1.5">
-            <button type="button" onclick="setHealthAlarmStyle('female')" id="btnAlarmStyleFemale" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
-              <span>👩</span> <span>Voz Mulher</span>
-            </button>
-            <button type="button" onclick="setHealthAlarmStyle('male')" id="btnAlarmStyleMale" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
-              <span>👨</span> <span>Voz Homem</span>
-            </button>
-            <button type="button" onclick="setHealthAlarmStyle('vibrate')" id="btnAlarmStyleVibrate" class="py-2 px-2 rounded-xl border font-black text-[11px] flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
-              <span>📳</span> <span>Só Vibrar</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEÇÃO 1: ROTINAS DO DIA (MANHÃ E NOITE) COM CHECK-IN FLEXÍVEL -->
-      <div class="py-2.5 border-b border-slate-200 dark:border-slate-800 space-y-3.5">
-        
-        <!-- ROTINA DA MANHÃ (08:00) -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
-            <div class="flex items-center gap-2">
-              <span class="text-base">☀️</span>
+          <!-- TOPO DO CARD: CABEÇALHO E BOTÃO INCLUIR NOVO MEDICAMENTO -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-sky-50 text-sky-600 border border-sky-200 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                💊
+              </div>
               <div>
-                <div class="flex items-center gap-1.5">
-                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Dose da Manhã</h4>
-                  <span class="font-mono font-black text-sky-600 dark:text-sky-400 text-xs">(<span id="routineMorningTimeDisplay">08:00</span>)</span>
-                  <span id="routineMorningStatusBadge" class="text-[10px] font-black px-2 py-0.2 rounded-full bg-sky-100 text-sky-800 border border-sky-300">Pendente</span>
-                </div>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Total: 3 comprimidos para controle da pressão arterial.</p>
+                <h4 class="font-black text-sm sm:text-base text-slate-900 tracking-tight">Tratamento &amp; Medicamentos</h4>
+                <p class="text-xs text-slate-600 font-medium">Rotina diária, alarmes e horários de doses</p>
               </div>
             </div>
+            <button type="button" onclick="openAddNewContinuousMedModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer flex-shrink-0">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>+ Incluir Medicamento</span>
+            </button>
+          </div>
 
-            <div class="flex items-center gap-2">
-              <button type="button" id="btnTakeMorningRoutine" onclick="takeFullRoutine('morning')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer">
-                ✅ Marcar: Já Tomei a Dose
+          <!-- BLOCO 1: DOSE DA MANHÃ -->
+          <div class="space-y-2.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">☀️</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h5 class="font-black text-xs sm:text-sm text-slate-900">Dose da Manhã</h5>
+                  <span class="font-mono font-black text-sky-700 bg-sky-50 px-2 py-0.5 rounded-lg border border-sky-200 text-xs">
+                    ⏰ <span id="routineMorningTimeDisplay">08:00</span>
+                  </span>
+                  <span id="routineMorningStatusBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300">Pendente</span>
+                </div>
+              </div>
+
+              <button type="button" id="btnTakeMorningRoutine" onclick="takeFullRoutine('morning')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm transition-all active:scale-95 cursor-pointer self-start sm:self-auto">
+                ✓ Marcar: Já Tomei a Dose
               </button>
             </div>
+
+            <!-- Lista de Medicamentos da Manhã (com divisórias limpas) -->
+            <div id="routineMorningMedsList" class="divide-y divide-slate-100 pt-1">
+              <!-- Injetado dinamicamente -->
+            </div>
           </div>
 
-          <!-- Remédios da Manhã -->
-          <div id="routineMorningMedsList" class="space-y-1.5">
-            <!-- Injetado dinamicamente -->
-          </div>
-        </div>
+          <div class="border-t border-slate-200"></div>
 
-        <!-- ROTINA DA NOITE (20:00) -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850/60 border border-slate-200 dark:border-slate-800">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
-            <div class="flex items-center gap-2">
-              <span class="text-base">🌙</span>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Dose da Noite</h4>
-                  <span class="font-mono font-black text-indigo-600 dark:text-indigo-400 text-xs">(<span id="routineEveningTimeDisplay">20:00</span>)</span>
-                  <span id="routineEveningStatusBadge" class="text-[10px] font-black px-2 py-0.2 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300">Pendente</span>
+          <!-- BLOCO 2: DOSE DA NOITE -->
+          <div class="space-y-2.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🌙</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h5 class="font-black text-xs sm:text-sm text-slate-900">Dose da Noite</h5>
+                  <span class="font-mono font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200 text-xs">
+                    ⏰ <span id="routineEveningTimeDisplay">20:00</span>
+                  </span>
+                  <span id="routineEveningStatusBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300">Pendente</span>
                 </div>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Total: 3 comprimidos (2 de pressão + 1 de glicemia).</p>
               </div>
+
+              <button type="button" id="btnTakeEveningRoutine" onclick="takeFullRoutine('evening')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-sm transition-all active:scale-95 cursor-pointer self-start sm:self-auto">
+                ✓ Marcar: Já Tomei a Dose
+              </button>
             </div>
 
-            <div class="text-[11px] text-slate-500 dark:text-slate-400 italic flex items-center gap-1.5">
-              <span>💡 Marque a caixa ao lado de cada medicamento conforme você for tomando sua dose:</span>
+            <!-- Lista de Medicamentos da Noite (com divisórias limpas) -->
+            <div id="routineEveningMedsList" class="divide-y divide-slate-100 pt-1">
+              <!-- Injetado dinamicamente -->
             </div>
           </div>
 
-          <!-- Remédios da Noite -->
-          <div id="routineEveningMedsList" class="space-y-1.5">
-            <!-- Injetado dinamicamente -->
-          </div>
-        </div>
-
-        <!-- HORÁRIOS ESPECÍFICOS / INDIVIDUALIZADOS (EX: ÔMEGA 3, ALMOÇO, TARDE, ETC.) -->
-        <div id="routineCustomMedsContainer" class="hidden p-3.5 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/80">
-          <div class="flex items-center justify-between gap-2 mb-2.5">
+          <!-- BLOCO 2.1: HORÁRIOS INDIVIDUALIZADOS (SE HOUVER) -->
+          <div id="routineCustomMedsContainer" class="hidden space-y-2 pt-2 border-t border-slate-200">
             <div class="flex items-center gap-2">
               <span class="text-base">⏰</span>
-              <div>
-                <h4 class="font-black text-xs sm:text-sm text-slate-900 dark:text-white">Horários Individualizados</h4>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400">Medicamentos com horário próprio fora da dose padrão</p>
+              <h5 class="font-black text-xs sm:text-sm text-slate-900">Horários Individualizados</h5>
+            </div>
+            <div id="routineCustomMedsList" class="divide-y divide-slate-100 pt-1"></div>
+          </div>
+
+          <div class="border-t border-slate-200"></div>
+
+          <!-- BLOCO 3: CONFIGURAÇÃO DE ALARME DE VOZ & PRIVACIDADE NO MESMO CARD -->
+          <div class="space-y-3 pt-1">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <div id="healthAudioNotifCardIconBox" class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="volume-2" id="healthAudioNotifCardIcon" class="w-5 h-5 text-emerald-700"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-xs sm:text-sm text-slate-900">Alarme dos Remédios</span>
+                    <span id="healthAudioNotifBadge" class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">Ligado</span>
+                  </div>
+                  <p id="healthAudioNotifDesc" class="text-xs text-slate-600 font-medium">Toque sonoro com voz ou vibração no horário da dose.</p>
+                </div>
               </div>
             </div>
+
+            <!-- SELETOR DO TIPO DE VOZ DO ALARME -->
+            <div id="alarmStyleSelectorBox" class="pt-2">
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Voz do Alarme:</label>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="setHealthAlarmStyle('female')" id="btnAlarmStyleFemale" class="py-2 px-2 rounded-xl border border-slate-200 font-bold text-xs text-slate-800 hover:border-sky-500 bg-slate-50 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+                  <span>👩</span> <span>Voz Mulher</span>
+                </button>
+                <button type="button" onclick="setHealthAlarmStyle('male')" id="btnAlarmStyleMale" class="py-2 px-2 rounded-xl border border-slate-200 font-bold text-xs text-slate-800 hover:border-sky-500 bg-slate-50 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+                  <span>👨</span> <span>Voz Homem</span>
+                </button>
+                <button type="button" onclick="setHealthAlarmStyle('vibrate')" id="btnAlarmStyleVibrate" class="py-2 px-2 rounded-xl border border-slate-200 font-bold text-xs text-slate-800 hover:border-sky-500 bg-slate-50 flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all">
+                  <span>📳</span> <span>Só Vibrar</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PRIVACIDADE DE VOZ INTEGRADA (NÃO FALAR O NOME NO ALARME) -->
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 flex items-center justify-between gap-3 mt-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-lg">🤫</span>
+                <div>
+                  <div class="font-black text-xs text-slate-900">Privacidade de Voz no Alarme</div>
+                  <div class="text-[11px] text-slate-600 font-medium">Não falar o nome da pessoa ("Falar apenas: Atenção, hora do remédio")</div>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                <input type="checkbox" id="chkHealthSpeakNameDisabled" onchange="toggleHealthSpeakNameDisabled(this.checked)" class="sr-only peer">
+                <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+
           </div>
-          <div id="routineCustomMedsList" class="space-y-1.5"></div>
+
         </div>
 
-      </div>
+        <!-- CONTROLE DE ESTOQUE (INCORPORADO DINAMICAMENTE) -->
+        <div id="healthMedsStockGrid" class="hidden"></div>
 
-      <!-- SEÇÃO 2: CONTROLE DE ESTOQUE (INCORPORADO DIRETAMENTE EM CADA CARD DE MEDICAMENTO) -->
-      <div id="healthMedsStockGrid" class="hidden"></div>
-
-      <!-- SEÇÃO 3: COMPARADOR DE PREÇOS EM 10 FARMÁCIAS VIRTUAIS -->
-      <div class="pt-3.5">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-1.5">
-            <span class="text-sm">🔍</span>
-            <h4 class="font-black text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Comparador de Preços em Farmácias (10 Grandes Redes)
-            </h4>
+        <!-- ========================================================== -->
+        <!-- CARD PADRONIZADO: COMPARADOR DE PREÇOS EM FARMÁCIAS        -->
+        <!-- ========================================================== -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/90 text-slate-900 space-y-3.5">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🔍</span>
+              <div>
+                <h4 class="font-black text-sm text-slate-900">Comparador de Preços em 10 Farmácias</h4>
+                <p class="text-xs text-slate-600 font-medium">Consulte preços em tempo real nas maiores redes</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-black text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full border border-sky-300">
+              Top 10 Farmácias
+            </span>
           </div>
-          <span class="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
-            Top 10 Melhores Preços
-          </span>
-        </div>
 
-        <!-- Campo de Busca e Botão Comparar 10 Farmácias -->
-        <div class="flex flex-col sm:flex-row items-center gap-2 mb-2.5">
-          <div class="relative flex-1 w-full">
-            <input type="text" id="inputPharmaSearchQuery" placeholder="Pesquisar remédio... Ex: Losartana 50mg, Dipirona, Dorflex, Glifage..." value="Aradois 50mg (Losartana)" class="w-full pl-3 pr-2 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs focus:outline-none focus:border-sky-500">
+          <!-- Campo de Busca e Botão Comparar -->
+          <div class="flex flex-col sm:flex-row items-center gap-2">
+            <div class="relative flex-1 w-full">
+              <input type="text" id="inputPharmaSearchQuery" placeholder="Pesquisar remédio... Ex: Losartana 50mg, Dipirona, Dorflex..." value="Aradois 50mg (Losartana)" class="w-full pl-3 pr-2 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-slate-900 font-bold text-xs focus:outline-none focus:border-sky-500 focus:bg-white transition-colors">
+            </div>
+            <button type="button" onclick="runPharma10PriceComparison()" class="w-full sm:w-auto px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer flex-shrink-0">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              <span>Comparar 10 Redes</span>
+            </button>
           </div>
-          <button type="button" onclick="runPharma10PriceComparison()" class="w-full sm:w-auto px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-            <i data-lucide="search" class="w-3.5 h-3.5"></i>
-            <span>Comparar 10 Farmácias</span>
-          </button>
+
+          <!-- Atalhos Rápidos com visual limpo e legível -->
+          <div class="flex items-center gap-1.5 flex-wrap pt-1">
+            <span class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Atalhos:</span>
+            <button type="button" onclick="setAndComparePharma('Aradois 50mg (Losartana)')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 cursor-pointer transition-colors">Aradois 50mg</button>
+            <button type="button" onclick="setAndComparePharma('Glifage XR 500mg')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 cursor-pointer transition-colors">Glifage XR</button>
+            <button type="button" onclick="setAndComparePharma('Dipirona 500mg 20 comp')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 cursor-pointer transition-colors">Dipirona 500mg</button>
+            <button type="button" onclick="setAndComparePharma('Dorflex 36 comprimidos')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 cursor-pointer transition-colors">Dorflex 36 comp</button>
+            <button type="button" onclick="setAndComparePharma('Omeprazol 20mg 28 cápsulas')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-200 cursor-pointer transition-colors">Omeprazol 20mg</button>
+          </div>
+
+          <!-- Painel dos Resultados da Comparação -->
+          <div id="pharma10ComparisonResults" class="space-y-2 pt-1">
+            <!-- Renderizado dinamicamente via runPharma10PriceComparison() -->
+          </div>
         </div>
 
-        <!-- Atalhos Rápidos de Medicamentos Contínuos e Comuns -->
-        <div class="flex items-center gap-1.5 flex-wrap mb-3">
-          <span class="text-[10px] text-slate-400 font-bold uppercase">Atalhos:</span>
-          <button type="button" onclick="setAndComparePharma('Aradois 50mg (Losartana)')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">Aradois 50mg</button>
-          <button type="button" onclick="setAndComparePharma('Glifage XR 500mg')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">Glifage XR</button>
-          <button type="button" onclick="setAndComparePharma('Dipirona 500mg 20 comp')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">Dipirona 500mg</button>
-          <button type="button" onclick="setAndComparePharma('Dorflex 36 comprimidos')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">Dorflex 36 comp</button>
-          <button type="button" onclick="setAndComparePharma('Omeprazol 20mg 28 cápsulas')" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer">Omeprazol 20mg</button>
-        </div>
-
-        <!-- Painel de Resultados dos 10 Melhores Preços Farmácia -->
-        <div id="pharma10ComparisonResults" class="space-y-2">
-          <!-- Renderizado dinamicamente via runPharma10PriceComparison() -->
-        </div>
       </div>
       <!-- Fim da Aba de Medicamentos -->
     </div>
@@ -30129,7 +30132,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🚗</span><span>Transporte &amp; Manutenção</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Combustível, seguro, IPVA, manutenção preventiva e planejamento de cofrinhos</p>
+          <p class="text-xs text-white/90 font-medium">Combustível, seguro, IPVA, manutenção preventiva e planejamento de cofrinhos</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('veiculos')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Transporte & Veículos">
@@ -30235,7 +30238,7 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🎓</span><span>Educação</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Faculdade, especialização, cursos, livros, materiais e cofrinhos</p>
+          <p class="text-xs text-white/90 font-medium">Faculdade, especialização, cursos, livros, materiais e cofrinhos</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('educacao')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Educação">
@@ -33612,7 +33615,7 @@ Frase falada: "${spokenText}"`;
         const daysLeft = window.getMedDaysRemaining ? window.getMedDaysRemaining(m) : Math.floor((m.estoqueAtual || 0) / (m.dosePorVez || 1));
         const isLow = daysLeft <= 5;
         return `
-          <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+          <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
             <div class="flex items-center gap-2 min-w-0 flex-1">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'morning')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
               <div class="min-w-0 flex-1">
@@ -33643,7 +33646,7 @@ Frase falada: "${spokenText}"`;
         const daysLeft = window.getMedDaysRemaining ? window.getMedDaysRemaining(m) : Math.floor((m.estoqueAtual || 0) / (m.dosePorVez || 1));
         const isLow = daysLeft <= 5;
         return `
-          <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+          <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
             <div class="flex items-center gap-2 min-w-0 flex-1">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'evening')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
               <div class="min-w-0 flex-1">
@@ -34911,7 +34914,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🛠️</span><span>Meus Prestadores</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
+          <p class="text-xs text-white/90 font-medium">Seus contatos de confiança prontos para chamar ou indicar no WhatsApp</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('prestadores')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights sobre Prestadores">
@@ -37065,7 +37068,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         const isTakenIndividually = m.lastTakenMorningDate === todayStr;
         const indivTime = m.horario || mTime;
         return `
-          <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+          <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
             <div class="flex items-center gap-2 min-w-0">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'morning')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
               <div class="min-w-0">
@@ -37094,7 +37097,7 @@ Se o usuário falou preço (ex: "arroz 25,90" ou "2 leites a 4,50"), preencha pr
         const isTakenIndividually = m.lastTakenEveningDate === todayStr;
         const indivTime = m.horario || eTime;
         return `
-          <div class="flex items-center justify-between p-2 rounded-xl ${isTakenIndividually ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80'}">
+          <div class="flex items-center justify-between py-2.5 px-1.5 transition-colors ${isTakenIndividually ? 'bg-emerald-50/50' : 'hover:bg-slate-50/80'}">
             <div class="flex items-center gap-2 min-w-0">
               <button type="button" onclick="toggleIndividualMedTaken('${m.id}', 'evening')" class="w-6 h-6 rounded-lg ${isTakenIndividually ? 'bg-emerald-600 text-white' : 'border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 text-transparent'} flex items-center justify-center font-black text-xs transition-all cursor-pointer flex-shrink-0">✓</button>
               <div class="min-w-0">
@@ -43313,7 +43316,7 @@ window.openHealthMedsModal = function() {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>📅</span><span>Ciclos Financeiros</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Histórico de meses e fechamentos</p>
+          <p class="text-xs text-white/90 font-medium">Histórico de meses e fechamentos</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -43509,7 +43512,7 @@ window.openHealthMedsModal = function() {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>✨</span><span>Personalizar Meu Perfil</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Configure o ControlPig para a realidade da sua vida</p>
+          <p class="text-xs text-white/90 font-medium">Configure o ControlPig para a realidade da sua vida</p>
         </div>
       </div>
       <button type="button" onclick="openSectionLampInsight('perfil')" class="w-8 h-8 rounded-full bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 flex items-center justify-center text-amber-200 transition-all cursor-pointer active:scale-95" title="Insights de Perfil">
@@ -43714,7 +43717,7 @@ window.openHealthMedsModal = function() {
           <h2 class="text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>📊</span><span>Comparativo de Mercados</span>
           </h2>
-          <p class="text-[11px] text-blue-200 font-medium">Ranking de preços e gastos por supermercado</p>
+          <p class="text-xs text-white/90 font-medium font-medium">Ranking de preços e gastos por supermercado</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -48836,7 +48839,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🛡️</span><span>Garantias &amp; Manutenções</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Garantias de produtos e lembretes de revisões (aquecedor a gás, ar, etc.)</p>
+          <p class="text-xs text-white/90 font-medium">Garantias de produtos e lembretes de revisões (aquecedor a gás, ar, etc.)</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -49065,7 +49068,7 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
           <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-1.5 leading-tight">
             <span>🧒</span><span>Crianças, Notas &amp; Educação</span>
           </h2>
-          <p class="text-[11px] text-blue-200">Boletim escolar dos filhos integrado às despesas com educação</p>
+          <p class="text-xs text-white/90 font-medium">Boletim escolar dos filhos integrado às despesas com educação</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
