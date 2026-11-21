@@ -22723,12 +22723,22 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
     window.setActivePetId = setActivePetId;
 
+    function scrollCarouselToPet(petId, smooth = true) {
+      const carousel = document.getElementById('petsHeroCardsCarousel');
+      const card = document.getElementById(`petHeroCard_${petId}`);
+      if (carousel && card) {
+        const scrollTarget = card.offsetLeft - carousel.offsetLeft - Math.max(0, (carousel.clientWidth - card.clientWidth) / 2);
+        carousel.scrollTo({
+          left: Math.max(0, scrollTarget),
+          behavior: smooth ? 'smooth' : 'auto'
+        });
+      }
+    }
+    window.scrollCarouselToPet = scrollCarouselToPet;
+
     function scrollToPetCard(petId) {
       setActivePetId(petId, true);
-      const card = document.getElementById(`petHeroCard_${petId}`);
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
+      scrollCarouselToPet(petId, true);
     }
     window.scrollToPetCard = scrollToPetCard;
 
@@ -22805,19 +22815,23 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
     }
 
     function openPetAreaModal() {
-      if (false && typeof window.showProfPiggySpotlight === 'function') {
-        window.showProfPiggySpotlight('pet', '🐾 Mundo Pet & Carteirinha de Vacinas', 'Mantenha a saúde do seu pet em dia! O app avisa com antecedência quando uma vacina estiver próxima do vencimento.');
-      }
       const modal = document.getElementById('modalPetArea');
       if (modal) {
+        modal.scrollTop = 0;
+        const scrollableBody = modal.querySelector('.overflow-y-auto') || modal.querySelector('.overflow-auto');
+        if (scrollableBody) scrollableBody.scrollTop = 0;
         modal.classList.remove('hidden');
         renderPetCarouselTabs();
-        renderPetProfileUI();
+        renderPetProfileUI(true);
         renderPetExpensesSummary();
         renderPetVaccinesList();
         renderPetCareList();
         runPet10PriceComparison();
         if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+          modal.scrollTop = 0;
+          if (scrollableBody) scrollableBody.scrollTop = 0;
+        }, 50);
       }
     }
 
@@ -23391,12 +23405,11 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
         `).join('');
       }
 
-      // Rola suavemente até o card ativo se não for skipScroll
+      // Rola suavemente APENAS o carrossel horizontal de cards sem NUNCA afetar a rolagem vertical da página
       if (!skipScroll) {
         setTimeout(() => {
-          const activeCard = document.getElementById(`petHeroCard_${activeId}`);
-          if (activeCard) {
-            activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          if (typeof scrollCarouselToPet === 'function') {
+            scrollCarouselToPet(activeId, true);
           }
         }, 50);
       }
@@ -47674,6 +47687,19 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       el.style.inset = '0';
       el.style.backgroundColor = '#071933';
       el.style.opacity = '1';
+
+      // Sempre garante que a tela inicie no topo exato sem rolagem prévia
+      el.scrollTop = 0;
+      const scrollable = el.querySelector('.overflow-y-auto') || el.querySelector('.overflow-auto');
+      if (scrollable) scrollable.scrollTop = 0;
+      requestAnimationFrame(() => {
+        el.scrollTop = 0;
+        if (scrollable) scrollable.scrollTop = 0;
+      });
+      setTimeout(() => {
+        el.scrollTop = 0;
+        if (scrollable) scrollable.scrollTop = 0;
+      }, 50);
     }
     if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
     return el;
@@ -47704,13 +47730,31 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
 
   window.openPetAreaModal = function() {
     ensureElementVisible('modalPetArea');
+    const modal = document.getElementById('modalPetArea');
+    if (modal) {
+      modal.scrollTop = 0;
+      const scrollableBody = modal.querySelector('.overflow-y-auto') || modal.querySelector('.overflow-auto');
+      if (scrollableBody) scrollableBody.scrollTop = 0;
+    }
     if (typeof renderPetCarouselTabs === 'function') renderPetCarouselTabs();
-    if (typeof renderPetProfileUI === 'function') renderPetProfileUI();
+    if (typeof renderPetProfileUI === 'function') renderPetProfileUI(true);
     if (typeof renderPetExpensesSummary === 'function') renderPetExpensesSummary();
     if (typeof renderPetVaccinesList === 'function') renderPetVaccinesList();
     if (typeof renderPetCareList === 'function') renderPetCareList();
     if (typeof runPet10PriceComparison === 'function') runPet10PriceComparison();
     if (window.lucide) lucide.createIcons();
+
+    setTimeout(() => {
+      const activeId = typeof getActivePetId === 'function' ? getActivePetId() : null;
+      if (activeId && typeof scrollCarouselToPet === 'function') {
+        scrollCarouselToPet(activeId, false);
+      }
+      if (modal) {
+        modal.scrollTop = 0;
+        const scrollableBody = modal.querySelector('.overflow-y-auto') || modal.querySelector('.overflow-auto');
+        if (scrollableBody) scrollableBody.scrollTop = 0;
+      }
+    }, 60);
   };
   window.closePetAreaModal = function() { hideElement('modalPetArea'); };
 
