@@ -19,7 +19,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.239+317";
+    window.APP_BUILD_VERSION = "2.1.240+318";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -5597,10 +5597,11 @@ html, body {
             
             <div class="flex items-start justify-between">
               <div>
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center gap-2">
                   <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Saldo atual</span>
-                  <button type="button" onclick="togglePrivacy(event)" id="btnHeroPrivacyToggle" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200/60 active:scale-90 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative z-50 p-1" title="Ocultar ou mostrar saldo e valores" style="touch-action: manipulation; pointer-events: auto;">
-                    <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-4 h-4 text-slate-600 pointer-events-none" style="color: #475569 !important;"></i>
+                  <!-- Botão do Olhinho com Área Touch Ampla (40x40px), Feedback Visual e Alta Sensibilidade -->
+                  <button type="button" id="btnHeroPrivacyToggle" class="w-10 h-10 -my-1 -ml-1 flex items-center justify-center rounded-full hover:bg-slate-200/70 active:scale-90 text-slate-600 hover:text-slate-900 transition-all cursor-pointer relative z-50" title="Ocultar ou mostrar saldo e valores" style="touch-action: manipulation; pointer-events: auto;">
+                    <i data-lucide="eye-off" id="iconHeroPrivacy" class="w-5 h-5 text-slate-600 pointer-events-none" style="color: #475569 !important;"></i>
                   </button>
                 </div>
                 <div class="mt-1 flex items-baseline gap-2">
@@ -5608,14 +5609,6 @@ html, body {
                     R$ •••••
                   </h2>
                 </div>
-              </div>
-
-              <!-- Lado Direito: Botão Discreto de Lançar Valores -->
-              <div class="flex flex-col items-end gap-1.5 -mr-1">
-                <button type="button" onclick="openActionHubModal()" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-extrabold text-xs border border-slate-200/80 shadow-2xs transition-all cursor-pointer whitespace-nowrap" title="Lançar receitas e despesas">
-                  <span class="text-blue-600 font-black text-xs leading-none">+</span>
-                  <span>Lançar</span>
-                </button>
               </div>
             </div>
 
@@ -45163,10 +45156,13 @@ window.openHealthMedsModal = function() {
     if (badgeEl) {
       if (isHidden) {
         if (!badgeEl.dataset.real && !badgeEl.textContent.includes('•••••')) badgeEl.dataset.real = badgeEl.innerHTML;
-        badgeEl.style.display = 'none';
+        badgeEl.innerHTML = '<span>•••••</span>';
       } else {
-        badgeEl.style.display = '';
-        if (badgeEl.dataset.real) badgeEl.innerHTML = badgeEl.dataset.real;
+        if (badgeEl.dataset.real) {
+          badgeEl.innerHTML = badgeEl.dataset.real;
+        } else if (typeof updateDashboard === 'function') {
+          updateDashboard();
+        }
       }
     }
 
