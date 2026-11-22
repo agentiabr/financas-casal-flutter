@@ -19,7 +19,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.236+314";
+    window.APP_BUILD_VERSION = "2.1.237+315";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -27239,19 +27239,35 @@ const INITIAL_ACTIVE_SHOPPING_LIST = [
       <!-- TELA 1 (ANTES DE ENTRAR NO CHAT): LISTA DE MEMBROS ESTILO WHATSAPP -->
       <!-- ============================================================== -->
       <div id="chatMembersDirectoryView" class="flex-1 flex flex-col overflow-y-auto px-3.5 sm:px-5 pt-3 pb-28 space-y-3">
-        <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex items-center justify-between gap-3">
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
-              💬
+        <!-- HERO PIGGY COM BALÃO DE FALA EXPLICATIVO (ESTILO DESIGN SYSTEM OFICIAL) -->
+        <div id="chatHeroPiggyBanner" class="relative overflow-hidden rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-[#1E3A8A] via-[#2563EB] to-[#1D4ED8] border border-white/30 shadow-lg min-h-[160px] sm:min-h-[180px] flex items-center">
+          <div class="absolute -right-8 -top-8 w-40 h-40 bg-sky-400/25 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-6 -bottom-6 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="relative z-10 flex items-center justify-between gap-3 sm:gap-4 w-full">
+            <!-- Balão de Fala e Texto Explicativo do Porquinho -->
+            <div class="flex-1 min-w-0 pr-1 flex flex-col justify-center space-y-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wider border border-white/30 shadow-xs">
+                  💬 Chat da Família & Mercado
+                </span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-400/25 text-emerald-200 border border-emerald-300/30 text-[9px] sm:text-[10px] font-black tracking-wide">
+                  ● Conectado
+                </span>
+              </div>
+              <h3 class="font-black text-base sm:text-lg text-white leading-tight drop-shadow-xs">
+                Converse, lance gastos por voz e sincronize compras!
+              </h3>
+              <p class="text-xs sm:text-[13px] text-blue-100/95 leading-relaxed font-medium">
+                Toque em um membro da família abaixo para enviar mensagens, ditar despesas por voz ou acompanhar a lista do mercado em tempo real.
+              </p>
             </div>
-            <div class="min-w-0">
-              <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight">Conversas da Família</h3>
-              <p class="text-xs text-slate-500 mt-0.5 leading-snug">Toque em um membro abaixo para iniciar a conversa ou sincronizar compras.</p>
+
+            <!-- Mascote Porquinho do Chat -->
+            <div class="w-24 sm:w-32 flex-shrink-0 flex items-center justify-center">
+              <img src="images/mascote_oficial_chat.png" onerror="this.src='assets/images/mascote_oficial_chat.png'" alt="Piggy Chat" class="w-full h-auto max-h-[125px] sm:max-h-[145px] object-contain drop-shadow-2xl hover:scale-105 transition-transform select-none">
             </div>
           </div>
-          <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-black whitespace-nowrap self-start shadow-2xs">
-            ● Online
-          </span>
         </div>
 
         <!-- Lista de Membros Estilo WhatsApp (Renderizada Dinamicamente) -->
@@ -42551,6 +42567,11 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       const heroHeader = document.getElementById('fintechAuroraHero');
       const secTable = document.getElementById('sectionTable');
       const quickHub = document.getElementById('fintechQuickHub');
+
+      // Fecha o modal de chat se o usuário clicar em uma aba do rodapé
+      if (tabName !== 'familia' && typeof closeFamilyChatModal === 'function') {
+        closeFamilyChatModal();
+      }
 
       if (tabName === 'inicio') {
         if (typeof switchScreen === 'function') switchScreen('dashboard');
