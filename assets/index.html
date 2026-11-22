@@ -19,7 +19,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.235+313";
+    window.APP_BUILD_VERSION = "2.1.236+314";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -3512,6 +3512,32 @@ html, body {
       overflow-y: auto !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+    }
+    #modalFamilyChat > div:nth-child(2),
+    #modalFamilyChat > div.bg-transparent {
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      gap: 0 !important;
+    }
+    #modalFamilyChat #chatActiveConversationView {
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    #modalFamilyChat #chatInputFooter {
+      margin-top: auto !important;
+      margin-bottom: 0 !important;
+      position: relative !important;
+      bottom: 0 !important;
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px) !important;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25) !important;
+      z-index: 30 !important;
+      flex-shrink: 0 !important;
     }
     #modalShoppingListHistory {
       background-color: var(--liquid-bg-main) !important;
