@@ -19,7 +19,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    window.APP_BUILD_VERSION = "2.1.238+316";
+    window.APP_BUILD_VERSION = "2.1.239+317";
     try {
       var prevVer = localStorage.getItem('ctrlpig_html_version');
       if (prevVer && prevVer !== window.APP_BUILD_VERSION) {
@@ -4991,6 +4991,23 @@ html, body {
     }
 
   </style>
+<style id="cpOptimizationShimmerStyles">
+  /* OTIMIZAÇÕES V2.1.239: Skeleton Shimmer & Fast Typewriter */
+  @keyframes cpShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .cp-skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(226, 232, 240, 0.4) 25%, rgba(241, 245, 249, 0.9) 50%, rgba(226, 232, 240, 0.4) 75%);
+    background-size: 200% 100%;
+    animation: cpShimmer 1.5s infinite;
+  }
+  .dark .cp-skeleton-shimmer {
+    background: linear-gradient(90deg, rgba(30, 41, 59, 0.5) 25%, rgba(51, 65, 85, 0.8) 50%, rgba(30, 41, 59, 0.5) 75%);
+    background-size: 200% 100%;
+    animation: cpShimmer 1.5s infinite;
+  }
+</style>
 </head>
 <body class="theme-light min-h-screen w-full antialiased pb-20 md:pb-6 bg-slate-50 text-slate-800">
 
@@ -14555,7 +14572,21 @@ html, body {
     window.onNativeOcrProcessingStart = function() {
       const ocrStatus = document.getElementById('invoiceOcrStatus');
       if (ocrStatus) {
-        ocrStatus.innerHTML = '<span class="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1.5"><span class="animate-spin">⏳</span> Reconhecendo dados e itens da nota com IA (Google ML Kit)...</span>';
+        ocrStatus.innerHTML = `
+          <div class="space-y-2 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl animate-in fade-in">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
+              <span class="flex items-center gap-1.5"><span class="animate-spin">⏳</span> Extraindo dados do cupom (Google ML Kit)...</span>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Processando</span>
+            </div>
+            <!-- SKELETON SHIMMER SIMULANDO O CUPOM FISCAL -->
+            <div class="space-y-1.5 pt-1">
+              <div class="h-3 w-3/4 rounded-md cp-skeleton-shimmer"></div>
+              <div class="h-3 w-1/2 rounded-md cp-skeleton-shimmer"></div>
+              <div class="h-2.5 w-full rounded-md cp-skeleton-shimmer opacity-80"></div>
+              <div class="h-2.5 w-5/6 rounded-md cp-skeleton-shimmer opacity-70"></div>
+            </div>
+          </div>
+        `;
       }
     };
 
@@ -52170,11 +52201,35 @@ window.onNativeInvoiceQrResult = function(rawPayload) {
       }
 
       titleEl.textContent = data.title;
-      bodyEl.innerHTML = data.tips.map(t => `
-        <div class="p-3 rounded-2xl bg-amber-50/70 dark:bg-slate-800 border border-amber-200/80 dark:border-slate-700 text-xs leading-relaxed">
-          ${t}
+      
+      // Streaming / Typewriter em tempo real para os insights do Mascote
+      bodyEl.innerHTML = data.tips.map((t, idx) => `
+        <div id="lampTipItem_${idx}" class="p-3 rounded-2xl bg-amber-50/70 dark:bg-slate-800 border border-amber-200/80 dark:border-slate-700 text-xs leading-relaxed transition-all">
+          <span class="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse mr-1"></span>
+          <span id="lampTipText_${idx}"></span>
         </div>
       `).join('');
+
+      data.tips.forEach((tipText, idx) => {
+        const textSpan = document.getElementById(`lampTipText_${idx}`);
+        if (!textSpan) return;
+        
+        let charIndex = 0;
+        const speed = Math.max(8, Math.min(25, Math.floor(1200 / (tipText.length || 1))));
+        function streamNextChar() {
+          if (charIndex < tipText.length) {
+            textSpan.innerHTML = tipText.substring(0, charIndex + 1);
+            charIndex++;
+            setTimeout(streamNextChar, speed);
+          } else {
+            textSpan.innerHTML = tipText;
+            const parent = document.getElementById(`lampTipItem_${idx}`);
+            const dot = parent ? parent.querySelector('.animate-pulse') : null;
+            if (dot) dot.remove();
+          }
+        }
+        setTimeout(streamNextChar, idx * 120);
+      });
 
       if (modal.parentElement !== document.body) document.body.appendChild(modal);
       modal.style.zIndex = '3900';
